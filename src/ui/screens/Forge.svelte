@@ -1,0 +1,179 @@
+<script lang="ts">
+  // List-detail: upgrade trees on the left, the selected recipe on the right.
+  import * as E from '../../engine';
+  import { game } from '../game.svelte';
+  import { glyphs, bestParts } from '../fmt';
+  import Costs from '../parts/Costs.svelte';
+  import { tick } from 'svelte';
+
+  type Tab = 'weapons' | 'armor';
+  let tab = $state<Tab>('weapons');
+  let ftype = $state<'All' | E.DamageType>('All');
+  let readyOnly = $state(false);
+  let chosen = $state<Record<Tab, string | null>>({ weapons: null, armor: null });
+  let toast = $state('');
+  let detailEl: HTMLElement;
+
+  const kind = $derived<E.RecipeKind>(tab === 'weapons' ? 'w' : 'a');
+  const s = $derived(game.save);
+
+  const groups = $derived.by(() => {
+    const raw = tab === 'weapons'
+      ? E.TREES.filter(t => ftype === 'All' || t.type === ftype).map(t => ({ group: t.type as string, sig: E.SIGNATURES[t.type], rows: t.nodes.map(([id, depth]) => ({ id, depth })) }))
+      : [{ group: 'Armor', sig: null, rows: Object.keys(E.ARMORS).map(id => ({ id, depth: 0 })) }];
+    return raw
+      .map(g => ({ ...g, rows: g.rows.filter(r => !readyOnly || E.recipeState(s, kind, r.id).cls === 'ready') }))
+      .filter(g => g.rows.length);
+  });
+  const visible = $derived(groups.flatMap(g => g.rows.map(r => r.id)));
+  const sel = $derived(visible.includes(chosen[tab] ?? '') ? chosen[tab] : visible[0] ?? null);
+
+  const lvHere = (id: string) => (kind === 'w' ? E.lvOf(s.weapons, id) : E.lvOf(s.armors, id));
+  /** Level a weapon would have: its own if owned, else the level it inherits from its parent. */
+  const wLevel = (id: string) => (s.weapons[id] ? E.lvOf(s.weapons, id) : E.WEAPONS[id].from ? E.lvOf(s.weapons, E.WEAPONS[id].from!) : 0);
+
+  async function pick(id: string) {
+    chosen[tab] = id; toast = '';
+    if (window.innerWidth <= 900) { await tick(); detailEl?.scrollIntoView?.({ behavior: 'smooth', block: 'start' }); }
+  }
+  function doIt() { if (sel) toast = game.town(sv => E.forgeDo(sv, kind, sel)) ?? ''; }
+  function track() {
+    if (!sel) return;
+    const tk = `${kind}:${sel}`;
+    s.tracked = s.tracked === tk ? null : tk;
+    game.persist();
+    toast = s.tracked ? 'Tracking. Its materials are flagged on the Hunt Board and in the Shop.' : 'Stopped tracking.';
+  }
+  function setTab(t: Tab) { tab = t; toast = ''; }
+</script>
+
+<div class="forgegrid">
+  <section class="panel" aria-label="Forge">
+    <div class="ph"><h2>The Forge</h2><span class="label">{E.trackedLine(s)}</span></div>
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected={tab === 'weapons'} onclick={() => setTab('weapons')}>Weapons</button>
+      <button role="tab" aria-selected={tab === 'armor'} onclick={() => setTab('armor')}>Armor</button>
+    </div>
+    <div class="pickbar">
+      <div class="filters">
+        {#if tab === 'weapons'}
+          {#each ['All', 'Cut', 'Blunt', 'Pierce'] as const as t}
+            <button aria-pressed={ftype === t} onclick={() => (ftype = t)}>{t}</button>
+          {/each}
+        {/if}
+      </div>
+      <label class="label readyto"><input type="checkbox" bind:checked={readyOnly} /> Ready to make</label>
+    </div>
+    <div class="flist">
+      {#each groups as g (g.group)}
+        <div class="fgroup"><span>{g.group}</span>{#if g.sig}<span class="tag {g.sig.tag}" style="margin:0">{g.sig.name}</span>{/if}</div>
+        {#each g.rows as r (r.id)}
+          {@const d = kind === 'w' ? E.WEAPONS[r.id] : E.ARMORS[r.id]}
+          {@const st = E.recipeState(s, kind, r.id)}
+          {@const lv = lvHere(r.id)}
+          <button class="fnode d{r.depth}" aria-current={sel === r.id} onclick={() => pick(r.id)}>
+            <span class="nmwrap">
+              {#if r.depth}<span class="ind">└</span>{/if}<span class="nm">{d.name}{#if lv}{' '}<span class="lv">+{lv}</span>{/if}</span>
+              {#if s.tracked === `${kind}:${r.id}`}<span class="tracked-pin">● Tracked</span>{/if}
+              <span class="st {st.cls}"><i></i>{st.text}</span>
+            </span>
+            <span class="avg">{kind === 'w' ? E.avgDmg(E.movesAt(r.id, wLevel(r.id))) : `${E.ARMORS[r.id].hp + 10 * lv} HP`}</span>
+          </button>
+        {/each}
+      {:else}
+        <p class="ital" style="padding:12px;margin:0">Nothing is ready to make yet. Untick "Ready to make" to see everything.</p>
+      {/each}
+    </div>
+  </section>
+
+  <section class="panel" aria-label="Selected recipe" aria-live="polite" bind:this={detailEl}>
+    {#if !sel}
+      <p class="ital p0">Pick something from the list.</p>
+    {:else}
+      {@const r = E.recipeOf(s, kind, sel)}
+      {@const st = E.recipeState(s, kind, sel)}
+      {@const owned = kind === 'w' ? !!s.weapons[sel] : !!s.armors[sel]}
+      {@const lv = lvHere(sel)}
+      {@const name = kind === 'w' ? E.WEAPONS[sel].name : E.ARMORS[sel].name}
+      {@const tk = `${kind}:${sel}`}
+      <div class="fdetail">
+        <div class="fd-head"><div><h2>{name}{#if lv}{' '}<span class="lv">+{lv}</span>{/if}</h2><span class="st {st.cls}"><i></i>{st.text}</span></div></div>
+
+        {#if kind === 'w'}
+          {@const d = E.WEAPONS[sel]}
+          {@const pLv = d.from ? E.lvOf(s.weapons, d.from) : 0}
+          {@const mv = E.movesAt(sel, owned ? lv : pLv)}
+          {@const sg = E.SIGNATURES[d.type]}
+          {@const ups = Object.values(E.WEAPONS).filter(x => x.from === sel).map(x => x.name)}
+          <span class="avg">
+            {#if !owned && r.action === 'upgrade'}
+              {E.avgDmg(E.movesAt(d.from!, pLv))} → <span class="up">{E.avgDmg(mv)}</span> avg <span class="avgnote">vs your {E.WEAPONS[d.from!].name}</span>
+            {:else}
+              {E.avgDmg(mv)} avg{#if owned && lv < E.MAX_REINFORCE}{' '}<span class="avgnote">· at +{lv + 1}:</span>{' '}<span class="up">{E.avgDmg(E.movesAt(sel, lv + 1))}</span>{/if}
+            {/if}
+          </span>
+          <span class="ty">{d.type} · {d.elem ?? 'No element'} · {d.kind}</span>
+          <p class="sigline"><span class="tag {sg.tag}" style="margin:0 6px 0 0">{sg.name}</span>{sg.text}</p>
+          <span class="stats">{mv.map(m => `${glyphs(m.need)} ${m.name} ${m.dmg}`).join(' · ')}</span>
+          <p class="ds p0">{d.note}</p>
+          {#if d.from || ups.length}
+            <p class="uplinks p0">{d.from ? `Upgrades from ${E.WEAPONS[d.from].name}.` : ''}{ups.length ? ` Upgrades into ${ups.join(' or ')}.` : ''}</p>
+          {/if}
+        {:else}
+          {@const a = E.ownedArmor(s, sel)}
+          {@const base = E.ARMORS[sel]}
+          <span class="avg">{owned ? a.hp : base.hp} HP · guard {owned ? a.guard : base.guard} · {base.rerolls} rerolls</span>
+          {#if owned && lv < E.MAX_REINFORCE}<span class="avgnote">At +{lv + 1}: {a.hp + 10} HP, guard {a.guard + 1}</span>{/if}
+          <p class="ds p0">{base.perk}</p>
+        {/if}
+
+        <div>
+          <div class="label rule">Against known monsters</div>
+          <table class="mtable"><tbody>
+            {#each Object.values(E.MONSTERS) as M (M.id)}
+              {#if kind === 'w'}
+                {@const w = { ...E.WEAPONS[sel], moves: E.movesAt(sel, wLevel(sel)) }}
+                {@const m = E.elemMult(w.elem, M.id)}
+                {@const best = bestParts(M.id, w.type).join(', ')}
+                <tr>
+                  <td>{M.short}</td>
+                  <td>{best ? `breaks ${best}` : '—'}{#if m > 1}{' · '}<span class="good">weakness</span>{:else if m < 1}{' · '}<span class="bad">resisted</span>{/if}{M.flier && w.type !== 'Pierce' ? ' · half in the air' : ''}</td>
+                  <td>{E.avgVs(w, M.id)} avg</td>
+                </tr>
+              {:else}
+                {@const res = E.ARMORS[sel].resist}
+                <tr><td>{M.short}</td><td>{#if res === M.elem}<span class="good">resists its attacks</span>{:else if res}<span class="neutral">resistance unused</span>{:else}—{/if}</td><td></td></tr>
+              {/if}
+            {/each}
+          </tbody></table>
+        </div>
+
+        {#if r.cost}
+          <div>
+            <div class="label rule">{r.action === 'reinforce' ? 'Reinforcing costs' : r.locked ? `Upgrade costs (once you own the ${E.WEAPONS[E.WEAPONS[sel].from!].name})` : 'Costs'}</div>
+            <Costs cost={r.cost} />
+          </div>
+        {/if}
+
+        <div class="fd-acts">
+          {#if r.action && r.cost}
+            <button class="btn primary" disabled={!E.canPay(s, r.cost)} onclick={doIt}>
+              {r.action === 'craft' ? 'Craft' : r.action === 'upgrade' ? 'Upgrade' : `Reinforce to +${lv + 1}`}
+            </button>
+          {:else if owned}
+            <span class="pl">Fully reinforced.</span>
+          {/if}
+          {#if r.cost && (r.action || r.locked)}
+            <button class="btn quiet" aria-pressed={s.tracked === tk} onclick={track}>{s.tracked === tk ? 'Untrack' : 'Track'}</button>
+          {/if}
+          {#if r.action === 'upgrade'}
+            {@const from = E.WEAPONS[sel].from!}
+            {@const flv = E.lvOf(s.weapons, from)}
+            <span class="pl">Replaces your {E.WEAPONS[from].name}{flv ? `, keeps +${flv}` : ''}.</span>
+          {/if}
+        </div>
+        <div class="toast" aria-live="polite">{toast}</div>
+      </div>
+    {/if}
+  </section>
+</div>

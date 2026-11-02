@@ -200,6 +200,8 @@ export interface MonsterDef {
   /** context tip on the telegraph */
   tip?(h: Hunt, type: string): string | null;
   canCapture?(h: Hunt): boolean;
+  /** takes to the air: the UI shows air notes (Pierce full damage, nets work) */
+  flier?: boolean;
 }
 
 export interface Loadout { weapons: string[]; armor: string; item: string | null; target: string }

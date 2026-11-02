@@ -19,6 +19,7 @@ export const galeshrike: MonsterDef = {
   id: 'galeshrike',
   name: 'The Galeshrike',
   short: 'Galeshrike',
+  flier: true,
   kind: 'Storm raptor',
   elem: 'Gale',
   weak: 'Frost',
