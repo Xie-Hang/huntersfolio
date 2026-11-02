@@ -11,7 +11,7 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
-    "types": ["vitest/globals"]
+    "types": ["vitest/globals", "node"]
   },
   "include": ["src/**/*.ts", "src/**/*.svelte", "tests/**/*.ts"]
 }
