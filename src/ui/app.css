@@ -1,0 +1,14 @@
+/* Global tokens. Single dark look by choice. Two typefaces, six sizes (see design doc: World, tone and presentation). */
+:root {
+  --bg: #14100d; --panel: #201a15; --raise: #2a221c; --line: #3b322a; --line-2: #4d4136;
+  --fg: #ecdfc8; --soft: #c9b89c; --muted: #a8977e;
+  --gold: #e9b949; --gold-hi: #f3cf7a; --ember: #e8773a; --ember-soft: #f0a070;
+  --gale: #8fc3c9; --life: #8fb07f; --daze: #b9a3e0; --ink: #1a1410; --bone: #ecdfc8; --bone-edge: #8c7a62;
+  --f-display: 'Barlow Condensed', 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif;
+  --f-body: 'Barlow', 'Helvetica Neue', Arial, sans-serif;
+  --fs-xs: 12px; --fs-sm: 14px; --fs-md: 16px; --fs-lg: 20px; --fs-xl: 26px; --fs-2xl: 40px;
+  color-scheme: dark;
+}
+html, body { margin: 0; background: var(--bg); }
+body { color: var(--fg); font-family: var(--f-body); font-size: var(--fs-md); line-height: 1.45; font-variant-numeric: lining-nums tabular-nums; }
+.wrap { max-width: 1360px; margin: 0 auto; padding-block: 24px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
