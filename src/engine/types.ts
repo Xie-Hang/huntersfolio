@@ -67,6 +67,17 @@ export interface ItemDef {
   effect: ItemEffect;
 }
 
+export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut';
+export interface CharmDef {
+  id: string;
+  name: string;
+  /** monster whose materials make it */
+  src: string;
+  perk: string;
+  effect: CharmEffect;
+  craft: Cost;
+}
+
 export interface MaterialDef {
   id: string;
   /** base name, e.g. 'Tusk' */
@@ -161,6 +172,7 @@ export interface Hunt {
   weapon: number;
   arm: ArmorInst;
   item: string | null;
+  charm: string | null;
   itemCharges: number;
   carried: number;
   itemUsed: boolean;
@@ -233,7 +245,7 @@ export interface MonsterDef {
   plated?: number;
 }
 
-export interface Loadout { weapons: string[]; armor: string; item: string | null; target: string }
+export interface Loadout { weapons: string[]; armor: string; charm: string | null; item: string | null; target: string }
 export interface MonsterRecord { hunts: number; wins: number; captures: number; breaks: Record<string, number> }
 
 export interface Save {
@@ -249,4 +261,6 @@ export interface Save {
   record: Record<string, MonsterRecord>;
   /** 'w:tusk' or 'a:vest' */
   tracked: string | null;
+  /** crafted charms (no levels) */
+  charms: Record<string, true>;
 }

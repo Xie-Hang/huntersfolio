@@ -357,6 +357,7 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .fd-stat .delta.up{color:var(--life)} .fd-stat .delta.down{color:var(--ember-soft)}
 .fd-type{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:var(--fs-md);color:var(--fg)}
 .fd-type .sep{color:var(--muted)}
+.fd-perk{margin:0;font-size:var(--fs-lg);color:var(--fg);max-width:50ch}
 .fd-sig{margin:0;font-size:var(--fs-sm);color:var(--soft);max-width:60ch}
 .fd-moves{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:var(--fs-sm)}
 .fd-moves li{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:10px;align-items:center}

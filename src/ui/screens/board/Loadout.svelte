@@ -5,7 +5,7 @@
   import { SLOT_LABEL, bestParts, movesLine, weaponVs } from '../../fmt';
   import { tick } from 'svelte';
 
-  type Slot = 'w0' | 'w1' | 'armor' | 'item';
+  type Slot = 'w0' | 'w1' | 'armor' | 'charm' | 'item';
   type Sort = 'best' | 'avg' | 'name';
   let picker = $state<{ slot: Slot; ftype: 'All' | E.DamageType; sort: Sort } | null>(null);
   let root: HTMLElement;
@@ -33,6 +33,7 @@
       if (L.weapons[o] === id) L.weapons[o] = L.weapons[idx]; // picking the other slot's weapon swaps them
       L.weapons[idx] = id;
     } else if (s === 'armor') L.armor = id;
+    else if (s === 'charm') L.charm = id || null;
     else L.item = id || null;
     game.persist();
     close();
@@ -108,6 +109,20 @@
           <span class="chg">Change</span>
         </button>
       {/if}
+      {#if L.charm}
+        {@const c = E.CHARMS[L.charm]}
+        <button class="slot" data-slot="charm" onclick={() => open('charm')}>
+          <span class="sl">Charm</span>
+          <span><span class="nm">{c.name}</span><span class="sub2"><span>{c.perk}</span></span></span>
+          <span class="chg">Change</span>
+        </button>
+      {:else}
+        <button class="slot empty" data-slot="charm" onclick={() => open('charm')}>
+          <span class="sl">Charm</span>
+          <span><span class="nm">No charm</span><span class="sub2"><span>{Object.keys(game.save.charms).length ? 'Choose one of your charms.' : 'Craft charms at the Forge from monster materials.'}</span></span></span>
+          <span class="chg">Choose</span>
+        </button>
+      {/if}
       {#if L.item}
         {@const it = E.ITEMS[L.item]}
         {@const have = game.save.items[L.item] ?? 0}
@@ -179,6 +194,21 @@
               <span class="num">{a.guard}{#if eq}<small>—</small>{:else}{@render delta(a.guard, cur.guard)}{/if}</span>
             </button>
           {/each}
+        </div>
+      {:else if picker.slot === 'charm'}
+        {@const ids = Object.keys(game.save.charms)}
+        <div class="plisthead one"><span>{ids.length} charm{ids.length === 1 ? '' : 's'}</span><span></span></div>
+        <div class="plist one">
+          <button class="prow" aria-current={!L.charm} onclick={() => choose('')}>
+            <span><span class="nm">No charm{#if !L.charm}<span class="badge">Equipped</span>{/if}</span></span><span class="num"></span>
+          </button>
+          {#each ids as id (id)}
+            {@const c = E.CHARMS[id]}
+            <button class="prow" aria-current={id === L.charm} onclick={() => choose(id)}>
+              <span><span class="nm">{c.name}{#if id === L.charm}<span class="badge">Equipped</span>{/if}</span><span class="ty">{c.perk}</span></span><span class="num"></span>
+            </button>
+          {/each}
+          {#if !ids.length}<p class="ital" style="padding:12px;margin:0">No charms yet. Craft them at the Forge from monster materials.</p>{/if}
         </div>
       {:else}
         <div class="plisthead"><span>{itemIds.length} in stash</span><span>Carry</span><span>Have</span></div>

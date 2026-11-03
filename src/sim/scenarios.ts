@@ -3,7 +3,7 @@ import * as E from '../engine';
 import type { Save } from '../engine/types';
 import { playHunt, type Policy } from './bot';
 
-export interface Setup { weapons: [string, number][]; armor: string; armorLv?: number; item?: string | null; items?: number; target: string }
+export interface Setup { weapons: [string, number][]; armor: string; armorLv?: number; item?: string | null; items?: number; charm?: string | null; target: string }
 
 function saveFor(s: Setup): Save {
   const save = E.newSave();
@@ -11,7 +11,8 @@ function saveFor(s: Setup): Save {
   save.armors = { [s.armor]: { lv: s.armorLv ?? 0 } };
   save.items = { ...save.items, salve: 0 };
   if (s.item) save.items[s.item] = s.items ?? 3;
-  save.loadout = { weapons: s.weapons.map(w => w[0]), armor: s.armor, item: s.item ?? null, target: s.target };
+  if (s.charm) save.charms = { [s.charm]: true };
+  save.loadout = { weapons: s.weapons.map(w => w[0]), armor: s.armor, charm: s.charm ?? null, item: s.item ?? null, target: s.target };
   return save;
 }
 

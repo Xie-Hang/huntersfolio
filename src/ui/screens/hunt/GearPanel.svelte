@@ -20,7 +20,8 @@
   const elemColor = $derived(em > 1 ? 'var(--gale)' : em < 1 ? 'var(--ember-soft)' : 'var(--muted)');
 
   const gOk = $derived(!over && n >= 1);
-  const cOk = $derived(!over && n === 2 && !h.chargePending);
+  const cd = $derived(E.chargeDice(h));
+  const cOk = $derived(!over && n === cd && !h.chargePending);
   const sOk = $derived(!over && n === 1);
   const capLive = $derived(!over && E.canCapture(h));
   const capOk = $derived(capLive && n === 2 && !E.captureBlocked(h));
@@ -55,7 +56,7 @@
     <span><span class="mn">Guard</span><span class="md">Blocks {h.arm.guard} per die{h.arm.blankx2 ? ' · Blanks block double' : ''}</span></span><span class="need">Any</span>
   </button>
   <button class="move dash {cOk ? 'ready' : 'no'}" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
-    <span><span class="mn">Charge</span><span class="md">Your first hit next turn deals double</span></span><span class="need">2</span>
+    <span><span class="mn">Charge</span><span class="md">Your first hit next turn deals double</span></span><span class="need">{cd}</span>
   </button>
   <button class="move dash {sOk ? 'ready' : 'no'}" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
     <span><span class="mn">Swap to {other.name}</span><span class="md">{other.type} · {other.elem ?? 'No element'}</span></span><span class="need">1</span>

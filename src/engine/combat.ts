@@ -4,7 +4,7 @@ import type { Hunt, Intent, Save, Tone, WeaponInst } from './types';
 import { MONSTERS } from './data/monsters';
 import { groundFlier } from './data/monsters/galeshrike';
 import { unearth } from './data/monsters/cinderback';
-import { ITEMS } from './data/gear';
+import { CHARMS, ITEMS } from './data/gear';
 import { armorInst, elemMult, fixLoadout, lvOf, weaponInst } from './economy';
 import { rollFace } from './rng';
 
@@ -15,13 +15,18 @@ export const CAPTURE_AT = 0.2;         // capture allowed at or below this share
 export const EXPOSE_TURNS = 2, EXPOSE_DMG = 1.15, EXPOSE_BREAK = 2;
 export const DAZE_START = 60, DAZE_STEP = 30, DAZE_LOCK = 2;
 /** Bump when the Hunt shape changes; in-progress hunts from older builds are refunded, not resumed. */
-export const HUNT_VERSION = 5;
+export const HUNT_VERSION = 6;
 /** Ice plating: layers a Cut hit breaks; any other hit breaks 1 */
 export const CUT_ICE_BREAK = 2;
 export const iceBreak = (w: WeaponInst) => (w.type === 'Cut' ? CUT_ICE_BREAK : 1);
 
 const def = (h: Hunt) => MONSTERS[h.mid];
 export const monsterOf = def;
+/** the carried charm's effect, if any */
+export const charmFx = (h: Hunt) => (h.charm ? CHARMS[h.charm]?.effect ?? null : null);
+/** dice a Charge costs (Kiln Charm: 1) */
+export const chargeDice = (h: Hunt) => (charmFx(h) === 'charge1' ? 1 : 2);
+export const LIGHT_CUT_BONUS = 4, DAZE_HEAL = 20;
 export const currentWeapon = (h: Hunt) => h.weps[h.weapon];
 export const otherWeapon = (h: Hunt) => h.weps[1 - h.weapon];
 
@@ -42,7 +47,7 @@ export function startHunt(s: Save, seed: number): Hunt {
     version: HUNT_VERSION,
     mid: MD.id, turn: 1, php: arm.hp, pmax: arm.hp, rerolls: arm.rerolls,
     weps: L.weapons.map(id => weaponInst(id, lvOf(s.weapons, id))), weapon: 0, arm,
-    item, itemCharges: carried, carried, itemUsed: false,
+    item, charm: L.charm && s.charms[L.charm] ? L.charm : null, itemCharges: carried, carried, itemUsed: false,
     dice: [], guard: 0, chargePending: false, chargeReady: false, evade: false, whet: 0,
     target: MD.parts[0].id,
     mon: { hp: MD.hp, max: MD.hp, parts, enraged: false, daze: 0, dazeMax: DAZE_START, dazeLock: 0, seq: 0, charges: 0, usedWallow: false, usedRoot: false, exhausted: false, wallow: 0, air: false, airLeft: 0, under: false, molten: 0, plating: MD.plated ?? 0 },
@@ -103,6 +108,12 @@ export function pickDice(h: Hunt, need: string, prefer: number[] = []): number[]
 export const canUseMove = (h: Hunt, i: number) => !h.over && canHit(h, currentWeapon(h)) && !!pickDice(h, currentWeapon(h).moves[i].need);
 
 /* ---------- player actions ---------- */
+function flowReroll(h: Hunt, mv: { flow?: boolean }) {
+  if (!mv.flow) return;
+  h.rerolls++;
+  log(h, 'Flow: +1 reroll.');
+}
+
 function checkEnrage(h: Hunt) {
   const m = h.mon;
   if (!m.enraged && m.hp > 0 && m.hp <= m.max / 2) { m.enraged = true; log(h, def(h).enrageText, 'ember'); }
@@ -129,17 +140,18 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
     const strip = Math.min(m.plating, iceBreak(w));
     m.plating -= strip; h.chargeReady = false; h.whet = 0;
     log(h, `${mv.name} breaks ${strip} layer${strip > 1 ? 's' : ''} of ice. ${m.plating ? `${m.plating} left.` : 'The plating is gone!'}`, m.plating ? '' : 'gold');
-    if (mv.flow) { h.rerolls++; log(h, 'Flow: +1 reroll.'); }
+    flowReroll(h, mv);
     return { dmg: 0, broke: false };
   }
   let dmg = mv.dmg; const notes: string[] = [];
+  if (mv.flow && w.type === 'Cut' && charmFx(h) === 'lightCut') { dmg += LIGHT_CUT_BONUS; notes.push('Rime Charm +4'); }
   if (h.chargeReady) { dmg *= 2; h.chargeReady = false; notes.push('charged ×2'); }
   if (h.whet) { dmg = Math.round(dmg * (1 + h.whet)); notes.push(`whetted +${Math.round(h.whet * 100)}%`); h.whet = 0; }
   const em = elemMult(w.elem, h.mid);
   if (em !== 1) { dmg = Math.round(dmg * em); notes.push(em > 1 ? 'weakness ×1.5' : 'resisted ×0.75'); }
   if (airborneHalf(h, w)) { dmg = Math.round(dmg / 2); notes.push('airborne ½'); }
   const p = m.parts[h.target], pdef = MD.parts.find(x => x.id === h.target)!;
-  const exposed = p.exposed > 0 && !p.broken;
+  const exposed = (p.exposed > 0 || (!!mv.expose && charmFx(h) === 'exposeSelf' && reachable(h, h.target, w))) && !p.broken;
   if (exposed) { dmg = Math.round(dmg * EXPOSE_DMG); notes.push('exposed +15%'); }
   const mod = MD.hitMod?.(h, h.target, w);
   if (mod) { dmg = Math.round(dmg * mod.mult); notes.push(mod.note); }
@@ -159,12 +171,13 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
       }
     } else if (dmg > 0) log(h, `${w.type} weapons can't break the ${pdef.name.toLowerCase()}. The hit still counts toward the kill.`);
   }
-  if (mv.flow) { h.rerolls++; log(h, 'Flow: +1 reroll.'); }
+  flowReroll(h, mv);
   if (mv.daze && h.target === MD.head && reach && m.hp > 0 && m.dazeLock === 0) {
     m.daze = Math.min(m.dazeMax, m.daze + mv.daze);
     if (m.daze >= m.dazeMax) {
       m.daze = 0; m.dazeMax += DAZE_STEP; m.dazeLock = DAZE_LOCK; h.intent = 'dazed';
       log(h, 'Daze: the blow rattles its skull. It loses its action!', 'daze');
+      if (charmFx(h) === 'dazeHeal') { const heal = Math.min(DAZE_HEAL, h.pmax - h.php); if (heal) { h.php += heal; log(h, `Tusk Charm: +${heal} HP.`, 'gold'); } }
     }
   }
   if (mv.expose && reach && !p.broken && m.hp > 0) {
@@ -193,7 +206,7 @@ export function guard(h: Hunt, idx: number[]): boolean {
   return true;
 }
 export function charge(h: Hunt, idx: number[]): boolean {
-  const sel = freeOnly(h, idx); if (sel.length !== 2 || h.chargePending || h.over) return false;
+  const sel = freeOnly(h, idx); if (sel.length !== chargeDice(h) || h.chargePending || h.over) return false;
   sel.forEach(i => (h.dice[i].used = 'Charge')); h.chargePending = true;
   log(h, 'You plant your feet and build up power.');
   return true;

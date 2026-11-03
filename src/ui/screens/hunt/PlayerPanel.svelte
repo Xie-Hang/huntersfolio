@@ -23,6 +23,7 @@
     </div>
     <div class="pstat">
       <span>{h.arm.name}{h.arm.lv ? ` +${h.arm.lv}` : ''}</span>
+      {#if h.charm}<span title={E.CHARMS[h.charm].perk}>{E.CHARMS[h.charm].name}</span>{/if}
       <span>Guard this turn <b>−{h.guard}</b></span>
       {#if h.chargeReady}<span class="gold">Charged: first hit ×2</span>{:else if h.chargePending}<span class="gold">Charging for next turn</span>{/if}
       {#if h.whet}<span class="gold">Sharpened: next hit +{Math.round(h.whet * 100)}%</span>{/if}

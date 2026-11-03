@@ -1,4 +1,4 @@
-import type { ArmorDef, ItemDef, MaterialDef } from '../types';
+import type { ArmorDef, CharmDef, ItemDef, MaterialDef } from '../types';
 
 const armors: ArmorDef[] = [
   { id: 'jerkin', name: 'Leather Jerkin', hp: 180, guard: 8, rerolls: 3, resist: null, perk: 'Start each hunt with 3 rerolls instead of 2.', craft: { coin: 80 } },
@@ -19,6 +19,15 @@ const items: ItemDef[] = [
   { id: 'tuskwhet', name: 'Tusk Whetstone', max: 2, craft: { tusk: 1, coin: 20 }, yields: 2, desc: 'Your next hit deals +100%.', effect: 'whet100' }
 ];
 export const ITEMS: Record<string, ItemDef> = Object.fromEntries(items.map(i => [i.id, i]));
+
+/** One charm per monster: a single small perk that deepens a playstyle. Crafted, never reinforced. */
+const charms: CharmDef[] = [
+  { id: 'tuskcharm', name: 'Tusk Charm', src: 'Gorehorn', perk: 'When you daze the monster, you heal 20.', effect: 'dazeHeal', craft: { coin: 150, tusk: 1, hide: 2 } },
+  { id: 'plumecharm', name: 'Plume Charm', src: 'Galeshrike', perk: 'The hit that exposes a part gets Expose’s bonus too.', effect: 'exposeSelf', craft: { coin: 150, pinion: 1, plume: 2 } },
+  { id: 'kilncharm', name: 'Kiln Charm', src: 'Cinderback', perk: 'Charge costs 1 die instead of 2.', effect: 'charge1', craft: { coin: 150, ventgland: 1, cinderscale: 2 } },
+  { id: 'rimecharm', name: 'Rime Charm', src: 'Rimetail', perk: 'Light Cut moves deal 4 more damage.', effect: 'lightCut', craft: { coin: 150, barbtail: 1, rimescale: 2 } }
+];
+export const CHARMS: Record<string, CharmDef> = Object.fromEntries(charms.map(c => [c.id, c]));
 
 const mats: MaterialDef[] = [
   { id: 'hide', base: 'Hide', src: 'Gorehorn', sell: 20, how: 'Every Gorehorn hunt' },

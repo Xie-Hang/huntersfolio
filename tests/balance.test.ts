@@ -105,7 +105,7 @@ describe('daze', () => {
     for (let i = 0; i < 300; i++) {
       const s = E.newSave();
       s.weapons = { crusher: { lv: 3 }, bow: { lv: 0 } };
-      s.loadout = { weapons: ['crusher', 'bow'], armor: 'jerkin', item: 'salve', target: 'gorehorn' };
+      s.loadout = { weapons: ['crusher', 'bow'], armor: 'jerkin', charm: null, item: 'salve', target: 'gorehorn' };
       const h = E.startHunt(s, 1 + i * 7919);
       let last = -9;
       while (!h.over && h.turn < 60) {

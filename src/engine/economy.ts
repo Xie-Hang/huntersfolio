@@ -1,7 +1,7 @@
 // Gear stats, crafting, the shop, rewards and hunt records.
 import type { ArmorInst, Cost, Element, Hunt, Move, Save, WeaponInst } from './types';
 import { WEAPONS } from './data/weapons';
-import { ARMORS, ITEMS, MATERIALS } from './data/gear';
+import { ARMORS, CHARMS, ITEMS, MATERIALS } from './data/gear';
 import { MONSTERS } from './data/monsters';
 import { nextRandom } from './rng';
 
@@ -79,7 +79,7 @@ export function missingCount(s: Save, c: Cost | null): number {
 }
 
 /* ---------- recipes ---------- */
-export type RecipeKind = 'w' | 'a';
+export type RecipeKind = 'w' | 'a' | 'c';
 export interface Recipe { action: 'craft' | 'upgrade' | 'reinforce' | null; cost: Cost | null; locked?: boolean }
 
 export function recipeOf(s: Save, kind: RecipeKind, id: string): Recipe {
@@ -90,16 +90,20 @@ export function recipeOf(s: Save, kind: RecipeKind, id: string): Recipe {
     if (d.from && s.weapons[d.from]) return { action: 'upgrade', cost: d.cost! };
     return { action: null, cost: d.cost ?? null, locked: true };
   }
+  if (kind === 'c') return s.charms[id] ? { action: null, cost: null } : { action: 'craft', cost: CHARMS[id].craft };
   if (s.armors[id]) { const lv = s.armors[id].lv; return lv < MAX_REINFORCE ? { action: 'reinforce', cost: reinforceCost(lv) } : { action: null, cost: null }; }
   return { action: 'craft', cost: ARMORS[id].craft };
 }
 
+export const isOwned = (s: Save, kind: RecipeKind, id: string) => (kind === 'w' ? !!s.weapons[id] : kind === 'a' ? !!s.armors[id] : !!s.charms[id]);
+export const gearDef = (kind: RecipeKind, id: string): { name: string } => (kind === 'w' ? WEAPONS[id] : kind === 'a' ? ARMORS[id] : CHARMS[id]);
+
 export type RecipeState = { cls: 'owned' | 'ready' | 'short' | 'locked'; text: string };
 export function recipeState(s: Save, kind: RecipeKind, id: string): RecipeState {
-  const owned = kind === 'w' ? !!s.weapons[id] : !!s.armors[id];
+  const owned = isOwned(s, kind, id);
   const r = recipeOf(s, kind, id);
   if (r.locked) return { cls: 'locked', text: `Needs ${WEAPONS[WEAPONS[id].from!].name}` };
-  if (owned && !r.action) return { cls: 'owned', text: 'Owned · max' };
+  if (owned && !r.action) return { cls: 'owned', text: kind === 'c' ? 'Owned' : 'Owned · max' };
   const ready = !!r.cost && canPay(s, r.cost);
   if (owned) return ready ? { cls: 'ready', text: 'Owned · reinforce ready' } : { cls: 'owned', text: 'Owned' };
   if (ready) return { cls: 'ready', text: r.action === 'upgrade' ? 'Upgrade ready' : 'Ready' };
@@ -123,6 +127,9 @@ export function forgeDo(s: Save, kind: RecipeKind, id: string): string | null {
       msg = `The ${WEAPONS[from].name} is now the ${d.name}.`;
     }
     if (r.action === 'reinforce') { s.weapons[id].lv++; msg = `${d.name} reinforced to +${s.weapons[id].lv}.`; }
+  } else if (kind === 'c') {
+    s.charms[id] = true; msg = `Crafted the ${CHARMS[id].name}.`;
+    if (!s.loadout.charm) s.loadout.charm = id;
   } else {
     if (r.action === 'craft') { s.armors[id] = { lv: 0 }; msg = `Crafted the ${ARMORS[id].name}.`; }
     if (r.action === 'reinforce') { s.armors[id].lv++; msg = `${ARMORS[id].name} reinforced to +${s.armors[id].lv}.`; }
@@ -135,7 +142,7 @@ export function forgeDo(s: Save, kind: RecipeKind, id: string): string | null {
 export function trackedRecipe(s: Save) {
   if (!s.tracked) return null;
   const [kind, id] = s.tracked.split(':') as [RecipeKind, string];
-  const def = kind === 'w' ? WEAPONS[id] : ARMORS[id];
+  const def = gearDef(kind, id);
   if (!def) return null;
   const r = recipeOf(s, kind, id);
   if (!r.cost || (!r.action && !r.locked)) return null;
@@ -159,6 +166,7 @@ export function reserveFor(s: Save, mat: string): number {
   let r = 0;
   for (const id of Object.keys(WEAPONS)) { const x = recipeOf(s, 'w', id); if (x.cost && (x.action || x.locked) && x.cost[mat]) r = Math.max(r, x.cost[mat]); }
   for (const id of Object.keys(ARMORS)) { const x = recipeOf(s, 'a', id); if (x.cost && x.action && x.cost[mat]) r = Math.max(r, x.cost[mat]); }
+  for (const id of Object.keys(CHARMS)) { const x = recipeOf(s, 'c', id); if (x.cost && x.action && x.cost[mat]) r = Math.max(r, x.cost[mat]); }
   for (const it of Object.values(ITEMS)) if (it.craft?.[mat]) r = Math.max(r, it.craft[mat]);
   return r;
 }
@@ -166,6 +174,7 @@ export function usedIn(s: Save, mat: string): string[] {
   const out: string[] = [];
   for (const [id, d] of Object.entries(WEAPONS)) { const x = recipeOf(s, 'w', id); if (x.cost && (x.action || x.locked) && x.cost[mat]) out.push(x.action === 'reinforce' ? `reinforcing ${d.name}` : d.name); }
   for (const [id, d] of Object.entries(ARMORS)) { const x = recipeOf(s, 'a', id); if (x.cost && x.action && x.cost[mat]) out.push(x.action === 'reinforce' ? `reinforcing ${d.name}` : d.name); }
+  for (const [id, d] of Object.entries(CHARMS)) { const x = recipeOf(s, 'c', id); if (x.cost && x.action && x.cost[mat]) out.push(d.name); }
   return out;
 }
 export function buyItem(s: Save, id: string, n: number): string | null {
@@ -200,6 +209,7 @@ export function fixLoadout(s: Save) {
   for (const id of Object.keys(s.weapons)) { if (L.weapons.length >= 2) break; if (!L.weapons.includes(id)) L.weapons.push(id); }
   if (!s.armors[L.armor]) L.armor = Object.keys(s.armors)[0];
   if (L.item && !((s.items[L.item] ?? 0) > 0)) L.item = null;
+  if (L.charm === undefined || (L.charm && !s.charms[L.charm])) L.charm = null;
 }
 
 /** Apply a finished hunt's results to the save. Safe to call more than once. */

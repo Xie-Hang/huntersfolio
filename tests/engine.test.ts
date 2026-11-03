@@ -104,7 +104,7 @@ describe('Galeshrike', () => {
 
 describe('Cinderback', () => {
   const burrowed = (weapons: string[], item: string | null = null) => {
-    const s = starter(); s.weapons = Object.fromEntries(weapons.map(w => [w, { lv: 0 }])); s.loadout = { weapons, armor: 'jerkin', item, target: 'cinderback' };
+    const s = starter(); s.weapons = Object.fromEntries(weapons.map(w => [w, { lv: 0 }])); s.loadout = { weapons, armor: 'jerkin', charm: null, item, target: 'cinderback' };
     if (item) s.items[item] = 2;
     const h = E.startHunt(s, 11); h.mon.under = true; h.intent = 'erupt';
     h.dice = [{ face: 'C', used: null }, { face: 'T', used: null }, { face: 'T', used: null }, { face: 'C', used: null }];
@@ -145,7 +145,7 @@ describe('Cinderback', () => {
 
 describe('Rimetail (ice plating)', () => {
   const plated = (weapons: string[]) => {
-    const s = starter(); s.weapons = Object.fromEntries(weapons.map(w => [w, { lv: 0 }])); s.loadout = { weapons, armor: 'jerkin', item: null, target: 'rimetail' };
+    const s = starter(); s.weapons = Object.fromEntries(weapons.map(w => [w, { lv: 0 }])); s.loadout = { weapons, armor: 'jerkin', charm: null, item: null, target: 'rimetail' };
     const h = E.startHunt(s, 4); h.target = 'tail';
     h.dice = [{ face: 'C', used: null }, { face: 'C', used: null }, { face: 'C', used: null }, { face: 'B', used: null }];
     return h;
@@ -171,6 +171,45 @@ describe('Rimetail (ice plating)', () => {
     expect(E.useItem(h)).toBe(true); expect(h.mon.plating).toBe(0);
     h.intent = 'rimecoat'; h.php = 999; E.endTurn(h); expect(h.mon.plating).toBe(2);
     h.mon.parts.mantle.broken = true; h.intent = 'rimecoat'; E.endTurn(h); expect(h.mon.plating).toBe(1);
+  });
+});
+
+describe('charms', () => {
+  const withCharm = (charm: string, weapons: string[], target = 'gorehorn') => {
+    const s = starter(); s.weapons = Object.fromEntries(weapons.map(w => [w, { lv: 0 }])); s.charms = { [charm]: true };
+    s.loadout = { weapons, armor: 'jerkin', charm, item: null, target };
+    const h = E.startHunt(s, 6); h.dice = [{ face: 'C', used: null }, { face: 'T', used: null }, { face: 'T', used: null }, { face: 'C', used: null }];
+    return h;
+  };
+  it('crafting a charm equips it if the slot is empty, and it can only be made once', () => {
+    const s = starter(); s.coin = 500; s.mats.tusk = 2; s.mats.hide = 4;
+    expect(E.forgeDo(s, 'c', 'tuskcharm')).toMatch(/Tusk Charm/);
+    expect(s.loadout.charm).toBe('tuskcharm');
+    expect(E.recipeOf(s, 'c', 'tuskcharm').action).toBeNull();
+  });
+  it('Tusk Charm heals 20 when you daze', () => {
+    const h = withCharm('tuskcharm', ['maul', 'blade']); h.target = 'tusks'; h.php = 100; h.mon.daze = h.mon.dazeMax - 1;
+    E.useMove(h, 0);
+    expect(h.intent).toBe('dazed');
+    expect(h.php).toBe(120);
+  });
+  it('Plume Charm: the exposing hit gets the bonus too', () => {
+    const h = withCharm('plumecharm', ['bow', 'maul']); h.target = 'legs';
+    expect(E.useMove(h, 0)!.dmg).toBe(Math.round(12 * E.EXPOSE_DMG));
+  });
+  it('Kiln Charm: Charge costs 1 die', () => {
+    const h = withCharm('kilncharm', ['blade', 'maul']);
+    expect(E.chargeDice(h)).toBe(1);
+    expect(E.charge(h, [0])).toBe(true);
+  });
+  it('Rime Charm: light Cut moves deal 4 more', () => {
+    const h = withCharm('rimecharm', ['blade', 'maul']); h.target = 'hide';
+    expect(E.useMove(h, 0)!.dmg).toBe(12 + E.LIGHT_CUT_BONUS);
+  });
+  it('v2 saves gain an empty charm slot', () => {
+    const s = E.loadSave({ version: 2, coin: 10, loadout: { weapons: ['blade', 'maul'], armor: 'jerkin', item: null, target: 'gorehorn' } });
+    expect(s.charms).toEqual({});
+    expect(s.loadout.charm).toBeNull();
   });
 });
 

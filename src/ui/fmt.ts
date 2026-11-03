@@ -10,7 +10,7 @@ export const effName = (e: number) => (e >= 1 ? 'Best' : e > 0 ? 'Half' : 'None'
 export const effCls = (e: number) => (e >= 1 ? 'best' : e > 0 ? 'half' : 'none');
 export const pct = (a: number, b: number) => Math.max(0, Math.min(100, Math.round((a / b) * 100)));
 
-export const SLOT_LABEL: Record<string, string> = { w0: 'Weapon 1', w1: 'Weapon 2', armor: 'Armor', item: 'Item' };
+export const SLOT_LABEL: Record<string, string> = { w0: 'Weapon 1', w1: 'Weapon 2', armor: 'Armor', charm: 'Charm', item: 'Item' };
 export const ELEMS: E.Element[] = ['Stone', 'Gale', 'Ember', 'Frost'];
 export const DAMAGE_TYPES: E.DamageType[] = ['Cut', 'Blunt', 'Pierce'];
 

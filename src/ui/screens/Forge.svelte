@@ -6,21 +6,23 @@
   import Costs from '../parts/Costs.svelte';
   import { tick } from 'svelte';
 
-  type Tab = 'weapons' | 'armor';
+  type Tab = 'weapons' | 'armor' | 'charms';
   let tab = $state<Tab>('weapons');
   let ftype = $state<'All' | E.DamageType>('All');
   let readyOnly = $state(false);
-  let chosen = $state<Record<Tab, string | null>>({ weapons: null, armor: null });
+  let chosen = $state<Record<Tab, string | null>>({ weapons: null, armor: null, charms: null });
   let toast = $state('');
   let detailEl: HTMLElement;
 
-  const kind = $derived<E.RecipeKind>(tab === 'weapons' ? 'w' : 'a');
+  const kind = $derived<E.RecipeKind>(tab === 'weapons' ? 'w' : tab === 'armor' ? 'a' : 'c');
   const s = $derived(game.save);
 
   const groups = $derived.by(() => {
     const raw = tab === 'weapons'
       ? E.TREES.filter(t => ftype === 'All' || t.type === ftype).map(t => ({ group: t.type as string, sig: E.SIGNATURES[t.type], rows: t.nodes.map(([id, depth]) => ({ id, depth })) }))
-      : [{ group: 'Armor', sig: null, rows: Object.keys(E.ARMORS).map(id => ({ id, depth: 0 })) }];
+      : tab === 'armor'
+        ? [{ group: 'Armor', sig: null, rows: Object.keys(E.ARMORS).map(id => ({ id, depth: 0 })) }]
+        : [{ group: 'Charms', sig: null, rows: Object.keys(E.CHARMS).map(id => ({ id, depth: 0 })) }];
     return raw
       .map(g => ({ ...g, rows: g.rows.filter(r => !readyOnly || E.recipeState(s, kind, r.id).cls === 'ready') }))
       .filter(g => g.rows.length);
@@ -28,7 +30,7 @@
   const visible = $derived(groups.flatMap(g => g.rows.map(r => r.id)));
   const sel = $derived(visible.includes(chosen[tab] ?? '') ? chosen[tab] : visible[0] ?? null);
 
-  const lvHere = (id: string) => (kind === 'w' ? E.lvOf(s.weapons, id) : E.lvOf(s.armors, id));
+  const lvHere = (id: string) => (kind === 'w' ? E.lvOf(s.weapons, id) : kind === 'a' ? E.lvOf(s.armors, id) : 0);
   /** Level a weapon would have: its own if owned, else the level it inherits from its parent. */
   const wLevel = (id: string) => (s.weapons[id] ? E.lvOf(s.weapons, id) : E.WEAPONS[id].from ? E.lvOf(s.weapons, E.WEAPONS[id].from!) : 0);
 
@@ -53,6 +55,7 @@
     <div class="tabs" role="tablist">
       <button role="tab" aria-selected={tab === 'weapons'} onclick={() => setTab('weapons')}>Weapons</button>
       <button role="tab" aria-selected={tab === 'armor'} onclick={() => setTab('armor')}>Armor</button>
+      <button role="tab" aria-selected={tab === 'charms'} onclick={() => setTab('charms')}>Charms</button>
     </div>
     <div class="pickbar">
       <div class="filters">
@@ -68,7 +71,7 @@
       {#each groups as g (g.group)}
         <div class="fgroup"><span>{g.group}</span>{#if g.sig}<span class="tag {g.sig.tag}" style="margin:0">{g.sig.name}</span>{/if}</div>
         {#each g.rows as r (r.id)}
-          {@const d = kind === 'w' ? E.WEAPONS[r.id] : E.ARMORS[r.id]}
+          {@const d = E.gearDef(kind, r.id)}
           {@const st = E.recipeState(s, kind, r.id)}
           {@const lv = lvHere(r.id)}
           <button class="fnode d{r.depth}" aria-current={sel === r.id} onclick={() => pick(r.id)}>
@@ -77,7 +80,7 @@
               {#if s.tracked === `${kind}:${r.id}`}<span class="tracked-pin">● Tracked</span>{/if}
               <span class="st {st.cls}"><i></i>{st.text}</span>
             </span>
-            <span class="avg">{kind === 'w' ? E.avgDmg(E.movesAt(r.id, wLevel(r.id))) : `${E.ARMORS[r.id].hp + 10 * lv} HP`}</span>
+            <span class="avg">{kind === 'w' ? E.avgDmg(E.movesAt(r.id, wLevel(r.id))) : kind === 'a' ? `${E.ARMORS[r.id].hp + 10 * lv} HP` : E.CHARMS[r.id].src}</span>
           </button>
         {/each}
       {:else}
@@ -92,9 +95,9 @@
     {:else}
       {@const r = E.recipeOf(s, kind, sel)}
       {@const st = E.recipeState(s, kind, sel)}
-      {@const owned = kind === 'w' ? !!s.weapons[sel] : !!s.armors[sel]}
+      {@const owned = E.isOwned(s, kind, sel)}
       {@const lv = lvHere(sel)}
-      {@const name = kind === 'w' ? E.WEAPONS[sel].name : E.ARMORS[sel].name}
+      {@const name = E.gearDef(kind, sel).name}
       {@const tk = `${kind}:${sel}`}
       <div class="fdetail">
         <!-- 1. What is it, and what state is it in -->
@@ -122,6 +125,10 @@
             <span>{#if d.elem}<span class="edot {d.elem}"></span>{d.elem}{:else}No element{/if}</span>
           </div>
           <p class="fd-sig">{sg.text}</p>
+        {:else if kind === 'c'}
+          {@const c = E.CHARMS[sel]}
+          <p class="fd-perk">{c.perk}</p>
+          <span class="fd-sig">Made from {c.src} materials. Goes in the charm slot; one charm at a time.</span>
         {:else}
           {@const a = E.ownedArmor(s, sel)}
           {@const base = E.ARMORS[sel]}
@@ -149,7 +156,7 @@
               {r.action === 'craft' ? 'Craft' : r.action === 'upgrade' ? 'Upgrade' : `Reinforce to +${lv + 1}`}
             </button>
           {:else if owned}
-            <span class="pl">Fully reinforced.</span>
+            <span class="pl">{kind === 'c' ? 'Owned. Equip it at the Hunt Board.' : 'Fully reinforced.'}</span>
           {/if}
           {#if r.cost && (r.action || r.locked)}
             <button class="btn quiet" aria-pressed={s.tracked === tk} onclick={track}>{s.tracked === tk ? 'Untrack' : 'Track'}</button>
