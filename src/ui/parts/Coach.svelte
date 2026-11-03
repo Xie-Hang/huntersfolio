@@ -18,10 +18,17 @@
     return null;
   }
 
+  /** CSS zoom (the browser stand-in for Interface size) scales fixed positions too; work in unzoomed px. */
+  const zoom = () => parseFloat(document.documentElement.style.zoom) || 1;
+  function rectOf(el: HTMLElement) {
+    const b = el.getBoundingClientRect(), z = zoom();
+    return { left: b.left / z, top: b.top / z, right: b.right / z, bottom: b.bottom / z, width: b.width / z, height: b.height / z };
+  }
+
   function place() {
-    const el = anchor(), vw = window.innerWidth, vh = window.innerHeight, ch = cardH || 120, cw = Math.min(W, vw - EDGE * 2);
+    const z = zoom(), el = anchor(), vw = window.innerWidth / z, vh = window.innerHeight / z, ch = cardH || 120, cw = Math.min(W, vw - EDGE * 2);
     if (!el) { ring = null; pos = { x: (vw - cw) / 2, y: vh - ch - 24 }; return; }
-    const r = el.getBoundingClientRect();
+    const r = rectOf(el);
     ring = { x: r.left - 4, y: r.top - 4, w: r.width + 8, h: r.height + 8 };
     const clampX = (x: number) => Math.max(EDGE, Math.min(vw - cw - EDGE, x));
     const clampY = (y: number) => Math.max(EDGE, Math.min(vh - ch - EDGE, y));

@@ -421,12 +421,12 @@ details.rules ul{margin:10px 0 0;padding-left:20px;display:flex;flex-direction:c
 .pick .vs.good,.pick .vs.bad{font-size:var(--fs-sm)}
 
 /* Tutorial tips */
-.coach{position:fixed;z-index:50;background:var(--raise);border:1px solid var(--gold);border-radius:4px;padding:14px 16px 12px;box-shadow:0 10px 30px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:10px}
+.coach{position:fixed;box-sizing:border-box;z-index:50;background:var(--raise);border:1px solid var(--gold);border-radius:4px;padding:14px 16px 12px;box-shadow:0 10px 30px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:10px}
 .coach p{margin:0;font-size:var(--fs-md);line-height:1.45;color:var(--fg)}
 .coach-acts{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .coach-acts .btn{min-height:36px;padding:6px 14px}
 .coach-skip{background:none;border:0;padding:6px 0;font-family:var(--f-body);font-size:var(--fs-sm);color:var(--muted);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .coach-skip:hover{color:var(--soft)}
-.coach-ring{position:fixed;z-index:49;pointer-events:none;border:2px solid var(--gold);border-radius:6px;animation:coachpulse 1.6s ease-in-out infinite}
+.coach-ring{position:fixed;box-sizing:border-box;z-index:49;pointer-events:none;border:2px solid var(--gold);border-radius:6px;animation:coachpulse 1.6s ease-in-out infinite}
 @keyframes coachpulse{0%,100%{box-shadow:0 0 0 0 rgba(233,185,73,.45)}50%{box-shadow:0 0 0 6px rgba(233,185,73,0)}}
 @media (prefers-reduced-motion: reduce){.coach-ring{animation:none}}
