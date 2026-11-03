@@ -79,6 +79,7 @@
       <li><strong>Bows</strong> attack from range: they ignore mud, hit fliers at full damage and are safe from molten shells. The Pinning Shot interrupts wind-ups and brings fliers down.</li>
       <li><strong>Airborne</strong> monsters take half damage from Cut and Blunt, and their crest can't be reached. A Pinning Shot or a Weighted Net brings them down.</li>
       <li><strong>Underground</strong> monsters can only be hit by Blunt, at half damage. A Blunt move that uses 2 or more dice drives them up and cancels their attack. So does Blast Powder.</li>
+      <li><strong>Ice plating</strong> breaks before a monster takes damage: a hit breaks layers of ice instead. A Cut hit breaks 2 layers, anything else 1. A Firepot melts all of it.</li>
       <li><strong>Molten</strong> monsters burn you a little each time you hit them with Cut or Blunt. Pierce attacks from range and is safe.</li>
       <li><strong>Avg</strong> next to a weapon = expected damage per turn if all 4 dice go to attacking, without rerolls.</li>
       <li>Reinforcing (+1 to +3) adds 5% weapon damage, or 10 HP and 1 guard to armor, per level. Upgrades keep the reinforcement.</li>

@@ -33,6 +33,7 @@
       {#if mud}<span class="chip mud">Mud-caked</span>{/if}
       {#if m.air}<span class="chip gale">Airborne</span>{/if}
       {#if m.under}<span class="chip mud">Underground</span>{/if}
+      {#if m.plating > 0}<span class="chip ice">Ice plating · {m.plating} layer{m.plating > 1 ? 's' : ''}</span>{/if}
       {#if m.molten > 0}<span class="chip hot">Molten · {m.molten} turn{m.molten > 1 ? 's' : ''}</span>{/if}
       {#if E.canCapture(h)}<span class="chip hot">Capturable</span>{/if}
     </div>

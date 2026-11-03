@@ -15,13 +15,16 @@ export type Skill = 'skilled' | 'casual';
 export interface Policy { skill: Skill; capture: boolean; goal?: string[] }
 
 const clone = (h: Hunt): Hunt => JSON.parse(JSON.stringify(h));
+const ICE_VALUE = 15;
 const need = (s: string) => ({ C: [...s].filter(c => c === 'C').length, T: [...s].filter(c => c === 'T').length });
 
 function effFor(h: Hunt, w: Hunt['weps'][number], partId: string): number {
   if (!E.canHit(h, w) || !E.reachable(h, partId, w)) return 0;
   const p = E.monsterOf(h).parts.find(x => x.id === partId)!;
   const exposed = h.mon.parts[partId].exposed > 0 ? E.EXPOSE_BREAK * E.EXPOSE_DMG : 1;
-  return p.eff[w.type] * exposed * (E.airborneHalf(h, w) ? 0.5 : 1);
+  // with ice up, what matters is how fast the weapon clears it (Cut breaks 2 layers a hit)
+  const ice = h.mon.plating > 0 ? E.iceBreak(w) / E.CUT_ICE_BREAK : 1;
+  return p.eff[w.type] * exposed * ice * (E.airborneHalf(h, w) ? 0.5 : 1);
 }
 
 function chooseTarget(h: Hunt, p: Policy) {
@@ -37,7 +40,9 @@ function chooseTarget(h: Hunt, p: Policy) {
   const shouldSwap = p.skill === 'skilled'
     ? effFor(h, oth, goal) > effFor(h, cur, goal) + 0.3
     : effFor(h, cur, goal) === 0 && effFor(h, oth, goal) > 0;
-  if (shouldSwap && E.freeDice(h).length) {
+  // ice up: both skill levels swap to the weapon that breaks more of it (the move captions say so)
+  const iceSwap = h.mon.plating >= 2 && E.iceBreak(oth) > E.iceBreak(cur);
+  if ((shouldSwap || iceSwap) && E.freeDice(h).length) {
     const free = E.freeDice(h), blank = free.find(i => h.dice[i].face === 'B');
     E.swap(h, [blank ?? free[0]]);
   }
@@ -58,7 +63,8 @@ function evaluate(h: Hunt, plan: Omit<Plan, 'score'>, p: Policy): number | null 
   for (const i of plan.moves) if (!E.useMove(c, i)) return null;
   if (plan.guard.length && !E.guard(c, plan.guard)) return null;
   if (plan.charge.length && !E.charge(c, plan.charge)) return null;
-  const dealt = hp0 - c.mon.hp, partProg = part0 - c.mon.parts[c.target].hp;
+  // ice broken is worth about what a hit would have dealt, since it clears the way for the next one
+  const dealt = hp0 - c.mon.hp + ICE_VALUE * (h.mon.plating - c.mon.plating), partProg = part0 - c.mon.parts[c.target].hp;
   if (c.over === 'win') return 10_000 + dealt;
   const taken = E.incoming(c)?.net ?? 0;
   const prevented = c.intent !== intent0 ? inc0 : 0;
@@ -130,7 +136,7 @@ function applyPlan(h: Hunt, plan: Plan) {
 /** Score a finished turn the way evaluate() does (skilled). */
 function stateScore(h0: Hunt, c: Hunt): number {
   if (c.over === 'win') return 10_000 + (h0.mon.hp - c.mon.hp);
-  const dealt = h0.mon.hp - c.mon.hp;
+  const dealt = h0.mon.hp - c.mon.hp + ICE_VALUE * (h0.mon.plating - c.mon.plating);
   const partProg = Object.keys(c.mon.parts).reduce((n, k) => n + (h0.mon.parts[k].hp - c.mon.parts[k].hp), 0);
   const taken = (E.incoming(c)?.net ?? 0) + (h0.php - c.php);
   const risk = 1 + 3 * (1 - c.php / c.pmax);
@@ -146,6 +152,7 @@ export function playTurn(h: Hunt, p: Policy) {
     const fx = E.ITEMS[h.item].effect, inc = E.incoming(h)?.net ?? 0;
     if (fx === 'heal30' && h.php < h.pmax * 0.55) E.useItem(h);
     else if (fx === 'net' && (h.intent === 'gust' || h.intent === 'circle')) E.useItem(h);
+    else if (fx === 'thaw' && h.mon.plating >= 2) E.useItem(h);
     else if (fx === 'blast' && h.intent === 'erupt' && !E.canHit(h, E.currentWeapon(h))) E.useItem(h);
     else if (fx === 'smoke' && inc >= 40) E.useItem(h);
   }

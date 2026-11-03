@@ -4,7 +4,8 @@ const armors: ArmorDef[] = [
   { id: 'jerkin', name: 'Leather Jerkin', hp: 180, guard: 8, rerolls: 3, resist: null, perk: 'Start each hunt with 3 rerolls instead of 2.', craft: { coin: 80 } },
   { id: 'vest', name: 'Bristlehide Vest', hp: 200, guard: 8, rerolls: 2, resist: 'Stone', perk: 'Resists Stone (−30%). Blank dice guard for double.', blankx2: true, craft: { coin: 300, pelt: 2, hide: 3 } },
   { id: 'coat', name: 'Galeweave Coat', hp: 170, guard: 7, rerolls: 2, resist: 'Gale', perk: 'Resists Gale (−30%). Breaking a part heals 25 and gives a reroll.', breakHeal: true, craft: { coin: 250, pinion: 2, plume: 3 } },
-  { id: 'kilnplate', name: 'Kilnplate Mail', hp: 190, guard: 9, rerolls: 2, resist: 'Ember', perk: 'Resists Ember (−30%). Molten shells can’t burn you.', burnproof: true, craft: { coin: 300, ventgland: 2, digclaw: 1, cinderscale: 3 } }
+  { id: 'kilnplate', name: 'Kilnplate Mail', hp: 190, guard: 9, rerolls: 2, resist: 'Ember', perk: 'Resists Ember (−30%). Molten shells can’t burn you.', burnproof: true, craft: { coin: 300, ventgland: 2, digclaw: 1, cinderscale: 3 } },
+  { id: 'rimehide', name: 'Rimehide Cloak', hp: 185, guard: 8, rerolls: 3, resist: 'Frost', perk: 'Resists Frost (−30%). Start each hunt with 3 rerolls instead of 2.', craft: { coin: 300, frostfang: 1, barbtail: 1, rimescale: 3 } }
 ];
 export const ARMORS: Record<string, ArmorDef> = Object.fromEntries(armors.map(a => [a.id, a]));
 
@@ -13,6 +14,7 @@ const items: ItemDef[] = [
   { id: 'smoke', name: 'Smoke Pouch', max: 2, price: 50, desc: "The monster's next attack misses.", effect: 'smoke' },
   { id: 'whet', name: 'Whetstone', max: 2, price: 40, desc: 'Your next hit deals +50%.', effect: 'whet50' },
   { id: 'net', name: 'Weighted Net', max: 2, price: 50, desc: 'Brings an airborne monster down. It loses its action.', effect: 'net' },
+  { id: 'firepot', name: 'Firepot', max: 2, price: 50, desc: 'Melts all of a monster’s ice plating at once.', effect: 'thaw' },
   { id: 'blast', name: 'Blast Powder', max: 2, price: 50, desc: 'Forces a burrowed monster to the surface. It loses its action.', effect: 'blast' },
   { id: 'tuskwhet', name: 'Tusk Whetstone', max: 2, craft: { tusk: 1, coin: 20 }, yields: 2, desc: 'Your next hit deals +100%.', effect: 'whet100' }
 ];
@@ -33,7 +35,12 @@ const mats: MaterialDef[] = [
   { id: 'slagplate', base: 'Slag Plate', src: 'Cinderback', sell: 60, how: 'Break the Cinderback’s head plate (Blunt best)' },
   { id: 'digclaw', base: 'Digging Claw', src: 'Cinderback', sell: 60, how: 'Break the Cinderback’s claws (Cut best)' },
   { id: 'ventgland', base: 'Vent Gland', src: 'Cinderback', sell: 60, how: 'Break the Cinderback’s back vents (Pierce best)' },
-  { id: 'kilnheart', base: 'Kilnheart', src: 'Cinderback', rare: true, sell: 300, how: 'Rare from Cinderback head plate breaks; capture raises the chance' }
+  { id: 'kilnheart', base: 'Kilnheart', src: 'Cinderback', rare: true, sell: 300, how: 'Rare from Cinderback head plate breaks; capture raises the chance' },
+  { id: 'rimescale', base: 'Rime Scale', src: 'Rimetail', sell: 20, how: 'Every Rimetail hunt' },
+  { id: 'barbtail', base: 'Barbed Tail', src: 'Rimetail', sell: 60, how: 'Sever the Rimetail’s tail (Cut best)' },
+  { id: 'mantleshard', base: 'Mantle Shard', src: 'Rimetail', sell: 60, how: 'Break the Rimetail’s ice mantle (Blunt best)' },
+  { id: 'frostfang', base: 'Frost Fang', src: 'Rimetail', sell: 60, how: 'Break the Rimetail’s jaw (Pierce best)' },
+  { id: 'frostheart', base: 'Frostheart', src: 'Rimetail', rare: true, sell: 300, how: 'Rare from Rimetail ice mantle breaks; capture raises the chance' }
 ];
 export const MATERIALS: Record<string, MaterialDef> = Object.fromEntries(mats.map(m => [m.id, m]));
 

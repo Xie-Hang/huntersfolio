@@ -55,7 +55,7 @@ export interface ArmorDef {
   craft: Cost;
 }
 
-export type ItemEffect = 'heal30' | 'smoke' | 'whet50' | 'whet100' | 'net' | 'blast';
+export type ItemEffect = 'heal30' | 'smoke' | 'whet50' | 'whet100' | 'net' | 'blast' | 'thaw';
 export interface ItemDef {
   id: string;
   name: string;
@@ -130,6 +130,8 @@ export interface MonsterState {
   under: boolean;
   /** turns left on a molten shell that burns melee attackers */
   molten: number;
+  /** layers of ice plating: each hit breaks layers instead of dealing damage (Cut breaks 2) */
+  plating: number;
 }
 
 export interface WeaponInst extends WeaponDef { lv: number }
@@ -227,6 +229,8 @@ export interface MonsterDef {
   flier?: boolean;
   /** burrows: the UI shows underground notes (only Blunt reaches it, Blast Powder works) */
   burrower?: boolean;
+  /** grows ice plating: layers it starts with (and the UI shows ice notes) */
+  plated?: number;
 }
 
 export interface Loadout { weapons: string[]; armor: string; item: string | null; target: string }

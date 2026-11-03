@@ -61,6 +61,21 @@ describe('Cinderback (the Blunt check)', () => {
   });
 });
 
+describe('Rimetail (the Cut check)', () => {
+  it('a blade handles it', () => {
+    expect(matchup(starterSalves('rimetail'), { skill: 'casual', capture: true }, N).win).toBeGreaterThanOrEqual(0.9);
+  });
+  it('leaving Cut at home is punished like the other checks', () => {
+    const r = matchup({ ...starterSalves('rimetail'), weapons: [['bow', 0], ['maul', 0]] }, { skill: 'casual', capture: true }, N);
+    expect(r.win).toBeGreaterThan(0.4);
+    expect(r.win).toBeLessThan(0.75);
+  });
+  it('a Firepot is a real answer without Cut', () => {
+    const r = matchup({ weapons: [['bow', 0], ['maul', 0]], armor: 'jerkin', item: 'firepot', items: 2, target: 'rimetail' }, { skill: 'casual', capture: true }, N);
+    expect(r.win).toBeGreaterThan(0.55);
+  });
+});
+
 describe('progression pacing (Gorehorn)', () => {
   const C = Array.from({ length: 120 }, (_, i) => gorehornCampaign(i + 1, { skill: 'skilled', capture: true }));
   const at = (k: string) => median(C.map(c => c.t[k]).filter((x): x is number => x != null));

@@ -29,14 +29,21 @@ const list: WeaponDef[] = [
   { id: 'saber', name: 'Bristle Saber', type: 'Cut', elem: null, kind: 'Longsword', note: 'Edged with Gorehorn bristles. Bites deeper.', moves: BLADE, mult: 1.2, from: 'blade', cost: { coin: 300, pelt: 2, hide: 3 } },
   { id: 'gale', name: 'Galecutter', type: 'Cut', elem: 'Gale', kind: 'Curved blade', note: 'Hooked with Galeshrike talons. Sings when swung.', moves: GALE, mult: 1.1, from: 'blade', cost: { coin: 300, talon: 2, plume: 3 } },
   { id: 'storm', name: 'Stormcleaver', type: 'Cut', elem: 'Gale', kind: 'Curved blade', note: 'A Tempest Eye spins in the guard.', moves: GALE, mult: 1.35, from: 'gale', cost: { coin: 500, tempesteye: 1, talon: 3 } },
+  { id: 'ridgecleaver', name: 'Ridgecleaver', type: 'Cut', elem: 'Stone', kind: 'Longsword', note: 'Ground from a Gorehorn tusk. Heavy for a blade.', moves: BLADE, mult: 1.1, from: 'blade', cost: { coin: 300, tusk: 1, pelt: 1, hide: 3 } },
+  { id: 'cinderedge', name: 'Cinderedge', type: 'Cut', elem: 'Ember', kind: 'Longsword', note: 'A Cinderback claw, honed. It stays warm in the cold.', moves: BLADE, mult: 1.1, from: 'blade', cost: { coin: 300, digclaw: 2, cinderscale: 3 } },
+  { id: 'rimefang', name: 'Rimefang Blade', type: 'Cut', elem: 'Frost', kind: 'Longsword', note: 'Edged with barbs from a Rimetail’s tail.', moves: BLADE, mult: 1.1, from: 'blade', cost: { coin: 300, barbtail: 2, rimescale: 3 } },
   { id: 'maul', name: 'Ironhead Maul', type: 'Blunt', elem: null, kind: 'Maul', note: 'Slow, heavy, and made for breaking things.', moves: MAUL, mult: 1, craft: { coin: 150 } },
   { id: 'tusk', name: 'Tuskbreaker', type: 'Blunt', elem: null, kind: 'Maul', note: 'A maul head set with a Gorehorn tusk.', moves: MAUL, mult: 1.25, from: 'maul', cost: { coin: 300, tusk: 3, hide: 2 } },
   { id: 'crusher', name: 'Gorehorn Crusher', type: 'Blunt', elem: null, kind: 'Maul', note: 'A Heartstone hums in the haft.', moves: MAUL, mult: 1.5, from: 'tusk', cost: { coin: 600, heartstone: 1, tusk: 3 } },
   { id: 'ember', name: 'Emberhead Maul', type: 'Blunt', elem: 'Ember', kind: 'Maul', note: 'A slab of Cinderback plate, still warm, bolted to the head.', moves: MAUL, mult: 1.1, from: 'maul', cost: { coin: 300, slagplate: 2, cinderscale: 3 } },
+  { id: 'boulder', name: 'Boulderhead Maul', type: 'Blunt', elem: 'Stone', kind: 'Maul', note: 'A river boulder bound to the haft with Gorehorn sinew.', moves: MAUL, mult: 1.1, from: 'maul', cost: { coin: 300, tusk: 2, sinew: 1, hide: 2 } },
+  { id: 'rimehammer', name: 'Rimehammer', type: 'Blunt', elem: 'Frost', kind: 'Maul', note: 'A shard of Rimetail mantle that never thaws.', moves: MAUL, mult: 1.1, from: 'maul', cost: { coin: 300, mantleshard: 2, rimescale: 3 } },
   { id: 'kiln', name: 'Kilnheart Hammer', type: 'Blunt', elem: 'Ember', kind: 'Maul', note: 'A Kilnheart burns behind a grate in the head.', moves: MAUL, mult: 1.35, from: 'ember', cost: { coin: 500, kilnheart: 1, slagplate: 3 } },
   { id: 'bow', name: 'Ashwood Bow', type: 'Pierce', elem: null, kind: 'Bow', note: 'Finds the gaps in any hide.', moves: BOW, mult: 1, craft: { coin: 200, hide: 2 } },
   { id: 'sinewbow', name: 'Sinewstring Bow', type: 'Pierce', elem: null, kind: 'Bow', note: 'Strung with Gorehorn sinew. Draws harder.', moves: BOW, mult: 1.2, from: 'bow', cost: { coin: 300, sinew: 2, pelt: 1 } },
   { id: 'windbow', name: 'Windpiercer Bow', type: 'Pierce', elem: 'Gale', kind: 'Bow', note: 'Fletched with storm pinions.', moves: BOW, mult: 1.1, from: 'bow', cost: { coin: 300, pinion: 2, plume: 2 } },
+  { id: 'ventfire', name: 'Ventfire Bow', type: 'Pierce', elem: 'Ember', kind: 'Bow', note: 'Its arrows are tipped with Cinderback vent glands. They hiss in flight.', moves: BOW, mult: 1.1, from: 'bow', cost: { coin: 300, ventgland: 2, cinderscale: 2 } },
+  { id: 'rimeshot', name: 'Rimeshot Bow', type: 'Pierce', elem: 'Frost', kind: 'Bow', note: 'Strung with frozen sinew. The arrowheads are Rimetail fangs.', moves: BOW, mult: 1.1, from: 'bow', cost: { coin: 300, frostfang: 2, rimescale: 2 } },
   { id: 'ridgebow', name: 'Ridgestone Bow', type: 'Pierce', elem: 'Stone', kind: 'Bow', note: 'Arrowheads knapped from Ashfall Ridge stone. Heavy, and they shatter on impact.', moves: BOW, mult: 1.1, from: 'bow', cost: { coin: 300, sinew: 1, pelt: 2, hide: 2 } }
 ];
 
@@ -44,9 +51,9 @@ export const WEAPONS: Record<string, WeaponDef> = Object.fromEntries(list.map(w 
 
 /** Forge trees: [weapon id, depth] in display order */
 export const TREES: { type: DamageType; nodes: [string, number][] }[] = [
-  { type: 'Cut', nodes: [['blade', 0], ['saber', 1], ['gale', 1], ['storm', 2]] },
-  { type: 'Blunt', nodes: [['maul', 0], ['tusk', 1], ['crusher', 2], ['ember', 1], ['kiln', 2]] },
-  { type: 'Pierce', nodes: [['bow', 0], ['sinewbow', 1], ['windbow', 1], ['ridgebow', 1]] }
+  { type: 'Cut', nodes: [['blade', 0], ['saber', 1], ['ridgecleaver', 1], ['gale', 1], ['storm', 2], ['cinderedge', 1], ['rimefang', 1]] },
+  { type: 'Blunt', nodes: [['maul', 0], ['tusk', 1], ['crusher', 2], ['boulder', 1], ['ember', 1], ['kiln', 2], ['rimehammer', 1]] },
+  { type: 'Pierce', nodes: [['bow', 0], ['sinewbow', 1], ['ridgebow', 1], ['windbow', 1], ['ventfire', 1], ['rimeshot', 1]] }
 ];
 
 export const SIGNATURES: Record<DamageType, { tag: 'flow' | 'daze' | 'expose'; name: string; text: string }> = {

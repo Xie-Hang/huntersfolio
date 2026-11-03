@@ -143,6 +143,37 @@ describe('Cinderback', () => {
   });
 });
 
+describe('Rimetail (ice plating)', () => {
+  const plated = (weapons: string[]) => {
+    const s = starter(); s.weapons = Object.fromEntries(weapons.map(w => [w, { lv: 0 }])); s.loadout = { weapons, armor: 'jerkin', item: null, target: 'rimetail' };
+    const h = E.startHunt(s, 4); h.target = 'tail';
+    h.dice = [{ face: 'C', used: null }, { face: 'C', used: null }, { face: 'C', used: null }, { face: 'B', used: null }];
+    return h;
+  };
+  it('starts plated; one Cut hit clears both layers and deals no damage', () => {
+    const h = plated(['blade', 'maul']);
+    expect(h.mon.plating).toBe(2);
+    const r = E.useMove(h, 0)!;
+    expect(r.dmg).toBe(0);
+    expect(h.mon.plating).toBe(0);
+    expect(h.mon.hp).toBe(h.mon.max);
+    expect(E.useMove(h, 0)!.dmg).toBe(12); // ice gone: hits land
+  });
+  it('any other hit breaks one layer, and a charged hit is wasted on the ice', () => {
+    const h = plated(['maul', 'blade']); h.chargeReady = true;
+    E.useMove(h, 0);
+    expect(h.mon.plating).toBe(1);
+    expect(h.chargeReady).toBe(false);
+  });
+  it('a Firepot melts it all; Rime Coat regrows it, thinner once the mantle breaks', () => {
+    const s = starter(); s.items.firepot = 2; s.loadout = { ...s.loadout, item: 'firepot', target: 'rimetail' };
+    const h = E.startHunt(s, 4);
+    expect(E.useItem(h)).toBe(true); expect(h.mon.plating).toBe(0);
+    h.intent = 'rimecoat'; h.php = 999; E.endTurn(h); expect(h.mon.plating).toBe(2);
+    h.mon.parts.mantle.broken = true; h.intent = 'rimecoat'; E.endTurn(h); expect(h.mon.plating).toBe(1);
+  });
+});
+
 describe('forge', () => {
   it('an upgrade replaces its parent, keeps reinforcement and updates the loadout', () => {
     const s = starter(); s.coin = 1000; s.mats.tusk = 3; s.mats.hide = 2; s.weapons.maul.lv = 2;

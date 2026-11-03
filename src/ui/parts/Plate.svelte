@@ -10,6 +10,7 @@
   const air = $derived(!!hunt?.mon.air);
   const under = $derived(!!hunt?.mon.under);
   const molten = $derived((hunt?.mon.molten ?? 0) > 0);
+  const iced = $derived((hunt?.mon.plating ?? (mon === 'rimetail' ? 1 : 0)) > 0);
 </script>
 
 {#if mon === 'gorehorn'}
@@ -64,5 +65,18 @@
         <path d="M80 112 C64 112 54 120 46 132" />
       </g>
     {/if}
+  </svg>
+{:else if mon === 'rimetail'}
+  <svg viewBox="0 0 320 175" role="img" aria-label="Engraving of the Rimetail, a frost stalker{iced ? ', plated in ice' : ''}">
+    <path class="hatch" d="M10 152 H310" style="stroke:#8c7a62;stroke-width:2" />
+    <path d="M96 118 C92 96 118 82 150 80 C186 78 214 88 222 104 C228 118 216 128 196 130 L120 130 C106 130 98 126 96 118Z" />
+    <path class={cls('mantle')} class:ice={iced} d="M116 84 l10 -14 l10 12 l12 -16 l10 14 l12 -15 l10 15 l12 -12 l8 14" />
+    {#if iced}<path class="ice" d="M122 92 l14 -6 l14 6 M152 88 l14 -6 l14 6 M182 92 l12 -5 l10 6" />{/if}
+    <path d="M222 102 C232 92 252 90 264 98 C272 104 270 112 260 114 L226 116" />
+    <path class={cls('jaw')} d="M262 104 L286 108 L264 116 M268 112 l4 6 M276 110 l3 6" />
+    <circle class="eye" cx="250" cy="100" r="2.4" />
+    <path d="M128 128 l-6 22 l8 0 M150 130 l0 20 l8 0 M190 130 l4 20 l8 0 M208 126 l8 24 l8 0" />
+    <path class={cls('tail')} d="M98 112 C70 108 52 92 40 70 C34 58 38 46 48 42 M48 42 l-8 -6 M48 42 l2 -10 M42 56 l-8 -4" />
+    <path class="hatch" d="M126 124 l10 -10 M142 126 l10 -10 M158 126 l10 -10 M174 126 l10 -10" />
   </svg>
 {/if}

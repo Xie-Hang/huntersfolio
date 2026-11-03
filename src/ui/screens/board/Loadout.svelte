@@ -61,6 +61,7 @@
   {#if m > 1}<span class="good">Hits weakness</span>{:else if m < 1}<span class="bad">Resisted</span>{/if}
   {#if best.length}{m !== 1 ? ' · ' : ''}<span class="best">Breaks {best.join(', ')}</span>{/if}
   {#if M.flier}{' · '}{#if w.type === 'Pierce'}<span class="good">Full damage in the air</span>{:else}<span class="bad">Half damage in the air</span>{/if}{/if}
+  {#if M.plated}{' · '}{#if w.type === 'Cut'}<span class="good">Clears its ice in one hit</span>{:else}<span class="bad">Takes two hits to clear its ice</span>{/if}{/if}
   {#if M.burrower}{' · '}{#if w.type === 'Blunt'}<span class="good">Reaches it underground</span>{:else}<span class="bad">Can’t reach it underground</span>{/if}{/if}
 {/snippet}
 
@@ -194,6 +195,7 @@
                 <span class="nm">{it.name}{#if k === L.item}<span class="badge">Equipped</span>{/if}</span>
                 <span class="ty">{it.desc}</span>
                 {#if it.effect === 'net'}<span class="note">{#if M.flier}<span class="good">Grounds the {M.short}</span>{:else}<span class="bad">Only works on fliers</span>{/if}</span>{/if}
+                {#if it.effect === 'thaw'}<span class="note">{#if M.plated}<span class="good">Melts the {M.short}’s ice</span>{:else}<span class="bad">Only works on plated monsters</span>{/if}</span>{/if}
                 {#if it.effect === 'blast'}<span class="note">{#if M.burrower}<span class="good">Forces the {M.short} up</span>{:else}<span class="bad">Only works on burrowers</span>{/if}</span>{/if}
               </span>
               <span class="num">{Math.min(have, it.max)}</span><span class="num">{have}</span>

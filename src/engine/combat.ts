@@ -15,7 +15,10 @@ export const CAPTURE_AT = 0.2;         // capture allowed at or below this share
 export const EXPOSE_TURNS = 2, EXPOSE_DMG = 1.15, EXPOSE_BREAK = 2;
 export const DAZE_START = 60, DAZE_STEP = 30, DAZE_LOCK = 2;
 /** Bump when the Hunt shape changes; in-progress hunts from older builds are refunded, not resumed. */
-export const HUNT_VERSION = 4;
+export const HUNT_VERSION = 5;
+/** Ice plating: layers a Cut hit breaks; any other hit breaks 1 */
+export const CUT_ICE_BREAK = 2;
+export const iceBreak = (w: WeaponInst) => (w.type === 'Cut' ? CUT_ICE_BREAK : 1);
 
 const def = (h: Hunt) => MONSTERS[h.mid];
 export const monsterOf = def;
@@ -42,7 +45,7 @@ export function startHunt(s: Save, seed: number): Hunt {
     item, itemCharges: carried, carried, itemUsed: false,
     dice: [], guard: 0, chargePending: false, chargeReady: false, evade: false, whet: 0,
     target: MD.parts[0].id,
-    mon: { hp: MD.hp, max: MD.hp, parts, enraged: false, daze: 0, dazeMax: DAZE_START, dazeLock: 0, seq: 0, charges: 0, usedWallow: false, usedRoot: false, exhausted: false, wallow: 0, air: false, airLeft: 0, under: false, molten: 0 },
+    mon: { hp: MD.hp, max: MD.hp, parts, enraged: false, daze: 0, dazeMax: DAZE_START, dazeLock: 0, seq: 0, charges: 0, usedWallow: false, usedRoot: false, exhausted: false, wallow: 0, air: false, airLeft: 0, under: false, molten: 0, plating: MD.plated ?? 0 },
     intent: '', log: [], over: null, captured: false,
     stats: { dealt: 0, taken: 0, guarded: 0, broken: 0, rerollsUsed: 0 },
     reward: null, rng: seed | 0
@@ -71,6 +74,7 @@ export function itemUsable(h: Hunt): boolean {
   if (!h.item || h.itemUsed || h.itemCharges < 1 || h.over) return false;
   if (ITEMS[h.item].effect === 'net') return h.mon.air;
   if (ITEMS[h.item].effect === 'blast') return h.mon.under;
+  if (ITEMS[h.item].effect === 'thaw') return h.mon.plating > 0;
   return true;
 }
 
@@ -120,6 +124,14 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
   const picks = pickDice(h, mv.need, prefer); if (!picks) return null;
   const wasCapturable = canCapture(h);
   picks.forEach(j => (h.dice[j].used = mv.name));
+  if (m.plating > 0) {
+    // Ice plating: the hit is spent on the ice. Charge and whetstone bonuses are used up too.
+    const strip = Math.min(m.plating, iceBreak(w));
+    m.plating -= strip; h.chargeReady = false; h.whet = 0;
+    log(h, `${mv.name} breaks ${strip} layer${strip > 1 ? 's' : ''} of ice. ${m.plating ? `${m.plating} left.` : 'The plating is gone!'}`, m.plating ? '' : 'gold');
+    if (mv.flow) { h.rerolls++; log(h, 'Flow: +1 reroll.'); }
+    return { dmg: 0, broke: false };
+  }
   let dmg = mv.dmg; const notes: string[] = [];
   if (h.chargeReady) { dmg *= 2; h.chargeReady = false; notes.push('charged ×2'); }
   if (h.whet) { dmg = Math.round(dmg * (1 + h.whet)); notes.push(`whetted +${Math.round(h.whet * 100)}%`); h.whet = 0; }
@@ -216,6 +228,7 @@ export function useItem(h: Hunt): boolean {
     case 'whet50': h.whet = 0.5; log(h, 'You sharpen your edge. Next hit +50%.'); break;
     case 'whet100': h.whet = 1; log(h, 'You grind your edge on the tusk. Next hit +100%.'); break;
     case 'net': groundFlier(h); log(h, 'The net wraps its wings. It crashes to the ground!', 'gold'); break;
+    case 'thaw': h.mon.plating = 0; log(h, 'The firepot bursts against its back. The ice plating melts away!', 'gold'); break;
     case 'blast': unearth(h); log(h, 'The powder goes off in its tunnel. It bursts up, stunned!', 'gold'); break;
   }
   return true;

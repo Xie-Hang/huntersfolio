@@ -346,6 +346,8 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .move.dash.ready{border-style:solid}
 /* Capture is the one move that ends the hunt early: inverted (gold fill, dark ink) when it's live */
 .plate .molten path:not(.hatch):not(.broke){stroke:var(--ember)}
+.plate .ice:not(.broke),.plate path.ice{stroke:#b9d3f0}
+.chip.ice{border-color:#b9d3f0;color:#b9d3f0}
 .cant{margin:0;font-size:var(--fs-sm);color:var(--ember-soft)}
 /* Forge detail: hierarchy = name → the number → type → cost and action → moves and details */
 .fd-stat{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}

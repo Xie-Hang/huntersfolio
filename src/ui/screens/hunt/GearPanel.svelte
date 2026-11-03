@@ -11,6 +11,8 @@
   const n = $derived(game.sel.length);
   const sg = $derived(E.SIGNATURES[w.type]);
   const halfAir = $derived(E.airborneHalf(h, w));
+  const iceNow = $derived(h.mon.plating > 0);
+  const iceLine = $derived.by(() => { const n = Math.min(h.mon.plating, E.iceBreak(w)); return n >= h.mon.plating ? `Breaks all the ice (${n} layer${n > 1 ? 's' : ''}). No damage` : `Breaks ${n} layer of ice. No damage`; });
   const exposedNow = $derived(h.mon.parts[h.target]?.exposed > 0 && !h.mon.parts[h.target].broken);
   /** the number the move will roughly deal now: air halves it, an exposed target adds Expose's bonus */
   const shownDmg = (d: number) => { let x = halfAir ? Math.round(d / 2) : d; if (exposedNow) x = Math.round(x * E.EXPOSE_DMG); return x; };
@@ -42,7 +44,7 @@
     <button class="move {ok ? 'ready' : 'no'}" aria-disabled={!ok} onclick={() => ok && game.move(i)}>
       <span>
         <span class="mn">{mv.name}{#if mv.flow}<span class="tag flow">Flow</span>{/if}{#if mv.daze}<span class="tag daze">Daze</span>{/if}{#if mv.expose}<span class="tag expose">Expose</span>{/if}</span>
-        <span class="md">{shownDmg(mv.dmg)} damage{halfAir ? ', halved in the air' : ''}{exposedNow ? ', exposed' : ''}{mv.part ? ` · ×${mv.part} toward breaks` : ''}{mv.daze ? ` · Daze +${mv.daze}` : ''}</span>
+        <span class="md">{#if iceNow}{iceLine}{:else}{shownDmg(mv.dmg)} damage{halfAir ? ', halved in the air' : ''}{exposedNow ? ', exposed' : ''}{mv.part ? ` · ×${mv.part} toward breaks` : ''}{mv.daze ? ` · Daze +${mv.daze}` : ''}{/if}</span>
       </span>
       <span class="need" aria-label="Needs {needLabel(mv.need)}">{glyphs(mv.need)}</span>
     </button>
@@ -76,7 +78,7 @@
     {@const it = E.ITEMS[h.item]}
     <div class="divider"><span class="label">Item · Free action</span><span class="label">{h.itemCharges} left</span></div>
     <button class="move {iOk ? 'ready' : 'no'}" aria-disabled={!iOk} onclick={() => iOk && game.item()}>
-      <span><span class="mn">{it.name}</span><span class="md">{it.desc}{h.itemUsed ? ' · Used this turn' : it.effect === 'net' && !h.mon.air ? ' · Only while it flies' : it.effect === 'blast' && !h.mon.under ? ' · Only while it’s underground' : ''}</span></span>
+      <span><span class="mn">{it.name}</span><span class="md">{it.desc}{h.itemUsed ? ' · Used this turn' : it.effect === 'net' && !h.mon.air ? ' · Only while it flies' : it.effect === 'blast' && !h.mon.under ? ' · Only while it’s underground' : it.effect === 'thaw' && !h.mon.plating ? ' · Only while it has ice' : ''}</span></span>
       <span class="need">Free</span>
     </button>
   {:else}
