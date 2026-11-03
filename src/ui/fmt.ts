@@ -3,6 +3,12 @@ import * as E from '../engine';
 
 export const GLYPH: Record<string, string> = { C: '●', T: '▲' };
 export const glyphs = (need: string) => [...need].map(c => GLYPH[c]).join('');
+/** Which of a recipe's dice you're missing, given the free faces: [shape, have][] in recipe order. */
+export function needMarks(need: string, free: string[]): { c: string; have: boolean }[] {
+  const pool = [...free];
+  return [...need].map(c => { const i = pool.indexOf(c); if (i >= 0) pool.splice(i, 1); return { c, have: i >= 0 }; });
+}
+export const HOLLOW: Record<string, string> = { C: '○', T: '△' };
 export const needLabel = (need: string) => [...need].map(c => (c === 'C' ? 'circle' : 'triangle')).join(', ');
 export const movesLine = (moves: E.Move[]) => moves.map(m => `${glyphs(m.need)} ${m.dmg}`).join(' · ');
 

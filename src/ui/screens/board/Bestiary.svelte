@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Elem from '../../parts/Elem.svelte';
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
   import { DAMAGE_TYPES, effName, record } from '../../fmt';
@@ -21,9 +22,9 @@
     <div><b>{breaks}</b><span>Parts broken</span></div>
   </div>
   <div class="trio">
-    <div><span>Element</span><b><span class="edot {M.elem}"></span>{M.elem}</b></div>
-    <div><span>Weakness</span><b class="good"><span class="edot {M.weak}"></span>{M.weak} ×1.5</b></div>
-    <div><span>Resists</span><b class="bad"><span class="edot {M.resist}"></span>{M.resist} ×0.75</b></div>
+    <div><span>Element</span><b><Elem e={M.elem} />{M.elem}</b></div>
+    <div><span>Weakness</span><b class="good"><Elem e={M.weak} />{M.weak} ×1.5</b></div>
+    <div><span>Resists</span><b class="bad"><Elem e={M.resist} />{M.resist} ×0.75</b></div>
   </div>
   <dl class="facts">
     <dt>Habits</dt><dd>{M.habits}</dd>

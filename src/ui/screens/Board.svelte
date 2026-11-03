@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Elem from '../parts/Elem.svelte';
   import * as E from '../../engine';
   import { game } from '../game.svelte';
   import { ELEMS, record } from '../fmt';
@@ -41,7 +42,7 @@
     <div class="filters" aria-label="Filter by element">
       {#each ['All', ...ELEMS] as f}
         <button aria-pressed={filter === f} onclick={() => (filter = f as typeof filter)}>
-          {#if f !== 'All'}<span class="edot {f}"></span>{/if}{f}
+          {#if f !== 'All'}<Elem e={f as E.Element} />{/if}{f}
         </button>
       {/each}
     </div>
@@ -56,14 +57,14 @@
             <span class="thumb" aria-hidden="true"><Plate mon={M.id} /></span>
             <span>
               <span class="nm">{M.short}</span>
-              <span class="meta"><span><span class="edot {M.elem}"></span>{M.elem}</span><span>Weak: {M.weak}</span>{#if open}<span class={r.wins ? '' : 'new'}>{r.wins ? `Hunted ×${r.wins}` : 'Not yet hunted'}</span>{:else}<span>Locked · Beat the {E.MONSTERS[M.requires!].short} first</span>{/if}</span>
+              <span class="meta"><span><Elem e={M.elem} />{M.elem}</span><span>Weak: {M.weak}</span>{#if open}<span class={r.wins ? '' : 'new'}>{r.wins ? `Hunted ×${r.wins}` : 'Not yet hunted'}</span>{:else}<span>Locked · Beat the {E.MONSTERS[M.requires!].short} first</span>{/if}</span>
             </span>
           </button>
         {/each}
         {#each g.unknown as u}
           <div class="mrow unknown" aria-disabled="true">
             <span class="thumb" aria-hidden="true">?</span>
-            <span><span class="nm">Unknown</span><span class="meta">{#if u.elem}<span><span class="edot {u.elem}"></span>{u.elem}</span>{/if}<span>{u.hint}</span></span></span>
+            <span><span class="nm">Unknown</span><span class="meta">{#if u.elem}<span><Elem e={u.elem} />{u.elem}</span>{/if}<span>{u.hint}</span></span></span>
           </div>
         {/each}
       {:else}

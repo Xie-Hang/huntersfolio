@@ -1,5 +1,6 @@
 <script lang="ts">
   // List-detail: upgrade trees on the left, the selected recipe on the right.
+  import Elem from '../parts/Elem.svelte';
   import * as E from '../../engine';
   import { game } from '../game.svelte';
   import { glyphs, needLabel } from '../fmt';
@@ -122,7 +123,7 @@
           <div class="fd-type">
             <span class="tag {sg.tag}" style="margin:0">{sg.name}</span>
             <span>{d.type}</span><span class="sep">·</span>
-            <span>{#if d.elem}<span class="edot {d.elem}"></span>{d.elem}{:else}No element{/if}</span>
+            <span>{#if d.elem}<Elem e={d.elem} />{d.elem}{:else}No element{/if}</span>
           </div>
           <p class="fd-sig">{sg.text}</p>
         {:else if kind === 'c'}
@@ -138,7 +139,7 @@
           </div>
           <div class="fd-type">
             <span>Guard {owned ? a.guard : base.guard} per die</span><span class="sep">·</span><span>{base.rerolls} rerolls</span><span class="sep">·</span>
-            <span>{#if base.resist}<span class="edot {base.resist}"></span>Resists {base.resist}{:else}No resistance{/if}</span>
+            <span>{#if base.resist}<Elem e={base.resist} />Resists {base.resist}{:else}No resistance{/if}</span>
           </div>
           <p class="fd-sig">{base.perk}</p>
         {/if}

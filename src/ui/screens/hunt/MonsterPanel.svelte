@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Elem from '../../parts/Elem.svelte';
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
   import { effCls, effName, pct } from '../../fmt';
@@ -15,7 +16,7 @@
 
 <section class="panel" aria-label="The monster" use:shake={game.shakes.mon}>
   <div style="display:flex;flex-direction:column;gap:14px">
-    <div class="ph"><h2>{M.name}</h2><span class="label">{M.kind} · {M.elem}</span></div>
+    <div class="ph"><h2>{M.name}</h2><span class="label">{M.kind} · <Elem e={M.elem} />{M.elem}</span></div>
     <div class="plate"><Plate mon={h.mid} hunt={h} /></div>
     <div class="hpline">
       <div class="ph"><span class="label">HP</span><span class="mono">{m.hp} / {m.max}</span></div>
@@ -28,7 +29,7 @@
       </div>
     {/if}
     <div class="chips">
-      <span class="chip gale">Weak to {M.weak}</span><span class="chip">Resists {M.resist}</span>
+      <span class="chip gale"><Elem e={M.weak} />Weak to {M.weak}</span><span class="chip"><Elem e={M.resist} />Resists {M.resist}</span>
       {#if m.enraged}<span class="chip hot">Enraged</span>{/if}
       {#if mud}<span class="chip mud">Mud-caked</span>{/if}
       {#if m.air}<span class="chip gale">Airborne</span>{/if}

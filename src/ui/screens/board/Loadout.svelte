@@ -1,5 +1,6 @@
 <script lang="ts">
   // Four slots; tapping one swaps the slots for a picker list (sortable, filterable, with deltas).
+  import Elem from '../../parts/Elem.svelte';
   import { coach } from '../../coach.svelte';
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
@@ -96,7 +97,7 @@
             <span class="sl">{SLOT_LABEL[slot]}</span>
             <span>
               <span class="nm">{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}{' '}<span class="avg">{weaponVs(game.save, id, mon)} avg</span></span>
-              <span class="sub2"><span><span class="tag {sg.tag}" style="margin:0 4px 0 0">{sg.name}</span>{w.type} · {w.elem ?? 'No element'}</span><span>{@render weaponNotes(w)}</span></span>
+              <span class="sub2"><span><span class="tag {sg.tag}" style="margin:0 4px 0 0">{sg.name}</span>{w.type} · <Elem e={w.elem} />{w.elem ?? 'No element'}</span><span>{@render weaponNotes(w)}</span></span>
             </span>
             <span class="chg">Change</span>
           </button>
@@ -169,7 +170,7 @@
             <button class="prow" aria-current={id === cur} onclick={() => choose(id)}>
               <span>
                 <span class="nm">{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}{#if id === cur}<span class="badge">Equipped</span>{:else if id === other}<span class="badge">In {SLOT_LABEL[idx ? 'w0' : 'w1']}</span>{/if}</span>
-                <span class="ty">{w.type} · {w.elem ?? 'No element'} · {movesLine(w.moves)}</span>
+                <span class="ty">{w.type} · <Elem e={w.elem} />{w.elem ?? 'No element'} · {movesLine(w.moves)}</span>
                 <span class="note">{@render weaponNotes(w)}</span>
               </span>
               <span class="num">{v}{#if id === cur}<small class="delta same">Equipped</small>{:else}{@render delta(v, curV)}{/if}</span>

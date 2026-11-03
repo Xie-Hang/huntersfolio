@@ -1,8 +1,9 @@
 <script lang="ts">
   // Current weapon's moves, then the dice actions (guard, charge, swap, capture) and the item.
+  import Elem from '../../parts/Elem.svelte';
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
-  import { glyphs, needLabel } from '../../fmt';
+  import { needLabel, needMarks, GLYPH, HOLLOW } from '../../fmt';
 
   const h = $derived(game.hunt!);
   const w = $derived(E.currentWeapon(h));
@@ -27,6 +28,7 @@
   const capOk = $derived(capLive && n === 2 && !E.captureBlocked(h));
   const capAt = $derived(Math.floor(h.mon.max * E.CAPTURE_AT));
   const iOk = $derived(!over && E.itemUsable(h));
+  const freeFaces = $derived(h.dice.filter(d => !d.used).map(d => d.face as string));
   /** the strongest move you can use now (the tutorial points at it) */
   const bestReady = $derived(w.moves.reduce((b, mv, i) => (E.canUseMove(h, i) && (b < 0 || mv.dmg > w.moves[b].dmg) ? i : b), -1));
 </script>
@@ -37,19 +39,21 @@
       <h2 style="margin:0;font-weight:600;font-size:var(--fs-lg)">{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}</h2>
       <span class="avg">{E.avgVs(w, h.mid)} avg</span>
     </div>
-    <span class="elem" style="color:{elemColor}">{w.type} · {w.elem ?? 'No element'}{em > 1 ? ' · hits weakness' : em < 1 ? ' · resisted' : ''}{halfAir ? ' · half damage in the air' : ''}</span>
+    <span class="elem" style="color:{elemColor}">{w.type} · <Elem e={w.elem} />{w.elem ?? 'No element'}{em > 1 ? ' · hits weakness' : em < 1 ? ' · resisted' : ''}{halfAir ? ' · half damage in the air' : ''}</span>
   </div>
   <p class="sigline"><span class="tag {sg.tag}" style="margin:0 6px 0 0">{sg.name}</span>{sg.text}</p>
   {#if !over && E.cantHitReason(h, w)}<p class="cant">{E.cantHitReason(h, w)} Swap, Guard or Charge instead.</p>{/if}
 
   {#each w.moves as mv, i}
     {@const ok = E.canUseMove(h, i)}
+    {@const marks = needMarks(mv.need, freeFaces)}
+    {@const miss = marks.filter(x => !x.have).map(x => (x.c === 'C' ? 'circle' : 'triangle'))}
     <button class="move {ok ? 'ready' : 'no'}" data-coach={i === bestReady ? 'move' : undefined} aria-disabled={!ok} onclick={() => ok && game.move(i)}>
       <span>
         <span class="mn">{mv.name}{#if mv.flow}<span class="tag flow">Flow</span>{/if}{#if mv.daze}<span class="tag daze">Daze</span>{/if}{#if mv.expose}<span class="tag expose">Expose</span>{/if}</span>
         <span class="md">{#if iceNow}{iceLine}{:else}{shownDmg(mv.dmg)} damage{halfAir ? ', halved in the air' : ''}{exposedNow ? ', exposed' : ''}{mv.part ? ` · ×${mv.part} toward breaks` : ''}{mv.daze ? ` · Daze +${mv.daze}` : ''}{/if}</span>
       </span>
-      <span class="need" aria-label="Needs {needLabel(mv.need)}">{glyphs(mv.need)}</span>
+      <span class="need" aria-label="Needs {needLabel(mv.need)}{miss.length && !over ? `; missing ${miss.join(', ')}` : ''}">{#each marks as x}{#if x.have || over}{GLYPH[x.c]}{:else}<span class="miss">{HOLLOW[x.c]}</span>{/if}{/each}</span>
     </button>
   {/each}
 
@@ -61,7 +65,7 @@
     <span><span class="mn">Charge</span><span class="md">Your first hit next turn deals double</span></span><span class="need">{cd}</span>
   </button>
   <button class="move dash {sOk ? 'ready' : 'no'}" data-coach="swap" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
-    <span><span class="mn">Swap to {other.name}</span><span class="md">{other.type} · {other.elem ?? 'No element'}</span></span><span class="need">1</span>
+    <span><span class="mn">Swap to {other.name}</span><span class="md">{other.type} · <Elem e={other.elem} />{other.elem ?? 'No element'}</span></span><span class="need">1</span>
   </button>
   <!-- Always shown, so players learn it exists before it's available. -->
   <button data-coach="capture" class="move capture {capLive && !E.captureBlocked(h) ? 'live' : ''} {capOk ? 'ready' : 'no'}" aria-disabled={!capOk} onclick={() => capOk && game.capture()}>

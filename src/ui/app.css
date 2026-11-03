@@ -80,20 +80,24 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .mrow[aria-current="true"] .nm{color:var(--gold-hi)}
 .mrow .meta{font-size:var(--fs-sm);color:var(--muted);display:flex;gap:6px;flex-wrap:wrap}
 .mrow .new{color:var(--gold-hi)}
-.mrow.locked{opacity:.7}
+.mrow.locked .thumb{opacity:.45}
 .mrow.locked .meta{color:var(--muted)}
 .unlock{color:var(--gold-hi);font-size:var(--fs-md)}
-.mrow.unknown{cursor:default;opacity:.55}
+.mrow.unknown{cursor:default}
+.mrow.unknown .thumb{opacity:.45}
+.mrow.unknown .nm{color:var(--soft)}
 .mrow.unknown:hover{border-color:transparent}
 .mrow.unknown .thumb{font-family:var(--f-body);font-size:var(--fs-lg);color:var(--muted)}
-.edot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:0}
-.edot.Stone{background:#a8977e}.edot.Gale{background:var(--gale)}.edot.Ember{background:var(--ember)}.edot.Frost{background:#b9d3f0}
+.emark{display:inline-block;width:12px;height:12px;margin-right:5px;vertical-align:-1px;flex:none}
+.emark .ln{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
+.emark rect,.emark path:not(.ln){fill:currentColor}
+.emark.Stone{color:#a8977e}.emark.Gale{color:var(--gale)}.emark.Ember{color:var(--ember)}.emark.Frost{color:#b9d3f0}
 .trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .trio div{border:1px solid var(--line);border-radius:3px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
 .trio span{font-size:var(--fs-sm);color:var(--muted)}
 .trio b{font-family:var(--f-body);font-weight:600;font-size:var(--fs-md);color:var(--fg)}
 .trio b.good{color:var(--gale)} .trio b.bad{color:var(--ember-soft)}
-.trio .edot{margin-right:6px}
+.trio .emark{margin-right:6px}
 /* loadout slots + picker */
 .slots{display:flex;flex-direction:column;gap:8px}
 .slot{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:84px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:3px;min-height:64px}
@@ -261,7 +265,7 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .tree{display:flex;flex-direction:column;gap:10px}
 .node{display:flex;flex-direction:column;gap:8px;padding:14px;border:1px solid var(--line);border-radius:3px}
 .node.owned{border-color:var(--gold);background:var(--raise)}
-.node.locked{opacity:.6}
+.node.locked{border-style:dashed}
 .node .head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
 .node .nm{font-family:var(--f-body);font-weight:600;font-size:var(--fs-lg)}
 .node.owned .nm{color:var(--gold-hi)}
@@ -322,11 +326,11 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .die:hover{transform:translateY(-2px)}
 .die:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 .die.sel{transform:translateY(-6px);box-shadow:0 4px 0 var(--bone-edge),0 0 0 3px var(--gold)}
-.die.used{opacity:.28;cursor:default;transform:none}
+.die.used{opacity:.4;cursor:default;transform:none}
 .die.used:hover{transform:none}
 .die svg{width:38px;height:38px}
 /* blank is a real face: same die body, the word printed in faded ink */
-.die .bl{font-family:var(--f-body);font-weight:600;font-size:var(--fs-sm);color:#2a1f17;opacity:.55}
+.die .bl{font-family:var(--f-body);font-weight:600;font-size:var(--fs-sm);color:#2a1f17;opacity:.72}
 .die.rolling{animation:tumble .45s ease-out}
 @keyframes tumble{0%{transform:rotate(-200deg) scale(.6)}70%{transform:rotate(12deg) scale(1.05)}100%{transform:rotate(0) scale(1)}}
 .dietag{font-family:var(--f-body);font-size:var(--fs-sm);color:var(--muted);min-height:15px;text-align:center}
@@ -352,7 +356,11 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .move.ready{border-color:var(--gold);background:var(--raise)}
 .move.ready .need{color:var(--gold-hi)}
 .move.ready:hover{box-shadow:0 0 0 3px rgba(233,185,73,.14)}
-.move.no{opacity:.45;cursor:not-allowed}
+.move.no{cursor:not-allowed}
+/* unavailable moves stay readable (players plan rerolls from them): no fill, quieter name, missing dice drawn hollow */
+.move.no .mn{color:var(--soft)}
+.move.no .md{color:var(--muted)}
+.move .need .miss{color:var(--muted)}
 .move.dash{border-style:dashed;border-color:var(--line-2)}
 .move.dash.ready{border-style:solid}
 /* Capture is the one move that ends the hunt early: inverted (gold fill, dark ink) when it's live */
