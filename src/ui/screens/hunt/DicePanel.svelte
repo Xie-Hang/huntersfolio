@@ -27,15 +27,15 @@
           {:else if d.face === 'T'}<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 5l16 29H4z" fill="#2a1f17" /></svg>
           {:else}<span class="bl">Blank</span>{/if}
         </button>
-        <span class="dietag" class:used={!!d.used}>{d.used || (sel ? 'Selected' : '')}</span>
+        <span class="dietag" class:used={!!d.used}>{#if d.used || sel}{d.used || 'Selected'}{:else if !over}<kbd class="key">{i + 1}</kbd>{/if}</span>
       </div>
     {/each}
   </div>
   <div class="tools">
     <div class="grp">
-      <button class="btn quiet" data-sound data-coach="reroll" disabled={!n || h.rerolls < 1 || over} onclick={() => game.reroll()}>Reroll selected · {h.rerolls} left</button>
-      <button class="btn quiet" disabled={!game.undoStack.length || over} onclick={() => game.undo()}>Undo</button>
+      <button class="btn quiet" data-sound data-coach="reroll" disabled={!n || h.rerolls < 1 || over} onclick={() => game.reroll()}><kbd class="key">R</kbd>Reroll selected · {h.rerolls} left</button>
+      <button class="btn quiet" disabled={!game.undoStack.length || over} onclick={() => game.undo()}><kbd class="key">U</kbd>Undo</button>
     </div>
-    <button class="btn primary" data-sound data-coach="end" disabled={over} onclick={() => game.endTurn()}>End turn</button>
+    <button class="btn primary" data-sound data-coach="end" disabled={over} onclick={() => game.endTurn()}><kbd class="key">Space</kbd>End turn</button>
   </div>
 </section>

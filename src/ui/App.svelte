@@ -3,6 +3,7 @@
   import { game, type View } from './game.svelte';
   import Modal from './parts/Modal.svelte';
   import Coach from './parts/Coach.svelte';
+  import { onHuntKey } from './keys';
   import { coach } from './coach.svelte';
   import Board from './screens/Board.svelte';
   import Forge from './screens/Forge.svelte';
@@ -71,7 +72,7 @@
   }
 </script>
 
-<svelte:window onpointerdown={() => music.unlock()} onkeydown={() => music.unlock()} onclickcapture={uiClick} />
+<svelte:window onpointerdown={() => music.unlock()} onkeydown={e => { music.unlock(); onHuntKey(e); }} onclickcapture={uiClick} />
 
 <div class="wrap">
   <header class="top">
@@ -153,6 +154,7 @@
       <li><strong>Avg</strong> next to a weapon = expected damage per turn if all 4 dice go to attacking, without rerolls.</li>
       <li>Reinforcing (+1 to +3) adds 5% weapon damage, or 10 HP and 1 guard to armor, per level. Upgrades keep the reinforcement.</li>
       <li>Rare materials (8%, 12% on capture) get 3% likelier with every miss and are guaranteed on the 12th break of their part.</li>
+      <li><strong>Keys in a hunt:</strong> <kbd>1</kbd>–<kbd>4</kbd> select dice · <kbd>Q</kbd> <kbd>W</kbd> <kbd>E</kbd> moves · <kbd>G</kbd> guard · <kbd>C</kbd> charge · <kbd>S</kbd> swap · <kbd>X</kbd> capture · <kbd>I</kbd> item · <kbd>R</kbd> reroll · <kbd>Space</kbd> end turn · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · <kbd>Esc</kbd> clear selection.</li>
       <li>Progress is saved automatically. Reset it from Settings (the gear).</li>
     </ul>
   </Modal>
