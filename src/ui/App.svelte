@@ -7,8 +7,9 @@
   import Shop from './screens/Shop.svelte';
   import Hunt from './screens/Hunt.svelte';
   import { music } from './audio';
-  import { setSfxVolume } from './sfx';
+  import { setSfxVolume, sfx } from './sfx';
   import { settings } from './settings.svelte';
+  import { UI_SIZES, isDesktop, isFullscreen, setFullscreen, onFullscreenChange, setUiSize } from './display';
 
   const BUILD = `v${__APP_VERSION__}`;
   game.load();
@@ -31,8 +32,28 @@
   // Music follows the game: town loop in town, hunt loop in a hunt, the danger layer on big telegraphs, a sting at the end.
   $effect(() => { music.setVolume(settings.prefs.music); });
   $effect(() => { setSfxVolume(settings.prefs.sfx); });
+  $effect(() => { setUiSize(settings.prefs.uiSize); });
+  // The desktop window opens in the saved mode; F11 and Esc keep the setting in step.
+  let fullscreen = $state(isFullscreen());
+  onFullscreenChange(on => {
+    fullscreen = on;
+    if (isDesktop() && settings.prefs.fullscreen !== on) { settings.prefs.fullscreen = on; settings.save(); }
+  });
+  function toggleFullscreen() {
+    const on = !fullscreen;
+    settings.prefs.fullscreen = on; settings.save();
+    setFullscreen(on);
+  }
+  function setSize(f: number) { settings.prefs.uiSize = f; settings.save(); }
   $effect(() => { void music.setScene(game.view === 'hunt' && game.hunt ? (game.hunt.over ? 'none' : 'hunt') : 'town'); });
   $effect(() => { const h = game.hunt; music.setDanger(!!h && !h.over && game.view === 'hunt' && E.intentInfo(h).threat >= 3); });
+  /** Buttons with no sound of their own get a soft click. Dice and moves sound in the game state; others opt out with data-sound. */
+  function uiClick(e: MouseEvent) {
+    const b = (e.target as HTMLElement | null)?.closest?.('button');
+    if (!b || b.disabled || b.getAttribute('aria-disabled') === 'true') return;
+    if (b.hasAttribute('data-sound') || b.classList.contains('die') || b.classList.contains('move')) return;
+    sfx('click');
+  }
   let stungFor: object | null = null;
   $effect(() => {
     const h = game.hunt;
@@ -48,7 +69,7 @@
   }
 </script>
 
-<svelte:window onpointerdown={() => music.unlock()} onkeydown={() => music.unlock()} />
+<svelte:window onpointerdown={() => music.unlock()} onkeydown={() => music.unlock()} onclickcapture={uiClick} />
 
 <div class="wrap">
   <header class="top">
@@ -93,6 +114,18 @@
         <input type="range" min="0" max="1" step="0.05" bind:value={settings.prefs.sfx} onchange={() => settings.save()} />
         <span class="mono">{Math.round(settings.prefs.sfx * 100)}%</span>
       </label>
+    </div>
+    <div class="setrow">
+      <span><span class="nm">Fullscreen</span><span class="md">F11 also switches it.</span></span>
+      <button class="btn quiet" role="switch" aria-checked={fullscreen} onclick={toggleFullscreen}>{fullscreen ? 'On' : 'Off'}</button>
+    </div>
+    <div class="setrow">
+      <span><span class="nm">Interface size</span><span class="md">Scales text and everything around it together, so nothing gets cramped or cut off.</span></span>
+      <span class="seg" role="radiogroup" aria-label="Interface size">
+        {#each UI_SIZES as f}
+          <button role="radio" aria-checked={settings.prefs.uiSize === f} onclick={() => setSize(f)}>{Math.round(f * 100)}%</button>
+        {/each}
+      </span>
     </div>
     <div class="setrow"><span><span class="nm">Credits</span><span class="md">Music: placeholder tracks composed in code for Hunter's Folio. Final music to come. Sound effects: synthesized in code.</span></span></div>
     <div class="toast" aria-live="polite">{setToast}</div>

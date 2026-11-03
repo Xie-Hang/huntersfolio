@@ -152,7 +152,7 @@
         {/if}
         <div class="fd-acts">
           {#if r.action && r.cost}
-            <button class="btn primary" disabled={!E.canPay(s, r.cost)} onclick={doIt}>
+            <button class="btn primary" data-sound disabled={!E.canPay(s, r.cost)} onclick={doIt}>
               {r.action === 'craft' ? 'Craft' : r.action === 'upgrade' ? 'Upgrade' : `Reinforce to +${lv + 1}`}
             </button>
           {:else if owned}

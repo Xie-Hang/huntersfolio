@@ -7,7 +7,7 @@ export type Sfx =
   | 'hitCut' | 'hitBlunt' | 'hitPierce' | 'bigHit'
   | 'partBreak' | 'daze' | 'expose' | 'iceBreak' | 'iceGone'
   | 'guard' | 'charge' | 'swap' | 'item' | 'capture'
-  | 'hurt' | 'hurtHeavy' | 'forge' | 'coin';
+  | 'hurt' | 'hurtHeavy' | 'forge' | 'coin' | 'click';
 
 let bus: GainNode | null = null;
 let volume = 0.8;
@@ -134,6 +134,9 @@ const SOUNDS: Record<Sfx, (c: AudioContext, t: number) => void> = {
     tone(c, t, 100, 35, { d: 0.4, peak: 0.85 });
     noise(c, t, 'lowpass', 1600, 250, { d: 0.25, peak: 0.6 });
   },
+
+  // any button without a sound of its own: a soft, short tick
+  click: (c, t) => { tone(c, t, 1500, 1100, { d: 0.03, peak: 0.12 }, 'triangle'); noise(c, t, 'bandpass', 3200, 3200, { d: 0.012, peak: 0.08 }, 4); },
 
   // town
   forge: (c, t) => { partials(c, t, [1040, 2710, 4020], 0.5, 0.4); partials(c, t + 0.22, [1040, 2710], 0.35, 0.18); },

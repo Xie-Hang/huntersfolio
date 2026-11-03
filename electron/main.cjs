@@ -61,13 +61,25 @@ ipcMain.on('storage:remove', (e, key) => {
     e.returnValue = false;
   }
 });
+ipcMain.on('window:isFullscreen', e => {
+  const w = BrowserWindow.fromWebContents(e.sender);
+  e.returnValue = !!w?.isFullScreen();
+});
+ipcMain.on('window:setFullscreen', (e, on) => {
+  BrowserWindow.fromWebContents(e.sender)?.setFullScreen(!!on);
+});
+/** The player's settings file, read once at startup so the window opens the way they left it. */
+const startPrefs = () => { try { return JSON.parse(readValid(fileFor('settings')) ?? '{}'); } catch { return {}; } };
+
 ipcMain.on('steam:info', e => {
   e.returnValue = steam.info(steamClient);
 });
 
 /* ---------- window ---------- */
 function createWindow() {
+  const prefs = startPrefs();
   const win = new BrowserWindow({
+    fullscreen: prefs.fullscreen === true,
     width: 1440,
     height: 900,
     minWidth: 1024,
@@ -84,6 +96,9 @@ function createWindow() {
     }
   });
   win.once('ready-to-show', () => win.show());
+  const tell = () => win.webContents.send('window:fullscreen', win.isFullScreen());
+  win.on('enter-full-screen', tell);
+  win.on('leave-full-screen', tell);
 
   // The game never navigates or opens windows. Refuse anything that tries.
   win.webContents.on('will-navigate', e => e.preventDefault());

@@ -59,7 +59,7 @@
             <span class="ctl">
               <span class="price">{it.price} each</span>
               {@render stepper(it.id, max)}
-              <button class="btn primary" disabled={s.coin < it.price! * q} onclick={() => run(sv => E.buyItem(sv, it.id, q), it.id)}>Buy {q} · {it.price! * q} coin</button>
+              <button class="btn primary" data-sound disabled={s.coin < it.price! * q} onclick={() => run(sv => E.buyItem(sv, it.id, q), it.id)}>Buy {q} · {it.price! * q} coin</button>
             </span>
           </div>
         {/each}
@@ -67,7 +67,7 @@
         {#each craftRows as it (it.id)}
           <div class="srow">
             <span><span class="nm">{it.name}</span><span class="md">{it.desc} Makes {it.yields ?? 1} · you have {s.items[it.id] ?? 0}.</span><Costs cost={it.craft!} /></span>
-            <span class="ctl"><button class="btn primary" disabled={!E.canPay(s, it.craft!)} onclick={() => run(sv => E.craftItem(sv, it.id))}>Craft {it.yields ?? 1}</button></span>
+            <span class="ctl"><button class="btn primary" data-sound disabled={!E.canPay(s, it.craft!)} onclick={() => run(sv => E.craftItem(sv, it.id))}>Craft {it.yields ?? 1}</button></span>
           </div>
         {/each}
         <div class="srow"><span class="md">More item recipes arrive with each new monster.</span></div>
@@ -75,7 +75,7 @@
         {#if sellRows.length}
           <div class="sellbar">
             <span class="md">Surplus = what no recipe you can still make needs.</span>
-            <button class="btn quiet" disabled={!surplusCoin} onclick={() => run(sv => E.sellSurplus(sv))}>Sell surplus · {surplusCoin} coin</button>
+            <button class="btn quiet" data-sound disabled={!surplusCoin} onclick={() => run(sv => E.sellSurplus(sv))}>Sell surplus · {surplusCoin} coin</button>
           </div>
         {/if}
         {#each sellRows as r (r.m.id)}
@@ -89,7 +89,7 @@
             </span>
             <span class="ctl">
               {@render stepper(key, r.have)}
-              <button class="btn primary" onclick={() => run(sv => E.sellMat(sv, r.m.id, q), key)}>Sell {q} · {r.m.sell * q} coin</button>
+              <button class="btn primary" data-sound onclick={() => run(sv => E.sellMat(sv, r.m.id, q), key)}>Sell {q} · {r.m.sell * q} coin</button>
             </span>
           </div>
         {:else}

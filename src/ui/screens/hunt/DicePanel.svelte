@@ -33,9 +33,9 @@
   </div>
   <div class="tools">
     <div class="grp">
-      <button class="btn quiet" disabled={!n || h.rerolls < 1 || over} onclick={() => game.reroll()}>Reroll selected · {h.rerolls} left</button>
+      <button class="btn quiet" data-sound disabled={!n || h.rerolls < 1 || over} onclick={() => game.reroll()}>Reroll selected · {h.rerolls} left</button>
       <button class="btn quiet" disabled={!game.undoStack.length || over} onclick={() => game.undo()}>Undo</button>
     </div>
-    <button class="btn primary" disabled={over} onclick={() => game.endTurn()}>End turn</button>
+    <button class="btn primary" data-sound disabled={over} onclick={() => game.endTurn()}>End turn</button>
   </div>
 </section>
