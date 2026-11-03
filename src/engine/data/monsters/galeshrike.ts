@@ -80,7 +80,7 @@ export const galeshrike: MonsterDef = {
   },
 
   onPin(h) {
-    if (h.mon.air) { ground(h); return 'PIN: the arrow punches through a wing. It comes crashing down!'; }
+    if (h.mon.air) { ground(h); return 'Pin: the arrow punches through a wing. It comes crashing down!'; }
     return null;
   },
 

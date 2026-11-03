@@ -43,8 +43,8 @@
       <path class={cls('talons')} d="M164 128 l-4 22 l-8 6 M160 150 l2 8 M160 150 l8 4 M190 128 l2 22 l-6 6 M192 150 l4 8 M192 150 l9 2" />
     </g>
   </svg>
-{:else if mon === 'cinderack'}
-  <svg viewBox="0 0 320 175" role="img" aria-label="Engraving of the Cinderack, a magma burrower{under ? ', underground' : ''}">
+{:else if mon === 'cinderback'}
+  <svg viewBox="0 0 320 175" role="img" aria-label="Engraving of the Cinderback, a magma burrower{under ? ', underground' : ''}">
     <defs><clipPath id="cr-above"><rect x="0" y="0" width="320" height="150" /></clipPath></defs>
     <path class="hatch" d="M10 150 H310" style="stroke:#8c7a62;stroke-width:2" />
     {#if under}

@@ -51,7 +51,7 @@
                 {#if !reach}<span class="chip sm none">{m.under ? 'Underground' : 'Out of reach'}</span>
                 {:else}<span class="chip sm {effCls(e)}">{w.type}: {effName(e)}</span>{/if}
               {/if}
-              <span class="mono" style="color:{st.broken ? 'var(--ember-soft)' : 'var(--soft)'}">{st.broken ? 'BROKEN' : `${st.hp} / ${st.max}`}</span>
+              <span class="mono" style="color:{st.broken ? 'var(--ember-soft)' : 'var(--soft)'}">{st.broken ? 'Broken' : `${st.hp} / ${st.max}`}</span>
             </span>
           </span>
           {#if !st.broken}<span class="bar"><i style="width:{pct(st.hp, st.max)}%;background:{on ? 'var(--gold)' : '#8c7a62'}"></i></span>{/if}

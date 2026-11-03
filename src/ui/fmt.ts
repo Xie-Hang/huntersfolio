@@ -24,7 +24,7 @@ export function segments(text: string): Seg[] {
   let last = 0, m: RegExpExecArray | null;
   while ((m = re.exec(text))) {
     if (m.index > last) out.push({ text: text.slice(last, m.index) });
-    out.push({ text: m[1], tag: m[1].toLowerCase() as Seg['tag'] });
+    out.push({ text: m[1][0] + m[1].slice(1).toLowerCase(), tag: m[1].toLowerCase() as Seg['tag'] });
     last = m.index + m[0].length;
   }
   if (last < text.length) out.push({ text: text.slice(last) });

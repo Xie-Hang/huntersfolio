@@ -29,11 +29,11 @@ const mats: MaterialDef[] = [
   { id: 'talon', base: 'Hooked Talon', src: 'Galeshrike', sell: 60, how: 'Break the Galeshrike’s talons (Cut best)' },
   { id: 'crest', base: 'Storm Crest', src: 'Galeshrike', sell: 60, how: 'Break the Galeshrike’s crest (Blunt best, only while grounded)' },
   { id: 'tempesteye', base: 'Tempest Eye', src: 'Galeshrike', rare: true, sell: 300, how: 'Rare from Galeshrike crest breaks; capture raises the chance' },
-  { id: 'cinderscale', base: 'Cinder Scale', src: 'Cinderack', sell: 20, how: 'Every Cinderack hunt' },
-  { id: 'slagplate', base: 'Slag Plate', src: 'Cinderack', sell: 60, how: 'Break the Cinderack’s head plate (Blunt best)' },
-  { id: 'digclaw', base: 'Digging Claw', src: 'Cinderack', sell: 60, how: 'Break the Cinderack’s claws (Cut best)' },
-  { id: 'ventgland', base: 'Vent Gland', src: 'Cinderack', sell: 60, how: 'Break the Cinderack’s back vents (Pierce best)' },
-  { id: 'kilnheart', base: 'Kilnheart', src: 'Cinderack', rare: true, sell: 300, how: 'Rare from Cinderack head plate breaks; capture raises the chance' }
+  { id: 'cinderscale', base: 'Cinder Scale', src: 'Cinderback', sell: 20, how: 'Every Cinderback hunt' },
+  { id: 'slagplate', base: 'Slag Plate', src: 'Cinderback', sell: 60, how: 'Break the Cinderback’s head plate (Blunt best)' },
+  { id: 'digclaw', base: 'Digging Claw', src: 'Cinderback', sell: 60, how: 'Break the Cinderback’s claws (Cut best)' },
+  { id: 'ventgland', base: 'Vent Gland', src: 'Cinderback', sell: 60, how: 'Break the Cinderback’s back vents (Pierce best)' },
+  { id: 'kilnheart', base: 'Kilnheart', src: 'Cinderback', rare: true, sell: 300, how: 'Rare from Cinderback head plate breaks; capture raises the chance' }
 ];
 export const MATERIALS: Record<string, MaterialDef> = Object.fromEntries(mats.map(m => [m.id, m]));
 

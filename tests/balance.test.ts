@@ -40,23 +40,23 @@ describe('Galeshrike (preparation test)', () => {
   });
 });
 
-describe('Cinderack (the Blunt check)', () => {
+describe('Cinderback (the Blunt check)', () => {
   it('a maul handles it, a little harder than the Gorehorn', () => {
-    const r = matchup(starterSalves('cinderack'), { skill: 'casual', capture: true }, N);
+    const r = matchup(starterSalves('cinderback'), { skill: 'casual', capture: true }, N);
     expect(r.win).toBeGreaterThanOrEqual(0.9);
     expect(r.hpLeft).toBeLessThan(0.5);
   });
   it('punishes leaving Blunt at home about as much as the Galeshrike punishes no bow', () => {
-    const r = matchup({ weapons: [['blade', 0], ['bow', 0]], armor: 'jerkin', item: 'salve', target: 'cinderack' }, { skill: 'casual', capture: true }, N);
+    const r = matchup({ weapons: [['blade', 0], ['bow', 0]], armor: 'jerkin', item: 'salve', target: 'cinderback' }, { skill: 'casual', capture: true }, N);
     expect(r.win).toBeGreaterThan(0.4);
     expect(r.win).toBeLessThan(0.75);
   });
   it('Blast Powder is a real answer without a Blunt weapon', () => {
-    const r = matchup({ weapons: [['blade', 0], ['bow', 0]], armor: 'jerkin', item: 'blast', items: 2, target: 'cinderack' }, { skill: 'casual', capture: true }, N);
+    const r = matchup({ weapons: [['blade', 0], ['bow', 0]], armor: 'jerkin', item: 'blast', items: 2, target: 'cinderback' }, { skill: 'casual', capture: true }, N);
     expect(r.win).toBeGreaterThan(0.4);
   });
   it('its own gear makes it comfortable', () => {
-    const r = matchup({ weapons: [['ember', 0], ['ridgebow', 0]], armor: 'kilnplate', item: 'salve', target: 'cinderack' }, { skill: 'casual', capture: true }, N);
+    const r = matchup({ weapons: [['ember', 0], ['ridgebow', 0]], armor: 'kilnplate', item: 'salve', target: 'cinderback' }, { skill: 'casual', capture: true }, N);
     expect(r.win).toBeGreaterThanOrEqual(0.95);
   });
 });

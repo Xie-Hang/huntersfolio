@@ -78,7 +78,7 @@
       <li>Each turn you roll 4 dice (circle, triangle or blank). The panel above the dice shows what the monster will do when you end your turn, and how much it will hurt.</li>
       <li>Weapon moves take the dice they need. Aim at a part on the left; the chip shows how well your weapon type breaks it.</li>
       <li>Select dice to <strong>Reroll</strong>, <strong>Guard</strong>, <strong>Charge</strong>, <strong>Swap</strong>, or <strong>Capture</strong> (when the monster is at 20% HP or less; doubles part materials).</li>
-      <li><span class="tag flow" style="margin:0">FLOW</span> Cut: light moves give a reroll. <span class="tag daze" style="margin:0">DAZE</span> Blunt: hits to the head part fill a daze meter. <span class="tag pin" style="margin:0">PIN</span> Pierce: ×1.5 toward breaks, ignores mud and flight, Pinning Shot interrupts.</li>
+      <li><span class="tag flow" style="margin:0">Flow</span> Cut: light moves give a reroll. <span class="tag daze" style="margin:0">Daze</span> Blunt: hits to the head part fill a daze meter. <span class="tag pin" style="margin:0">Pin</span> Pierce: ×1.5 toward breaks, ignores mud and flight, Pinning Shot interrupts.</li>
       <li><strong>Airborne</strong> monsters take half damage from Cut and Blunt, and their crest can't be reached. A Pinning Shot or a Weighted Net brings them down.</li>
       <li><strong>Underground</strong> monsters can only be hit by Blunt, at half damage. A Blunt move that uses 2 or more dice drives them up and cancels their attack. So does Blast Powder.</li>
       <li><strong>Molten</strong> monsters burn you a little each time you hit them with Cut or Blunt. Pierce attacks from range and is safe.</li>

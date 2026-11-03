@@ -79,9 +79,9 @@ describe('Galeshrike', () => {
   });
 });
 
-describe('Cinderack', () => {
+describe('Cinderback', () => {
   const burrowed = (weapons: string[], item: string | null = null) => {
-    const s = starter(); s.weapons = Object.fromEntries(weapons.map(w => [w, { lv: 0 }])); s.loadout = { weapons, armor: 'jerkin', item, target: 'cinderack' };
+    const s = starter(); s.weapons = Object.fromEntries(weapons.map(w => [w, { lv: 0 }])); s.loadout = { weapons, armor: 'jerkin', item, target: 'cinderback' };
     if (item) s.items[item] = 2;
     const h = E.startHunt(s, 11); h.mon.under = true; h.intent = 'erupt';
     h.dice = [{ face: 'C', used: null }, { face: 'T', used: null }, { face: 'T', used: null }, { face: 'C', used: null }];
@@ -113,7 +113,7 @@ describe('Cinderack', () => {
     const hp3 = k.php; E.useMove(k, 0); expect(k.php).toBe(hp3);
   });
   it('keeps its swipe-swipe-burrow rhythm even when its claws break mid-cycle', () => {
-    const s = starter(); s.loadout.target = 'cinderack';
+    const s = starter(); s.loadout.target = 'cinderback';
     const h = E.startHunt(s, 5); const seen: string[] = [h.intent];
     for (let t = 0; t < 4; t++) { if (t === 1) h.mon.parts.claws.broken = true; h.php = 999; E.endTurn(h); seen.push(h.intent); }
     expect(seen).toEqual(['swipe', 'swipe', 'swipe', 'burrow', 'erupt']);
@@ -144,6 +144,12 @@ describe('saves', () => {
     expect(s.pity.heartstone).toBe(3);
     expect(s.mats.plume).toBe(0);
     expect(s.weapons.blade.lv).toBe(1);
+  });
+  it('v1 saves carry Cinderack records over to the Cinderback', () => {
+    const s = E.loadSave({ version: 1, coin: 50, record: { cinderack: { hunts: 2, wins: 1, captures: 0, breaks: {} } }, loadout: { weapons: ['blade', 'maul'], armor: 'jerkin', item: null, target: 'cinderack' } });
+    expect(s.record.cinderback.hunts).toBe(2);
+    expect(s.record.cinderack).toBeUndefined();
+    expect(s.loadout.target).toBe('cinderback');
   });
   it('garbage gives a fresh save', () => {
     expect(E.loadSave('nonsense').coin).toBe(100);

@@ -6,7 +6,7 @@ import { WEAPONS } from './data/weapons';
 import { ARMORS } from './data/gear';
 import { MONSTERS } from './data/monsters';
 
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 
 export function newSave(): Save {
   return {
@@ -27,7 +27,15 @@ export function newSave(): Save {
 /** Migration steps: index n upgrades a save from version n to n + 1. */
 const MIGRATIONS: ((s: any) => any)[] = [
   // v0 → v1: saves from the browser prototype (no version field). Shape is compatible; just stamp it.
-  s => ({ ...s, version: 1 })
+  s => ({ ...s, version: 1 }),
+  // v1 → v2: the Cinderack was renamed the Cinderback (4 Nov 2026). Carry its record and the Hunt Board selection over.
+  s => {
+    const rec = { ...(s.record || {}) };
+    if (rec.cinderack) { rec.cinderback = rec.cinderack; delete rec.cinderack; }
+    const loadout = { ...(s.loadout || {}) };
+    if (loadout.target === 'cinderack') loadout.target = 'cinderback';
+    return { ...s, record: rec, loadout, version: 2 };
+  }
 ];
 
 /** Turn anything loaded from storage into a valid, current Save. Unknown or broken data gives a fresh save. */

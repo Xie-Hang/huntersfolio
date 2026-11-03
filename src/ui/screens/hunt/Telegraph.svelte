@@ -30,7 +30,7 @@
     {@const r = h.reward}
     {#if h.over === 'win'}
       <span class="kicker" style="color:var(--gold-hi)">{h.captured ? 'Captured' : 'Slain'}</span>
-      <h2 style="margin:0;font-family:var(--f-display);font-weight:600">{M.name} is {h.captured ? 'captured' : 'down'}</h2>
+      <h2 style="margin:0;font-weight:600">{M.name} is {h.captured ? 'captured' : 'down'}</h2>
       <span class="coin">+{r.coin} coin</span>
       <div>
         <span class="label">Materials</span>
@@ -44,7 +44,7 @@
       {#if r.returned && h.item}<p class="ital p0">{r.returned} unused {E.ITEMS[h.item].name} returned to your stash.</p>{/if}
     {:else}
       <span class="kicker">Hunt failed</span>
-      <h2 style="margin:0;font-family:var(--f-display);font-weight:600">{M.name} wins this one</h2>
+      <h2 style="margin:0;font-weight:600">{M.name} wins this one</h2>
       <p class="ital p0">It had {h.mon.hp} HP left. No coin or materials.{h.item ? ` You lost ${r.lost} ${E.ITEMS[h.item].name} you carried.` : ''}</p>
     {/if}
     {@render stats()}

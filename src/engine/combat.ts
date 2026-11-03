@@ -3,7 +3,7 @@
 import type { Hunt, Intent, Save, Tone, WeaponInst } from './types';
 import { MONSTERS } from './data/monsters';
 import { groundFlier } from './data/monsters/galeshrike';
-import { unearth } from './data/monsters/cinderack';
+import { unearth } from './data/monsters/cinderback';
 import { ITEMS } from './data/gear';
 import { armorInst, elemMult, fixLoadout, lvOf, weaponInst } from './economy';
 import { rollFace } from './rng';
@@ -14,7 +14,7 @@ export const CAPTURE_AT = 0.2;         // capture allowed at or below this share
 export const PIERCE_BREAK_BONUS = 1.5;
 export const DAZE_START = 60, DAZE_STEP = 30, DAZE_LOCK = 2;
 /** Bump when the Hunt shape changes; in-progress hunts from older builds are refunded, not resumed. */
-export const HUNT_VERSION = 2;
+export const HUNT_VERSION = 3;
 
 const def = (h: Hunt) => MONSTERS[h.mid];
 export const monsterOf = def;
@@ -144,12 +144,12 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
       }
     } else if (dmg > 0) log(h, `${w.type} weapons can't break the ${pdef.name.toLowerCase()}. The hit still counts toward the kill.`);
   }
-  if (mv.flow) { h.rerolls++; log(h, 'FLOW: +1 reroll.'); }
+  if (mv.flow) { h.rerolls++; log(h, 'Flow: +1 reroll.'); }
   if (mv.daze && h.target === MD.head && reach && m.hp > 0 && m.dazeLock === 0) {
     m.daze = Math.min(m.dazeMax, m.daze + mv.daze);
     if (m.daze >= m.dazeMax) {
       m.daze = 0; m.dazeMax += DAZE_STEP; m.dazeLock = DAZE_LOCK; h.intent = 'dazed';
-      log(h, 'DAZE: the blow rattles its skull. It loses its action!', 'daze');
+      log(h, 'Daze: the blow rattles its skull. It loses its action!', 'daze');
     }
   }
   if (mv.pin) { const t = MD.onPin?.(h); if (t) log(h, t, 'gold'); }

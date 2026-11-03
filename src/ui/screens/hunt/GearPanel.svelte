@@ -26,7 +26,7 @@
 <section class="panel" aria-label="Your gear">
   <div class="wname">
     <div class="ph" style="gap:8px">
-      <h2 style="margin:0;font-family:var(--f-display);font-weight:600;font-size:var(--fs-xl)">{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}</h2>
+      <h2 style="margin:0;font-weight:600;font-size:var(--fs-lg)">{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}</h2>
       <span class="avg">{E.avgVs(w, h.mid)} avg</span>
     </div>
     <span class="elem" style="color:{elemColor}">{w.type} · {w.elem ?? 'No element'}{em > 1 ? ' · hits weakness' : em < 1 ? ' · resisted' : ''}{halfAir ? ' · half damage in the air' : ''}</span>
@@ -38,7 +38,7 @@
     {@const ok = E.canUseMove(h, i)}
     <button class="move {ok ? 'ready' : 'no'}" aria-disabled={!ok} onclick={() => ok && game.move(i)}>
       <span>
-        <span class="mn">{mv.name}{#if mv.flow}<span class="tag flow">FLOW</span>{/if}{#if mv.daze}<span class="tag daze">DAZE</span>{/if}{#if mv.pin}<span class="tag pin">PIN</span>{/if}</span>
+        <span class="mn">{mv.name}{#if mv.flow}<span class="tag flow">Flow</span>{/if}{#if mv.daze}<span class="tag daze">Daze</span>{/if}{#if mv.pin}<span class="tag pin">Pin</span>{/if}</span>
         <span class="md">{halfAir ? `${Math.round(mv.dmg / 2)} dmg (airborne)` : `${mv.dmg} dmg`}{mv.part ? ` · ×${mv.part} toward breaks` : ''}{mv.daze ? ` · daze +${mv.daze}` : ''}</span>
       </span>
       <span class="need" aria-label="Needs {needLabel(mv.need)}">{glyphs(mv.need)}</span>
