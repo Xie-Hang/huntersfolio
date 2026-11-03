@@ -17,7 +17,7 @@
     <Telegraph />
     <DicePanel />
     <section class="panel" aria-label="Hunt log">
-      <div class="ph"><h2>Hunt Log</h2><span class="label">newest first</span></div>
+      <div class="ph"><h2>Hunt log</h2><span class="label">Newest first</span></div>
       <ul class="log">
         {#each h.log.slice(0, 16) as l}<li class={l.tone}><Tagged text={l.t} /></li>{/each}
       </ul>

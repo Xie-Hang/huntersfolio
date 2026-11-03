@@ -73,7 +73,7 @@
 
 {#snippet delta(v: number, cur: number)}
   {@const d = v - cur}
-  {#if !d}<small class="delta same">same</small>
+  {#if !d}<small class="delta same">Same</small>
   {:else}<small class="delta {d > 0 ? 'up' : 'down'}">{d > 0 ? '▲ +' : '▼ '}{d}</small>{/if}
 {/snippet}
 
@@ -155,7 +155,7 @@
                 <span class="ty">{w.type} · {w.elem ?? 'No element'} · {movesLine(w.moves)}</span>
                 <span class="note">{@render weaponNotes(w)}</span>
               </span>
-              <span class="num">{v}{#if id === cur}<small class="delta same">equipped</small>{:else}{@render delta(v, curV)}{/if}</span>
+              <span class="num">{v}{#if id === cur}<small class="delta same">Equipped</small>{:else}{@render delta(v, curV)}{/if}</span>
             </button>
           {:else}
             <p class="ital" style="padding:12px;margin:0">No weapons of that type yet. Craft some at the Forge.</p>

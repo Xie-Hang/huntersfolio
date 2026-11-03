@@ -7,7 +7,7 @@
 </script>
 
 <section class="panel" aria-label="Your dice">
-  <div class="ph"><h2>The Dice</h2><span class="label">Turn {h.turn} · tap to select</span></div>
+  <div class="ph"><h2>The dice</h2><span class="label">Turn {h.turn} · Click dice to select them</span></div>
   <div class="tray">
     {#each h.dice as d, i}
       {@const sel = game.sel.includes(i)}
@@ -27,7 +27,7 @@
           {:else if d.face === 'T'}<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 5l16 29H4z" fill="#2a1f17" /></svg>
           {:else}<span class="bl">Blank</span>{/if}
         </button>
-        <span class="dietag" class:used={!!d.used}>{d.used || (sel ? 'selected' : '')}</span>
+        <span class="dietag" class:used={!!d.used}>{d.used || (sel ? 'Selected' : '')}</span>
       </div>
     {/each}
   </div>

@@ -36,7 +36,7 @@
       {#if m.molten > 0}<span class="chip hot">Molten · {m.molten} turn{m.molten > 1 ? 's' : ''}</span>{/if}
       {#if E.canCapture(h)}<span class="chip hot">Capturable</span>{/if}
     </div>
-    <div class="ph rule"><span class="label">Parts</span><span class="label">Tap to aim</span></div>
+    <div class="ph rule"><span class="label">Parts</span><span class="label">Click a part to aim at it</span></div>
     <div class="parts">
       {#each M.parts as p (p.id)}
         {@const st = m.parts[p.id]}

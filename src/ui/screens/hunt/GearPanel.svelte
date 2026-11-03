@@ -39,7 +39,7 @@
     <button class="move {ok ? 'ready' : 'no'}" aria-disabled={!ok} onclick={() => ok && game.move(i)}>
       <span>
         <span class="mn">{mv.name}{#if mv.flow}<span class="tag flow">Flow</span>{/if}{#if mv.daze}<span class="tag daze">Daze</span>{/if}{#if mv.pin}<span class="tag pin">Pin</span>{/if}</span>
-        <span class="md">{halfAir ? `${Math.round(mv.dmg / 2)} dmg (airborne)` : `${mv.dmg} dmg`}{mv.part ? ` · ×${mv.part} toward breaks` : ''}{mv.daze ? ` · daze +${mv.daze}` : ''}</span>
+        <span class="md">{halfAir ? `${Math.round(mv.dmg / 2)} damage, halved in the air` : `${mv.dmg} damage`}{mv.part ? ` · ×${mv.part} toward breaks` : ''}{mv.daze ? ` · Daze +${mv.daze}` : ''}</span>
       </span>
       <span class="need" aria-label="Needs {needLabel(mv.need)}">{glyphs(mv.need)}</span>
     </button>
@@ -47,10 +47,10 @@
 
   <div class="divider"><span class="label">Or spend selected dice</span><span class="label">{n} selected</span></div>
   <button class="move dash {gOk ? 'ready' : 'no'}" aria-disabled={!gOk} onclick={() => gOk && game.guard()}>
-    <span><span class="mn">Guard</span><span class="md">−{h.arm.guard} per die{h.arm.blankx2 ? ' · blanks ×2' : ''}</span></span><span class="need">any</span>
+    <span><span class="mn">Guard</span><span class="md">Blocks {h.arm.guard} per die{h.arm.blankx2 ? ' · Blanks block double' : ''}</span></span><span class="need">Any</span>
   </button>
   <button class="move dash {cOk ? 'ready' : 'no'}" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
-    <span><span class="mn">Charge</span><span class="md">first hit next turn ×2</span></span><span class="need">2</span>
+    <span><span class="mn">Charge</span><span class="md">Your first hit next turn deals double</span></span><span class="need">2</span>
   </button>
   <button class="move dash {sOk ? 'ready' : 'no'}" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
     <span><span class="mn">Swap to {other.name}</span><span class="md">{other.type} · {other.elem ?? 'No element'}</span></span><span class="need">1</span>
@@ -60,10 +60,10 @@
     <span>
       <span class="mn">Capture</span>
       <span class="md">
-        {#if !capLive}Unlocks at {capAt} HP or less · ends the hunt, part materials ×2
-        {:else if E.captureBlocked(h)}Bring it down first
-        {:else if n !== 2}Select 2 dice · ends the hunt, part materials ×2
-        {:else}Ends the hunt · part materials ×2{/if}
+        {#if !capLive}Unlocks at {capAt} HP or less. Ends the hunt with double part materials
+        {:else if E.captureBlocked(h)}{E.monsterOf(h).flier ? 'Bring it down first' : 'Drive it to the surface first'}
+        {:else if n !== 2}Select 2 dice. Ends the hunt with double part materials
+        {:else}Ends the hunt with double part materials{/if}
       </span>
     </span>
     <span class="need">2</span>
@@ -71,12 +71,12 @@
 
   {#if h.item}
     {@const it = E.ITEMS[h.item]}
-    <div class="divider"><span class="label">Item · free action</span><span class="label">{h.itemCharges} left</span></div>
+    <div class="divider"><span class="label">Item · Free action</span><span class="label">{h.itemCharges} left</span></div>
     <button class="move {iOk ? 'ready' : 'no'}" aria-disabled={!iOk} onclick={() => iOk && game.item()}>
-      <span><span class="mn">{it.name}</span><span class="md">{it.desc}{h.itemUsed ? ' · used this turn' : it.effect === 'net' && !h.mon.air ? ' · only while it flies' : it.effect === 'blast' && !h.mon.under ? ' · only while it’s underground' : ''}</span></span>
-      <span class="need">free</span>
+      <span><span class="mn">{it.name}</span><span class="md">{it.desc}{h.itemUsed ? ' · Used this turn' : it.effect === 'net' && !h.mon.air ? ' · Only while it flies' : it.effect === 'blast' && !h.mon.under ? ' · Only while it’s underground' : ''}</span></span>
+      <span class="need">Free</span>
     </button>
   {:else}
-    <div class="divider"><span class="label">Item</span><span class="label">none carried</span></div>
+    <div class="divider"><span class="label">Item</span><span class="label">None carried</span></div>
   {/if}
 </section>

@@ -62,8 +62,8 @@
         </div>
         <div class="calc">
           <b>{inc.raw}</b> {M.elem}
-          {#if inc.res}<br />resisted → <b>{inc.after}</b>{/if}
-          {#if inc.evade}<br />smoke: <b>misses</b>{:else if h.guard}<br />− <b>{inc.g}</b> guard{inc.half ? ' (halved)' : ''}{/if}
+          {#if inc.res}<br />Resisted → <b>{inc.after}</b>{/if}
+          {#if inc.evade}<br />Smoke: <b>misses</b>{:else if h.guard}<br />− <b>{inc.g}</b> guard{inc.half ? ' (halved)' : ''}{/if}
           {#if !inc.evade && inc.net}<br /><span style="color:var(--muted)">Guard dice to reduce{inc.half ? ' (half as well)' : ''}</span>{/if}
         </div>
       </div>

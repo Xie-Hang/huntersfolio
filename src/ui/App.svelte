@@ -23,8 +23,6 @@
     return `${BUILD} · ${label}${v === 'hunt' && h ? ` · Turn ${h.turn}` : ''} · Hunts ${game.save.hunts}`;
   });
 
-  // Settings are hidden mid-hunt; close the dialog if a hunt starts.
-  $effect(() => { if (game.inHunt) settingsOpen = false; });
   $effect(() => { if (settingsOpen) setToast = ''; });
 
   function reset() {
@@ -56,18 +54,17 @@
       </button>
       {#if game.inHunt}
         <button class="btn quiet" onclick={() => game.abandon()}>Abandon hunt</button>
-      {:else}
+      {/if}
         <button class="iconbtn" aria-label="Settings" aria-expanded={settingsOpen} onclick={() => (settingsOpen = true)}>
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" /></svg>
         </button>
-      {/if}
     </div>
   </header>
 
   <Modal bind:open={settingsOpen} title="Settings">
     <div class="setrow">
-      <span><span class="nm">Save data</span><span class="md">Progress is saved automatically. Hunts so far: <b>{game.save.hunts}</b>.</span></span>
-      <button class="btn quiet danger" onclick={reset}>{resetArmed ? 'Tap again to erase everything' : 'Reset save'}</button>
+      <span><span class="nm">Save data</span><span class="md">Progress is saved automatically. Hunts so far: <b>{game.save.hunts}</b>.{#if game.inHunt}{' '}Finish or abandon this hunt before resetting.{/if}</span></span>
+      <button class="btn quiet danger" disabled={game.inHunt} onclick={reset}>{resetArmed ? 'Click again to erase everything' : 'Reset save'}</button>
     </div>
     <div class="toast" aria-live="polite">{setToast}</div>
   </Modal>

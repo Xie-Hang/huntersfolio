@@ -2,7 +2,7 @@
   // List-detail: upgrade trees on the left, the selected recipe on the right.
   import * as E from '../../engine';
   import { game } from '../game.svelte';
-  import { glyphs, bestParts, needLabel } from '../fmt';
+  import { glyphs, needLabel } from '../fmt';
   import Costs from '../parts/Costs.svelte';
   import { tick } from 'svelte';
 
@@ -111,7 +111,7 @@
           <!-- 2. Is it better? The number that matters, with the change -->
           <div class="fd-stat">
             <span class="big">{now}</span>
-            <span class="unit">avg damage per turn</span>
+            <span class="unit">Avg damage per turn</span>
             {#if base != null}<span class="delta {now >= base ? 'up' : 'down'}">{now >= base ? '▲ +' : '▼ '}{now - base} vs your {E.WEAPONS[d.from!].name}</span>
             {:else if next != null}<span class="delta up">▲ {next} at +{lv + 1}</span>{/if}
           </div>
@@ -162,40 +162,18 @@
         </div>
         <div class="toast" aria-live="polite">{toast}</div>
 
-        <!-- 5. Where is it good? -->
-        <div>
-          <div class="label rule">Against known monsters</div>
-          <table class="mtable"><tbody>
-            {#each Object.values(E.MONSTERS) as M (M.id)}
-              {#if kind === 'w'}
-                {@const w = { ...E.WEAPONS[sel], moves: E.movesAt(sel, wLevel(sel)) }}
-                {@const m = E.elemMult(w.elem, M.id)}
-                {@const best = bestParts(M.id, w.type).join(', ')}
-                <tr>
-                  <td>{M.short}</td>
-                  <td>{best ? `Breaks ${best}` : '—'}{#if m > 1}{' · '}<span class="good">weakness</span>{:else if m < 1}{' · '}<span class="bad">resisted</span>{/if}{M.flier && w.type !== 'Pierce' ? ' · half in the air' : ''}{M.burrower && w.type !== 'Blunt' ? ' · can’t reach it underground' : ''}</td>
-                  <td>{E.avgVs(w, M.id)} avg</td>
-                </tr>
-              {:else}
-                {@const res = E.ARMORS[sel].resist}
-                <tr><td>{M.short}</td><td>{#if res === M.elem}<span class="good">Resists its attacks</span>{:else if res}<span class="neutral">Resistance unused</span>{:else}—{/if}</td><td></td></tr>
-              {/if}
-            {/each}
-          </tbody></table>
-        </div>
-
-        <!-- 6. Details: for players who want them, out of the way for everyone else -->
+        <!-- 5. Moves and details: secondary, always shown, below the decision -->
         {#if kind === 'w'}
           {@const d = E.WEAPONS[sel]}
-          <details class="fd-more">
-            <summary>Moves and details</summary>
+          <div class="fd-more">
+            <div class="label rule">Moves and details</div>
             <ul class="fd-moves">
               {#each E.movesAt(sel, wLevel(sel)) as m}
                 <li><span class="need" aria-label="Needs {needLabel(m.need)}">{glyphs(m.need)}</span><span>{m.name}</span><span class="n">{m.dmg}</span></li>
               {/each}
             </ul>
             <p class="fd-note">{d.kind}. {d.note}</p>
-          </details>
+          </div>
         {/if}
       </div>
     {/if}
