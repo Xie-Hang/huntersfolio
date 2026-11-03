@@ -91,6 +91,12 @@ export const TIPS: Tip[] = [
     done: () => (hunt()?.guard ?? 0) > 0
   },
   {
+    id: 'item', learn: true, at: ['item'],
+    when: () => { const h = hunt(); return !!h && !!h.item && E.itemUsable(h) && E.ITEMS[h.item].effect === 'heal30' && h.php <= h.pmax * 0.6; },
+    text: () => { const h = hunt()!; return `Running low? Your ${E.ITEMS[h.item!].name} heals 30 and costs no dice. One item per turn, ${h.itemCharges} left.`; },
+    done: () => !!hunt()?.itemUsed
+  },
+  {
     id: 'swap', learn: true, at: ['swap'],
     when: () => {
       const h = hunt(); if (!h || h.turn < 5 || !unusedTurn(h)) return false;
