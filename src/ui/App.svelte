@@ -6,6 +6,8 @@
   import Forge from './screens/Forge.svelte';
   import Shop from './screens/Shop.svelte';
   import Hunt from './screens/Hunt.svelte';
+  import { music } from './audio';
+  import { settings } from './settings.svelte';
 
   const BUILD = `v${__APP_VERSION__}`;
   game.load();
@@ -25,6 +27,16 @@
 
   $effect(() => { if (settingsOpen) setToast = ''; });
 
+  // Music follows the game: town loop in town, hunt loop in a hunt, the danger layer on big telegraphs, a sting at the end.
+  $effect(() => { music.setVolume(settings.prefs.music); });
+  $effect(() => { void music.setScene(game.view === 'hunt' && game.hunt ? (game.hunt.over ? 'none' : 'hunt') : 'town'); });
+  $effect(() => { const h = game.hunt; music.setDanger(!!h && !h.over && game.view === 'hunt' && E.intentInfo(h).threat >= 3); });
+  let stungFor: object | null = null;
+  $effect(() => {
+    const h = game.hunt;
+    if (h?.over && game.view === 'hunt' && stungFor !== h) { stungFor = h; void music.sting(h.over === 'win' ? 'victory' : 'defeat'); }
+  });
+
   function reset() {
     clearTimeout(resetTimer);
     if (!resetArmed) { resetArmed = true; resetTimer = setTimeout(() => (resetArmed = false), 3000); return; }
@@ -33,6 +45,8 @@
     setToast = 'Save reset. You’re back to 100 coin and starter gear.';
   }
 </script>
+
+<svelte:window onpointerdown={() => music.unlock()} onkeydown={() => music.unlock()} />
 
 <div class="wrap">
   <header class="top">
@@ -66,6 +80,19 @@
       <span><span class="nm">Save data</span><span class="md">Progress is saved automatically. Hunts so far: <b>{game.save.hunts}</b>.{#if game.inHunt}{' '}Finish or abandon this hunt before resetting.{/if}</span></span>
       <button class="btn quiet danger" disabled={game.inHunt} onclick={reset}>{resetArmed ? 'Click again to erase everything' : 'Reset save'}</button>
     </div>
+    <div class="setrow">
+      <label class="slider"><span class="nm">Music volume</span>
+        <input type="range" min="0" max="1" step="0.05" bind:value={settings.prefs.music} onchange={() => settings.save()} />
+        <span class="mono">{Math.round(settings.prefs.music * 100)}%</span>
+      </label>
+    </div>
+    <div class="setrow">
+      <label class="slider"><span class="nm">Sound effects volume</span>
+        <input type="range" min="0" max="1" step="0.05" bind:value={settings.prefs.sfx} onchange={() => settings.save()} />
+        <span class="mono">{Math.round(settings.prefs.sfx * 100)}%</span>
+      </label>
+    </div>
+    <div class="setrow"><span><span class="nm">Credits</span><span class="md">Music: placeholder tracks composed in code for Hunter's Folio. Final music to come.</span></span></div>
     <div class="toast" aria-live="polite">{setToast}</div>
   </Modal>
 

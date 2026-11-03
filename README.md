@@ -57,6 +57,12 @@ Saves are versioned (`SAVE_VERSION` in `src/engine/save.ts`). When the save shap
 
 A hunt in progress is saved too, so closing the game mid-hunt doesn't lose the items you carried.
 
+## Music
+
+The game plays five files from `public/audio/music/`: `town`, `hunt`, `danger` (a layer that fades in over `hunt` on big telegraphs), `victory` and `defeat`, all `.ogg`.
+
+The current ones are **placeholders** composed in code. Re-render them with `node scripts/compose-placeholder-music.mjs` (needs ffmpeg). To use real music, replace the files with the same names and note each track's source and licence for the credits (Settings → Credits). If the new tracks are louder or quieter than each other, adjust `TRIM` in `src/ui/audio.ts`.
+
 ## Steam
 
 `electron/steam.cjs` is a placeholder: it does nothing until the game has a Steam App ID. To test locally with Valve's public test app, run with `HF_STEAM_APP_ID=480` while Steam is open. Once Steamworks gives us an App ID, it goes in that file, and achievements, cloud saves and the overlay are added there.

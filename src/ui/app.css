@@ -40,6 +40,9 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .helplist strong{color:var(--fg);font-weight:600}
 .settings .setrow{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 0;border-top:1px solid var(--line)}
 .settings .nm{font-family:var(--f-body);font-weight:600;font-size:var(--fs-md);display:block}
+.slider{display:grid;grid-template-columns:minmax(0,1fr) minmax(120px,200px) 48px;align-items:center;gap:12px;width:100%}
+.slider input{accent-color:var(--gold);width:100%}
+.slider .mono{text-align:right;color:var(--soft)}
 .settings .md{font-size:var(--fs-sm);color:var(--soft);display:block}
 .btn.danger{border-color:var(--ember);color:var(--ember-soft)}
 .btn.danger:hover:not(:disabled){background:rgba(232,119,58,.12);border-color:var(--ember)}
