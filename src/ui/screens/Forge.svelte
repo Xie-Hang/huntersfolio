@@ -38,7 +38,7 @@
     chosen[tab] = id; toast = '';
     if (window.innerWidth <= 900) { await tick(); detailEl?.scrollIntoView?.({ behavior: 'smooth', block: 'start' }); }
   }
-  function doIt() { if (sel) toast = game.town(sv => E.forgeDo(sv, kind, sel)) ?? ''; }
+  function doIt() { if (sel) toast = game.town(sv => E.forgeDo(sv, kind, sel), 'forge') ?? ''; }
   function track() {
     if (!sel) return;
     const tk = `${kind}:${sel}`;

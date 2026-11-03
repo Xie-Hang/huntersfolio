@@ -3,6 +3,7 @@
 // triggers effects (floating numbers, shakes, dice rolls) and persists.
 import * as E from '../engine';
 import { read, write, remove, SAVE_KEY, HUNT_KEY } from './storage';
+import { sfx, type Sfx } from './sfx';
 
 export type View = 'board' | 'forge' | 'shop' | 'hunt';
 type Panel = 'mon' | 'player';
@@ -68,6 +69,7 @@ class Game {
     this.sel = [];
     this.view = 'hunt';
     this.roll([0, 1, 2, 3]);
+    sfx('diceRoll');
     this.persist();
   }
 
@@ -106,6 +108,7 @@ class Game {
     const h = this.hunt;
     if (!h || h.over || h.dice[i].used) return;
     this.sel = this.sel.includes(i) ? this.sel.filter(x => x !== i) : [...this.sel, i];
+    sfx('dieTap');
   }
   target(part: string) {
     if (!this.hunt || this.hunt.over) return;
@@ -113,26 +116,46 @@ class Game {
     this.persist();
   }
   move(i: number) {
+    const h0 = this.hunt; if (!h0) return;
+    // what the hit did, read by comparing before and after
+    const w = E.currentWeapon(h0), ice0 = h0.mon.plating, intent0 = h0.intent;
+    const exposed0 = Object.values(h0.mon.parts).filter(p => p.exposed > 0).length;
     const r = this.act(h => E.useMove(h, i, this.sel), r => !!r);
     if (!r) return;
-    this.float('mon', `−${r.dmg}`);
+    const h = this.hunt!;
+    const sounds: Sfx[] = [];
+    if (h.mon.plating < ice0) {
+      sounds.push(h.mon.plating === 0 ? 'iceGone' : 'iceBreak');
+      this.float('mon', h.mon.plating === 0 ? 'Ice shattered' : 'Ice cracked', 'ice');
+    } else {
+      sounds.push(w.type === 'Cut' ? 'hitCut' : w.type === 'Blunt' ? 'hitBlunt' : 'hitPierce');
+      if (r.dmg >= 50) sounds.push('bigHit');
+      this.float('mon', `−${r.dmg}`);
+    }
+    if (r.broke) sounds.push('partBreak');
+    if (h.intent === 'dazed' && intent0 !== 'dazed') sounds.push('daze');
+    if (Object.values(h.mon.parts).filter(p => p.exposed > 0).length > exposed0) sounds.push('expose');
+    if (h.over === 'win' && !h.captured) sounds.push('bigHit');
+    sfx(...sounds);
     if (r.broke || r.dmg >= 50) this.shake('mon');
   }
-  guard() { this.act(h => E.guard(h, this.sel), ok => ok); }
-  charge() { this.act(h => E.charge(h, this.sel), ok => ok); }
-  swap() { this.act(h => E.swap(h, this.sel), ok => ok); }
+  guard() { if (this.act(h => E.guard(h, this.sel), ok => ok)) sfx('guard'); }
+  charge() { if (this.act(h => E.charge(h, this.sel), ok => ok)) sfx('charge'); }
+  swap() { if (this.act(h => E.swap(h, this.sel), ok => ok)) sfx('swap'); }
   capture() {
     // the engine logs a reason when capture is blocked (airborne); keep that on screen
     const r = this.act(h => E.capture(h, this.sel), ok => ok);
+    if (r) sfx('capture');
     if (r === false) this.persist();
   }
   reroll() {
     const idx = this.act(h => E.reroll(h, this.sel), r => r.length > 0);
-    if (idx?.length) this.roll(idx);
+    if (idx?.length) { this.roll(idx); sfx('reroll'); }
   }
   item() {
     const before = this.hunt?.php ?? 0;
     const ok = this.act(h => E.useItem(h), ok => ok);
+    if (ok) sfx('item');
     if (ok && this.hunt && this.hunt.php > before) this.float('player', `+${this.hunt.php - before}`, 'heal');
   }
   undo() {
@@ -147,6 +170,8 @@ class Game {
     if (!h || h.over) return;
     const { taken } = E.endTurn(h);
     if (taken) { this.float('player', `−${taken}`, 'hurt'); if (taken >= E.CHARGE_BREAK) this.shake('player'); }
+    if (taken) sfx(taken >= E.CHARGE_BREAK ? 'hurtHeavy' : 'hurt');
+    if (!h.over) setTimeout(() => sfx('diceRoll'), taken ? 260 : 0); // the new roll lands after the hit
     this.undoStack = [];
     this.sel = [];
     if (!h.over) this.roll([0, 1, 2, 3]);
@@ -160,8 +185,9 @@ class Game {
   }
 
   /* ---------- town actions (forge and shop return a message for the toast) ---------- */
-  town(fn: (s: E.Save) => string | null): string | null {
+  town(fn: (s: E.Save) => string | null, sound?: Sfx): string | null {
     const msg = fn(this.save);
+    if (msg && sound) sfx(sound);
     this.persist();
     return msg;
   }

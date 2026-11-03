@@ -24,7 +24,7 @@
   const surplusCoin = $derived(sellRows.reduce((n, r) => n + r.spare * r.m.sell, 0));
 
   function run(fn: (sv: E.Save) => string | null, resetKey?: string) {
-    const msg = game.town(fn);
+    const msg = game.town(fn, 'coin');
     if (msg) { toast = msg; if (resetKey) qty[resetKey] = 1; }
   }
   function setTab(t: Tab) { tab = t; toast = ''; }

@@ -7,6 +7,17 @@
 // victory / defeat  one-shot stings when a hunt ends
 // Browsers only allow audio after the player interacts, so the context starts on the first click.
 
+/** One audio context for music and sound effects; created on the first click (browser rule). */
+let sharedCtx: AudioContext | null = null;
+export function audioContext(create = false): AudioContext | null {
+  if (!sharedCtx && create) {
+    const AC = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (AC) sharedCtx = new AC();
+  }
+  if (sharedCtx?.state === 'suspended') void sharedCtx.resume();
+  return sharedCtx;
+}
+
 export type Scene = 'town' | 'hunt' | 'none';
 type Name = 'town' | 'hunt' | 'danger' | 'victory' | 'defeat';
 
@@ -25,10 +36,10 @@ class Music {
 
   /** Call from a user gesture (first click). Safe to call repeatedly. */
   unlock() {
-    if (this.ctx) { if (this.ctx.state === 'suspended') void this.ctx.resume(); return; }
-    const AC = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (!AC) return;
-    this.ctx = new AC();
+    if (this.ctx) { audioContext(); return; }
+    const ctx = audioContext(true);
+    if (!ctx) return;
+    this.ctx = ctx;
     this.bus = this.ctx.createGain();
     this.bus.gain.value = this.volume;
     this.bus.connect(this.ctx.destination);

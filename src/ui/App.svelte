@@ -7,6 +7,7 @@
   import Shop from './screens/Shop.svelte';
   import Hunt from './screens/Hunt.svelte';
   import { music } from './audio';
+  import { setSfxVolume } from './sfx';
   import { settings } from './settings.svelte';
 
   const BUILD = `v${__APP_VERSION__}`;
@@ -29,6 +30,7 @@
 
   // Music follows the game: town loop in town, hunt loop in a hunt, the danger layer on big telegraphs, a sting at the end.
   $effect(() => { music.setVolume(settings.prefs.music); });
+  $effect(() => { setSfxVolume(settings.prefs.sfx); });
   $effect(() => { void music.setScene(game.view === 'hunt' && game.hunt ? (game.hunt.over ? 'none' : 'hunt') : 'town'); });
   $effect(() => { const h = game.hunt; music.setDanger(!!h && !h.over && game.view === 'hunt' && E.intentInfo(h).threat >= 3); });
   let stungFor: object | null = null;
@@ -92,7 +94,7 @@
         <span class="mono">{Math.round(settings.prefs.sfx * 100)}%</span>
       </label>
     </div>
-    <div class="setrow"><span><span class="nm">Credits</span><span class="md">Music: placeholder tracks composed in code for Hunter's Folio. Final music to come.</span></span></div>
+    <div class="setrow"><span><span class="nm">Credits</span><span class="md">Music: placeholder tracks composed in code for Hunter's Folio. Final music to come. Sound effects: synthesized in code.</span></span></div>
     <div class="toast" aria-live="polite">{setToast}</div>
   </Modal>
 
