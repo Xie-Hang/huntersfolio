@@ -32,6 +32,8 @@
       {#if m.enraged}<span class="chip hot">Enraged</span>{/if}
       {#if mud}<span class="chip mud">Mud-caked</span>{/if}
       {#if m.air}<span class="chip gale">Airborne</span>{/if}
+      {#if m.under}<span class="chip mud">Underground</span>{/if}
+      {#if m.molten > 0}<span class="chip hot">Molten · {m.molten} turn{m.molten > 1 ? 's' : ''}</span>{/if}
       {#if E.canCapture(h)}<span class="chip hot">Capturable</span>{/if}
     </div>
     <div class="ph rule"><span class="label">Parts</span><span class="label">Tap to aim</span></div>
@@ -40,13 +42,13 @@
         {@const st = m.parts[p.id]}
         {@const on = h.target === p.id}
         {@const e = p.eff[w.type]}
-        {@const reach = E.reachable(h, p.id, w)}
+        {@const reach = E.canHit(h, w) && E.reachable(h, p.id, w)}
         <button class="part" class:on class:broken={st.broken} aria-pressed={on} disabled={!!h.over} onclick={() => game.target(p.id)}>
           <span class="row">
             <span class="nm">{p.name}</span>
             <span style="display:flex;gap:8px;align-items:baseline">
               {#if !st.broken}
-                {#if !reach}<span class="chip sm none">Out of reach</span>
+                {#if !reach}<span class="chip sm none">{m.under ? 'Underground' : 'Out of reach'}</span>
                 {:else}<span class="chip sm {effCls(e)}">{w.type}: {effName(e)}</span>{/if}
               {/if}
               <span class="mono" style="color:{st.broken ? 'var(--ember-soft)' : 'var(--soft)'}">{st.broken ? 'BROKEN' : `${st.hp} / ${st.max}`}</span>

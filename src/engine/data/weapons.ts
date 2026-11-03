@@ -32,10 +32,12 @@ const list: WeaponDef[] = [
   { id: 'maul', name: 'Ironhead Maul', type: 'Blunt', elem: null, kind: 'Maul', note: 'Slow, heavy, and made for breaking things.', moves: MAUL, mult: 1, craft: { coin: 150 } },
   { id: 'tusk', name: 'Tuskbreaker', type: 'Blunt', elem: null, kind: 'Maul', note: 'A maul head set with a Gorehorn tusk.', moves: MAUL, mult: 1.25, from: 'maul', cost: { coin: 300, tusk: 3, hide: 2 } },
   { id: 'crusher', name: 'Gorehorn Crusher', type: 'Blunt', elem: null, kind: 'Maul', note: 'A Heartstone hums in the haft.', moves: MAUL, mult: 1.5, from: 'tusk', cost: { coin: 600, heartstone: 1, tusk: 3 } },
-  { id: 'ember', name: 'Emberhead Maul', type: 'Blunt', elem: 'Ember', kind: 'Maul', note: 'Its strike face glows.', moves: MAUL, mult: 1, from: 'maul', cost: { coin: 250, hide: 3 }, placeholder: 'Ember' },
+  { id: 'ember', name: 'Emberhead Maul', type: 'Blunt', elem: 'Ember', kind: 'Maul', note: 'A slab of Cinderack plate, still warm, bolted to the head.', moves: MAUL, mult: 1.1, from: 'maul', cost: { coin: 300, slagplate: 2, cinderscale: 3 } },
+  { id: 'kiln', name: 'Kilnheart Hammer', type: 'Blunt', elem: 'Ember', kind: 'Maul', note: 'A Kilnheart burns behind a grate in the head.', moves: MAUL, mult: 1.35, from: 'ember', cost: { coin: 500, kilnheart: 1, slagplate: 3 } },
   { id: 'bow', name: 'Ashwood Bow', type: 'Pierce', elem: null, kind: 'Bow', note: 'Finds the gaps in any hide.', moves: BOW, mult: 1, craft: { coin: 200, hide: 2 } },
   { id: 'sinewbow', name: 'Sinewstring Bow', type: 'Pierce', elem: null, kind: 'Bow', note: 'Strung with Gorehorn sinew. Draws harder.', moves: BOW, mult: 1.2, from: 'bow', cost: { coin: 300, sinew: 2, pelt: 1 } },
-  { id: 'windbow', name: 'Windpiercer Bow', type: 'Pierce', elem: 'Gale', kind: 'Bow', note: 'Fletched with storm pinions.', moves: BOW, mult: 1.1, from: 'bow', cost: { coin: 300, pinion: 2, plume: 2 } }
+  { id: 'windbow', name: 'Windpiercer Bow', type: 'Pierce', elem: 'Gale', kind: 'Bow', note: 'Fletched with storm pinions.', moves: BOW, mult: 1.1, from: 'bow', cost: { coin: 300, pinion: 2, plume: 2 } },
+  { id: 'ridgebow', name: 'Ridgestone Bow', type: 'Pierce', elem: 'Stone', kind: 'Bow', note: 'Arrowheads knapped from Ashfall Ridge stone. Heavy, and they shatter on impact.', moves: BOW, mult: 1.1, from: 'bow', cost: { coin: 300, sinew: 1, pelt: 2, hide: 2 } }
 ];
 
 export const WEAPONS: Record<string, WeaponDef> = Object.fromEntries(list.map(w => [w.id, w]));
@@ -43,12 +45,12 @@ export const WEAPONS: Record<string, WeaponDef> = Object.fromEntries(list.map(w 
 /** Forge trees: [weapon id, depth] in display order */
 export const TREES: { type: DamageType; nodes: [string, number][] }[] = [
   { type: 'Cut', nodes: [['blade', 0], ['saber', 1], ['gale', 1], ['storm', 2]] },
-  { type: 'Blunt', nodes: [['maul', 0], ['tusk', 1], ['crusher', 2], ['ember', 1]] },
-  { type: 'Pierce', nodes: [['bow', 0], ['sinewbow', 1], ['windbow', 1]] }
+  { type: 'Blunt', nodes: [['maul', 0], ['tusk', 1], ['crusher', 2], ['ember', 1], ['kiln', 2]] },
+  { type: 'Pierce', nodes: [['bow', 0], ['sinewbow', 1], ['windbow', 1], ['ridgebow', 1]] }
 ];
 
 export const SIGNATURES: Record<DamageType, { tag: 'flow' | 'daze' | 'pin'; name: string; text: string }> = {
   Cut: { tag: 'flow', name: 'FLOW', text: 'Light moves give you a reroll.' },
   Blunt: { tag: 'daze', name: 'DAZE', text: 'Hits to the head part fill a daze meter. Full meter: the monster loses its action, then recovers for a turn.' },
-  Pierce: { tag: 'pin', name: 'PIN', text: 'Hits count ×1.5 toward breaks. Ignores mud and flight. Pinning Shot interrupts wind-ups and grounds fliers.' }
+  Pierce: { tag: 'pin', name: 'PIN', text: 'Hits count ×1.5 toward breaks. Ignores mud and flight, and is safe from molten shells. Pinning Shot interrupts wind-ups and grounds fliers.' }
 };

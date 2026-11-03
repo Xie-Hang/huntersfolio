@@ -40,6 +40,27 @@ describe('Galeshrike (preparation test)', () => {
   });
 });
 
+describe('Cinderack (the Blunt check)', () => {
+  it('a maul handles it, a little harder than the Gorehorn', () => {
+    const r = matchup(starterSalves('cinderack'), { skill: 'casual', capture: true }, N);
+    expect(r.win).toBeGreaterThanOrEqual(0.9);
+    expect(r.hpLeft).toBeLessThan(0.5);
+  });
+  it('punishes leaving Blunt at home about as much as the Galeshrike punishes no bow', () => {
+    const r = matchup({ weapons: [['blade', 0], ['bow', 0]], armor: 'jerkin', item: 'salve', target: 'cinderack' }, { skill: 'casual', capture: true }, N);
+    expect(r.win).toBeGreaterThan(0.4);
+    expect(r.win).toBeLessThan(0.75);
+  });
+  it('Blast Powder is a real answer without a Blunt weapon', () => {
+    const r = matchup({ weapons: [['blade', 0], ['bow', 0]], armor: 'jerkin', item: 'blast', items: 2, target: 'cinderack' }, { skill: 'casual', capture: true }, N);
+    expect(r.win).toBeGreaterThan(0.4);
+  });
+  it('its own gear makes it comfortable', () => {
+    const r = matchup({ weapons: [['ember', 0], ['ridgebow', 0]], armor: 'kilnplate', item: 'salve', target: 'cinderack' }, { skill: 'casual', capture: true }, N);
+    expect(r.win).toBeGreaterThanOrEqual(0.95);
+  });
+});
+
 describe('progression pacing (Gorehorn)', () => {
   const C = Array.from({ length: 120 }, (_, i) => gorehornCampaign(i + 1, { skill: 'skilled', capture: true }));
   const at = (k: string) => median(C.map(c => c.t[k]).filter((x): x is number => x != null));

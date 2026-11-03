@@ -80,6 +80,8 @@
       <li>Select dice to <strong>Reroll</strong>, <strong>Guard</strong>, <strong>Charge</strong>, <strong>Swap</strong>, or <strong>Capture</strong> (when the monster is at 20% HP or less; doubles part materials).</li>
       <li><span class="tag flow" style="margin:0">FLOW</span> Cut: light moves give a reroll. <span class="tag daze" style="margin:0">DAZE</span> Blunt: hits to the head part fill a daze meter. <span class="tag pin" style="margin:0">PIN</span> Pierce: ×1.5 toward breaks, ignores mud and flight, Pinning Shot interrupts.</li>
       <li><strong>Airborne</strong> monsters take half damage from Cut and Blunt, and their crest can't be reached. A Pinning Shot or a Weighted Net brings them down.</li>
+      <li><strong>Underground</strong> monsters can only be hit by Blunt, at half damage. A Blunt move that uses 2 or more dice drives them up and cancels their attack. So does Blast Powder.</li>
+      <li><strong>Molten</strong> monsters burn you a little each time you hit them with Cut or Blunt. Pierce attacks from range and is safe.</li>
       <li><strong>Avg</strong> next to a weapon = expected damage per turn if all 4 dice go to attacking, without rerolls.</li>
       <li>Reinforcing (+1 to +3) adds 5% weapon damage, or 10 HP and 1 guard to armor, per level. Upgrades keep the reinforcement.</li>
       <li>Rare materials (8%, 12% on capture) get 3% likelier with every miss and are guaranteed on the 12th break of their part.</li>

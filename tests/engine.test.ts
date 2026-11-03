@@ -79,6 +79,47 @@ describe('Galeshrike', () => {
   });
 });
 
+describe('Cinderack', () => {
+  const burrowed = (weapons: string[], item: string | null = null) => {
+    const s = starter(); s.weapons = Object.fromEntries(weapons.map(w => [w, { lv: 0 }])); s.loadout = { weapons, armor: 'jerkin', item, target: 'cinderack' };
+    if (item) s.items[item] = 2;
+    const h = E.startHunt(s, 11); h.mon.under = true; h.intent = 'erupt';
+    h.dice = [{ face: 'C', used: null }, { face: 'T', used: null }, { face: 'T', used: null }, { face: 'C', used: null }];
+    return h;
+  };
+  it('underground, Cut and Pierce cannot hit at all', () => {
+    const h = burrowed(['blade', 'bow']);
+    expect(E.canUseMove(h, 0)).toBe(false);
+    expect(E.useMove(h, 0)).toBeNull();
+  });
+  it('a 2-die Blunt hit drives it up and cancels the eruption; a 1-die hit does not', () => {
+    const h = burrowed(['maul', 'blade']);
+    expect(E.useMove(h, 0)!.dmg).toBe(6); // Thump 12, half through the ground
+    expect(h.intent).toBe('erupt');
+    E.useMove(h, 1); // Smash
+    expect(h.mon.under).toBe(false);
+    expect(h.intent).toBe('unearthed');
+  });
+  it('Blast Powder forces it up', () => {
+    const h = burrowed(['blade', 'bow'], 'blast');
+    expect(E.useItem(h)).toBe(true);
+    expect(h.intent).toBe('unearthed');
+  });
+  it('a molten shell burns melee hits but not Pierce, and Kilnplate is immune', () => {
+    const h = burrowed(['blade', 'bow']); h.mon.under = false; h.intent = 'venting'; h.mon.molten = 2;
+    const hp = h.php; E.useMove(h, 0); expect(h.php).toBe(hp - 5);
+    E.swap(h, [1]); const hp2 = h.php; E.useMove(h, 0); expect(h.php).toBe(hp2);
+    const k = burrowed(['blade', 'bow']); k.arm = E.armorInst('kilnplate', 0); k.mon.under = false; k.mon.molten = 2;
+    const hp3 = k.php; E.useMove(k, 0); expect(k.php).toBe(hp3);
+  });
+  it('keeps its swipe-swipe-burrow rhythm even when its claws break mid-cycle', () => {
+    const s = starter(); s.loadout.target = 'cinderack';
+    const h = E.startHunt(s, 5); const seen: string[] = [h.intent];
+    for (let t = 0; t < 4; t++) { if (t === 1) h.mon.parts.claws.broken = true; h.php = 999; E.endTurn(h); seen.push(h.intent); }
+    expect(seen).toEqual(['swipe', 'swipe', 'swipe', 'burrow', 'erupt']);
+  });
+});
+
 describe('forge', () => {
   it('an upgrade replaces its parent, keeps reinforcement and updates the loadout', () => {
     const s = starter(); s.coin = 1000; s.mats.tusk = 3; s.mats.hide = 2; s.weapons.maul.lv = 2;

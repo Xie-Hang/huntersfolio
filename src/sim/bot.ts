@@ -18,7 +18,7 @@ const clone = (h: Hunt): Hunt => JSON.parse(JSON.stringify(h));
 const need = (s: string) => ({ C: [...s].filter(c => c === 'C').length, T: [...s].filter(c => c === 'T').length });
 
 function effFor(h: Hunt, w: Hunt['weps'][number], partId: string): number {
-  if (!E.reachable(h, partId, w)) return 0;
+  if (!E.canHit(h, w) || !E.reachable(h, partId, w)) return 0;
   const p = E.monsterOf(h).parts.find(x => x.id === partId)!;
   return p.eff[w.type] * (w.type === 'Pierce' ? E.PIERCE_BREAK_BONUS : 1) * (E.airborneHalf(h, w) ? 0.5 : 1);
 }
@@ -52,7 +52,7 @@ interface Plan { moves: number[]; guard: number[]; charge: number[]; score: numb
 
 function evaluate(h: Hunt, plan: Omit<Plan, 'score'>, p: Policy): number | null {
   const c = clone(h);
-  const hp0 = c.mon.hp, part0 = c.mon.parts[c.target].hp, intent0 = c.intent;
+  const php0 = c.php, hp0 = c.mon.hp, part0 = c.mon.parts[c.target].hp, intent0 = c.intent;
   const inc0 = E.incoming(c)?.net ?? 0;
   for (const i of plan.moves) if (!E.useMove(c, i)) return null;
   if (plan.guard.length && !E.guard(c, plan.guard)) return null;
@@ -63,7 +63,8 @@ function evaluate(h: Hunt, plan: Omit<Plan, 'score'>, p: Policy): number | null 
   const prevented = c.intent !== intent0 ? inc0 : 0;
   if (p.skill === 'casual') return dealt * 10 + partProg;
   const risk = 1 + 3 * (1 - c.php / c.pmax);
-  let score = dealt + 0.5 * partProg - risk * taken + 0.3 * prevented + (plan.charge.length ? 30 : 0);
+  const burned = php0 - c.php;
+  let score = dealt + 0.5 * partProg - risk * (taken + burned) + 0.3 * prevented + (plan.charge.length ? 30 : 0);
   if (E.currentWeapon(c).moves[0].flow) score += 4 * plan.moves.filter(i => i === 0).length;
   if (c.php - taken <= 0) score -= 1000;
   return score;
@@ -103,6 +104,7 @@ export function playTurn(h: Hunt, p: Policy) {
     const fx = E.ITEMS[h.item].effect, inc = E.incoming(h)?.net ?? 0;
     if (fx === 'heal30' && h.php < h.pmax * 0.55) E.useItem(h);
     else if (fx === 'net' && (h.intent === 'gust' || h.intent === 'circle')) E.useItem(h);
+    else if (fx === 'blast' && h.intent === 'erupt' && !E.canHit(h, E.currentWeapon(h))) E.useItem(h);
     else if (fx === 'smoke' && inc >= 40) E.useItem(h);
   }
   // one reroll toward the strong recipe

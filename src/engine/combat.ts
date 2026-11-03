@@ -3,6 +3,7 @@
 import type { Hunt, Intent, Save, Tone, WeaponInst } from './types';
 import { MONSTERS } from './data/monsters';
 import { groundFlier } from './data/monsters/galeshrike';
+import { unearth } from './data/monsters/cinderack';
 import { ITEMS } from './data/gear';
 import { armorInst, elemMult, fixLoadout, lvOf, weaponInst } from './economy';
 import { rollFace } from './rng';
@@ -40,7 +41,7 @@ export function startHunt(s: Save, seed: number): Hunt {
     item, itemCharges: carried, carried, itemUsed: false,
     dice: [], guard: 0, chargePending: false, chargeReady: false, evade: false, whet: 0,
     target: MD.parts[0].id,
-    mon: { hp: MD.hp, max: MD.hp, parts, enraged: false, daze: 0, dazeMax: DAZE_START, dazeLock: 0, seq: 0, charges: 0, usedWallow: false, usedRoot: false, exhausted: false, wallow: 0, air: false, airLeft: 0 },
+    mon: { hp: MD.hp, max: MD.hp, parts, enraged: false, daze: 0, dazeMax: DAZE_START, dazeLock: 0, seq: 0, charges: 0, usedWallow: false, usedRoot: false, exhausted: false, wallow: 0, air: false, airLeft: 0, under: false, molten: 0 },
     intent: '', log: [], over: null, captured: false,
     stats: { dealt: 0, taken: 0, guarded: 0, broken: 0, rerollsUsed: 0 },
     reward: null, rng: seed | 0
@@ -59,6 +60,8 @@ export const intentInfo = (h: Hunt): Intent => def(h).intent(h, h.intent);
 export const tip = (h: Hunt) => (h.over ? null : def(h).tip?.(h, h.intent) ?? null);
 export const canCapture = (h: Hunt) => h.mon.hp > 0 && h.mon.hp <= h.mon.max * CAPTURE_AT;
 export const captureBlocked = (h: Hunt) => canCapture(h) && def(h).canCapture?.(h) === false;
+export const canHit = (h: Hunt, w: WeaponInst) => def(h).canHit?.(h, w) ?? true;
+export const cantHitReason = (h: Hunt, w: WeaponInst) => (canHit(h, w) ? null : def(h).cantHitReason?.(h, w) ?? 'It can’t be hit right now.');
 export const reachable = (h: Hunt, partId: string, w: WeaponInst) => def(h).reachable?.(h, partId, w) ?? true;
 export const airborneHalf = (h: Hunt, w: WeaponInst) => h.mon.air && w.type !== 'Pierce';
 export const freeDice = (h: Hunt) => h.dice.map((d, i) => (d.used ? -1 : i)).filter(i => i >= 0);
@@ -66,6 +69,7 @@ export const freeDice = (h: Hunt) => h.dice.map((d, i) => (d.used ? -1 : i)).fil
 export function itemUsable(h: Hunt): boolean {
   if (!h.item || h.itemUsed || h.itemCharges < 1 || h.over) return false;
   if (ITEMS[h.item].effect === 'net') return h.mon.air;
+  if (ITEMS[h.item].effect === 'blast') return h.mon.under;
   return true;
 }
 
@@ -91,7 +95,7 @@ export function pickDice(h: Hunt, need: string, prefer: number[] = []): number[]
   }
   return picks;
 }
-export const canUseMove = (h: Hunt, i: number) => !h.over && !!pickDice(h, currentWeapon(h).moves[i].need);
+export const canUseMove = (h: Hunt, i: number) => !h.over && canHit(h, currentWeapon(h)) && !!pickDice(h, currentWeapon(h).moves[i].need);
 
 /* ---------- player actions ---------- */
 function checkEnrage(h: Hunt) {
@@ -111,6 +115,7 @@ export interface HitResult { dmg: number; broke: boolean }
 export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | null {
   if (h.over) return null;
   const w = currentWeapon(h), mv = w.moves[i], m = h.mon, MD = def(h);
+  if (!canHit(h, w)) return null;
   const picks = pickDice(h, mv.need, prefer); if (!picks) return null;
   const wasCapturable = canCapture(h);
   picks.forEach(j => (h.dice[j].used = mv.name));
@@ -148,6 +153,13 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
     }
   }
   if (mv.pin) { const t = MD.onPin?.(h); if (t) log(h, t, 'gold'); }
+  if (m.hp > 0) { const t = MD.onHit?.(h, mv, w); if (t) log(h, t, 'gold'); }
+  const burn = m.hp > 0 && !h.arm.burnproof ? MD.burn?.(h, w) ?? 0 : 0;
+  if (burn > 0) {
+    // a burn never knocks you out: losing to your own attack would feel unfair
+    const b = Math.min(burn, h.php - 1);
+    if (b > 0) { h.php -= b; h.stats.taken += b; log(h, `The molten shell sears you for ${b}.`, 'ember'); }
+  }
   checkEnrage(h);
   if (m.hp > 0 && !wasCapturable && canCapture(h)) log(h, `${MD.short} is weak enough to capture!`, 'gold');
   if (m.hp <= 0) finish(h, 'win');
@@ -197,6 +209,7 @@ export function useItem(h: Hunt): boolean {
     case 'whet50': h.whet = 0.5; log(h, 'You sharpen your edge. Next hit +50%.'); break;
     case 'whet100': h.whet = 1; log(h, 'You grind your edge on the tusk. Next hit +100%.'); break;
     case 'net': groundFlier(h); log(h, 'The net wraps its wings. It crashes to the ground!', 'gold'); break;
+    case 'blast': unearth(h); log(h, 'The powder goes off in its tunnel. It bursts up, stunned!', 'gold'); break;
   }
   return true;
 }
@@ -230,6 +243,7 @@ export function endTurn(h: Hunt): TurnResult {
   if (line) log(h, line);
   if (m.wallow > 0) m.wallow--;
   if (m.dazeLock > 0) m.dazeLock--;
+  if (m.molten > 0) m.molten--;
   if (h.php <= 0) { finish(h, 'lose'); return { taken }; }
   if (h.chargeReady) log(h, 'Your unused charge fades.');
   h.turn++; h.chargeReady = h.chargePending; h.chargePending = false; h.guard = 0; h.itemUsed = false;

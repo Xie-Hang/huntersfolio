@@ -47,10 +47,12 @@ export interface ArmorDef {
   perk: string;
   blankx2?: boolean;
   breakHeal?: boolean;
+  /** immune to burns from hitting a molten monster */
+  burnproof?: boolean;
   craft: Cost;
 }
 
-export type ItemEffect = 'heal30' | 'smoke' | 'whet50' | 'whet100' | 'net';
+export type ItemEffect = 'heal30' | 'smoke' | 'whet50' | 'whet100' | 'net' | 'blast';
 export interface ItemDef {
   id: string;
   name: string;
@@ -120,6 +122,10 @@ export interface MonsterState {
   wallow: number;
   air: boolean;
   airLeft: number;
+  /** underground (burrowers): only some weapons can hit */
+  under: boolean;
+  /** turns left on a molten shell that burns melee attackers */
+  molten: number;
 }
 
 export interface WeaponInst extends WeaponDef { lv: number }
@@ -205,8 +211,18 @@ export interface MonsterDef {
   /** context tip on the telegraph */
   tip?(h: Hunt, type: string): string | null;
   canCapture?(h: Hunt): boolean;
+  /** can this weapon hit at all right now? (false: its moves are unusable) */
+  canHit?(h: Hunt, w: WeaponInst): boolean;
+  /** why canHit is false, for the UI */
+  cantHitReason?(h: Hunt, w: WeaponInst): string;
+  /** reacts after a hit lands (e.g. Blunt drives a burrower up). Returns a log line. */
+  onHit?(h: Hunt, mv: Move, w: WeaponInst): string | null;
+  /** burn dealt to the player for this hit (molten shells); 0 for none */
+  burn?(h: Hunt, w: WeaponInst): number;
   /** takes to the air: the UI shows air notes (Pierce full damage, nets work) */
   flier?: boolean;
+  /** burrows: the UI shows underground notes (only Blunt reaches it, Blast Powder works) */
+  burrower?: boolean;
 }
 
 export interface Loadout { weapons: string[]; armor: string; item: string | null; target: string }

@@ -32,6 +32,7 @@
     <span class="elem" style="color:{elemColor}">{w.type} · {w.elem ?? 'No element'}{em > 1 ? ' · hits weakness' : em < 1 ? ' · resisted' : ''}{halfAir ? ' · half damage in the air' : ''}</span>
   </div>
   <p class="sigline"><span class="tag {sg.tag}" style="margin:0 6px 0 0">{sg.name}</span>{sg.text}</p>
+  {#if !over && E.cantHitReason(h, w)}<p class="cant">{E.cantHitReason(h, w)} Swap, Guard or Charge instead.</p>{/if}
 
   {#each w.moves as mv, i}
     {@const ok = E.canUseMove(h, i)}
@@ -72,7 +73,7 @@
     {@const it = E.ITEMS[h.item]}
     <div class="divider"><span class="label">Item · free action</span><span class="label">{h.itemCharges} left</span></div>
     <button class="move {iOk ? 'ready' : 'no'}" aria-disabled={!iOk} onclick={() => iOk && game.item()}>
-      <span><span class="mn">{it.name}</span><span class="md">{it.desc}{h.itemUsed ? ' · used this turn' : it.effect === 'net' && !h.mon.air ? ' · only while it flies' : ''}</span></span>
+      <span><span class="mn">{it.name}</span><span class="md">{it.desc}{h.itemUsed ? ' · used this turn' : it.effect === 'net' && !h.mon.air ? ' · only while it flies' : it.effect === 'blast' && !h.mon.under ? ' · only while it’s underground' : ''}</span></span>
       <span class="need">free</span>
     </button>
   {:else}

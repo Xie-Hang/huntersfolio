@@ -61,9 +61,11 @@
   {#if m > 1}<span class="good">Hits weakness</span>{:else if m < 1}<span class="bad">Resisted</span>{/if}
   {#if best.length}{m !== 1 ? ' · ' : ''}<span class="best">Breaks {best.join(', ')}</span>{/if}
   {#if M.flier}{' · '}{#if w.type === 'Pierce'}<span class="good">Full damage in the air</span>{:else}<span class="bad">Half damage in the air</span>{/if}{/if}
+  {#if M.burrower}{' · '}{#if w.type === 'Blunt'}<span class="good">Reaches it underground</span>{:else}<span class="bad">Can’t reach it underground</span>{/if}{/if}
 {/snippet}
 
 {#snippet armorNote(a: E.ArmorInst)}
+  {#if a.burnproof && M.burrower}<span class="good">Immune to its molten shell</span>{' · '}{/if}
   {#if !a.resist}<span class="neutral">No resistance</span>
   {:else if a.resist === M.elem}<span class="good">Resists its {M.elem} attacks</span>
   {:else}<span class="bad">{a.resist} resist does nothing here</span>{/if}
@@ -192,6 +194,7 @@
                 <span class="nm">{it.name}{#if k === L.item}<span class="badge">Equipped</span>{/if}</span>
                 <span class="ty">{it.desc}</span>
                 {#if it.effect === 'net'}<span class="note">{#if M.flier}<span class="good">Grounds the {M.short}</span>{:else}<span class="bad">Only works on fliers</span>{/if}</span>{/if}
+                {#if it.effect === 'blast'}<span class="note">{#if M.burrower}<span class="good">Forces the {M.short} up</span>{:else}<span class="bad">Only works on burrowers</span>{/if}</span>{/if}
               </span>
               <span class="num">{Math.min(have, it.max)}</span><span class="num">{have}</span>
             </button>

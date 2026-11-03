@@ -3,7 +3,8 @@ import type { ArmorDef, ItemDef, MaterialDef } from '../types';
 const armors: ArmorDef[] = [
   { id: 'jerkin', name: 'Leather Jerkin', hp: 180, guard: 8, rerolls: 3, resist: null, perk: 'Start each hunt with 3 rerolls instead of 2.', craft: { coin: 80 } },
   { id: 'vest', name: 'Bristlehide Vest', hp: 200, guard: 8, rerolls: 2, resist: 'Stone', perk: 'Resists Stone (−30%). Blank dice guard for double.', blankx2: true, craft: { coin: 300, pelt: 2, hide: 3 } },
-  { id: 'coat', name: 'Galeweave Coat', hp: 170, guard: 7, rerolls: 2, resist: 'Gale', perk: 'Resists Gale (−30%). Breaking a part heals 25 and gives a reroll.', breakHeal: true, craft: { coin: 250, pinion: 2, plume: 3 } }
+  { id: 'coat', name: 'Galeweave Coat', hp: 170, guard: 7, rerolls: 2, resist: 'Gale', perk: 'Resists Gale (−30%). Breaking a part heals 25 and gives a reroll.', breakHeal: true, craft: { coin: 250, pinion: 2, plume: 3 } },
+  { id: 'kilnplate', name: 'Kilnplate Mail', hp: 190, guard: 9, rerolls: 2, resist: 'Ember', perk: 'Resists Ember (−30%). Molten shells can’t burn you.', burnproof: true, craft: { coin: 300, ventgland: 2, digclaw: 1, cinderscale: 3 } }
 ];
 export const ARMORS: Record<string, ArmorDef> = Object.fromEntries(armors.map(a => [a.id, a]));
 
@@ -12,6 +13,7 @@ const items: ItemDef[] = [
   { id: 'smoke', name: 'Smoke Pouch', max: 2, price: 50, desc: "The monster's next attack misses.", effect: 'smoke' },
   { id: 'whet', name: 'Whetstone', max: 2, price: 40, desc: 'Your next hit deals +50%.', effect: 'whet50' },
   { id: 'net', name: 'Weighted Net', max: 2, price: 50, desc: 'Brings an airborne monster down. It loses its action.', effect: 'net' },
+  { id: 'blast', name: 'Blast Powder', max: 2, price: 50, desc: 'Forces a burrowed monster to the surface. It loses its action.', effect: 'blast' },
   { id: 'tuskwhet', name: 'Tusk Whetstone', max: 2, craft: { tusk: 1, coin: 20 }, yields: 2, desc: 'Your next hit deals +100%.', effect: 'whet100' }
 ];
 export const ITEMS: Record<string, ItemDef> = Object.fromEntries(items.map(i => [i.id, i]));
@@ -26,7 +28,12 @@ const mats: MaterialDef[] = [
   { id: 'pinion', base: 'Wing Pinion', src: 'Galeshrike', sell: 60, how: 'Break the Galeshrike’s wings (Pierce best)' },
   { id: 'talon', base: 'Hooked Talon', src: 'Galeshrike', sell: 60, how: 'Break the Galeshrike’s talons (Cut best)' },
   { id: 'crest', base: 'Storm Crest', src: 'Galeshrike', sell: 60, how: 'Break the Galeshrike’s crest (Blunt best, only while grounded)' },
-  { id: 'tempesteye', base: 'Tempest Eye', src: 'Galeshrike', rare: true, sell: 300, how: 'Rare from Galeshrike crest breaks; capture raises the chance' }
+  { id: 'tempesteye', base: 'Tempest Eye', src: 'Galeshrike', rare: true, sell: 300, how: 'Rare from Galeshrike crest breaks; capture raises the chance' },
+  { id: 'cinderscale', base: 'Cinder Scale', src: 'Cinderack', sell: 20, how: 'Every Cinderack hunt' },
+  { id: 'slagplate', base: 'Slag Plate', src: 'Cinderack', sell: 60, how: 'Break the Cinderack’s head plate (Blunt best)' },
+  { id: 'digclaw', base: 'Digging Claw', src: 'Cinderack', sell: 60, how: 'Break the Cinderack’s claws (Cut best)' },
+  { id: 'ventgland', base: 'Vent Gland', src: 'Cinderack', sell: 60, how: 'Break the Cinderack’s back vents (Pierce best)' },
+  { id: 'kilnheart', base: 'Kilnheart', src: 'Cinderack', rare: true, sell: 300, how: 'Rare from Cinderack head plate breaks; capture raises the chance' }
 ];
 export const MATERIALS: Record<string, MaterialDef> = Object.fromEntries(mats.map(m => [m.id, m]));
 

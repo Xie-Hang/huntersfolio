@@ -137,7 +137,7 @@
                 {@const best = bestParts(M.id, w.type).join(', ')}
                 <tr>
                   <td>{M.short}</td>
-                  <td>{best ? `breaks ${best}` : '—'}{#if m > 1}{' · '}<span class="good">weakness</span>{:else if m < 1}{' · '}<span class="bad">resisted</span>{/if}{M.flier && w.type !== 'Pierce' ? ' · half in the air' : ''}</td>
+                  <td>{best ? `breaks ${best}` : '—'}{#if m > 1}{' · '}<span class="good">weakness</span>{:else if m < 1}{' · '}<span class="bad">resisted</span>{/if}{M.flier && w.type !== 'Pierce' ? ' · half in the air' : ''}{M.burrower && w.type !== 'Blunt' ? ' · can’t reach it underground' : ''}</td>
                   <td>{E.avgVs(w, M.id)} avg</td>
                 </tr>
               {:else}
