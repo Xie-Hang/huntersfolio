@@ -45,7 +45,7 @@
     {:else}
       <span class="kicker">Hunt failed</span>
       <h2 style="margin:0;font-family:var(--f-display);font-weight:600">{M.name} wins this one</h2>
-      <p class="ital p0">It had {h.mon.hp} vigour left. No coin or materials.{h.item ? ` You lost ${r.lost} ${E.ITEMS[h.item].name} you carried.` : ''}</p>
+      <p class="ital p0">It had {h.mon.hp} HP left. No coin or materials.{h.item ? ` You lost ${r.lost} ${E.ITEMS[h.item].name} you carried.` : ''}</p>
     {/if}
     {@render stats()}
   {:else}
@@ -69,6 +69,7 @@
       </div>
     {/if}
     {#if tip}<div class="tip"><Tagged text={tip} /></div>{/if}
+    {#if E.canCapture(h)}<div class="tip capture">It's weak enough to capture. Select 2 dice and use Capture for double part materials.</div>{/if}
     <div class="meta"><span style="color:var(--fg)">{info.name}</span>{#if info.note}<span>{info.note}</span>{/if}</div>
   {/if}
 </section>

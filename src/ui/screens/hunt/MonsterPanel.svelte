@@ -18,13 +18,13 @@
     <div class="ph"><h2>{M.name}</h2><span class="label">{M.kind} · {M.elem}</span></div>
     <div class="plate"><Plate mon={h.mid} hunt={h} /></div>
     <div class="hpline">
-      <div class="ph"><span class="label">Vigour</span><span class="mono">{m.hp} / {m.max}</span></div>
+      <div class="ph"><span class="label">HP</span><span class="mono">{m.hp} / {m.max}</span></div>
       <div class="bar" style="height:8px"><i style="width:{pct(m.hp, m.max)}%;background:var(--ember)"></i></div>
     </div>
     {#if E.carries(h, 'Blunt')}
       <div class="hpline">
-        <div class="ph"><span class="label" style="color:var(--daze)">Daze · from Blunt hits to the {headName}</span><span class="mono">{m.daze} / {m.dazeMax}</span></div>
-        <div class="bar"><i style="width:{pct(m.daze, m.dazeMax)}%;background:var(--daze)"></i></div>
+        <div class="ph"><span class="label" style="color:var(--daze)">Daze · from Blunt hits to the {headName}</span><span class="mono">{m.dazeLock ? 'Recovering' : `${m.daze} / ${m.dazeMax}`}</span></div>
+        <div class="bar" class:locked={m.dazeLock > 0}><i style="width:{pct(m.daze, m.dazeMax)}%;background:var(--daze)"></i></div>
       </div>
     {/if}
     <div class="chips">

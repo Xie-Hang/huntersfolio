@@ -57,7 +57,7 @@ export const gorehorn: MonsterDef = {
   resolve(h, type) {
     const m = h.mon;
     switch (type) {
-      case 'root': { const heal = Math.min(25, m.max - m.hp); m.hp += heal; return `It feeds and recovers ${heal} vigour.`; }
+      case 'root': { const heal = Math.min(25, m.max - m.hp); m.hp += heal; return `It feeds and recovers ${heal} HP.`; }
       case 'wallow': m.wallow = 3; return 'Mud cakes its hide.';
       case 'windup': return 'It gathers itself to charge.';
       case 'exhausted': return 'It catches its breath.';

@@ -30,7 +30,15 @@ class Game {
     E.fixLoadout(this.save);
     const h = read(HUNT_KEY) as E.Hunt | null;
     // Resume a hunt that was interrupted (app closed mid-hunt). Its item charges already left the stash.
-    if (h && !h.over && E.MONSTERS[h.mid] && Array.isArray(h.dice)) { this.hunt = h; this.view = 'hunt'; }
+    if (h && !h.over && E.MONSTERS[h.mid] && Array.isArray(h.dice)) {
+      if (h.version === E.HUNT_VERSION) { this.hunt = h; this.view = 'hunt'; }
+      else {
+        // Saved by an older build: give back the carried item charges rather than resume a hunt the rules no longer fit.
+        if (h.item && E.ITEMS[h.item]) this.save.items[h.item] = (this.save.items[h.item] ?? 0) + (h.itemCharges ?? 0);
+        remove(HUNT_KEY);
+        write(SAVE_KEY, $state.snapshot(this.save));
+      }
+    }
   }
   persist() {
     write(SAVE_KEY, $state.snapshot(this.save));

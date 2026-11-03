@@ -14,7 +14,8 @@ export interface Move {
   /** multiplier toward part breaks */
   part?: number;
   flow?: boolean;
-  daze?: boolean;
+  /** daze points added when this hits the head part (Blunt) */
+  daze?: number;
   pin?: boolean;
 }
 
@@ -108,6 +109,8 @@ export interface MonsterState {
   enraged: boolean;
   daze: number;
   dazeMax: number;
+  /** monster actions left before the daze meter can fill again */
+  dazeLock: number;
   /** behaviour bookkeeping shared by the T1 cycles */
   seq: number;
   charges: number;
@@ -135,6 +138,8 @@ export interface Reward {
 }
 
 export interface Hunt {
+  /** hunt format; a saved hunt from another format is refunded and dropped */
+  version: number;
   mid: string;
   turn: number;
   php: number;

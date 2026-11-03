@@ -17,7 +17,9 @@
   const gOk = $derived(!over && n >= 1);
   const cOk = $derived(!over && n === 2 && !h.chargePending);
   const sOk = $derived(!over && n === 1);
-  const capOk = $derived(!over && n === 2 && E.canCapture(h) && !E.captureBlocked(h));
+  const capLive = $derived(!over && E.canCapture(h));
+  const capOk = $derived(capLive && n === 2 && !E.captureBlocked(h));
+  const capAt = $derived(Math.floor(h.mon.max * E.CAPTURE_AT));
   const iOk = $derived(!over && E.itemUsable(h));
 </script>
 
@@ -36,7 +38,7 @@
     <button class="move {ok ? 'ready' : 'no'}" aria-disabled={!ok} onclick={() => ok && game.move(i)}>
       <span>
         <span class="mn">{mv.name}{#if mv.flow}<span class="tag flow">FLOW</span>{/if}{#if mv.daze}<span class="tag daze">DAZE</span>{/if}{#if mv.pin}<span class="tag pin">PIN</span>{/if}</span>
-        <span class="md">{halfAir ? `${Math.round(mv.dmg / 2)} dmg (airborne)` : `${mv.dmg} dmg`}{mv.part ? ` · ×${mv.part} toward breaks` : ''}</span>
+        <span class="md">{halfAir ? `${Math.round(mv.dmg / 2)} dmg (airborne)` : `${mv.dmg} dmg`}{mv.part ? ` · ×${mv.part} toward breaks` : ''}{mv.daze ? ` · daze +${mv.daze}` : ''}</span>
       </span>
       <span class="need" aria-label="Needs {needLabel(mv.need)}">{glyphs(mv.need)}</span>
     </button>
@@ -52,11 +54,19 @@
   <button class="move dash {sOk ? 'ready' : 'no'}" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
     <span><span class="mn">Swap to {other.name}</span><span class="md">{other.type} · {other.elem ?? 'No element'}</span></span><span class="need">1</span>
   </button>
-  {#if E.canCapture(h)}
-    <button class="move dash {capOk ? 'ready' : 'no'}" aria-disabled={!capOk} onclick={() => capOk && game.capture()}>
-      <span><span class="mn">Capture</span><span class="md">{E.captureBlocked(h) ? 'bring it down first' : 'ends the hunt · part materials ×2'}</span></span><span class="need">2</span>
-    </button>
-  {/if}
+  <!-- Always shown, so players learn it exists before it's available. -->
+  <button class="move capture {capLive && !E.captureBlocked(h) ? 'live' : ''} {capOk ? 'ready' : 'no'}" aria-disabled={!capOk} onclick={() => capOk && game.capture()}>
+    <span>
+      <span class="mn">Capture</span>
+      <span class="md">
+        {#if !capLive}Unlocks at {capAt} HP or less · ends the hunt, part materials ×2
+        {:else if E.captureBlocked(h)}Bring it down first
+        {:else if n !== 2}Select 2 dice · ends the hunt, part materials ×2
+        {:else}Ends the hunt · part materials ×2{/if}
+      </span>
+    </span>
+    <span class="need">2</span>
+  </button>
 
   {#if h.item}
     {@const it = E.ITEMS[h.item]}

@@ -307,12 +307,11 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .die:hover{transform:translateY(-2px)}
 .die:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 .die.sel{transform:translateY(-6px);box-shadow:0 4px 0 var(--bone-edge),0 0 0 3px var(--gold)}
-.die.blank{background:var(--raise);border:1px dashed var(--line-2);box-shadow:none}
-.die.blank.sel{box-shadow:0 0 0 3px var(--gold)}
 .die.used{opacity:.28;cursor:default;transform:none}
 .die.used:hover{transform:none}
 .die svg{width:38px;height:38px}
-.die .bl{font-family:var(--f-body);font-size:var(--fs-xs);color:var(--muted)}
+/* blank is a real face: same die body, the word printed in faded ink */
+.die .bl{font-family:var(--f-display);font-weight:600;font-size:var(--fs-sm);letter-spacing:1.5px;text-transform:uppercase;color:#2a1f17;opacity:.55}
 .die.rolling{animation:tumble .45s ease-out}
 @keyframes tumble{0%{transform:rotate(-200deg) scale(.6)}70%{transform:rotate(12deg) scale(1.05)}100%{transform:rotate(0) scale(1)}}
 .dietag{font-family:var(--f-body);font-size:var(--fs-xs);color:var(--muted);min-height:15px;text-align:center}
@@ -341,6 +340,13 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .move.no{opacity:.45;cursor:not-allowed}
 .move.dash{border-style:dashed;border-color:var(--line-2)}
 .move.dash.ready{border-style:solid}
+/* Capture is the one move that ends the hunt early: inverted (gold fill, dark ink) when it's live */
+.bar.locked{background:repeating-linear-gradient(135deg,var(--line) 0 6px,transparent 6px 12px)}
+.move.capture{border-style:solid;border-color:var(--gold)}
+.move.capture.live{background:var(--gold);border-color:var(--gold-hi);color:var(--ink);opacity:1;animation:capglow 1.6s ease-in-out 2}
+.move.capture.live .md,.move.capture.live .need{color:var(--ink)}
+@keyframes capglow{50%{box-shadow:0 0 0 6px rgba(233,185,73,.25)}}
+.tele .tip.capture{border-color:var(--gold);color:var(--gold-hi)}
 .divider{display:flex;justify-content:space-between;gap:10px;padding:6px 0 4px;border-bottom:1px solid var(--line)}
 
 .pstat{display:flex;gap:10px 18px;flex-wrap:wrap;font-family:var(--f-body);font-size:var(--fs-sm);color:var(--soft)}
@@ -373,7 +379,7 @@ details.rules ul{margin:10px 0 0;padding-left:20px;display:flex;flex-direction:c
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
 @media (prefers-reduced-motion: reduce){
   dialog.settings[open]{animation:none}
-  .tele.danger,.die.rolling,.shake,.float,.hpbig .ghost{animation:none}
+  .tele.danger,.die.rolling,.shake,.float,.hpbig .ghost,.move.capture.live{animation:none}
   .float{opacity:0}
   .die,.part,.move,.pick,.bar > i,.hpbig > i{transition:none}
 }

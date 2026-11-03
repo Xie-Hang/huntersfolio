@@ -9,9 +9,11 @@ import { rollFace } from './rng';
 
 export const GUARD_RESIST = 0.7;       // armor element resistance multiplier
 export const CHARGE_BREAK = 30;        // damage that breaks a pending charge
-export const CAPTURE_AT = 0.2;         // capture allowed at or below this share of vigour
+export const CAPTURE_AT = 0.2;         // capture allowed at or below this share of the monster's HP
 export const PIERCE_BREAK_BONUS = 1.5;
-export const DAZE_START = 50, DAZE_STEP = 30;
+export const DAZE_START = 60, DAZE_STEP = 30, DAZE_LOCK = 2;
+/** Bump when the Hunt shape changes; in-progress hunts from older builds are refunded, not resumed. */
+export const HUNT_VERSION = 2;
 
 const def = (h: Hunt) => MONSTERS[h.mid];
 export const monsterOf = def;
@@ -32,12 +34,13 @@ export function startHunt(s: Save, seed: number): Hunt {
   if (item && (s.items[item] ?? 0) > 0) { carried = Math.min(s.items[item], ITEMS[item].max); s.items[item] -= carried; } else item = null;
   const parts = Object.fromEntries(MD.parts.map(p => [p.id, { hp: p.hp, max: p.hp, broken: false }]));
   const h: Hunt = {
+    version: HUNT_VERSION,
     mid: MD.id, turn: 1, php: arm.hp, pmax: arm.hp, rerolls: arm.rerolls,
     weps: L.weapons.map(id => weaponInst(id, lvOf(s.weapons, id))), weapon: 0, arm,
     item, itemCharges: carried, carried, itemUsed: false,
     dice: [], guard: 0, chargePending: false, chargeReady: false, evade: false, whet: 0,
     target: MD.parts[0].id,
-    mon: { hp: MD.hp, max: MD.hp, parts, enraged: false, daze: 0, dazeMax: DAZE_START, seq: 0, charges: 0, usedWallow: false, usedRoot: false, exhausted: false, wallow: 0, air: false, airLeft: 0 },
+    mon: { hp: MD.hp, max: MD.hp, parts, enraged: false, daze: 0, dazeMax: DAZE_START, dazeLock: 0, seq: 0, charges: 0, usedWallow: false, usedRoot: false, exhausted: false, wallow: 0, air: false, airLeft: 0 },
     intent: '', log: [], over: null, captured: false,
     stats: { dealt: 0, taken: 0, guarded: 0, broken: 0, rerollsUsed: 0 },
     reward: null, rng: seed | 0
@@ -109,6 +112,7 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
   if (h.over) return null;
   const w = currentWeapon(h), mv = w.moves[i], m = h.mon, MD = def(h);
   const picks = pickDice(h, mv.need, prefer); if (!picks) return null;
+  const wasCapturable = canCapture(h);
   picks.forEach(j => (h.dice[j].used = mv.name));
   let dmg = mv.dmg; const notes: string[] = [];
   if (h.chargeReady) { dmg *= 2; h.chargeReady = false; notes.push('charged ×2'); }
@@ -136,12 +140,16 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
     } else if (dmg > 0) log(h, `${w.type} weapons can't break the ${pdef.name.toLowerCase()}. The hit still counts toward the kill.`);
   }
   if (mv.flow) { h.rerolls++; log(h, 'FLOW: +1 reroll.'); }
-  if (mv.daze && h.target === MD.head && reach && m.hp > 0) {
-    m.daze = Math.min(m.dazeMax, m.daze + dmg);
-    if (m.daze >= m.dazeMax) { m.daze = 0; m.dazeMax += DAZE_STEP; h.intent = 'dazed'; log(h, 'DAZE: the blow rattles its skull. It loses its action!', 'daze'); }
+  if (mv.daze && h.target === MD.head && reach && m.hp > 0 && m.dazeLock === 0) {
+    m.daze = Math.min(m.dazeMax, m.daze + mv.daze);
+    if (m.daze >= m.dazeMax) {
+      m.daze = 0; m.dazeMax += DAZE_STEP; m.dazeLock = DAZE_LOCK; h.intent = 'dazed';
+      log(h, 'DAZE: the blow rattles its skull. It loses its action!', 'daze');
+    }
   }
   if (mv.pin) { const t = MD.onPin?.(h); if (t) log(h, t, 'gold'); }
   checkEnrage(h);
+  if (m.hp > 0 && !wasCapturable && canCapture(h)) log(h, `${MD.short} is weak enough to capture!`, 'gold');
   if (m.hp <= 0) finish(h, 'win');
   return { dmg, broke };
 }
@@ -221,6 +229,7 @@ export function endTurn(h: Hunt): TurnResult {
   const line = MD.resolve(h, type);
   if (line) log(h, line);
   if (m.wallow > 0) m.wallow--;
+  if (m.dazeLock > 0) m.dazeLock--;
   if (h.php <= 0) { finish(h, 'lose'); return { taken }; }
   if (h.chargeReady) log(h, 'Your unused charge fades.');
   h.turn++; h.chargeReady = h.chargePending; h.chargePending = false; h.guard = 0; h.itemUsed = false;

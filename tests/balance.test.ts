@@ -47,3 +47,27 @@ describe('progression pacing (Gorehorn)', () => {
   it('Gorehorn Crusher (needs the rare) around hunt 7–13', () => { expect(at('crusher')).toBeGreaterThanOrEqual(7); expect(at('crusher')).toBeLessThanOrEqual(13); });
   it('everything at +3 around hunt 12–22', () => { expect(at('done')).toBeGreaterThanOrEqual(12); expect(at('done')).toBeLessThanOrEqual(22); });
 });
+
+describe('daze', () => {
+  // Playtest: with upgraded mauls the Gorehorn was losing half its turns, often back to back.
+  it('never stuns two monster actions in a row, and takes at most about a fifth of its turns', async () => {
+    const E = await import('../src/engine');
+    const { playTurn } = await import('../src/sim/bot');
+    let turns = 0, dazes = 0, chains = 0;
+    for (let i = 0; i < 300; i++) {
+      const s = E.newSave();
+      s.weapons = { crusher: { lv: 3 }, bow: { lv: 0 } };
+      s.loadout = { weapons: ['crusher', 'bow'], armor: 'jerkin', item: 'salve', target: 'gorehorn' };
+      const h = E.startHunt(s, 1 + i * 7919);
+      let last = -9;
+      while (!h.over && h.turn < 60) {
+        playTurn(h, { skill: 'skilled', capture: true, goal: ['tusks'] });
+        if (h.intent === 'dazed') { dazes++; if (h.turn - last === 1) chains++; last = h.turn; }
+        if (!h.over) E.endTurn(h);
+      }
+      turns += h.turn;
+    }
+    expect(chains).toBe(0);
+    expect(dazes / turns).toBeLessThan(0.25);
+  });
+});

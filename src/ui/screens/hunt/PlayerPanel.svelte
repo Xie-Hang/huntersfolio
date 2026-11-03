@@ -14,7 +14,7 @@
 <section class="panel" aria-label="Your state" use:shake={game.shakes.player}>
   <div style="display:flex;flex-direction:column;gap:10px">
     <div class="ph">
-      <h2>You</h2>
+      <h2>Your HP</h2>
       <span class="mono">{h.php} / {h.pmax}{#if net}{' '}<span style="color:var(--ember-soft)">→ {after}</span>{/if}</span>
     </div>
     <div class="hpbig" role="img" aria-label="{h.php} of {h.pmax} HP{net ? `, about to take ${net}` : ''}">

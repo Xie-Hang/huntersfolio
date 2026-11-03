@@ -1,5 +1,8 @@
 import type { DamageType, Move, WeaponDef } from '../types';
 
+/** Daze points per Blunt move. Fixed, so upgrades raise damage but not how often you stun. */
+export const DZ = { light: 10, medium: 20, strong: 35 };
+
 const BLADE: Move[] = [
   { name: 'Slash', need: 'C', dmg: 12, flow: true },
   { name: 'Cleave', need: 'CT', dmg: 26 },
@@ -11,9 +14,9 @@ const GALE: Move[] = [
   { name: 'Tempest', need: 'TTC', dmg: 56, part: 2 }
 ];
 const MAUL: Move[] = [
-  { name: 'Thump', need: 'C', dmg: 12, daze: true },
-  { name: 'Smash', need: 'CT', dmg: 28, part: 1.5, daze: true },
-  { name: 'Skullcrack', need: 'CTT', dmg: 56, part: 2, daze: true }
+  { name: 'Thump', need: 'C', dmg: 12, daze: DZ.light },
+  { name: 'Smash', need: 'CT', dmg: 28, part: 1.5, daze: DZ.medium },
+  { name: 'Skullcrack', need: 'CTT', dmg: 56, part: 2, daze: DZ.strong }
 ];
 const BOW: Move[] = [
   { name: 'Quick Shot', need: 'C', dmg: 12 },
@@ -46,6 +49,6 @@ export const TREES: { type: DamageType; nodes: [string, number][] }[] = [
 
 export const SIGNATURES: Record<DamageType, { tag: 'flow' | 'daze' | 'pin'; name: string; text: string }> = {
   Cut: { tag: 'flow', name: 'FLOW', text: 'Light moves give you a reroll.' },
-  Blunt: { tag: 'daze', name: 'DAZE', text: 'Hits to the head part fill a daze meter. Full meter: the monster loses its action.' },
+  Blunt: { tag: 'daze', name: 'DAZE', text: 'Hits to the head part fill a daze meter. Full meter: the monster loses its action, then recovers for a turn.' },
   Pierce: { tag: 'pin', name: 'PIN', text: 'Hits count ×1.5 toward breaks. Ignores mud and flight. Pinning Shot interrupts wind-ups and grounds fliers.' }
 };
