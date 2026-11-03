@@ -50,6 +50,7 @@
               {#if !st.broken}
                 {#if !reach}<span class="chip sm none">{m.under ? 'Underground' : 'Out of reach'}</span>
                 {:else}<span class="chip sm {effCls(e)}">{w.type}: {effName(e)}</span>{/if}
+                {#if st.exposed > 0}<span class="chip sm exposed">Exposed · {st.exposed}</span>{/if}
               {/if}
               <span class="mono" style="color:{st.broken ? 'var(--ember-soft)' : 'var(--soft)'}">{st.broken ? 'Broken' : `${st.hp} / ${st.max}`}</span>
             </span>

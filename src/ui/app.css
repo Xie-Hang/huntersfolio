@@ -184,7 +184,8 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .bar > i{display:block;height:100%;border-radius:2px;transition:width .35s ease}
 
 .tag{display:inline-block;font-family:var(--f-body);font-size:var(--fs-sm);font-weight:600;padding:1px 6px;border-radius:2px;vertical-align:1px;margin-left:6px;border:1px solid currentColor}
-.tag.flow{color:var(--gale)} .tag.daze{color:var(--daze)} .tag.pin{color:var(--gold-hi)}
+.tag.flow{color:var(--gale)} .tag.daze{color:var(--daze)} .tag.expose{color:var(--gold-hi)}
+.chip.exposed{border-color:var(--gold-hi);color:var(--ink);background:var(--gold-hi)}
 
 .tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);flex-wrap:wrap}
 .tabs button{font-family:var(--f-body);font-weight:600;font-size:var(--fs-md);padding:8px 14px;min-height:44px;background:transparent;border:0;border-bottom:2px solid transparent;cursor:pointer;color:var(--muted)}

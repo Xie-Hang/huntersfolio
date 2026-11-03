@@ -11,10 +11,11 @@ import { rollFace } from './rng';
 export const GUARD_RESIST = 0.7;       // armor element resistance multiplier
 export const CHARGE_BREAK = 30;        // damage that breaks a pending charge
 export const CAPTURE_AT = 0.2;         // capture allowed at or below this share of the monster's HP
-export const PIERCE_BREAK_BONUS = 1.5;
+/** Pierce's Expose: a hit leaves the part exposed for 2 turns; any weapon's hits there get these bonuses. Tuned by simulation (4 Nov 2026). */
+export const EXPOSE_TURNS = 2, EXPOSE_DMG = 1.15, EXPOSE_BREAK = 2;
 export const DAZE_START = 60, DAZE_STEP = 30, DAZE_LOCK = 2;
 /** Bump when the Hunt shape changes; in-progress hunts from older builds are refunded, not resumed. */
-export const HUNT_VERSION = 3;
+export const HUNT_VERSION = 4;
 
 const def = (h: Hunt) => MONSTERS[h.mid];
 export const monsterOf = def;
@@ -33,7 +34,7 @@ export function startHunt(s: Save, seed: number): Hunt {
   const L = s.loadout, MD = MONSTERS[L.target], arm = armorInst(L.armor, lvOf(s.armors, L.armor));
   let item = L.item, carried = 0;
   if (item && (s.items[item] ?? 0) > 0) { carried = Math.min(s.items[item], ITEMS[item].max); s.items[item] -= carried; } else item = null;
-  const parts = Object.fromEntries(MD.parts.map(p => [p.id, { hp: p.hp, max: p.hp, broken: false }]));
+  const parts = Object.fromEntries(MD.parts.map(p => [p.id, { hp: p.hp, max: p.hp, broken: false, exposed: 0 }]));
   const h: Hunt = {
     version: HUNT_VERSION,
     mid: MD.id, turn: 1, php: arm.hp, pmax: arm.hp, rerolls: arm.rerolls,
@@ -126,6 +127,8 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
   if (em !== 1) { dmg = Math.round(dmg * em); notes.push(em > 1 ? 'weakness ×1.5' : 'resisted ×0.75'); }
   if (airborneHalf(h, w)) { dmg = Math.round(dmg / 2); notes.push('airborne ½'); }
   const p = m.parts[h.target], pdef = MD.parts.find(x => x.id === h.target)!;
+  const exposed = p.exposed > 0 && !p.broken;
+  if (exposed) { dmg = Math.round(dmg * EXPOSE_DMG); notes.push('exposed +15%'); }
   const mod = MD.hitMod?.(h, h.target, w);
   if (mod) { dmg = Math.round(dmg * mod.mult); notes.push(mod.note); }
   dmg = Math.min(dmg, m.hp);
@@ -137,7 +140,7 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
     const e = pdef.eff[w.type];
     if (!reach) log(h, `The ${pdef.name.toLowerCase()} is out of reach right now. Only Pierce gets there.`);
     else if (e > 0) {
-      p.hp = Math.max(0, p.hp - Math.round(dmg * e * (mv.part ?? 1) * (w.type === 'Pierce' ? PIERCE_BREAK_BONUS : 1)));
+      p.hp = Math.max(0, p.hp - Math.round(dmg * e * (mv.part ?? 1) * (exposed ? EXPOSE_BREAK : 1)));
       if (p.hp === 0) {
         p.broken = true; h.stats.broken++; broke = true; log(h, pdef.brk, 'ember');
         if (h.arm.breakHeal) { const heal = Math.min(25, h.pmax - h.php); h.php += heal; h.rerolls++; log(h, `${h.arm.name}: +${heal} HP, +1 reroll.`, 'gold'); }
@@ -151,6 +154,10 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
       m.daze = 0; m.dazeMax += DAZE_STEP; m.dazeLock = DAZE_LOCK; h.intent = 'dazed';
       log(h, 'Daze: the blow rattles its skull. It loses its action!', 'daze');
     }
+  }
+  if (mv.expose && reach && !p.broken && m.hp > 0) {
+    if (!p.exposed) log(h, `Expose: the ${pdef.name.toLowerCase()} ${pdef.name.endsWith('s') ? 'are' : 'is'} exposed. Hits there deal +15% and count double toward the break for 2 turns.`, 'gold');
+    p.exposed = EXPOSE_TURNS;
   }
   if (mv.pin) { const t = MD.onPin?.(h); if (t) log(h, t, 'gold'); }
   if (m.hp > 0) { const t = MD.onHit?.(h, mv, w); if (t) log(h, t, 'gold'); }
@@ -244,6 +251,7 @@ export function endTurn(h: Hunt): TurnResult {
   if (m.wallow > 0) m.wallow--;
   if (m.dazeLock > 0) m.dazeLock--;
   if (m.molten > 0) m.molten--;
+  for (const part of Object.values(m.parts)) if (part.exposed > 0) part.exposed--;
   if (h.php <= 0) { finish(h, 'lose'); return { taken }; }
   if (h.chargeReady) log(h, 'Your unused charge fades.');
   h.turn++; h.chargeReady = h.chargePending; h.chargePending = false; h.guard = 0; h.itemUsed = false;

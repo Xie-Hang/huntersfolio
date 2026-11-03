@@ -11,6 +11,9 @@
   const n = $derived(game.sel.length);
   const sg = $derived(E.SIGNATURES[w.type]);
   const halfAir = $derived(E.airborneHalf(h, w));
+  const exposedNow = $derived(h.mon.parts[h.target]?.exposed > 0 && !h.mon.parts[h.target].broken);
+  /** the number the move will roughly deal now: air halves it, an exposed target adds Expose's bonus */
+  const shownDmg = (d: number) => { let x = halfAir ? Math.round(d / 2) : d; if (exposedNow) x = Math.round(x * E.EXPOSE_DMG); return x; };
   const em = $derived(E.elemMult(w.elem, h.mid));
   const elemColor = $derived(em > 1 ? 'var(--gale)' : em < 1 ? 'var(--ember-soft)' : 'var(--muted)');
 
@@ -38,8 +41,8 @@
     {@const ok = E.canUseMove(h, i)}
     <button class="move {ok ? 'ready' : 'no'}" aria-disabled={!ok} onclick={() => ok && game.move(i)}>
       <span>
-        <span class="mn">{mv.name}{#if mv.flow}<span class="tag flow">Flow</span>{/if}{#if mv.daze}<span class="tag daze">Daze</span>{/if}{#if mv.pin}<span class="tag pin">Pin</span>{/if}</span>
-        <span class="md">{halfAir ? `${Math.round(mv.dmg / 2)} damage, halved in the air` : `${mv.dmg} damage`}{mv.part ? ` · ×${mv.part} toward breaks` : ''}{mv.daze ? ` · Daze +${mv.daze}` : ''}</span>
+        <span class="mn">{mv.name}{#if mv.flow}<span class="tag flow">Flow</span>{/if}{#if mv.daze}<span class="tag daze">Daze</span>{/if}{#if mv.expose}<span class="tag expose">Expose</span>{/if}</span>
+        <span class="md">{shownDmg(mv.dmg)} damage{halfAir ? ', halved in the air' : ''}{exposedNow ? ', exposed' : ''}{mv.part ? ` · ×${mv.part} toward breaks` : ''}{mv.daze ? ` · Daze +${mv.daze}` : ''}</span>
       </span>
       <span class="need" aria-label="Needs {needLabel(mv.need)}">{glyphs(mv.need)}</span>
     </button>

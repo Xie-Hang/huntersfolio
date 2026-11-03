@@ -17,10 +17,10 @@ export const DAMAGE_TYPES: E.DamageType[] = ['Cut', 'Blunt', 'Pierce'];
 export const record = (s: E.Save, mon: string): E.MonsterRecord => s.record[mon] ?? { hunts: 0, wins: 0, captures: 0, breaks: {} };
 
 /** Split engine text into plain runs and signature chips: "[PIN] Pinning Shot…" → chip + text. */
-export type Seg = { text: string; tag?: 'pin' | 'daze' | 'flow' };
+export type Seg = { text: string; tag?: 'expose' | 'daze' | 'flow' };
 export function segments(text: string): Seg[] {
   const out: Seg[] = [];
-  const re = /\[(PIN|DAZE|FLOW)\]/g;
+  const re = /\[(EXPOSE|DAZE|FLOW)\]/g;
   let last = 0, m: RegExpExecArray | null;
   while ((m = re.exec(text))) {
     if (m.index > last) out.push({ text: text.slice(last, m.index) });

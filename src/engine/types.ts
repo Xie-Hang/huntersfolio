@@ -16,7 +16,10 @@ export interface Move {
   flow?: boolean;
   /** daze points added when this hits the head part (Blunt) */
   daze?: number;
+  /** Pinning Shot: interrupts wind-ups, grounds fliers (monster hooks) */
   pin?: boolean;
+  /** Pierce signature: the hit leaves the part exposed */
+  expose?: boolean;
 }
 
 export interface WeaponDef {
@@ -102,7 +105,8 @@ export interface LogEntry { t: string; tone: Tone }
 
 export interface Die { face: Face; used: string | null }
 
-export interface PartState { hp: number; max: number; broken: boolean }
+/** exposed: turns left on a Pierce exposure (+15% damage, ×2 toward the break, from any weapon) */
+export interface PartState { hp: number; max: number; broken: boolean; exposed: number }
 
 export interface MonsterState {
   hp: number;

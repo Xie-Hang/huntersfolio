@@ -35,9 +35,11 @@ export function elemMult(elem: Element | null, monsterId: string): number {
 }
 
 const avgCache = new Map<string, number>();
+/** Expose's damage bonus, mirrored here to avoid an import cycle with combat.ts (kept equal by a test). */
+export const EXPOSE_DMG_FOR_AVG = 1.15;
 /** Expected damage per turn if all 4 dice go to attacking, without rerolls. */
 export function avgDmg(moves: Move[]): number {
-  const key = moves.map(m => m.need + ':' + m.dmg).join('|');
+  const key = moves.map(m => m.need + ':' + m.dmg + (m.expose ? 'x' : '')).join('|');
   const hit = avgCache.get(key); if (hit != null) return hit;
   const nc = moves.map(m => ({ C: [...m.need].filter(c => c === 'C').length, T: [...m.need].filter(c => c === 'T').length }));
   const f = [1, 1, 2, 6, 24];
@@ -46,7 +48,14 @@ export function avgDmg(moves: Move[]): number {
     let best = 0;
     for (let a = 0; a <= 4; a++) for (let x = 0; x <= 2; x++) for (let y = 0; y <= 1; y++) {
       const uc = a * nc[0].C + x * nc[1].C + y * nc[2].C, ut = a * nc[0].T + x * nc[1].T + y * nc[2].T;
-      if (uc <= C && ut <= T) best = Math.max(best, a * moves[0].dmg + x * moves[1].dmg + y * moves[2].dmg);
+      if (uc > C || ut > T) continue;
+      let d = a * moves[0].dmg + x * moves[1].dmg + y * moves[2].dmg;
+      // Expose (Pierce): every hit after the first lands on an exposed part. Lead with the smallest.
+      if (moves[0].expose && a + x + y > 1) {
+        const first = a ? moves[0].dmg : x ? moves[1].dmg : moves[2].dmg;
+        d = first + (d - first) * EXPOSE_DMG_FOR_AVG;
+      }
+      best = Math.max(best, d);
     }
     const B = 4 - C - T;
     ev += (f[4] / (f[C] * f[T] * f[B])) / 81 * best;

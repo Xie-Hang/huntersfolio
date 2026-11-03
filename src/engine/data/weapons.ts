@@ -19,9 +19,9 @@ const MAUL: Move[] = [
   { name: 'Skullcrack', need: 'CTT', dmg: 56, part: 2, daze: DZ.strong }
 ];
 const BOW: Move[] = [
-  { name: 'Quick Shot', need: 'C', dmg: 12 },
-  { name: 'Volley', need: 'CC', dmg: 28 },
-  { name: 'Pinning Shot', need: 'CTT', dmg: 54, part: 1.5, pin: true }
+  { name: 'Quick Shot', need: 'C', dmg: 12, expose: true },
+  { name: 'Volley', need: 'CC', dmg: 28, expose: true },
+  { name: 'Pinning Shot', need: 'CTT', dmg: 54, part: 1.5, pin: true, expose: true }
 ];
 
 const list: WeaponDef[] = [
@@ -49,8 +49,8 @@ export const TREES: { type: DamageType; nodes: [string, number][] }[] = [
   { type: 'Pierce', nodes: [['bow', 0], ['sinewbow', 1], ['windbow', 1], ['ridgebow', 1]] }
 ];
 
-export const SIGNATURES: Record<DamageType, { tag: 'flow' | 'daze' | 'pin'; name: string; text: string }> = {
+export const SIGNATURES: Record<DamageType, { tag: 'flow' | 'daze' | 'expose'; name: string; text: string }> = {
   Cut: { tag: 'flow', name: 'Flow', text: 'Light moves give you a reroll.' },
   Blunt: { tag: 'daze', name: 'Daze', text: 'Hits to the head part fill a daze meter. Full meter: the monster loses its action, then recovers for a turn.' },
-  Pierce: { tag: 'pin', name: 'Pin', text: 'Hits count ×1.5 toward breaks. Ignores mud and flight, and is safe from molten shells. Pinning Shot interrupts wind-ups and grounds fliers.' }
+  Pierce: { tag: 'expose', name: 'Expose', text: 'Hits expose the part for 2 turns: every hit there, from either weapon, deals +15% and counts double toward breaking it.' }
 };

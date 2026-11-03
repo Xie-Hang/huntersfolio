@@ -17,7 +17,7 @@ describe('average damage shown on weapons', () => {
   it('matches the tuned values', () => {
     expect(E.avgDmg(E.WEAPONS.blade.moves)).toBe(30);
     expect(E.avgDmg(E.WEAPONS.maul.moves)).toBe(33);
-    expect(E.avgDmg(E.WEAPONS.bow.moves)).toBe(29);
+    expect(E.avgDmg(E.WEAPONS.bow.moves)).toBe(30); // includes Expose on follow-up arrows
     expect(E.avgDmg(E.movesAt('tusk', 0))).toBe(42);
   });
 });
@@ -39,6 +39,29 @@ describe('items', () => {
     E.abandon(h); E.settleHunt(s, h);
     expect(s.items.salve).toBe(0);
     expect(h.reward?.lost).toBe(3);
+  });
+});
+
+describe('Expose (Pierce)', () => {
+  it('a Pierce hit exposes the part; the next hit there, from any weapon, gets +15% and double break progress', () => {
+    const s = starter(); s.weapons = { bow: { lv: 0 }, blade: { lv: 0 } }; s.loadout.weapons = ['bow', 'blade'];
+    const h = E.startHunt(s, 2); h.target = 'hide';
+    h.dice = [{ face: 'C', used: null }, { face: 'B', used: null }, { face: 'C', used: null }, { face: 'B', used: null }];
+    E.useMove(h, 0); // Quick Shot 12: exposes, gets no bonus itself
+    expect(h.mon.parts.hide.exposed).toBe(E.EXPOSE_TURNS);
+    expect(h.mon.parts.hide.hp).toBe(240 - 6); // Pierce is Half on the hide
+    E.swap(h, [1]);
+    const hit = E.useMove(h, 0)!; // Slash 12 → 14 exposed; Cut is Best on the hide, ×2 toward the break
+    expect(hit.dmg).toBe(14);
+    expect(h.mon.parts.hide.hp).toBe(240 - 6 - 28);
+  });
+  it('wears off after two turns', () => {
+    const s = starter(); const h = E.startHunt(s, 2); h.mon.parts.hide.exposed = E.EXPOSE_TURNS; h.php = 999;
+    E.endTurn(h); expect(h.mon.parts.hide.exposed).toBe(1);
+    E.endTurn(h); expect(h.mon.parts.hide.exposed).toBe(0);
+  });
+  it('the average-damage display uses the same bonus as combat', () => {
+    expect(E.EXPOSE_DMG_FOR_AVG).toBe(E.EXPOSE_DMG);
   });
 });
 

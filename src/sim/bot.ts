@@ -20,7 +20,8 @@ const need = (s: string) => ({ C: [...s].filter(c => c === 'C').length, T: [...s
 function effFor(h: Hunt, w: Hunt['weps'][number], partId: string): number {
   if (!E.canHit(h, w) || !E.reachable(h, partId, w)) return 0;
   const p = E.monsterOf(h).parts.find(x => x.id === partId)!;
-  return p.eff[w.type] * (w.type === 'Pierce' ? E.PIERCE_BREAK_BONUS : 1) * (E.airborneHalf(h, w) ? 0.5 : 1);
+  const exposed = h.mon.parts[partId].exposed > 0 ? E.EXPOSE_BREAK * E.EXPOSE_DMG : 1;
+  return p.eff[w.type] * exposed * (E.airborneHalf(h, w) ? 0.5 : 1);
 }
 
 function chooseTarget(h: Hunt, p: Policy) {
@@ -95,6 +96,47 @@ function bestPlan(h: Hunt, p: Policy): Plan {
   return best ?? { moves: [], guard: [], charge: [], score: 0 };
 }
 
+/** Skilled only: is "one Pierce shot, swap, then the other weapon" better than a normal turn? Tried on copies. */
+function tryExposeCombo(h: Hunt, p: Policy): boolean {
+  if (p.skill !== 'skilled' || h.over) return false;
+  const cur = E.currentWeapon(h), oth = E.otherWeapon(h);
+  if (cur.type !== 'Pierce' || oth.type === 'Pierce' || !E.canHit(h, oth)) return false;
+  const base = clone(h); const bp = bestPlan(base, p); applyPlan(base, bp);
+  const baseScore = stateScore(h, base);
+  let best: { i: number; score: number } | null = null;
+  for (let i = 0; i < 3; i++) {
+    const c = clone(h);
+    if (!E.useMove(c, i)) continue;
+    if (c.over) { best = { i, score: Infinity }; break; }
+    const free = E.freeDice(c); if (free.length < 2) continue;
+    const blank = free.find(j => c.dice[j].face === 'B');
+    E.swap(c, [blank ?? free[0]]);
+    applyPlan(c, bestPlan(c, p));
+    const sc = stateScore(h, c);
+    if (sc > baseScore && (!best || sc > best.score)) best = { i, score: sc };
+  }
+  if (!best) return false;
+  E.useMove(h, best.i); if (h.over) return true;
+  const free = E.freeDice(h), blank = free.find(j => h.dice[j].face === 'B');
+  E.swap(h, [blank ?? free[0]]);
+  applyPlan(h, bestPlan(h, p));
+  return true;
+}
+function applyPlan(h: Hunt, plan: Plan) {
+  for (const i of plan.moves) { if (!E.useMove(h, i)) break; if (h.over) return; }
+  if (plan.guard.length) E.guard(h, plan.guard);
+  if (plan.charge.length) E.charge(h, plan.charge);
+}
+/** Score a finished turn the way evaluate() does (skilled). */
+function stateScore(h0: Hunt, c: Hunt): number {
+  if (c.over === 'win') return 10_000 + (h0.mon.hp - c.mon.hp);
+  const dealt = h0.mon.hp - c.mon.hp;
+  const partProg = Object.keys(c.mon.parts).reduce((n, k) => n + (h0.mon.parts[k].hp - c.mon.parts[k].hp), 0);
+  const taken = (E.incoming(c)?.net ?? 0) + (h0.php - c.php);
+  const risk = 1 + 3 * (1 - c.php / c.pmax);
+  return dealt + 0.5 * partProg - risk * taken + (c.chargePending ? 30 : 0) - (c.php - taken <= 0 ? 1000 : 0);
+}
+
 export function playTurn(h: Hunt, p: Policy) {
   chooseTarget(h, p);
   const free = E.freeDice(h);
@@ -116,6 +158,7 @@ export function playTurn(h: Hunt, p: Policy) {
     const toRoll = fr.filter(i => { const f = h.dice[i].face; if (f === 'C' && kc > 0) { kc--; return false; } if (f === 'T' && kt > 0) { kt--; return false; } if (f === 'B' && big) return false; return true; });
     if (toRoll.length) E.reroll(h, toRoll);
   }
+  if (tryExposeCombo(h, p)) return;
   const plan = bestPlan(h, p);
   if (h.item && E.ITEMS[h.item].effect.startsWith('whet') && plan.moves.includes(2) && E.itemUsable(h)) E.useItem(h);
   for (const i of plan.moves) { E.useMove(h, i); if (h.over) return; }

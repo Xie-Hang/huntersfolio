@@ -69,6 +69,18 @@ describe('progression pacing (Gorehorn)', () => {
   it('everything at +3 around hunt 12–22', () => { expect(at('done')).toBeGreaterThanOrEqual(12); expect(at('done')).toBeLessThanOrEqual(22); });
 });
 
+describe('Expose (the bow sets up breaks)', () => {
+  it('skilled bow + maul breaks more Gorehorn parts than blade + maul', () => {
+    const bow = matchup({ ...starterSalves('gorehorn'), weapons: [['bow', 0], ['maul', 0]] }, { skill: 'skilled', capture: true }, N);
+    const blade = matchup(starterSalves('gorehorn'), { skill: 'skilled', capture: true }, N);
+    expect(bow.parts).toBeGreaterThan(blade.parts + 0.3);
+  });
+  it('a bow is no longer a handicap against the Gorehorn for casual players', () => {
+    const r = matchup({ ...starterSalves('gorehorn'), weapons: [['bow', 0], ['maul', 0]] }, { skill: 'casual', capture: true }, N);
+    expect(r.win).toBeGreaterThanOrEqual(0.88);
+  });
+});
+
 describe('daze', () => {
   // Playtest: with upgraded mauls the Gorehorn was losing half its turns, often back to back.
   it('never stuns two monster actions in a row, and takes at most about a fifth of its turns', async () => {

@@ -7,7 +7,7 @@
 // Breaking the claws: it burrows less often.
 // Breaking the vents: no more molten shell. Breaking the head plate: weaker eruption.
 import type { Intent, MonsterDef } from '../../types';
-import { carries, carryingName, dazeTag, pinTag } from '../../util';
+import { carries, carryingName, dazeTag } from '../../util';
 
 export const MOLTEN_TURNS = 2;
 const moltenBurn = (enraged: boolean) => (enraged ? 8 : 5);
@@ -105,7 +105,7 @@ export const cinderback: MonsterDef = {
       if (h.item && h.itemCharges > 0 && h.item === 'blast') return 'Throw the Blast Powder to force it up.';
       return 'Only Blunt reaches it underground. Guard for the eruption.';
     }
-    if (m.molten > 0) return `Molten shell: Cut and Blunt hits burn you ${moltenBurn(m.enraged)}.${carries(h, 'Pierce') ? ` ${pinTag} Pierce is safe (${carryingName(h, 'Pierce')}).` : ''}`;
+    if (m.molten > 0) return `Molten shell: Cut and Blunt hits burn you ${moltenBurn(m.enraged)}.${carries(h, 'Pierce') ? ` Pierce is safe (${carryingName(h, 'Pierce')}).` : ''}`;
     if (type === 'burrow' && carries(h, 'Blunt')) return `It’s about to dig in. Keep your ${carryingName(h, 'Blunt')} ready.`;
     return null;
   },

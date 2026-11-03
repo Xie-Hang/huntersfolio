@@ -1,7 +1,7 @@
 // The Gorehorn — T1 Stone ridge boar. Tutorial monster: a fixed, learnable cycle.
 // Pattern: Jab → Jab → Wind-up → Charge, repeating. Mud Wallow once below 70%, Root once below 30%.
 import type { Intent, MonsterDef } from '../../types';
-import { carries, carryingName, dazeTag, pinTag } from '../../util';
+import { carries, carryingName, dazeTag } from '../../util';
 
 export const gorehorn: MonsterDef = {
   id: 'gorehorn',
@@ -84,8 +84,8 @@ export const gorehorn: MonsterDef = {
   },
 
   tip(h, type) {
-    if (type === 'windup' && carries(h, 'Pierce')) return `${pinTag} Pinning Shot now cancels the charge (${carryingName(h, 'Pierce')}).`;
-    if (type === 'wallow' && carries(h, 'Pierce')) return `${pinTag} Pierce ignores the mud (${carryingName(h, 'Pierce')}).`;
+    if (type === 'windup' && carries(h, 'Pierce')) return `Pinning Shot now cancels the charge (${carryingName(h, 'Pierce')}).`;
+    if (type === 'wallow' && carries(h, 'Pierce')) return `Pierce ignores the mud (${carryingName(h, 'Pierce')}).`;
     if (type === 'charge' && carries(h, 'Blunt') && h.mon.daze >= h.mon.dazeMax * 0.6) return `${dazeTag} Fill the daze meter now to stop this charge.`;
     return null;
   }

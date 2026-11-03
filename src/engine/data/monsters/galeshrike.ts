@@ -1,7 +1,7 @@
 // The Galeshrike — T1 Gale storm raptor. Spends half the fight airborne.
 // Pattern: Rake → Take off → Gust → Circle → Dive → Stuck, repeating.
 import type { Intent, MonsterDef } from '../../types';
-import { carries, carryingName, dazeTag, pinTag } from '../../util';
+import { carries, carryingName, dazeTag } from '../../util';
 
 export function airTurns(h: { mon: { enraged: boolean; parts: Record<string, { broken: boolean }> } }): number {
   let n = h.mon.enraged ? 3 : 2;
@@ -86,7 +86,7 @@ export const galeshrike: MonsterDef = {
 
   tip(h, type) {
     const m = h.mon;
-    if (m.air && carries(h, 'Pierce')) return `${pinTag} Pinning Shot brings it down (${carryingName(h, 'Pierce')}).`;
+    if (m.air && carries(h, 'Pierce')) return `Pinning Shot brings it down (${carryingName(h, 'Pierce')}).`;
     if (m.air && h.item === 'net' && h.itemCharges > 0) return 'Throw the Weighted Net to bring it down.';
     if ((type === 'stuck' || type === 'crashed') && carries(h, 'Blunt')) return `${dazeTag} It’s grounded. Hit the crest while you can.`;
     if (m.air) return 'It’s airborne: Cut and Blunt deal half damage.';
