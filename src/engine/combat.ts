@@ -1,6 +1,6 @@
 // Combat rules. Every action mutates the hunt in place and returns true if it happened.
 // The UI keeps its own snapshots for Undo (structuredClone the hunt before an action).
-import type { Hunt, Intent, Save, Tone, WeaponInst } from './types';
+import type { Face, Hunt, Intent, Save, Tone, WeaponInst } from './types';
 import { MONSTERS } from './data/monsters';
 import { groundFlier } from './data/monsters/galeshrike';
 import { unearth } from './data/monsters/cinderback';
@@ -36,8 +36,13 @@ export function log(h: Hunt, t: string, tone: Tone = '') {
 }
 
 /* ---------- start ---------- */
-/** Builds a hunt from the save's loadout. Carried item charges leave the stash now. */
-export function startHunt(s: Save, seed: number): Hunt {
+/** The first hunt's opening rolls, so the tutorial's lessons always land: turn 1 affords the
+ *  starter weapons' strongest move with a die left over to Guard; turn 2 is a near miss to teach Reroll. */
+export const TUTORIAL_SCRIPT: Face[][] = [['C', 'C', 'T', 'B'], ['C', 'T', 'B', 'B']];
+
+/** Builds a hunt from the save's loadout. Carried item charges leave the stash now.
+ *  `script` fixes the faces of the opening turns (the tutorial); later turns roll from the seed. */
+export function startHunt(s: Save, seed: number, script?: Face[][]): Hunt {
   fixLoadout(s);
   const L = s.loadout, MD = MONSTERS[L.target], arm = armorInst(L.armor, lvOf(s.armors, L.armor));
   let item = L.item, carried = 0;
@@ -53,7 +58,8 @@ export function startHunt(s: Save, seed: number): Hunt {
     mon: { hp: MD.hp, max: MD.hp, parts, enraged: false, daze: 0, dazeMax: DAZE_START, dazeLock: 0, seq: 0, charges: 0, usedWallow: false, usedRoot: false, exhausted: false, wallow: 0, air: false, airLeft: 0, under: false, molten: 0, plating: MD.plated ?? 0 },
     intent: '', log: [], over: null, captured: false,
     stats: { dealt: 0, taken: 0, guarded: 0, broken: 0, rerollsUsed: 0 },
-    reward: null, rng: seed | 0
+    reward: null, rng: seed | 0,
+    ...(script?.length ? { script: script.map(t => [...t]) } : {})
   };
   rollAll(h);
   h.intent = MD.next(h, null);
@@ -62,7 +68,10 @@ export function startHunt(s: Save, seed: number): Hunt {
   return h;
 }
 
-function rollAll(h: Hunt) { h.dice = [0, 1, 2, 3].map(() => ({ face: rollFace(h), used: null })); }
+function rollAll(h: Hunt) {
+  const fixed = h.script?.[h.turn - 1];
+  h.dice = [0, 1, 2, 3].map(i => ({ face: fixed?.[i] ?? rollFace(h), used: null }));
+}
 
 /* ---------- reading the state ---------- */
 export const intentInfo = (h: Hunt): Intent => def(h).intent(h, h.intent);

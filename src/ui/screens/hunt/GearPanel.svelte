@@ -27,6 +27,8 @@
   const capOk = $derived(capLive && n === 2 && !E.captureBlocked(h));
   const capAt = $derived(Math.floor(h.mon.max * E.CAPTURE_AT));
   const iOk = $derived(!over && E.itemUsable(h));
+  /** the strongest move you can use now (the tutorial points at it) */
+  const bestReady = $derived(w.moves.reduce((b, mv, i) => (E.canUseMove(h, i) && (b < 0 || mv.dmg > w.moves[b].dmg) ? i : b), -1));
 </script>
 
 <section class="panel" aria-label="Your gear">
@@ -42,7 +44,7 @@
 
   {#each w.moves as mv, i}
     {@const ok = E.canUseMove(h, i)}
-    <button class="move {ok ? 'ready' : 'no'}" aria-disabled={!ok} onclick={() => ok && game.move(i)}>
+    <button class="move {ok ? 'ready' : 'no'}" data-coach={i === bestReady ? 'move' : undefined} aria-disabled={!ok} onclick={() => ok && game.move(i)}>
       <span>
         <span class="mn">{mv.name}{#if mv.flow}<span class="tag flow">Flow</span>{/if}{#if mv.daze}<span class="tag daze">Daze</span>{/if}{#if mv.expose}<span class="tag expose">Expose</span>{/if}</span>
         <span class="md">{#if iceNow}{iceLine}{:else}{shownDmg(mv.dmg)} damage{halfAir ? ', halved in the air' : ''}{exposedNow ? ', exposed' : ''}{mv.part ? ` · ×${mv.part} toward breaks` : ''}{mv.daze ? ` · Daze +${mv.daze}` : ''}{/if}</span>
@@ -52,17 +54,17 @@
   {/each}
 
   <div class="divider"><span class="label">Or spend selected dice</span><span class="label">{n} selected</span></div>
-  <button class="move dash {gOk ? 'ready' : 'no'}" aria-disabled={!gOk} onclick={() => gOk && game.guard()}>
+  <button class="move dash {gOk ? 'ready' : 'no'}" data-coach="guard" aria-disabled={!gOk} onclick={() => gOk && game.guard()}>
     <span><span class="mn">Guard</span><span class="md">Blocks {h.arm.guard} per die{h.arm.blankx2 ? ' · Blanks block double' : ''}</span></span><span class="need">Any</span>
   </button>
   <button class="move dash {cOk ? 'ready' : 'no'}" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
     <span><span class="mn">Charge</span><span class="md">Your first hit next turn deals double</span></span><span class="need">{cd}</span>
   </button>
-  <button class="move dash {sOk ? 'ready' : 'no'}" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
+  <button class="move dash {sOk ? 'ready' : 'no'}" data-coach="swap" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
     <span><span class="mn">Swap to {other.name}</span><span class="md">{other.type} · {other.elem ?? 'No element'}</span></span><span class="need">1</span>
   </button>
   <!-- Always shown, so players learn it exists before it's available. -->
-  <button class="move capture {capLive && !E.captureBlocked(h) ? 'live' : ''} {capOk ? 'ready' : 'no'}" aria-disabled={!capOk} onclick={() => capOk && game.capture()}>
+  <button data-coach="capture" class="move capture {capLive && !E.captureBlocked(h) ? 'live' : ''} {capOk ? 'ready' : 'no'}" aria-disabled={!capOk} onclick={() => capOk && game.capture()}>
     <span>
       <span class="mn">Capture</span>
       <span class="md">

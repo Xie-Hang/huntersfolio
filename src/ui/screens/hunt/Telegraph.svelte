@@ -19,13 +19,13 @@
     <span>Parts broken <b>{h.stats.broken} / {M.parts.length}</b></span><span>Rerolls used <b>{h.stats.rerollsUsed}</b></span>
   </div>
   <div style="display:flex;gap:10px;flex-wrap:wrap">
-    <button class="btn primary" onclick={() => game.go('forge')}>Go to the Forge</button>
+    <button class="btn primary" data-coach="to-forge" onclick={() => game.go('forge')}>Go to the Forge</button>
     <button class="btn" onclick={() => game.go('shop')}>Shop</button>
     <button class="btn" onclick={() => game.go('board')}>Hunt Board</button>
   </div>
 {/snippet}
 
-<section class="panel tele {cls}" aria-live="polite">
+<section class="panel tele {cls}" data-coach="tele" aria-live="polite">
   {#if h.over && h.reward}
     {@const r = h.reward}
     {#if h.over === 'win'}

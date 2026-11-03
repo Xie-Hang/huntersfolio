@@ -6,7 +6,7 @@ import { WEAPONS } from './data/weapons';
 import { ARMORS } from './data/gear';
 import { MONSTERS } from './data/monsters';
 
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 
 export function newSave(): Save {
   return {
@@ -21,7 +21,8 @@ export function newSave(): Save {
     hunts: 0,
     record: {},
     tracked: null,
-    charms: {}
+    charms: {},
+    tips: []
   };
 }
 
@@ -38,7 +39,9 @@ const MIGRATIONS: ((s: any) => any)[] = [
     return { ...s, record: rec, loadout, version: 2 };
   },
   // v2 → v3: charms (4 Nov 2026). Nothing to convert; the charm slot starts empty.
-  s => ({ ...s, charms: s.charms || {}, loadout: { ...(s.loadout || {}), charm: null }, version: 3 })
+  s => ({ ...s, charms: s.charms || {}, loadout: { ...(s.loadout || {}), charm: null }, version: 3 }),
+  // v3 → v4: tutorial tips (4 Nov 2026). Existing saves start with none seen; tips only show when they fit.
+  s => ({ ...s, tips: [], version: 4 })
 ];
 
 /** Turn anything loaded from storage into a valid, current Save. Unknown or broken data gives a fresh save. */
@@ -60,6 +63,7 @@ export function loadSave(raw: unknown): Save {
     record: { ...(s.record || {}) },
     weapons: Object.fromEntries(Object.entries(s.weapons || base.weapons).filter(([k]) => WEAPONS[k])) as Save['weapons'],
     armors: Object.fromEntries(Object.entries(s.armors || base.armors).filter(([k]) => ARMORS[k])) as Save['armors'],
+    tips: Array.isArray(s.tips) ? s.tips.filter((x: unknown) => typeof x === 'string') : [],
     charms: Object.fromEntries(Object.keys(s.charms || {}).filter(k => CHARMS[k]).map(k => [k, true])) as Save['charms']
   };
   if (!Object.keys(out.weapons).length) out.weapons = base.weapons;

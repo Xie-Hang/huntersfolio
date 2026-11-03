@@ -195,6 +195,8 @@ export interface Hunt {
   reward: Reward | null;
   /** seeded RNG state; hunts are deterministic given a seed */
   rng: number;
+  /** tutorial: fixed faces for the opening turns (index 0 = turn 1); later turns roll normally */
+  script?: Face[][];
 }
 
 export interface MonsterDef {
@@ -267,4 +269,6 @@ export interface Save {
   tracked: string | null;
   /** crafted charms (no levels) */
   charms: Record<string, true>;
+  /** tutorial tips this save has already shown */
+  tips: string[];
 }

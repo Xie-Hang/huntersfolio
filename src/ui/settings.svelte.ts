@@ -4,8 +4,8 @@ import { read, write } from './storage';
 const KEY = 'settings';
 import { UI_SIZES } from './display';
 
-interface Prefs { music: number; sfx: number; fullscreen: boolean; uiSize: number }
-const DEFAULTS: Prefs = { music: 0.7, sfx: 0.8, fullscreen: false, uiSize: 1 };
+interface Prefs { music: number; sfx: number; fullscreen: boolean; uiSize: number; tips: boolean }
+const DEFAULTS: Prefs = { music: 0.7, sfx: 0.8, fullscreen: false, uiSize: 1, tips: true };
 
 function loadPrefs(): Prefs {
   const raw = read(KEY) as Partial<Prefs> | null;
@@ -14,6 +14,7 @@ function loadPrefs(): Prefs {
     music: clamp(raw?.music, DEFAULTS.music),
     sfx: clamp(raw?.sfx, DEFAULTS.sfx),
     fullscreen: raw?.fullscreen === true,
+    tips: raw?.tips !== false,
     uiSize: (UI_SIZES as readonly number[]).includes(raw?.uiSize as number) ? (raw!.uiSize as number) : DEFAULTS.uiSize
   };
 }

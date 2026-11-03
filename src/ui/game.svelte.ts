@@ -61,10 +61,11 @@ class Game {
     E.fixLoadout(this.save);
     this.view = v;
   }
-  begin() {
+  /** `scripted`: the tutorial's first hunt, opening on fixed dice */
+  begin(scripted = false) {
     E.fixLoadout(this.save);
     if (this.save.loadout.weapons.length !== 2 || !E.isUnlocked(this.save, this.save.loadout.target)) return;
-    this.hunt = E.startHunt(this.save, E.randomSeed());
+    this.hunt = E.startHunt(this.save, E.randomSeed(), scripted ? E.TUTORIAL_SCRIPT : undefined);
     this.undoStack = [];
     this.sel = [];
     this.view = 'hunt';

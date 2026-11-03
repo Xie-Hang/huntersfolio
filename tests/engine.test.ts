@@ -245,6 +245,23 @@ describe('forge', () => {
   });
 });
 
+describe('tutorial', () => {
+  it('scripted opening turns use fixed faces, then the seed takes over', () => {
+    const a = E.startHunt(starter(), 42, E.TUTORIAL_SCRIPT), b = E.startHunt(starter(), 42);
+    expect(a.dice.map(d => d.face)).toEqual(E.TUTORIAL_SCRIPT[0]);
+    expect(E.canUseMove(a, 2)).toBe(true); // Rend on turn 1
+    E.endTurn(a); E.endTurn(b);
+    expect(a.dice.map(d => d.face)).toEqual(E.TUTORIAL_SCRIPT[1]);
+    E.endTurn(a); E.endTurn(b);
+    expect(a.dice.length).toBe(4);
+    expect(b.script).toBeUndefined();
+  });
+  it('saves keep the tips already shown, and old saves start with none', () => {
+    expect(E.loadSave({ ...starter(), tips: ['aim', 7] }).tips).toEqual(['aim']);
+    expect(E.loadSave({ version: 3, coin: 5 }).tips).toEqual([]);
+  });
+});
+
 describe('saves', () => {
   it('migrates a browser-prototype save (no version, numeric pity)', () => {
     const proto = { coin: 640, mats: { hide: 4, tusk: 2 }, weapons: { blade: { lv: 1 }, maul: { lv: 0 } }, armors: { jerkin: { lv: 0 } }, items: { salve: 2 }, loadout: { weapons: ['blade', 'maul'], armor: 'jerkin', item: 'salve', target: 'gorehorn' }, pity: 3, hunts: 7 };

@@ -2,6 +2,8 @@
   import * as E from '../engine';
   import { game, type View } from './game.svelte';
   import Modal from './parts/Modal.svelte';
+  import Coach from './parts/Coach.svelte';
+  import { coach } from './coach.svelte';
   import Board from './screens/Board.svelte';
   import Forge from './screens/Forge.svelte';
   import Shop from './screens/Shop.svelte';
@@ -81,7 +83,7 @@
       {#if !game.inHunt}
         <nav class="nav" aria-label="Town">
           {#each NAV as [v, label]}
-            <button aria-current={game.view === v ? 'page' : 'false'} onclick={() => game.go(v)}>{label}</button>
+            <button aria-current={game.view === v ? 'page' : 'false'} data-coach="nav-{v}" onclick={() => game.go(v)}>{label}</button>
           {/each}
         </nav>
       {/if}
@@ -127,6 +129,10 @@
         {/each}
       </span>
     </div>
+    <div class="setrow">
+      <span><span class="nm">Tutorial tips</span><span class="md">Short prompts the first time something happens. Turning them on again replays them from the start.</span></span>
+      <button class="btn quiet" role="switch" aria-checked={settings.prefs.tips} onclick={() => coach.setEnabled(!settings.prefs.tips)}>{settings.prefs.tips ? 'On' : 'Off'}</button>
+    </div>
     <div class="setrow"><span><span class="nm">Credits</span><span class="md">Music: placeholder tracks composed in code for Hunter's Folio. Final music to come. Sound effects: synthesized in code.</span></span></div>
     <div class="toast" aria-live="polite">{setToast}</div>
   </Modal>
@@ -157,3 +163,6 @@
   {:else if game.view === 'hunt' && game.hunt}<Hunt />
   {/if}
 </div>
+
+<Coach />
+

@@ -1,5 +1,6 @@
 <script lang="ts">
   // Four slots; tapping one swaps the slots for a picker list (sortable, filterable, with deltas).
+  import { coach } from '../../coach.svelte';
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
   import { SLOT_LABEL, bestParts, movesLine, weaponVs } from '../../fmt';
@@ -243,7 +244,7 @@
       <button class="btn primary" disabled>Locked</button>
     {:else}
       <span class="ital">{nWeapons === 2 ? 'Swap weapons mid-hunt for 1 die.' : 'Choose two weapons to bring.'}</span>
-      <button class="btn primary" data-sound disabled={nWeapons !== 2} onclick={() => game.begin()}>Hunt the {M.short}</button>
+      <button class="btn primary" data-sound data-coach="begin" disabled={nWeapons !== 2} onclick={() => game.begin(coach.scriptFirstHunt())}>Hunt the {M.short}</button>
     {/if}
   </div>
 </section>

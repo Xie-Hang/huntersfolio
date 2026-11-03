@@ -38,7 +38,7 @@
       {#if E.canCapture(h)}<span class="chip hot">Capturable</span>{/if}
     </div>
     <div class="ph rule"><span class="label">Parts</span><span class="label">Click a part to aim at it</span></div>
-    <div class="parts">
+    <div class="parts" data-coach="parts">
       {#each M.parts as p (p.id)}
         {@const st = m.parts[p.id]}
         {@const on = h.target === p.id}

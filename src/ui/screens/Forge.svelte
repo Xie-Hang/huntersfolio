@@ -152,14 +152,14 @@
         {/if}
         <div class="fd-acts">
           {#if r.action && r.cost}
-            <button class="btn primary" data-sound disabled={!E.canPay(s, r.cost)} onclick={doIt}>
+            <button class="btn primary" data-sound data-coach="forge-act" disabled={!E.canPay(s, r.cost)} onclick={doIt}>
               {r.action === 'craft' ? 'Craft' : r.action === 'upgrade' ? 'Upgrade' : `Reinforce to +${lv + 1}`}
             </button>
           {:else if owned}
             <span class="pl">{kind === 'c' ? 'Owned. Equip it at the Hunt Board.' : 'Fully reinforced.'}</span>
           {/if}
           {#if r.cost && (r.action || r.locked)}
-            <button class="btn quiet" aria-pressed={s.tracked === tk} onclick={track}>{s.tracked === tk ? 'Untrack' : 'Track'}</button>
+            <button class="btn quiet" data-coach="track" aria-pressed={s.tracked === tk} onclick={track}>{s.tracked === tk ? 'Untrack' : 'Track'}</button>
           {/if}
           {#if r.action === 'upgrade'}
             {@const from = E.WEAPONS[sel].from!}
