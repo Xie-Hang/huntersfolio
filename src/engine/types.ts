@@ -158,6 +158,8 @@ export interface Reward {
   returned: number;
   /** item charges lost (fail) */
   lost: number;
+  /** monsters this hunt unlocked */
+  unlocked?: string[];
 }
 
 export interface Hunt {
@@ -243,6 +245,8 @@ export interface MonsterDef {
   burrower?: boolean;
   /** grows ice plating: layers it starts with (and the UI shows ice notes) */
   plated?: number;
+  /** must have beaten this monster before it can be hunted (Tier 1: the Gorehorn) */
+  requires?: string;
 }
 
 export interface Loadout { weapons: string[]; armor: string; charm: string | null; item: string | null; target: string }

@@ -26,6 +26,7 @@ export const galeshrike: MonsterDef = {
   resist: 'Stone',
   hp: 380,
   tier: 1,
+  requires: 'gorehorn',
   head: 'crest',
   common: 'plume',
   rarePart: 'crest',

@@ -51,11 +51,12 @@
         <div class="group">{E.TIERS[g.t]}</div>
         {#each g.known as M (M.id)}
           {@const r = record(game.save, M.id)}
-          <button class="mrow" data-id={M.id} aria-current={M.id === game.save.loadout.target} onclick={() => pick(M.id)}>
+          {@const open = E.isUnlocked(game.save, M.id)}
+          <button class="mrow" class:locked={!open} data-id={M.id} aria-current={M.id === game.save.loadout.target} onclick={() => pick(M.id)}>
             <span class="thumb" aria-hidden="true"><Plate mon={M.id} /></span>
             <span>
               <span class="nm">{M.short}</span>
-              <span class="meta"><span><span class="edot {M.elem}"></span>{M.elem}</span><span>Weak: {M.weak}</span><span class={r.wins ? '' : 'new'}>{r.wins ? `Hunted ×${r.wins}` : 'Not yet hunted'}</span></span>
+              <span class="meta"><span><span class="edot {M.elem}"></span>{M.elem}</span><span>Weak: {M.weak}</span>{#if open}<span class={r.wins ? '' : 'new'}>{r.wins ? `Hunted ×${r.wins}` : 'Not yet hunted'}</span>{:else}<span>Locked · Beat the {E.MONSTERS[M.requires!].short} first</span>{/if}</span>
             </span>
           </button>
         {/each}

@@ -62,7 +62,7 @@ class Game {
   }
   begin() {
     E.fixLoadout(this.save);
-    if (this.save.loadout.weapons.length !== 2) return;
+    if (this.save.loadout.weapons.length !== 2 || !E.isUnlocked(this.save, this.save.loadout.target)) return;
     this.hunt = E.startHunt(this.save, E.randomSeed());
     this.undoStack = [];
     this.sel = [];

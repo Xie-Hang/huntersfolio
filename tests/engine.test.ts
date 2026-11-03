@@ -213,6 +213,23 @@ describe('charms', () => {
   });
 });
 
+describe('hunt unlocks', () => {
+  it('only the Gorehorn is open at first; beating it unlocks the other Tier 1 monsters', () => {
+    const s = starter();
+    expect(E.isUnlocked(s, 'gorehorn')).toBe(true);
+    expect(['galeshrike', 'cinderback', 'rimetail'].some(id => E.isUnlocked(s, id))).toBe(false);
+    const h = E.startHunt(s, 1); h.over = 'win'; E.settleHunt(s, h);
+    expect(h.reward?.unlocked?.sort()).toEqual(['cinderback', 'galeshrike', 'rimetail']);
+    expect(E.isUnlocked(s, 'rimetail')).toBe(true);
+  });
+  it('a failed Gorehorn hunt unlocks nothing; older saves that already hunted a monster keep it open', () => {
+    const s = starter(); const h = E.startHunt(s, 1); E.abandon(h); E.settleHunt(s, h);
+    expect(E.isUnlocked(s, 'galeshrike')).toBe(false);
+    s.record.galeshrike = { hunts: 2, wins: 0, captures: 0, breaks: {} };
+    expect(E.isUnlocked(s, 'galeshrike')).toBe(true);
+  });
+});
+
 describe('forge', () => {
   it('an upgrade replaces its parent, keeps reinforcement and updates the loadout', () => {
     const s = starter(); s.coin = 1000; s.mats.tusk = 3; s.mats.hide = 2; s.weapons.maul.lv = 2;

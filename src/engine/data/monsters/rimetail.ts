@@ -22,6 +22,7 @@ export const rimetail: MonsterDef = {
   resist: 'Gale',
   hp: 320,
   tier: 1,
+  requires: 'gorehorn',
   head: 'jaw',
   common: 'rimescale',
   rarePart: 'mantle',

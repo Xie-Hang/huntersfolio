@@ -41,6 +41,7 @@
       {#if h.mon.parts[M.rarePart].broken && !r.rare}
         <p class="ital p0">No {E.matName(M.rare)} this time. Pity counter: {game.save.pity[M.rare] ?? 0} / {E.RARE.pityGuarantee}.</p>
       {/if}
+      {#if r.unlocked?.length}<p class="unlock p0">New hunts unlocked: {r.unlocked.map(id => E.MONSTERS[id].short).join(', ')}.</p>{/if}
       {#if r.returned && h.item}<p class="ital p0">{r.returned} unused {E.ITEMS[h.item].name} returned to your stash.</p>{/if}
     {:else}
       <span class="kicker">Hunt failed</span>

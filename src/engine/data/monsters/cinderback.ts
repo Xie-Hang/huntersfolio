@@ -30,6 +30,7 @@ export const cinderback: MonsterDef = {
   resist: 'Frost',
   hp: 400,
   tier: 1,
+  requires: 'gorehorn',
   head: 'plate',
   common: 'cinderscale',
   rarePart: 'plate',

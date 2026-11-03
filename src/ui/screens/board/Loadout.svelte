@@ -238,7 +238,12 @@
   {/if}
 
   <div class="campfoot">
-    <span class="ital">{nWeapons === 2 ? 'Swap weapons mid-hunt for 1 die.' : 'Choose two weapons to bring.'}</span>
-    <button class="btn primary" disabled={nWeapons !== 2} onclick={() => game.begin()}>Hunt the {M.short}</button>
+    {#if !E.isUnlocked(game.save, mon)}
+      <span class="ital">Beat the {E.MONSTERS[M.requires!].short} to unlock this hunt. You can still read up and prepare.</span>
+      <button class="btn primary" disabled>Locked</button>
+    {:else}
+      <span class="ital">{nWeapons === 2 ? 'Swap weapons mid-hunt for 1 die.' : 'Choose two weapons to bring.'}</span>
+      <button class="btn primary" disabled={nWeapons !== 2} onclick={() => game.begin()}>Hunt the {M.short}</button>
+    {/if}
   </div>
 </section>

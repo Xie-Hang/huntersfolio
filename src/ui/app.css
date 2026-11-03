@@ -72,6 +72,9 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .mrow[aria-current="true"] .nm{color:var(--gold-hi)}
 .mrow .meta{font-size:var(--fs-sm);color:var(--muted);display:flex;gap:6px;flex-wrap:wrap}
 .mrow .new{color:var(--gold-hi)}
+.mrow.locked{opacity:.7}
+.mrow.locked .meta{color:var(--muted)}
+.unlock{color:var(--gold-hi);font-size:var(--fs-md)}
 .mrow.unknown{cursor:default;opacity:.55}
 .mrow.unknown:hover{border-color:transparent}
 .mrow.unknown .thumb{font-family:var(--f-body);font-size:var(--fs-lg);color:var(--muted)}

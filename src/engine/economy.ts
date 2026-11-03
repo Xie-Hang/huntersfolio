@@ -212,10 +212,18 @@ export function fixLoadout(s: Save) {
   if (L.charm === undefined || (L.charm && !s.charms[L.charm])) L.charm = null;
 }
 
+/* ---------- unlocks ---------- */
+/** Can this monster be hunted? Locked until its prerequisite is beaten. Already-hunted monsters stay open. */
+export function isUnlocked(s: Save, id: string): boolean {
+  const req = MONSTERS[id]?.requires;
+  return !req || (s.record[req]?.wins ?? 0) > 0 || (s.record[id]?.hunts ?? 0) > 0;
+}
+
 /** Apply a finished hunt's results to the save. Safe to call more than once. */
 export function settleHunt(s: Save, h: Hunt) {
   if (!h.over || h.reward) return;
   const MD = MONSTERS[h.mid];
+  const lockedBefore = Object.keys(MONSTERS).filter(id => !isUnlocked(s, id));
   s.hunts++;
   const rec = (s.record[h.mid] ??= { hunts: 0, wins: 0, captures: 0, breaks: {} });
   rec.hunts++;
@@ -236,7 +244,7 @@ export function settleHunt(s: Save, h: Hunt) {
     s.coin += coin;
     for (const [k, v] of Object.entries(mats)) s.mats[k] = (s.mats[k] ?? 0) + v;
     if (h.item) s.items[h.item] = (s.items[h.item] ?? 0) + h.itemCharges;
-    h.reward = { coin, mats, rare, returned: h.item ? h.itemCharges : 0, lost: 0 };
+    h.reward = { coin, mats, rare, returned: h.item ? h.itemCharges : 0, lost: 0, unlocked: lockedBefore.filter(id => isUnlocked(s, id)) };
   } else {
     h.reward = { coin: 0, mats: {}, rare: false, returned: 0, lost: h.item ? h.carried : 0 };
   }
