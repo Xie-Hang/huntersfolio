@@ -473,3 +473,31 @@ svg.wc.pose-dazed .stars{opacity:1;animation:wc-orbit 1.4s linear infinite}
 @keyframes wc-glow{50%{opacity:.45}}
 svg.wc.static *{animation:none!important}
 @media (prefers-reduced-motion: reduce){svg.wc *{animation:none!important;transition:none!important}}
+
+/* Compact layout for screens up to 1100 px tall (1080p and below: most players, and the default 1440×900 window).
+   Everything a turn needs (dice, End turn, every move, Capture and the item) has to fit without scrolling. */
+@media (max-height:1100px){
+  .wrap{padding-block:14px 24px;gap:12px}
+  .top{padding-bottom:10px}
+  .top h1{font-size:var(--fs-logo)}
+  .grid{gap:12px}
+  .grid .panel{padding:14px 16px;gap:8px}
+  .center{gap:12px}
+  .grid .move{min-height:42px;padding:5px 12px;line-height:1.3}
+  .grid .move .mn{font-size:var(--fs-md)}
+  .grid .divider{padding:2px 0}
+  .grid .die{width:66px;height:66px}
+  .grid .die svg{width:32px;height:32px}
+  .tele .tip{padding:6px 10px}
+  .tele .meta{padding-top:8px}
+}
+/* 768-tall laptops: the dashed actions drop their one-line explanations (How to play and hovering still explain them) */
+@media (max-height:820px){
+  .grid .move.dash .md{display:none}
+  .grid .move{min-height:38px}
+  .grid .panel{padding:12px 14px;gap:6px}
+  .grid .move.ready, .grid .move.no{min-height:36px}
+  .wrap{padding-block:10px 16px;gap:10px}
+  .tray{padding:4px 0 0}
+  .tele .say{font-size:var(--fs-md)}
+}
