@@ -201,6 +201,63 @@ ICONS = {
     'ALL_CHARMS': lambda: cord(['30 60', '128 120 226 60']) + charm('tusk', 66, 112, 1.05) + charm('plume', 108, 130, 1.05) + charm('kiln', 150, 130, 1.0) + charm('rime', 192, 112, 1.05),
 }
 
+
+# ---------- Mirewood and the bounty board (full game) ----------
+SEALRED, MOSS, WATER = '#a8402c', '#7f9159', '#3c5a5a'
+
+
+def mire(flag=True):
+    out = f'<ellipse cx="128" cy="190" rx="112" ry="22" fill="{WATER}" stroke="{INK}" stroke-width="5"/>'
+    out += f'<path d="M50 188 C66 182 94 182 110 188 M140 194 C160 188 190 188 206 194" stroke="{BONE2}" stroke-width="3" stroke-linecap="round" opacity=".6"/>'
+    hum = 'M70 186 C78 150 104 132 128 132 C152 132 178 150 186 186 Z'
+    out += f'<clipPath id="hm"><path d="{hum}"/></clipPath><path d="{hum}" fill="{BONE}" stroke="{INK}" stroke-width="6" stroke-linejoin="round"/><g clip-path="url(#hm)">{hatch(70, 150, 190, 190, 7, -10)}</g>'
+    for x, h, lean in [(40, 70, -6), (54, 92, 4), (66, 60, -2), (196, 84, 6), (210, 66, -4), (222, 96, 3)]:
+        stem = f'M{x} 190 q{lean} -{h / 2} {lean * 2} -{h}'
+        out += f'<path d="{stem}" fill="none" stroke="{INK}" stroke-width="6" stroke-linecap="round"/><path d="{stem}" fill="none" stroke="{MOSS}" stroke-width="3" stroke-linecap="round"/>'
+        out += f'<ellipse cx="{x + lean * 2}" cy="{190 - h + 6}" rx="5" ry="12" fill="{MUD}" stroke="{INK}" stroke-width="3"/>'
+    if flag:
+        out += f'<path d="M128 132 V62" stroke="{INK}" stroke-width="5" stroke-linecap="round"/><path d="M130 64 L170 74 L130 88 Z" fill="{EMBER}" stroke="{INK}" stroke-width="4" stroke-linejoin="round"/>'
+    return out
+
+
+def seal(cx, cy, s=1.0):
+    blob = ('M0 -60 C14 -60 18 -50 32 -48 C46 -46 46 -32 54 -22 C62 -10 56 2 58 14 C60 30 46 36 38 46 C28 58 14 56 0 60 '
+            'C-14 62 -26 54 -38 46 C-50 38 -58 28 -58 14 C-60 0 -52 -12 -54 -24 C-54 -40 -42 -46 -30 -50 C-18 -56 -12 -60 0 -60 Z')
+    return (f'<g transform="translate({cx} {cy}) scale({s})">'
+            f'<path d="{blob}" fill="{SEALRED}" stroke="{INK}" stroke-width="6" stroke-linejoin="round"/>'
+            f'<circle r="38" fill="none" stroke="{INK}" stroke-width="3.5" opacity=".55"/>'
+            f'<path d="M-18 16 L0 -24 L18 16 M-10 0 H10" fill="none" stroke="{GOLDHI}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>'
+            f'<path d="M-40 -30 Q-30 -44 -14 -48" fill="none" stroke="#d4735d" stroke-width="4" stroke-linecap="round"/></g>')
+
+
+def notice(x, y, w, h, ang, done=True):
+    lines = ''.join(f'<path d="M8 {14 + i * 11} H{w - 10 - (i % 2) * 14}" stroke="{INK}" stroke-width="3" stroke-linecap="round" opacity=".5"/>' for i in range(int((h - 30) / 11)))
+    return (f'<g transform="translate({x} {y}) rotate({ang})"><rect width="{w}" height="{h}" fill="{BONE}" stroke="{INK}" stroke-width="4"/>{lines}'
+            f'<circle cx="{w / 2}" cy="4" r="4" fill="{STEEL}" stroke="{INK}" stroke-width="2"/>{seal(w - 16, h - 14, 0.24) if done else ""}</g>')
+
+
+def board():
+    out = f'<rect x="28" y="36" width="200" height="164" rx="4" fill="#6b4a32" stroke="{INK}" stroke-width="6"/>'
+    out += ''.join(f'<path d="M30 {y} H226" stroke="{INK}" stroke-width="2.5" opacity=".45"/>' for y in (78, 120, 162))
+    out += f'<path d="M48 200 V226 M208 200 V226" stroke="{INK}" stroke-width="8" stroke-linecap="round"/>'
+    out += notice(42, 48, 56, 66, -4) + notice(102, 44, 52, 72, 3) + notice(160, 50, 54, 64, -2)
+    out += notice(48, 122, 54, 64, 3) + notice(108, 124, 50, 62, -3) + notice(164, 120, 52, 66, 2)
+    return out
+
+
+def blade_out(x=150, y=150):
+    return (f'<g transform="translate({x} {y}) rotate(-28)"><path d="M-8 0 L-8 -70 L0 -86 L8 -70 L8 0 Z" fill="{STEEL}" stroke="{INK}" stroke-width="5" stroke-linejoin="round"/>'
+            f'<path d="M0 -78 L0 -6" stroke="#9e978a" stroke-width="3"/></g>{sparks(x - 18, y - 4, 5, 16, 34)}')
+
+
+ICONS.update({
+    'MIREWOOD_CLEARED': lambda: mire(True),
+    'GUT_CHECK': lambda: plate('bog_digest', -10, 46, 280, (340, 110, 536, 376)) + blade_out(130, 196),
+    'TWO_HEADS': lambda: plate('dusk_reel', 4, 20, 260, (430, 0, 446, 400)),
+    'FIRST_BOUNTY': lambda: seal(128, 124, 1.5),
+    'ALL_BOUNTIES': lambda: board(),
+})
+
 for aid, fn in ICONS.items():
     body = fn()
     (SVG / f'{aid}.svg').write_text(frame(body, True))

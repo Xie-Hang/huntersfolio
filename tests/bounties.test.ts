@@ -71,3 +71,13 @@ describe('the bounty board', () => {
     expect(s.bounties).toEqual({}); expect(s.version).toBe(E.SAVE_VERSION);
   });
 });
+
+describe('full-game achievements', () => {
+  it('Bounty hunter on the first bounty; Gut check and Two heads down from hunt feats', () => {
+    const s = E.newSave(); s.bounties = { gore2: true };
+    expect(E.award(s)).toContain('FIRST_BOUNTY');
+    const h = E.startHunt(E.newSave(), 1); h.feats = ['escape', 'reelboth'];
+    const got = E.award(E.newSave(), h);
+    expect(got).toContain('GUT_CHECK'); expect(got).toContain('TWO_HEADS');
+  });
+});

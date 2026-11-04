@@ -4,6 +4,8 @@
 import type { Hunt, Save } from './types';
 import { MONSTERS } from './data/monsters';
 import { CHARMS } from './data/gear';
+import { BOUNTIES } from './data/bounties';
+import { EDITION } from './edition';
 
 export interface AchievementDef {
   id: string; name: string; desc: string;
@@ -15,6 +17,7 @@ export interface AchievementDef {
 
 const won = (h: Hunt) => h.over === 'win';
 const tier1 = () => Object.values(MONSTERS).filter(M => M.tier === 1).map(M => M.id);
+const tier2 = () => Object.values(MONSTERS).filter(M => M.tier === 2).map(M => M.id);
 const STARTERS = ['blade', 'maul'];
 
 export const ACHIEVEMENTS: AchievementDef[] = [
@@ -36,6 +39,14 @@ export const ACHIEVEMENTS: AchievementDef[] = [
   { id: 'FIRST_CHARM', name: 'Lucky charm', desc: 'Craft a charm.', save: s => Object.keys(s.charms).length > 0 },
   { id: 'ALL_CHARMS', name: 'Charm collector', desc: 'Craft every charm.', save: s => Object.keys(CHARMS).every(id => s.charms[id]) }
 ];
+// Full game: Mirewood and the bounty board (5 Nov 2026). Not in the demo, which has neither.
+if (EDITION === 'full') ACHIEVEMENTS.push(
+  { id: 'MIREWOOD_CLEARED', name: 'Mirewood', desc: 'Beat every monster in the Mirewood.', save: s => tier2().length > 0 && tier2().every(id => (s.record[id]?.wins ?? 0) > 0) },
+  { id: 'GUT_CHECK', name: 'Gut check', desc: 'Cut your way out of the Bogjaw.', hunt: h => !!h.feats?.includes('escape') },
+  { id: 'TWO_HEADS', name: 'Two heads down', desc: 'Set both of the Duskheron’s heads reeling in one hunt.', hunt: h => !!h.feats?.includes('reelboth') },
+  { id: 'FIRST_BOUNTY', name: 'Bounty hunter', desc: 'Complete a bounty.', save: s => Object.keys(s.bounties).length > 0 },
+  { id: 'ALL_BOUNTIES', name: 'Every name on the board', desc: 'Complete every bounty.', save: s => Object.keys(BOUNTIES).length > 0 && Object.keys(BOUNTIES).every(id => s.bounties[id]) }
+);
 
 /** Ids newly earned now (not yet in the save). Adds them to the save. Pass the hunt that just ended, if any. */
 export function award(s: Save, h: Hunt | null = null): string[] {
