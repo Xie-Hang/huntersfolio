@@ -39,7 +39,13 @@ src/
   sim/           The balance simulator: bots that play the real engine
   ui/            Svelte screens and components
     game.svelte.ts   The one place UI state lives (save, hunt, Undo, effects)
+    coach.svelte.ts  Tutorial tips: what each says, when it shows, when it's done
+    settings.svelte.ts  Player settings (volumes, fullscreen, interface size, tips)
+    keys.ts          Keyboard shortcuts in hunts
+    audio.ts, sfx.ts Music player and synthesized sound effects
+    display.ts       Fullscreen and interface size (desktop shell or browser)
     screens/         Hunt Board, Hunt, Forge, Shop
+    parts/           Shared pieces: Coach (tip card), Elem (element marks), Plate (engravings), Modal
 tests/           Rule checks and balance tests
 electron/        The desktop wrapper: window, save files, Steam hookup
 ```
@@ -47,6 +53,18 @@ electron/        The desktop wrapper: window, save files, Steam hookup
 **Adding a monster** is mostly adding a file in `src/engine/data/monsters/` and listing it in the roster. The simulator and balance tests pick it up from the same data.
 
 **A new monster also needs a plate:** its engraving lives in `src/ui/parts/Plate.svelte` until real art arrives.
+
+## Tutorial
+
+There's no separate training fight: the first Gorehorn hunt is the tutorial. Tips in `src/ui/coach.svelte.ts` appear one at a time, in list order, the first time they're relevant, and point at the element tagged with the matching `data-coach="..."` attribute. A tip retires when the player does what it says (or does it before the tip ever shows), when its moment passes, or on Got it. Seen tips are stored in the save (`tips`). To add one, add an entry to `TIPS` and tag the element it points at.
+
+The very first hunt opens on fixed dice for two turns (`TUTORIAL_SCRIPT` in `src/engine/combat.ts`) so the first lessons always work. To see the tutorial again: Settings → Tutorial tips off and on, or Reset save.
+
+## Settings and controls
+
+Player settings live apart from the save (key `settings`), so resetting progress keeps them. The desktop shell reads them at startup to open fullscreen if that was chosen. Interface size uses Electron's page zoom so layouts reflow; in the browser it falls back to CSS zoom.
+
+Hunt shortcuts: 1–4 dice, Q/W/E moves, G guard, C charge, S swap, X capture, I item, R reroll, Space end turn, Ctrl+Z or U undo, Esc clear selection. F11 toggles fullscreen anywhere.
 
 ## Saves
 
@@ -71,5 +89,6 @@ Steam doesn't use installers: upload the contents of `release/win-unpacked/` as 
 
 ## Not done yet
 
-- App icon (the default Electron icon is used)
+- App icon (the default Electron icon is used) and Steam store art: Mekkman is making these
+- Controller and Steam Deck support: planned after Steam Playtest
 - Code signing (Windows SmartScreen will warn on the zip; Steam builds are fine without it)
