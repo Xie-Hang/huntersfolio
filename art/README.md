@@ -19,3 +19,6 @@ The current store and library set is built from `keyart.py` (the charging Goreho
 
 ## Achievement icons v2 (woodcut)
 `ach2/capture.cjs` captures the in-game plates in chosen poses (preview server on :4173), `ach2/make_achievements.py` draws the 16 icons (monster ones from those poses, the rest drawn: crossed blade and maul, the ridge, net, folio, shield, gem, anvil, tempered blade, charms), `ach2/render.cjs` renders 256x256 JPGs, achieved + locked (grey, dim), into `ach2/out/`. Same API names and files as `achievements.csv`.
+
+## The nine monsters beyond Ashfall Ridge (concepts)
+`monsters/make_monsters.py` draws Bogjaw, Duskheron, Emberwhelk, Mistglass, Monolith Warden, Stormcrown Roc, Slagwyrm, Gorhydra and the Wanderer Sovereign in the plate style (1000x600, facing left, exported mirrored to face right as in the game); `monsters/render.cjs` makes transparent PNGs and a contact sheet. One pose each: telegraph poses and animation wait until each monster is designed (after Playtest). The SVG paths are written so they can be moved into `src/ui/parts/plates/` as Svelte plates later.
