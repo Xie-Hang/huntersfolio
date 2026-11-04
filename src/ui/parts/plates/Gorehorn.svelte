@@ -47,12 +47,12 @@
   $effect(() => {
     const a = game.pulse.act;
     if (!hunt || a === seenAct) return; seenAct = a;
-    if (!reduce) rig?.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(14px)', offset: 0.2 }, { transform: 'translateX(-90px) rotate(3deg)', offset: 0.55 }, { transform: 'translateX(0)' }], { duration: 520, easing: 'cubic-bezier(.3,.7,.3,1)' });
+    if (!reduce) rig?.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(40px) scaleY(.92) skewX(8deg)', offset: 0.22 }, { transform: 'translateX(-190px) skewX(-14deg)', offset: 0.5 }, { transform: 'translateX(-150px) skewX(-6deg)', offset: 0.62 }, { transform: 'translateX(0)' }], { duration: 640, easing: 'cubic-bezier(.3,.7,.3,1)' });
   });
   $effect(() => {
     const t = game.pulse.hit;
     if (!hunt || t === seenHit) return; seenHit = t;
-    if (!reduce) rig?.animate([{ transform: 'translateX(0)', filter: 'brightness(1.6)' }, { transform: 'translateX(22px) rotate(-2deg)', filter: 'brightness(1.15)', offset: 0.3 }, { transform: 'translateX(0)', filter: 'brightness(1)' }], { duration: 300, easing: 'ease-out' });
+    if (!reduce) rig?.animate([{ transform: 'translateX(0)', filter: 'brightness(1.9)' }, { transform: 'translateX(60px) scaleY(.94) skewX(10deg)', filter: 'brightness(1.3)', offset: 0.25 }, { transform: 'translateX(-10px) skewX(-3deg)', offset: 0.6 }, { transform: 'translateX(0)', filter: 'brightness(1)' }], { duration: 420, easing: 'ease-out' });
   });
 </script>
 
@@ -105,10 +105,10 @@
             <path {d} fill={tusks.broke ? BONE2 : GOLD} stroke={INK} stroke-width="8" stroke-linejoin="round" />
           {/each}
           {#if tusks.broke}<path d="M148 356 l10 -6 l6 10 l10 -6 M206 366 l10 -6 l6 10 l10 -6" fill="none" stroke={EMBER} stroke-width="5" stroke-linecap="round" />{/if}
+          <g class="stars" style="transform-origin:250px 130px"><path d="M120 78 Q131.44 118.56 172 130 Q131.44 141.44 120 182 Q108.56 141.44 68 130 Q108.56 118.56 120 78 Z" fill={GOLD} stroke={INK} stroke-width="6" stroke-linejoin="round" /><path d="M330 26 Q339.68 60.32 374 70 Q339.68 79.68 330 114 Q320.32 79.68 286 70 Q320.32 60.32 330 26 Z" fill={GOLD} stroke={INK} stroke-width="6" stroke-linejoin="round" /><path d="M300 164 Q307.92 192.08 336 200 Q307.92 207.92 300 236 Q292.08 207.92 264 200 Q292.08 192.08 300 164 Z" fill={GOLD} stroke={INK} stroke-width="6" stroke-linejoin="round" /></g>
           <g class="snort"><circle cx="70" cy="370" r="10" fill={BONE2} /><circle cx="44" cy="356" r="7" fill={BONE2} /><circle cx="60" cy="398" r="6" fill={BONE2} /></g>
         </g>
       </g>
-      <g class="stars" style="transform-origin:300px 150px"><circle cx="240" cy="150" r="10" fill={GOLD} /><circle cx="330" cy="120" r="8" fill={GOLD} /><circle cx="380" cy="170" r="7" fill={GOLD} /></g>
     </g>
   </g>
 </svg>
@@ -117,37 +117,48 @@
   /* drawn facing left (like the key art); flipped so it faces the player */
   svg { display: block; width: 100%; height: auto; overflow: visible; transform: scaleX(-1); }
   .rig, .breath, .head, .leg, .shin, .stars, .snort { transform-box: view-box; }
-  .breath { transform-origin: 560px 520px; animation: breathe 3.2s ease-in-out infinite; }
-  .head { transform: translate(-34px, -8px) rotate(5deg); transition: transform .45s ease; }
+  /* Everything that moves the whole body pivots on the ground line (y 530) and uses translate, scale or
+     skew, never a rotation of the whole body, so hooves never sink through the ground. */
+  .rig { transform-origin: 580px 530px; transition: transform .35s cubic-bezier(.3,.7,.3,1); }
+  .breath { transform-origin: 580px 530px; animation: breathe 2.8s ease-in-out infinite; }
+  .head { transform: translate(-34px, -8px) rotate(5deg); transition: transform .35s cubic-bezier(.3,.7,.3,1); }
   .stars, .snort { opacity: 0; }
-  @keyframes breathe { 50% { transform: scaleY(1.025); } }
+  @keyframes breathe { 50% { transform: scaleY(1.045) scaleX(.99); } }
 
-  /* wind-up: head down, rear up, the front hoof scrapes the ground */
-  .pose-windup .head { transform: translate(-20px, 6px) rotate(-8deg); }
-  .pose-windup .rig { transform: translateX(16px) rotate(2deg); transform-origin: 560px 520px; transition: transform .4s ease; }
-  .pose-windup .leg-ff { animation: paw .7s ease-in-out infinite; }
-  .pose-windup .breath { animation-duration: 1.1s; }
-  @keyframes paw { 0%, 100% { transform: rotate(0); } 40% { transform: rotate(-24deg); } 70% { transform: rotate(10deg); } }
-  /* the charge is coming: leaning in, snorting */
-  .pose-tense .head { transform: translate(-40px, 0) rotate(-1deg); }
-  .pose-tense .rig { transform: translateX(-14px); transition: transform .3s ease; }
-  .pose-tense .snort { animation: snort 1.2s ease-out infinite; }
-  @keyframes snort { 0% { opacity: .9; transform: translateX(0); } 100% { opacity: 0; transform: translateX(-40px); } }
-  /* dazed: swaying, stars round the head */
-  .pose-dazed .rig { animation: sway 1.4s ease-in-out infinite; transform-origin: 560px 520px; }
-  .pose-dazed .stars { opacity: 1; animation: orbit 1.6s linear infinite; }
-  @keyframes sway { 0%, 100% { transform: rotate(-2.5deg); } 50% { transform: rotate(2.5deg); } }
+  /* wind-up: drops low and back, head down, front hoof scraping hard */
+  .pose-windup .rig { transform: translateX(46px) scaleY(.9) skewX(8deg); }
+  .pose-windup .head { transform: translate(-6px, 34px) rotate(-16deg); }
+  .pose-windup .leg-ff { animation: paw .6s ease-in-out infinite; }
+  .pose-windup .breath { animation: breathe .7s ease-in-out infinite; }
+  @keyframes paw { 0%, 100% { transform: rotate(0); } 35% { transform: rotate(-38deg); } 65% { transform: rotate(12deg); } }
+  /* the charge is coming: leaning hard toward you, snorting */
+  .pose-tense .rig { transform: translateX(-36px) skewX(-10deg); }
+  .pose-tense .head { transform: translate(-56px, 12px) rotate(-6deg); }
+  .pose-tense .snort { animation: snort .9s ease-out infinite; }
+  .pose-tense .breath { animation: breathe 1s ease-in-out infinite; }
+  @keyframes snort { 0% { opacity: 1; transform: translateX(0) scale(.6); } 100% { opacity: 0; transform: translateX(-70px) scale(1.4); } }
+  /* dazed: reeling side to side, head lolling, stars circling */
+  .pose-dazed .rig { animation: reel 1.2s ease-in-out infinite; }
+  .pose-dazed .head { animation: loll 1.2s ease-in-out infinite; }
+  .pose-dazed .stars { opacity: 1; animation: orbit 1.4s linear infinite; }
+  @keyframes reel { 0%, 100% { transform: skewX(-9deg) translateX(-14px); } 50% { transform: skewX(9deg) translateX(14px); } }
+  @keyframes loll { 0%, 100% { transform: translate(-34px, 0) rotate(-10deg); } 50% { transform: translate(-34px, -14px) rotate(14deg); } }
   @keyframes orbit { to { transform: rotate(360deg); } }
-  /* exhausted: head hangs, slow heavy breathing */
-  .pose-tired .head { transform: translate(-24px, 10px) rotate(-14deg); }
-  .pose-tired .breath { animation-duration: 1.6s; }
-  /* rooting for food: nose to the ground, nodding */
-  .pose-root .head { animation: nose 1.1s ease-in-out infinite; }
-  @keyframes nose { 0%, 100% { transform: translate(-24px, 12px) rotate(-16deg); } 50% { transform: translate(-24px, 6px) rotate(-8deg); } }
-  /* beaten: lies still */
+  /* exhausted: sagging, head hanging, heaving breaths */
+  .pose-tired .rig { transform: scaleY(.93); }
+  .pose-tired .head { transform: translate(-20px, 30px) rotate(-22deg); }
+  .pose-tired .breath { animation: heave 1.4s ease-in-out infinite; }
+  @keyframes heave { 50% { transform: scaleY(1.07) scaleX(.985); } }
+  /* rooting for food: nose to the ground, digging */
+  .pose-root .head { animation: nose .8s ease-in-out infinite; }
+  @keyframes nose { 0%, 100% { transform: translate(-20px, 34px) rotate(-26deg); } 50% { transform: translate(-20px, 18px) rotate(-12deg); } }
+  /* beaten: legs fold, it sinks onto its belly */
   .pose-down .breath { animation: none; }
-  .pose-down .rig { transform: translateY(40px) rotate(4deg); transform-origin: 560px 520px; filter: saturate(.6) brightness(.85); }
-  .pose-down .head { transform: translate(-20px, 14px) rotate(-18deg); }
+  .pose-down .rig { transform: translateY(58px) scaleY(.92); filter: saturate(.55) brightness(.8); }
+  .pose-down .leg-ff, .pose-down .leg-fr { transform: rotate(62deg); }
+  .pose-down .leg-rf, .pose-down .leg-rr { transform: rotate(-62deg); }
+  .pose-down .head { transform: translate(-20px, 26px) rotate(-20deg); }
+  .leg { transition: transform .5s ease; }
   .static .breath { animation: none; }
   @media (prefers-reduced-motion: reduce) { .breath, .leg, .stars, .snort, .rig, .head { animation: none !important; transition: none !important; } }
 </style>
