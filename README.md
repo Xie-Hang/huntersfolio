@@ -85,7 +85,9 @@ The current ones are **placeholders** composed in code. Re-render them with `nod
 
 `electron/steam.cjs` is a placeholder: it does nothing until the game has a Steam App ID. To test locally with Valve's public test app, run with `HF_STEAM_APP_ID=480` while Steam is open. Once Steamworks gives us an App ID, it goes in that file, and achievements, cloud saves and the overlay are added there.
 
-**The demo's Wishlist button** opens the full game's store page, which has its own App ID (a Steam demo is a separate app). Set it as `STORE_APP_ID` in `electron/steam.cjs` (or `HF_STORE_APP_ID` to test); until then the button stays hidden. The "That's the demo" card shows once, the first time every monster in the build has been beaten (`contentComplete` in the engine), so the full game never shows it.
+**The demo's Wishlist button** opens the full game's store page, which has its own App ID (a Steam demo is a separate app). Set it as `STORE_APP_ID` in `electron/steam.cjs` (or `HF_STORE_APP_ID` to test); until then the button stays hidden. **Demo saves carry over** to the full game on the same PC: `electron/main.cjs` pins the save folder to `%APPDATA%\Hunter's Folio` whatever the build is called, so a demo build must keep the same save keys and the full game must keep migrating them (`SAVE_VERSION`). Steam Cloud can't carry a save between the demo app and the full game app. If balance changes after Playtest make old saves too strong, add a migration step that adjusts them rather than wiping them.
+
+The "That's the demo" card shows once, the first time every monster in the build has been beaten (`contentComplete` in the engine), so the full game never shows it.
 
 Steam doesn't use installers: upload the contents of `release/win-unpacked/` as the Windows depot.
 

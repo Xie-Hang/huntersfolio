@@ -155,7 +155,7 @@
       <p class="lead">You've hunted every monster on Ashfall Ridge.</p>
       <div class="stats"><span>Hunts <b>{game.save.hunts}</b></span><span>Parts broken <b>{totals.breaks}</b></span><span>Captures <b>{totals.captures}</b></span></div>
       <p>The full game goes on beyond the ridge, with new regions, new monsters and the weapons forged from them.</p>
-      <p class="md">You can keep playing: there are still weapons to upgrade, charms to make and monsters to capture.</p>
+      <p class="md">You can keep playing: there are still weapons to upgrade, charms to make and monsters to capture. Your progress carries over to the full game on this PC.</p>
       <div class="acts">
         {#if storeAvailable()}<button class="btn primary" onclick={() => openStore()}>Wishlist on Steam</button>{/if}
         <button class="btn" onclick={() => (endOpen = false)}>Keep hunting</button>

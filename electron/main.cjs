@@ -9,6 +9,11 @@ const steam = require('./steam.cjs');
 // Must happen before the app is ready (Steam needs to hook the process early).
 const steamClient = steam.init();
 
+// Demo and full game share one save folder, so demo progress carries over to the full game on the same PC.
+// Fixed here (not taken from the build's product name) so a "Hunter's Folio Demo" build still writes to it.
+// Steam Cloud can't carry it: each Steam app (demo, full game) has its own cloud storage.
+app.setPath('userData', path.join(app.getPath('appData'), "Hunter's Folio"));
+
 // One copy at a time: two windows writing the same save would corrupt progress.
 if (!app.requestSingleInstanceLock()) app.quit();
 
