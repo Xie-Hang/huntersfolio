@@ -29,6 +29,12 @@ function effFor(h: Hunt, w: Hunt['weps'][number], partId: string): number {
 
 function chooseTarget(h: Hunt, p: Policy) {
   const MD = E.monsterOf(h);
+  // a part that needs hitting now (a regrowing stump): both skill levels go for it, swapping if only the other weapon can
+  if (MD.priority) {
+    let pr = MD.priority(h, E.currentWeapon(h));
+    if (!pr && MD.priority(h, E.otherWeapon(h)) && E.freeDice(h).length > 1) { E.swap(h, [E.freeDice(h)[0]]); pr = MD.priority(h, E.currentWeapon(h)); }
+    if (pr) { h.target = pr; return; }
+  }
   // With no explicit goal, aim where the carried weapons break parts best (what the part chips show).
   const bestEff = (id: string) => Math.max(...h.weps.map(w => MD.parts.find(x => x.id === id)!.eff[w.type]));
   const order = p.goal ?? MD.parts.map(x => x.id).sort((a, b) => bestEff(b) - bestEff(a));

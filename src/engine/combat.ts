@@ -91,7 +91,7 @@ function rollAll(h: Hunt) {
   const g = h.mon.gut ?? 0;
   for (let i = 4 - g; i < 4; i++) if (i >= 0) h.dice[i].used = SWALLOWED;
   // frozen: the first free dice are iced over for this roll only
-  let f = h.mon.frost ?? 0;
+  let f = h.arm.thaw ? 0 : h.mon.frost ?? 0;
   for (const d of h.dice) if (f > 0 && !d.used) { d.used = FROZEN; f--; }
   h.mon.frost = 0;
 }

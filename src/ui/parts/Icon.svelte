@@ -104,6 +104,13 @@
     slagtail: `<path d="M6 30 C16 22 30 22 42 30 C34 36 22 40 6 38 Z" fill="${BONE2}" ${S}/><path d="M12 32 h4 M20 31 h4 M28 31 h4" stroke="${EMBER}" stroke-width="3" stroke-linecap="round"/>`,
     slagheart: `<circle cx="24" cy="26" r="20" fill="${EMBER}" opacity=".25"/><path d="M24 42 C10 32 6 24 10 16 C14 9 22 10 24 16 C26 10 34 9 38 16 C42 24 38 32 24 42 Z" fill="${ASH}" ${S}/><path d="M16 22 l5 4 l4 -6 l5 6 l3 -3" fill="none" stroke="#f0a85a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`,
     slagcharm: `${charmTop}<path d="M12 22 L24 14 L36 22 L32 40 L16 40 Z" fill="${ASH}" ${S}/><path d="M18 28 l6 5 l6 -5" fill="none" stroke="${EMBER}" stroke-width="3" stroke-linecap="round"/>`,
+    /* Gorhydra (Stormspire): bone and frost */
+    hydrascale: scale('#cfe3ec'),
+    hydrafang: fang(BONE),
+    hydracrown: `<path d="M8 40 L14 16 L20 30 L26 8 L31 30 L38 16 L40 40 Z" fill="${FROST}" ${S}/><path d="M6 40 H42" ${S} fill="none"/><circle cx="24" cy="34" r="3.5" fill="${INK}"/>`,
+    hydrahorn: `<path d="M16 42 C12 28 18 14 34 6 C28 18 28 30 32 42 Z" fill="${FROST}" ${S}/><path d="M20 34 l8 -2 M19 26 l9 -3 M22 18 l8 -4" stroke="${INK}" stroke-width="2" opacity=".55"/>`,
+    hydraheart: gem(FROST, '#7fd4ff'),
+    stumpcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="#4a3a30" ${S}/><path d="M18 26 l5 5 l-4 4 l7 4" fill="none" stroke="${EMBER}" stroke-width="3" stroke-linecap="round"/>`,
     duskcharm: `${charmTop}<path d="M38 22 L12 28 L38 34 Z" fill="${BONE2}" ${S}/><path d="M38 34 L14 38 L38 42 Z" fill="${BONE2}" ${S}/>`,
     bogcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${STONEC}" ${S}/><circle cx="20" cy="25" r="3.5" fill="${MOSS}"/><circle cx="28" cy="31" r="3" fill="${MOSS}"/>`
   };

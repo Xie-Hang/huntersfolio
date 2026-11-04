@@ -70,6 +70,8 @@ export interface ArmorDef {
   rod?: boolean;
   /** every monster hit on you is reduced by this much */
   ward?: number;
+  /** your dice can't be frozen */
+  thaw?: boolean;
   craft: Cost;
 }
 
@@ -85,7 +87,7 @@ export interface ItemDef {
   effect: ItemEffect;
 }
 
-export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet' | 'airPierce' | 'bigHeal';
+export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet' | 'airPierce' | 'bigHeal' | 'sealHeal';
 export interface CharmDef {
   /** monster tier it comes from (default 1); gear above the edition's top tier isn't in that build */
   tier?: number;
@@ -197,6 +199,10 @@ export interface MonsterState {
   stoked?: boolean;
   melt?: boolean;
   burnedTurn?: number;
+  /** T3 Gorhydra: monster actions until each broken head's stump regrows; heads sealed for good */
+  stump?: Record<string, number>;
+  sealed?: Record<string, boolean>;
+  justCut?: string;
 }
 
 export interface WeaponInst extends WeaponDef { lv: number }
@@ -298,6 +304,10 @@ export interface MonsterDef {
   meter?(h: Hunt): { label: string; value: number; max: number; tone?: 'gold' | 'ember' | 'ice' | 'gale' | 'stone'; note?: string; pips?: boolean } | null;
   /** damage soaked before it reaches HP (after every multiplier). Returns what's left and a note */
   absorb?(h: Hunt, dmg: number, w: WeaponInst): { dmg: number; note: string } | null;
+  /** a part that needs hitting right now with this weapon (a regrowing stump): the sim aims there, the UI flags it */
+  priority?(h: Hunt, w: WeaponInst): string | null;
+  /** a part's state in words for the monster panel (a stump, an exposed core) instead of Broken */
+  partNote?(h: Hunt, partId: string): { chip: string; hint: string } | null;
   /** extra modifiers for a hit on a part */
   hitMod?(h: Hunt, partId: string, w: WeaponInst): { mult: number; note: string } | null;
   /** the hit strikes an image instead (dice spent, no damage, no daze); return the log line, or null if it lands */

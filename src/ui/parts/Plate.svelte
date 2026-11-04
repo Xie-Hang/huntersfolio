@@ -13,6 +13,7 @@
   import Monolith from './plates/Monolith.svelte';
   import Stormroc from './plates/Stormroc.svelte';
   import Slagwyrm from './plates/Slagwyrm.svelte';
+  import Gorhydra from './plates/Gorhydra.svelte';
   import { ALL_MONSTERS } from '../../engine';
   import Scene from './Scene.svelte';
   /** scene: draw Ashfall Ridge behind it (the big plates; not the small Hunt Board thumbnails) */
@@ -32,6 +33,7 @@
 {:else if mon === 'monolith'}<Monolith {hunt} />
 {:else if mon === 'stormroc'}<Stormroc {hunt} />
 {:else if mon === 'slagwyrm'}<Slagwyrm {hunt} />
+{:else if mon === 'gorhydra'}<Gorhydra {hunt} />
 {/if}
 </div>
 

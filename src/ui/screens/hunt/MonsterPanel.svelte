@@ -36,7 +36,7 @@
       </div>
     {/if}
     {#if E.carries(h, 'Blunt') && M.heads}
-      {#each M.heads as hd (hd)}
+      {#each M.heads.filter(x => !m.parts[x].broken) as hd (hd)}
         {@const reel = (m.reel?.[hd] ?? 0) > 0}
         {@const v = m.headDaze?.[hd] ?? 0}
         <div class="hpline">
@@ -70,6 +70,7 @@
         {@const on = h.target === p.id}
         {@const e = p.eff[w.type]}
         {@const reach = E.canHit(h, w) && E.reachable(h, p.id, w)}
+        {@const note = M.partNote?.(h, p.id) ?? null}
         <button class="part" class:on class:broken={st.broken} aria-pressed={on} disabled={!!h.over} onclick={() => game.target(p.id)}>
           <span class="row">
             <span class="nm">{p.name}</span>
@@ -79,11 +80,12 @@
                 {:else}<span class="chip sm {effCls(e)}">{w.type}: {effName(e)}</span>{/if}
                 {#if st.exposed > 0}<span class="chip sm exposed">Exposed · {st.exposed}</span>{/if}
               {/if}
-              <span class="mono" style="color:{st.broken ? 'var(--ember-soft)' : 'var(--soft)'}">{st.broken ? 'Broken' : `${st.hp} / ${st.max}`}</span>
+              {#if note}<span class="chip sm exposed">{note.chip}</span>{/if}
+              <span class="mono" style="color:{st.broken ? 'var(--ember-soft)' : 'var(--soft)'}">{st.broken ? (note ? '' : 'Broken') : `${st.hp} / ${st.max}`}</span>
             </span>
           </span>
           {#if !st.broken}<span class="bar"><i style="width:{pct(st.hp, st.max)}%;background:{on ? 'var(--gold)' : '#8c7a62'}"></i></span>{/if}
-          <span class="hint">{st.broken ? 'Hits here still damage it.' : p.hint}</span>
+          <span class="hint">{note ? note.hint : st.broken ? 'Hits here still damage it.' : p.hint}</span>
         </button>
       {/each}
     </div>
