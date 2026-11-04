@@ -11,6 +11,7 @@
   import Emberwhelk from './plates/Emberwhelk.svelte';
   import Mistglass from './plates/Mistglass.svelte';
   import Monolith from './plates/Monolith.svelte';
+  import Stormroc from './plates/Stormroc.svelte';
   import { ALL_MONSTERS } from '../../engine';
   import Scene from './Scene.svelte';
   /** scene: draw Ashfall Ridge behind it (the big plates; not the small Hunt Board thumbnails) */
@@ -28,6 +29,7 @@
 {:else if mon === 'emberwhelk'}<Emberwhelk {hunt} />
 {:else if mon === 'mistglass'}<Mistglass {hunt} />
 {:else if mon === 'monolith'}<Monolith {hunt} />
+{:else if mon === 'stormroc'}<Stormroc {hunt} />
 {/if}
 </div>
 

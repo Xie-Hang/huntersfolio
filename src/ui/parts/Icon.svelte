@@ -90,6 +90,13 @@
     coreshard: `<circle cx="24" cy="24" r="18" fill="${GOLD}" opacity=".2"/><path d="M18 8 L32 18 L26 24 L34 40 L16 30 L22 22 Z" fill="${GOLDHI}" ${S}/>`,
     wardencore: gem(GOLDHI, GOLD),
     corecharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${STONEC}" ${S}/><path d="M20 20 L27 26 L21 31 L28 36" fill="none" stroke="${GOLDHI}" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>`,
+    /* Stormcrown Roc (Stormspire): gale blue and lightning gold */
+    rocplume: feather('#cfe3ec'),
+    rocpinion: feather(BONE2, true),
+    stormcrown: `<circle cx="24" cy="24" r="19" fill="${GOLDHI}" opacity=".2"/><path d="M22 6 L12 24 H20 L15 42 L34 18 H26 L31 6 Z" fill="${GOLDHI}" ${S}/>`,
+    roctalon: claw('#d8d2c4'),
+    stormheart: gem(GALE, GOLDHI),
+    crowncharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${GALE}" ${S}/><path d="M25 18 L19 29 H24 L21 38 L30 26 H25 L28 18 Z" fill="${GOLDHI}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>`,
     duskcharm: `${charmTop}<path d="M38 22 L12 28 L38 34 Z" fill="${BONE2}" ${S}/><path d="M38 34 L14 38 L38 42 Z" fill="${BONE2}" ${S}/>`,
     bogcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${STONEC}" ${S}/><circle cx="20" cy="25" r="3.5" fill="${MOSS}"/><circle cx="28" cy="31" r="3" fill="${MOSS}"/>`
   };

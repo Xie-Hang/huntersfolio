@@ -14,7 +14,7 @@ export const GUARD_RESIST = 0.7;       // armor element resistance multiplier
 export const CHARGE_BREAK = 30;        // damage that breaks a pending charge
 export const CAPTURE_AT = 0.2;         // capture allowed at or below this share of the monster's HP
 /** Pierce's Expose: a hit leaves the part exposed for 2 turns; any weapon's hits there get these bonuses. Tuned by simulation (4 Nov 2026). */
-export const MEND = 6, BRACE = 12, FINISHER = 1.25, SWAP_WHET = 0.3;
+export const MEND = 6, BRACE = 12, FINISHER = 1.25, SWAP_WHET = 0.3, AIR_PIERCE = 1.2;
 export const EXPOSE_TURNS = 2, EXPOSE_DMG = 1.15, EXPOSE_BREAK = 2;
 export const DAZE_START = 60, DAZE_STEP = 30, DAZE_LOCK = 2;
 /** each head's meter, for monsters with several heads */
@@ -198,6 +198,7 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
   const em = elemMult(w.elem, h.mid);
   if (em !== 1) { dmg = Math.round(dmg * em); notes.push(em > 1 ? 'weakness ×1.5' : 'resisted ×0.75'); }
   if (airborneHalf(h, w)) { dmg = Math.round(dmg / 2); notes.push('airborne ½'); }
+  if (m.air && w.type === 'Pierce' && charmFx(h) === 'airPierce') { dmg = Math.round(dmg * AIR_PIERCE); notes.push('Crown Charm +20%'); }
   if (wasCapturable && charmFx(h) === 'finisher') { dmg = Math.round(dmg * FINISHER); notes.push('Finisher’s Charm +25%'); }
   const p = m.parts[h.target], pdef = MD.parts.find(x => x.id === h.target)!;
   const exposed = (p.exposed > 0 || (!!mv.expose && charmFx(h) === 'exposeSelf' && reachable(h, h.target, w))) && !p.broken;

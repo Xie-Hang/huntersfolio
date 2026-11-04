@@ -66,6 +66,8 @@ export interface ArmorDef {
   braced?: boolean;
   /** your first swap each turn costs no die */
   quickswap?: boolean;
+  /** lightning (Thunderhead) deals half */
+  rod?: boolean;
   craft: Cost;
 }
 
@@ -81,7 +83,7 @@ export interface ItemDef {
   effect: ItemEffect;
 }
 
-export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet';
+export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet' | 'airPierce';
 export interface CharmDef {
   /** monster tier it comes from (default 1); gear above the edition's top tier isn't in that build */
   tier?: number;
@@ -183,6 +185,10 @@ export interface MonsterState {
   /** T3 Monolith Warden: monster actions left with the core exposed; phase 2 (Crumbling) */
   core?: number;
   crumble?: boolean;
+  /** T3 Stormcrown Roc: pips of storm in its crown, a counter for slower build, and phase 2 (never lands) */
+  storm?: number;
+  stormTick?: number;
+  skyLock?: boolean;
 }
 
 export interface WeaponInst extends WeaponDef { lv: number }
