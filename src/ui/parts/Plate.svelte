@@ -2,6 +2,7 @@
   // Engraved monster plates. Parts light up when aimed at and dim when broken.
   // Each new monster needs a plate here (until art assets replace these).
   import type { Hunt } from '../../engine';
+  import Gorehorn from './plates/Gorehorn.svelte';
   let { mon, hunt = null }: { mon: string; hunt?: Hunt | null } = $props();
   const cls = (id: string) => {
     if (!hunt) return '';
@@ -14,20 +15,7 @@
 </script>
 
 {#if mon === 'gorehorn'}
-  <svg viewBox="0 0 320 175" role="img" aria-label="Engraving of the Gorehorn, a great ridge boar">
-    <path class={cls('hide')} d="M70 100 C70 60 120 45 170 48 C215 50 245 62 250 88 C255 112 238 128 205 130 L110 130 C85 130 70 120 70 100Z" />
-    <path class={cls('hide')} d="M118 52 l6 -11 l6 10 l6 -12 l6 11 l6 -13 l6 12 l6 -12 l6 11 l6 -11 l6 10 l6 -9" />
-    <path class="hatch" d="M118 122 l10 -10 M132 124 l10 -10 M146 125 l10 -10 M160 125 l10 -10 M174 125 l10 -10 M188 124 l10 -10" />
-    <path d="M250 82 C264 78 284 86 291 99 C295 108 290 117 278 117 L252 116" />
-    <path d="M289 102 l9 2 l-2 10 l-8 -2" />
-    <path d="M246 72 l8 -17 l7 19" />
-    <circle class="eye" cx="269" cy="92" r="2.6" />
-    <path d="M72 92 c-10 -4 -15 6 -8 11" />
-    <path class={cls('tusks')} d="M276 112 C284 124 300 122 305 106" />
-    <path class={cls('tusks')} d="M266 115 C270 129 286 133 296 122" />
-    <path class={cls('legs')} d="M98 126 l-6 34 l8 0 M122 130 l0 31 l8 0" />
-    <path d="M204 129 l-2 32 l8 0 M228 124 l6 36 l8 0" />
-  </svg>
+  <Gorehorn {hunt} />
 {:else if mon === 'galeshrike'}
   <svg viewBox="0 0 320 175" role="img" aria-label="Engraving of the Galeshrike, a storm raptor{air ? ', in flight' : ''}">
     <g transform={air ? 'translate(0,-14)' : ''}>

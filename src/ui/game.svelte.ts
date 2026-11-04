@@ -24,6 +24,8 @@ class Game {
   rolling = $state<number[]>([]);
   floats = $state<Float[]>([]);
   shakes = $state({ mon: 0, player: 0 });
+  /** one-shot animation cues for the monster plate: it was hit / it attacked */
+  pulse = $state({ hit: 0, act: 0 });
 
   get inHunt() { return this.view === 'hunt' && !!this.hunt && !this.hunt.over; }
 
@@ -128,6 +130,7 @@ class Game {
     const r = this.act(h => E.useMove(h, i, this.sel), r => !!r);
     if (!r) return;
     const h = this.hunt!;
+    this.pulse.hit++;
     const sounds: Sfx[] = [];
     if (h.mon.plating < ice0) {
       sounds.push(h.mon.plating === 0 ? 'iceGone' : 'iceBreak');
@@ -174,6 +177,7 @@ class Game {
     const h = this.hunt;
     if (!h || h.over) return;
     PL.turnEnd(h);
+    if (E.intentInfo(h).dmg > 0) this.pulse.act++;
     const { taken } = E.endTurn(h);
     if (taken) { this.float('player', `−${taken}`, 'hurt'); if (taken >= E.CHARGE_BREAK) this.shake('player'); }
     if (taken) sfx(taken >= E.CHARGE_BREAK ? 'hurtHeavy' : 'hurt');

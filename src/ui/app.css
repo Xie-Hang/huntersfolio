@@ -73,7 +73,7 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .mrow[aria-current="true"]{border-color:var(--gold);background:var(--raise)}
 .mrow .thumb{width:64px;height:36px;border:1px solid var(--line);border-radius:2px;background:#1a1511;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .mrow .thumb svg{width:100%;height:auto}
-.mrow .thumb path,.mrow .thumb circle{fill:none;stroke:#8c7a62;stroke-width:3}
+.mrow .thumb svg:not(.wc) path,.mrow .thumb svg:not(.wc) circle{fill:none;stroke:#8c7a62;stroke-width:3}
 .mrow .thumb .eye{fill:#8c7a62}
 .mrow .thumb .hatch{stroke:none}
 .mrow .nm{font-family:var(--f-body);font-weight:600;font-size:var(--fs-md);display:block}
@@ -209,7 +209,7 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 /* bestiary + monster */
 .plate{border:1px solid var(--line);border-radius:3px;background:#1a1511;padding:10px 6px 4px}
 .plate svg{display:block;width:100%;height:auto}
-.plate path,.plate circle{fill:none;stroke:#8c7a62;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:stroke .2s}
+.plate svg:not(.wc) path,.plate svg:not(.wc) circle{fill:none;stroke:#8c7a62;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:stroke .2s}
 .plate .hatch{stroke:#4d4136;stroke-width:1}
 .plate .eye{fill:#8c7a62}
 .plate .on{stroke:var(--gold-hi);stroke-width:2.2}
