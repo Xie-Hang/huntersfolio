@@ -5,8 +5,9 @@ import { MATERIALS, ITEMS, CHARMS } from './data/gear';
 import { WEAPONS } from './data/weapons';
 import { ARMORS } from './data/gear';
 import { MONSTERS } from './data/monsters';
+import { BOUNTIES } from './data/bounties';
 
-export const SAVE_VERSION = 6;
+export const SAVE_VERSION = 7;
 
 export function newSave(): Save {
   return {
@@ -24,7 +25,8 @@ export function newSave(): Save {
     charms: {},
     tips: [],
     endSeen: false,
-    achievements: []
+    achievements: [],
+    bounties: {}
   };
 }
 
@@ -47,7 +49,9 @@ const MIGRATIONS: ((s: any) => any)[] = [
   // v4 → v5: the end-of-content card (4 Nov 2026). Not seen yet; it shows if every monster is already beaten.
   s => ({ ...s, endSeen: false, version: 5 }),
   // v5 → v6: achievements (4 Nov 2026). Start empty; the ones a save already qualifies for are awarded on load.
-  s => ({ ...s, achievements: [], version: 6 })
+  s => ({ ...s, achievements: [], version: 6 }),
+  // v6 → v7: the bounty board (5 Nov 2026). None done yet, none taken.
+  s => ({ ...s, bounties: {}, loadout: { ...(s.loadout || {}), bounty: null }, version: 7 })
 ];
 
 /** Turn anything loaded from storage into a valid, current Save. Unknown or broken data gives a fresh save. */
@@ -90,7 +94,8 @@ export function loadSave(raw: unknown): Save {
     endSeen: s.endSeen === true,
     achievements: Array.isArray(s.achievements) ? s.achievements.filter((x: unknown) => typeof x === 'string') : [],
     tips: Array.isArray(s.tips) ? s.tips.filter((x: unknown) => typeof x === 'string') : [],
-    charms: Object.fromEntries(Object.keys(s.charms || {}).filter(k => CHARMS[k]).map(k => [k, true])) as Save['charms']
+    charms: Object.fromEntries(Object.keys(s.charms || {}).filter(k => CHARMS[k]).map(k => [k, true])) as Save['charms'],
+    bounties: Object.fromEntries(Object.keys(s.bounties && typeof s.bounties === 'object' ? s.bounties : {}).filter(k => BOUNTIES[k]).map(k => [k, true])) as Save['bounties']
   };
   // A hunt takes two weapons; only a damaged save can have fewer, so give back the starter pair.
   if (Object.keys(out.weapons).length < 2) out.weapons = { ...base.weapons, ...out.weapons };
@@ -101,6 +106,7 @@ export function loadSave(raw: unknown): Save {
   for (const id of Object.keys(out.weapons)) { if (out.loadout.weapons.length >= 2) break; if (!out.loadout.weapons.includes(id)) out.loadout.weapons.push(id); }
   if (!out.armors[out.loadout.armor]) out.loadout.armor = Object.keys(out.armors)[0];
   if (out.loadout.charm && !out.charms[out.loadout.charm]) out.loadout.charm = null;
+  if (out.loadout.bounty && (!BOUNTIES[out.loadout.bounty] || out.bounties[out.loadout.bounty])) out.loadout.bounty = null;
   out.version = SAVE_VERSION;
   return out;
 }

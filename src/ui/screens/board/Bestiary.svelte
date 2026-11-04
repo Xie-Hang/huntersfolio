@@ -11,6 +11,9 @@
   const r = $derived(record(game.save, mon));
   const breaks = $derived(Object.values(r.breaks).reduce((a, b) => a + b, 0));
   const mats = $derived([M.common, ...M.parts.map(p => p.mat), M.rare]);
+  const bounties = $derived(E.BOUNTIES_ON ? E.bountiesFor(mon) : []);
+  const beaten = $derived(r.wins > 0);
+  function take(id: string | null) { game.save.loadout.bounty = id; game.persist(); }
 </script>
 
 <div style="display:flex;flex-direction:column;gap:14px">
@@ -31,6 +34,26 @@
     <dt>Habits</dt><dd>{M.habits}</dd>
     <dt>Reward</dt><dd><b>{E.REWARD.base} coin</b>, +{E.REWARD.perPart} per part broken, +{E.REWARD.capture} for a capture.</dd>
   </dl>
+  {#if bounties.length}
+    <div class="label rule">Bounties · {bounties.filter(b => game.save.bounties[b.id]).length} of {bounties.length} done</div>
+    <ul class="bounties">
+      {#each bounties as b (b.id)}
+        {@const done = !!game.save.bounties[b.id]}
+        {@const taken = game.save.loadout.bounty === b.id}
+        <li class:done class:taken>
+          <div class="bh">
+            <span class="nm">{b.name}{#if b.hard}{' '}<span class="tag hard">Hard</span>{/if}</span>
+            {#if done}<span class="state">Done</span>
+            {:else if !beaten}<span class="state">Beat it once first</span>
+            {:else if taken}<button class="btn quiet" onclick={() => take(null)}>Drop</button>
+            {:else}<button class="btn quiet" onclick={() => take(b.id)}>Take bounty</button>{/if}
+          </div>
+          <span class="goals">Win, and: {b.goals.map(g => E.goalText(g, mon)).join(' · ')}</span>
+          <span class="pay">{b.reward.coin} coin · {b.reward.seals} Hunter’s Seal{b.reward.seals > 1 ? 's' : ''}{#if b.reward.mat}{' · '}<Icon id={b.reward.mat} size={16} />{E.matName(b.reward.mat)}{/if}</span>
+        </li>
+      {/each}
+    </ul>
+  {/if}
   <div class="label rule">Breaking parts · damage that counts toward a break</div>
   <div class="etable-wrap">
     <table class="etable">
@@ -59,3 +82,16 @@
     {/each}
   </div>
 </div>
+
+<style>
+  .bounties { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .bounties li { display: flex; flex-direction: column; gap: 3px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 6px; }
+  .bounties li.taken { border-color: var(--gold); }
+  .bounties li.done { opacity: .6; }
+  .bounties .bh { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .bounties .nm { color: var(--fg); font-weight: 600; }
+  .bounties .goals { color: var(--soft); }
+  .bounties .pay { color: var(--gold-hi); font-size: var(--fs-sm); }
+  .bounties .state { color: var(--soft); font-size: var(--fs-sm); }
+  .tag.hard { color: var(--ember-soft); border-color: var(--ember-soft); }
+</style>

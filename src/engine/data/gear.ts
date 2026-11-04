@@ -37,6 +37,12 @@ charms.push({ id: 'bogcharm', tier: 2, name: 'Bog Charm', src: 'Bogjaw', perk: '
 charms.push({ id: 'duskcharm', tier: 2, name: 'Dusk Charm', src: 'Duskheron', perk: 'When you daze a monster, your next hit deals +50%.', effect: 'dazeWhet', craft: { coin: 150, duskbeak: 1, duskplume: 2 } });
 charms.push({ id: 'whelkcharm', tier: 2, name: 'Whelk Charm', src: 'Emberwhelk', perk: 'Expose lasts 3 turns instead of 2.', effect: 'longExpose', craft: { coin: 150, whelkgill: 1, whelkscale: 2 } });
 charms.push({ id: 'glasscharm', tier: 2, name: 'Glass Charm', src: 'Mistglass', perk: 'Charged hits count double toward breaking parts.', effect: 'chargeBreak', craft: { coin: 150, glasstail: 1, glassdust: 2 } });
+// bounty charms: crafted from Hunter's Seals, which only bounties pay (full game)
+charms.push(
+  { id: 'scoutcharm', tier: 2, name: 'Tracker’s Charm', src: 'Bounty board', perk: 'Start every hunt with 1 extra reroll.', effect: 'scout', craft: { coin: 100, seal: 3 } },
+  { id: 'salvagecharm', tier: 2, name: 'Salvager’s Charm', src: 'Bounty board', perk: 'Breaking a part heals 15 and gives a reroll.', effect: 'salvage', craft: { coin: 150, seal: 5 } },
+  { id: 'finishercharm', tier: 2, name: 'Finisher’s Charm', src: 'Bounty board', perk: 'Hits deal +25% once the monster can be captured.', effect: 'finisher', craft: { coin: 200, seal: 8 } }
+);
 export const CHARMS: Record<string, CharmDef> = Object.fromEntries(charms.filter(inEdition).map(c => [c.id, c]));
 
 const mats: MaterialDef[] = [
@@ -81,6 +87,7 @@ mats.push(
   { id: 'glassfacet', tier: 2, base: 'Glass Facet', src: 'Mistglass', sell: 90, how: 'Break the Mistglass’s facets (Blunt best)' },
   { id: 'glasseye', tier: 2, base: 'Glass Eye', src: 'Mistglass', sell: 90, how: 'Break the Mistglass’s eyes (Pierce best)' },
   { id: 'mirrorheart', tier: 2, base: 'Mirror Heart', src: 'Mistglass', rare: true, sell: 450, how: 'Rare from Mistglass eye breaks' },
+  { id: 'seal', tier: 2, base: 'Hunter’s Seal', src: 'Bounty board', sell: 0, how: 'Paid by bounties; crafts the bounty charms' },
   { id: 'mirestone', tier: 2, base: 'Mirestone', src: 'Bogjaw', rare: true, sell: 450, how: 'Rare from Bogjaw stone warts' }
 );
 export const MATERIALS: Record<string, MaterialDef> = Object.fromEntries(mats.filter(inEdition).map(m => [m.id, m]));

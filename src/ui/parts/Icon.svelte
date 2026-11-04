@@ -78,6 +78,11 @@
     glasseye: `<circle cx="24" cy="24" r="20" fill="#7fd4ff" opacity=".22"/><path d="M6 24 C14 12 34 12 42 24 C34 36 14 36 6 24 Z" fill="#cfe3ec" ${S}/><circle cx="24" cy="24" r="7" fill="#7fd4ff" ${S} stroke-width="2.4"/><circle cx="24" cy="24" r="3" fill="${INK}"/>`,
     mirrorheart: gem('#cfe3ec', '#7fd4ff'),
     glasscharm: `${charmTop}<path d="M14 26 L24 14 L34 26 L24 42 Z" fill="#cfe3ec" ${S}/><path d="M24 14 V42 M14 26 H34" stroke="#fff" stroke-width="2" opacity=".85"/>`,
+    /* the bounty board: wax seals and its charms */
+    seal: `<path d="M24 6 C30 6 32 10 37 11 C42 13 41 18 42 22 C44 27 40 30 40 35 C38 40 33 39 29 42 C25 45 21 43 17 41 C12 40 9 37 8 32 C6 27 9 23 8 18 C9 12 15 11 19 8 C21 7 22 6 24 6 Z" fill="#a8402c" ${S}/><circle cx="24" cy="24" r="10" fill="none" stroke="${INK}" stroke-width="2.4" opacity=".7"/><path d="M19 27 L24 17 L29 27 M21 23 H27" fill="none" stroke="${GOLDHI}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`,
+    scoutcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${BONE2}" ${S}/><path d="M24 18 L27 28 L24 38 L21 28 Z" fill="#a8402c" ${S} stroke-width="2"/><circle cx="24" cy="28" r="2.5" fill="${INK}"/>`,
+    salvagecharm: `${charmTop}<path d="M12 22 L24 14 L36 22 L36 34 L24 42 L12 34 Z" fill="${ASH}" ${S}/><path d="M18 26 L30 34 M30 26 L18 34" stroke="${GOLDHI}" stroke-width="3" stroke-linecap="round"/>`,
+    finishercharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="#a8402c" ${S}/><path d="M24 18 V38 M14 28 H34" stroke="${GOLDHI}" stroke-width="2.6" stroke-linecap="round"/><circle cx="24" cy="28" r="5" fill="none" stroke="${GOLDHI}" stroke-width="2.6"/>`,
     duskcharm: `${charmTop}<path d="M38 22 L12 28 L38 34 Z" fill="${BONE2}" ${S}/><path d="M38 34 L14 38 L38 42 Z" fill="${BONE2}" ${S}/>`,
     bogcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${STONEC}" ${S}/><circle cx="20" cy="25" r="3.5" fill="${MOSS}"/><circle cx="28" cy="31" r="3" fill="${MOSS}"/>`
   };

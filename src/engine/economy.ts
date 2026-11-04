@@ -4,6 +4,7 @@ import { WEAPONS } from './data/weapons';
 import { ARMORS, CHARMS, ITEMS, MATERIALS } from './data/gear';
 import { MONSTERS } from './data/monsters';
 import { nextRandom } from './rng';
+import { settleBounty } from './bounty';
 
 /* ---------- tuning constants ---------- */
 export const REWARD = { base: 100, perPart: 40, capture: 60 };
@@ -188,7 +189,7 @@ export function craftItem(s: Save, id: string): string | null {
   return `Crafted ${it.yields ?? 1} ${it.name}.`;
 }
 export function sellMat(s: Save, id: string, n: number): string | null {
-  const m = MATERIALS[id], k = Math.min(n, s.mats[id] ?? 0); if (k < 1) return null;
+  const m = MATERIALS[id], k = Math.min(n, s.mats[id] ?? 0); if (k < 1 || m.sell <= 0) return null;
   s.mats[id] -= k; s.coin += m.sell * k;
   return `Sold ${k} ${m.base} for ${m.sell * k} coin.`;
 }
@@ -196,7 +197,7 @@ export function sellSurplus(s: Save): string {
   let total = 0, n = 0;
   for (const [k, m] of Object.entries(MATERIALS)) {
     const spare = (s.mats[k] ?? 0) - Math.min(s.mats[k] ?? 0, reserveFor(s, k));
-    if (spare > 0) { s.mats[k] -= spare; total += spare * m.sell; n += spare; }
+    if (spare > 0 && m.sell > 0) { s.mats[k] -= spare; total += spare * m.sell; n += spare; }
   }
   s.coin += total;
   return n ? `Sold ${n} surplus materials for ${total} coin.` : 'Nothing surplus to sell.';
@@ -263,4 +264,5 @@ export function settleHunt(s: Save, h: Hunt) {
   } else {
     h.reward = { coin: 0, mats: {}, rare: false, returned: 0, lost: h.item ? h.carried : 0 };
   }
+  settleBounty(s, h);
 }

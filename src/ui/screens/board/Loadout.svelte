@@ -17,6 +17,8 @@
   const mon = $derived(L.target);
   const M = $derived(E.MONSTERS[mon]);
   const nWeapons = $derived(L.weapons.filter(Boolean).length);
+  const B = $derived(L.bounty && E.BOUNTIES[L.bounty]?.mon === mon && E.bountyOpen(game.save, L.bounty) ? E.BOUNTIES[L.bounty] : null);
+  const breaks = $derived(B ? E.loadoutBreaks(game.save) : null);
 
   async function open(slot: Slot) {
     picker = { slot, ftype: 'All', sort: 'best' };
@@ -240,6 +242,13 @@
     </div>
   {/if}
 
+  {#if B}
+    <div class="bstrip">
+      <span><span class="bn">Bounty · {B.name}</span> <span class="ital">Win, and: {B.goals.map(g => E.goalText(g, mon)).join(' · ')}</span></span>
+      {#if breaks}<span class="bad">{breaks}: change a weapon or it won’t pay.</span>{/if}
+      <button class="btn quiet" onclick={() => { L.bounty = null; game.persist(); }}>Drop</button>
+    </div>
+  {/if}
   <div class="campfoot">
     {#if !E.isUnlocked(game.save, mon)}
       <span class="ital">{E.unlockHint(M.id)} to unlock this hunt. You can still read up and prepare.</span>
@@ -250,3 +259,9 @@
     {/if}
   </div>
 </section>
+
+<style>
+  .bstrip { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; padding: 10px 12px; border: 1px solid var(--gold); border-radius: 6px; }
+  .bstrip .bn { color: var(--gold-hi); font-weight: 600; }
+  .bstrip .bad { color: var(--ember-soft); font-size: var(--fs-sm); }
+</style>

@@ -7,12 +7,14 @@ import { unearth } from './data/monsters/cinderback';
 import { CHARMS, ITEMS } from './data/gear';
 import { armorInst, elemMult, fixLoadout, lvOf, weaponInst } from './economy';
 import { rollFace } from './rng';
+import { BOUNTIES } from './data/bounties';
+import { bountyOpen } from './bounty';
 
 export const GUARD_RESIST = 0.7;       // armor element resistance multiplier
 export const CHARGE_BREAK = 30;        // damage that breaks a pending charge
 export const CAPTURE_AT = 0.2;         // capture allowed at or below this share of the monster's HP
 /** Pierce's Expose: a hit leaves the part exposed for 2 turns; any weapon's hits there get these bonuses. Tuned by simulation (4 Nov 2026). */
-export const MEND = 6, BRACE = 12;
+export const MEND = 6, BRACE = 12, FINISHER = 1.25;
 export const EXPOSE_TURNS = 2, EXPOSE_DMG = 1.15, EXPOSE_BREAK = 2;
 export const DAZE_START = 60, DAZE_STEP = 30, DAZE_LOCK = 2;
 /** each head's meter, for monsters with several heads */
@@ -45,6 +47,9 @@ export const TUTORIAL_SCRIPT: Face[][] = [['C', 'C', 'T', 'B'], ['C', 'T', 'B', 
 
 /** Builds a hunt from the save's loadout. Carried item charges leave the stash now.
  *  `script` fixes the faces of the opening turns (the tutorial); later turns roll from the seed. */
+/** the bounty this hunt counts for: the one taken, if it's for this monster and still open */
+const bountyFor = (s: Save, mon: string) => { const id = s.loadout.bounty; return id && BOUNTIES[id]?.mon === mon && bountyOpen(s, id) ? id : null; };
+
 export function startHunt(s: Save, seed: number, script?: Face[][]): Hunt {
   fixLoadout(s);
   const L = s.loadout, MD = MONSTERS[L.target], arm = armorInst(L.armor, lvOf(s.armors, L.armor));
@@ -62,8 +67,10 @@ export function startHunt(s: Save, seed: number, script?: Face[][]): Hunt {
     intent: '', log: [], over: null, captured: false,
     stats: { dealt: 0, taken: 0, guarded: 0, broken: 0, rerollsUsed: 0 },
     reward: null, rng: seed | 0,
+    ...(bountyFor(s, MD.id) ? { bounty: bountyFor(s, MD.id)! } : {}),
     ...(script?.length ? { script: script.map(t => [...t]) } : {})
   };
+  if (h.charm && CHARMS[h.charm]?.effect === 'scout') h.rerolls++;
   rollAll(h);
   h.intent = MD.next(h, null);
   log(h, `You set out with the ${h.weps[0].name} and ${h.weps[1].name}.`);
@@ -92,6 +99,7 @@ function rollAll(h: Hunt) {
 /** Swallow lands: `n` of your dice are stuck until you deal the escape damage. */
 export function swallowPlayer(h: Hunt, n: number) {
   h.mon.gut = n; h.mon.gutHp = h.arm.slick ? GUT_ESCAPE / 2 : GUT_ESCAPE;
+  (h.feats ??= []).includes('swallowed') || h.feats.push('swallowed');
 }
 
 /* ---------- reading the state ---------- */
@@ -187,6 +195,7 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
   const em = elemMult(w.elem, h.mid);
   if (em !== 1) { dmg = Math.round(dmg * em); notes.push(em > 1 ? 'weakness ×1.5' : 'resisted ×0.75'); }
   if (airborneHalf(h, w)) { dmg = Math.round(dmg / 2); notes.push('airborne ½'); }
+  if (wasCapturable && charmFx(h) === 'finisher') { dmg = Math.round(dmg * FINISHER); notes.push('Finisher’s Charm +25%'); }
   const p = m.parts[h.target], pdef = MD.parts.find(x => x.id === h.target)!;
   const exposed = (p.exposed > 0 || (!!mv.expose && charmFx(h) === 'exposeSelf' && reachable(h, h.target, w))) && !p.broken;
   if (exposed) { dmg = Math.round(dmg * EXPOSE_DMG); notes.push('exposed +15%'); }
@@ -214,6 +223,7 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
       p.hp = Math.max(0, p.hp - Math.round(dmg * e * (mv.part ?? 1) * (exposed ? EXPOSE_BREAK : 1) * (charged && charmFx(h) === 'chargeBreak' ? 2 : 1)));
       if (p.hp === 0) {
         p.broken = true; h.stats.broken++; broke = true; log(h, pdef.brk, 'ember');
+        if (charmFx(h) === 'salvage') { const heal = Math.min(15, h.pmax - h.php); h.php += heal; h.rerolls++; log(h, `Salvager’s Charm: +${heal} HP, +1 reroll.`, 'gold'); }
         if (h.arm.breakHeal) { const heal = Math.min(25, h.pmax - h.php); h.php += heal; h.rerolls++; log(h, `${h.arm.name}: +${heal} HP, +1 reroll.`, 'gold'); }
       }
     } else if (dmg > 0) log(h, `${w.type} weapons can't break the ${pdef.name.toLowerCase()}. The hit still counts toward the kill.`);
@@ -223,7 +233,8 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
     const r = MD.dazeHead(h, h.target, mv.daze);
     if (r.line) log(h, r.line, r.dazed ? 'daze' : '');
     if (r.dazed) {
-      feat(h, 'daze');
+      feat(h, 'daze'); feat(h, `reel:${h.target}`);
+      if (MD.heads!.every(x => h.feats!.includes(`reel:${x}`))) feat(h, 'reelboth');
       if (charmFx(h) === 'dazeWhet') { h.whet = Math.max(h.whet, 0.5); log(h, 'Dusk Charm: your next hit deals +50%.', 'gold'); }
       if (charmFx(h) === 'dazeHeal') { const heal = Math.min(DAZE_HEAL, h.pmax - h.php); if (heal) { h.php += heal; log(h, `Tusk Charm: +${heal} HP.`, 'gold'); } }
     }

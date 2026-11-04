@@ -394,6 +394,7 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .log li:first-child{color:var(--fg)}
 .log li.ember{color:var(--ember-soft)}
 .log li.gold{color:var(--gold-hi)}
+.meta .gold{color:var(--gold-hi)}
 .log li.daze{color:var(--daze)}
 
 .end h2{font-size:var(--fs-lg)}

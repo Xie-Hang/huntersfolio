@@ -79,7 +79,7 @@ export interface ItemDef {
   effect: ItemEffect;
 }
 
-export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak';
+export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage';
 export interface CharmDef {
   /** monster tier it comes from (default 1); gear above the edition's top tier isn't in that build */
   tier?: number;
@@ -195,6 +195,8 @@ export interface Reward {
   lost: number;
   /** monsters this hunt unlocked */
   unlocked?: string[];
+  /** the bounty outcome (win or lose) */
+  bounty?: { id: string; met: boolean; missed?: string; coin: number; seals: number; mat?: string };
 }
 
 export interface Hunt {
@@ -234,6 +236,8 @@ export interface Hunt {
   script?: Face[][];
   /** notable moments this hunt, for achievements: 'daze' | 'interrupt' | 'grounded' | 'unearthed' | 'shatter' */
   feats?: string[];
+  /** the bounty taken for this hunt */
+  bounty?: string;
 }
 
 export interface MonsterDef {
@@ -295,7 +299,7 @@ export interface MonsterDef {
   requires?: string | string[];
 }
 
-export interface Loadout { weapons: string[]; armor: string; charm: string | null; item: string | null; target: string }
+export interface Loadout { weapons: string[]; armor: string; charm: string | null; item: string | null; target: string; /** a bounty taken for this monster */ bounty?: string | null }
 export interface MonsterRecord { hunts: number; wins: number; captures: number; breaks: Record<string, number> }
 
 export interface Save {
@@ -321,4 +325,6 @@ export interface Save {
   endSeen: boolean;
   /** achievement ids earned (kept locally so they reach Steam whenever it's available) */
   achievements: string[];
+  /** bounties completed */
+  bounties: Record<string, true>;
 }
