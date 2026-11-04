@@ -81,12 +81,12 @@ export const stormroc: MonsterDef = {
     const m = h.mon, lines: string[] = [];
     // phase 2: a swoop leaves it low for one of your turns; it climbs again on its next action
     if (m.skyLock && !m.air && type !== 'crashed' && type !== 'perched') m.air = true;
-    if (type === 'thunder') m.storm = 0;
+    if (type === 'thunder') { m.storm = 0; m.stormFull = false; }
     else if (type !== 'dazed' && type !== 'gutter' && type !== 'crashed') {
       // the storm builds every turn; a broken crown builds it every other turn
       m.stormTick = (m.stormTick ?? 0) + 1;
       if (!m.parts.crown.broken || m.stormTick % 2 === 0) m.storm = Math.min(STORM_MAX, (m.storm ?? 0) + 1);
-      if (m.storm === STORM_MAX) lines.push('Its crown is crackling white. A Thunderhead is coming.');
+      if (m.storm === STORM_MAX) { m.stormFull = true; lines.push('Its crown is crackling white. A Thunderhead is coming.'); }
     }
     switch (type) {
       case 'takeoff': m.air = true; m.airLeft = AIR_TURNS; lines.push('It’s airborne!'); break;
@@ -104,6 +104,7 @@ export const stormroc: MonsterDef = {
     const m = h.mon;
     if (h.target !== 'crown' || w.type !== 'Pierce' || !(m.storm ?? 0)) return null;
     m.storm!--;
+    if (m.storm === 0 && m.stormFull) { m.stormFull = false; if (!(h.feats ??= []).includes('stormdrain')) h.feats.push('stormdrain'); }
     if (h.intent === 'thunder') { h.intent = 'gutter'; return 'The arrow grounds the storm. Its Thunderhead fizzles out!'; }
     return `The arrow bleeds the storm from its crown (${m.storm} / ${STORM_MAX}).`;
   },

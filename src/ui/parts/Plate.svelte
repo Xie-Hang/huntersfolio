@@ -21,7 +21,7 @@
 </script>
 
 <div class="plate-stage">
-{#if scene}<Scene region={(ALL_MONSTERS[mon]?.tier ?? 1) === 2 ? 'mire' : 'ridge'} />{/if}
+{#if scene}<Scene region={(ALL_MONSTERS[mon]?.tier ?? 1) === 3 ? 'spire' : (ALL_MONSTERS[mon]?.tier ?? 1) === 2 ? 'mire' : 'ridge'} />{/if}
 {#if mon === 'gorehorn'}<Gorehorn {hunt} />
 {:else if mon === 'galeshrike'}<Galeshrike {hunt} />
 {:else if mon === 'cinderback'}<Cinderback {hunt} />

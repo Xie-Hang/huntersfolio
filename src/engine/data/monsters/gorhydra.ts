@@ -122,7 +122,9 @@ export const gorhydra: MonsterDef = {
     if (h.mon.justCut === x) { h.mon.justCut = undefined; return null; }
     if (!stumped(h, x) || !(w.type === 'Cut' || w.elem === 'Ember')) return null;
     h.mon.stump![x] = 0; (h.mon.sealed ??= {})[x] = true;
-    if (HYDRA_HEADS.every(y => sealed(h, y))) (h.feats ??= []).includes('sealall') || h.feats.push('sealall');
+    const n = HYDRA_HEADS.filter(y => sealed(h, y)).length, feats = (h.feats ??= []);
+    if (n >= 2 && !feats.includes('seal2')) feats.push('seal2');
+    if (n === 3 && !feats.includes('sealall')) feats.push('sealall');
     if (h.charm === 'stumpcharm') { const heal = Math.min(20, h.pmax - h.php); h.php += heal; return `You seal the ${NAME[x]}'s stump. Stump Charm: +${heal} HP.`; }
     return `You seal the ${NAME[x]}'s stump. It won’t grow back.`;
   },
@@ -164,7 +166,7 @@ export const gorhydra: MonsterDef = {
       const t = Math.min(...stumps.map(x => h.mon.stump![x]));
       return { label: `Stump${stumps.length > 1 ? 's' : ''} regrowing`, value: t, max: regrowTurns(h), tone: 'ice', pips: true, note: `in ${t} · seal with Cut or Ember` };
     }
-    return { label: 'Heads sealed for good', value: gone, max: 3, tone: 'gold', pips: true, note: `${gone} / 3` };
+    return gone ? { label: 'Heads sealed for good', value: gone, max: 3, tone: 'gold', pips: true, note: `${gone} / 3` } : null;
   },
 
   tip(h) {

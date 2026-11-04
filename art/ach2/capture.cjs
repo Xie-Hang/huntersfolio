@@ -15,13 +15,16 @@ const POSES = {
   bog_digest: ['bogjaw', { intent: 'digest', mon: { gut: 2, gutHp: 30 } }],
   dusk_reel: ['duskheron', { intent: 'upper:peck|lower:peck', mon: { reel: { upper: 2, lower: 2 } } }],
   whelk_idle: ['emberwhelk', { intent: 'spit' }],
-  mist_images: ['mistglass', { intent: 'rake', mon: { mirage: 2 } }]
+  mist_images: ['mistglass', { intent: 'rake', mon: { mirage: 2 } }],
+  slag_shattered: ['slagwyrm', { intent: 'quenched', mon: { shatter: 2 } }],
+  hydra_sealed: ['gorhydra', { intent: 'slam', mon: { sealed: { left: true, middle: true, right: true }, stump: {} }, broke: ['left', 'middle', 'right'] }],
+  roc_calm: ['stormroc', { intent: 'perched', mon: { storm: 0 } }]
 };
 (async () => {
   const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 3 });
   await p.goto('http://localhost:4173/'); await p.waitForTimeout(300); await p.click('.coach-skip');
   await p.click('[data-coach="nav-forge"]'); await p.click('[data-coach="track"]'); await p.click('[data-coach="track"]');
-  await p.evaluate(() => { const s = JSON.parse(localStorage.getItem('huntersfolio-save')); for (const id of ['gorehorn', 'galeshrike', 'cinderback', 'rimetail']) s.record[id] = { hunts: 1, wins: 1, captures: 0, breaks: {} }; localStorage.setItem('huntersfolio-save', JSON.stringify(s)); });
+  await p.evaluate(() => { const s = JSON.parse(localStorage.getItem('huntersfolio-save')); for (const id of ['gorehorn', 'galeshrike', 'cinderback', 'rimetail', 'bogjaw', 'duskheron', 'emberwhelk', 'mistglass']) s.record[id] = { hunts: 1, wins: 1, captures: 0, breaks: {} }; localStorage.setItem('huntersfolio-save', JSON.stringify(s)); });
   const cdp = await p.context().newCDPSession(p); await cdp.send('Animation.enable');
   for (const [name, [mon, st]] of Object.entries(POSES)) {
     if (ONLY.length && !ONLY.includes(name)) continue;

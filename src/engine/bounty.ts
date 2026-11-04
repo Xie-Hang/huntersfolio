@@ -20,6 +20,7 @@ export function goalText(g: Goal, mon: string): string {
     case 'noItem': return 'Use no items';
     case 'without': return `Bring no ${g.type} weapon`;
     case 'feat': case 'never': return g.text;
+    case 'cracks': return `Break its ${M?.parts.find(p => p.id === g.part)?.name.toLowerCase() ?? g.part} ${g.n === 2 ? 'twice' : `${g.n} times`}`;
   }
 }
 
@@ -35,6 +36,7 @@ export function goalState(h: Hunt, g: Goal): 'met' | 'failed' | 'open' {
     case 'without': return h.weps.some(w => w.type === g.type) ? 'failed' : done ? 'met' : 'open';
     case 'feat': return h.feats?.includes(g.f) ? 'met' : done ? 'failed' : 'open';
     case 'never': return h.feats?.includes(g.f) ? 'failed' : done ? 'met' : 'open';
+    case 'cracks': return (h.mon.parts[g.part]?.cracks ?? 0) >= g.n ? 'met' : done ? 'failed' : 'open';
   }
 }
 

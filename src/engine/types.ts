@@ -193,6 +193,7 @@ export interface MonsterState {
   storm?: number;
   stormTick?: number;
   skyLock?: boolean;
+  stormFull?: boolean;
   /** T3 Slagwyrm: molten armour left this turn, turns it stays shattered, stoked (double), phase 2 (meltdown) */
   armour?: number;
   shatter?: number;

@@ -36,14 +36,19 @@
       </div>
     {/if}
     {#if E.carries(h, 'Blunt') && M.heads}
-      {#each M.heads.filter(x => !m.parts[x].broken) as hd (hd)}
-        {@const reel = (m.reel?.[hd] ?? 0) > 0}
-        {@const v = m.headDaze?.[hd] ?? 0}
-        <div class="hpline">
-          <div class="ph"><span class="label" style="color:var(--daze)">Daze · {M.parts.find(p => p.id === hd)!.name}</span><span class="mono">{reel ? 'Reeling' : `${v} / ${E.HEAD_DAZE_MAX}`}</span></div>
-          <div class="bar" class:locked={reel}><i style="width:{pct(v, E.HEAD_DAZE_MAX)}%;background:var(--daze)"></i></div>
+      <div class="hpline">
+        <div class="ph"><span class="label" style="color:var(--daze)">Daze · each head has its own meter</span></div>
+        <div class="heads">
+          {#each M.heads.filter(x => !m.parts[x].broken) as hd (hd)}
+            {@const reel = (m.reel?.[hd] ?? 0) > 0}
+            {@const v = m.headDaze?.[hd] ?? 0}
+            <div class="hd" aria-label="{M.parts.find(p => p.id === hd)!.name} daze: {reel ? 'reeling' : `${v} of ${E.HEAD_DAZE_MAX}`}">
+              <span class="label">{M.parts.find(p => p.id === hd)!.name.replace(' Head', '')}{reel ? ' · Reeling' : ''}</span>
+              <div class="bar" class:locked={reel}><i style="width:{pct(v, E.HEAD_DAZE_MAX)}%;background:var(--daze)"></i></div>
+            </div>
+          {/each}
         </div>
-      {/each}
+      </div>
     {:else if E.carries(h, 'Blunt')}
       <div class="hpline">
         <div class="ph"><span class="label" style="color:var(--daze)">Daze · from Blunt hits to the {headName}</span><span class="mono">{m.dazeLock ? 'Recovering' : `${m.daze} / ${m.dazeMax}`}</span></div>
@@ -96,6 +101,10 @@
 </section>
 
 <style>
+  .heads { display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 10px; }
+  .heads .hd { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .heads .label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
   .pipbar { display: flex; gap: 6px; }
   .pipbar i { flex: 1; height: 10px; border-radius: 2px; border: 1px solid var(--line-2); background: transparent; }
   .pipbar i.f { background: var(--c); border-color: var(--c); }

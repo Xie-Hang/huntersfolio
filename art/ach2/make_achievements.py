@@ -258,6 +258,37 @@ ICONS.update({
     'ALL_BOUNTIES': lambda: board(),
 })
 
+
+# ---------- Stormspire (full game) ----------
+def spire(flag=True):
+    d = 'M22 204 L60 150 L80 162 L104 96 L118 104 L128 40 L140 60 L150 34 L162 70 L178 110 L200 120 L234 204 Z'
+    out = f'<clipPath id="sp"><path d="{d}"/></clipPath><path d="{d}" fill="{BONE}" stroke="{INK}" stroke-width="6" stroke-linejoin="round"/>'
+    out += f'<g clip-path="url(#sp)">{hatch(20, 120, 240, 210, 7, -12)}<path d="M150 34 L136 204 M104 96 L112 204 M178 110 L196 204" stroke="{INK}" stroke-width="3" opacity=".6"/></g>'
+    out += f'<path d="M22 204 H234" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+    out += f'<path transform="translate(206 44) scale(.5)" d="M0 0 L-26 46 H-6 L-20 90 L24 34 H4 L18 0 Z" fill="{GOLDHI}" stroke="{INK}" stroke-width="7" stroke-linejoin="round"/>'
+    if flag:
+        out += f'<path d="M150 34 V-4" stroke="{INK}" stroke-width="5" stroke-linecap="round" transform="translate(0 6)"/><path d="M152 4 L188 14 L152 26 Z" fill="{EMBER}" stroke="{INK}" stroke-width="4" stroke-linejoin="round"/>'
+    return out
+
+
+def arrow_through(x, y, ang):
+    return (f'<g transform="translate({x} {y}) rotate({ang})"><path d="M-90 0 H70" stroke="{INK}" stroke-width="9" stroke-linecap="round"/>'
+            f'<path d="M-90 0 H70" stroke="{MUD}" stroke-width="4" stroke-linecap="round"/>'
+            f'<path d="M70 -12 L96 0 L70 12 Z" fill="{STEEL}" stroke="{INK}" stroke-width="4" stroke-linejoin="round"/>'
+            f'<path d="M-90 0 l-14 -12 M-90 0 l-14 12 M-80 0 l-14 -12 M-80 0 l-14 12" stroke="{GOLD}" stroke-width="4" stroke-linecap="round"/></g>')
+
+
+def steam(cx, cy):
+    return ''.join(f'<circle cx="{cx + dx}" cy="{cy + dy}" r="{r}" fill="{BONE2}" opacity=".35"/>' for dx, dy, r in [(0, 0, 18), (22, -14, 14), (-20, -18, 12), (8, -34, 10)])
+
+
+ICONS.update({
+    'STORMSPIRE_CLEARED': lambda: f'<g transform="translate(14 34) scale(.88)">{spire(True)}</g>',
+    'QUENCHED': lambda: plate('slag_shattered', -20, 64, 296, (0, 30, 876, 456)) + steam(170, 90) + steam(96, 110) + f'<g transform="translate(196 112) rotate(36) scale(.5)">{maul(0, 0, 0)}</g>',
+    'SEARED_SHUT': lambda: plate('hydra_sealed', 4, 30, 248, (130, 60, 520, 420)),
+    'STORM_CHASER': lambda: plate('roc_calm', -10, 20, 276, (380, 100, 380, 330)) + arrow_through(150, 92, -18),
+})
+
 for aid, fn in ICONS.items():
     body = fn()
     (SVG / f'{aid}.svg').write_text(frame(body, True))

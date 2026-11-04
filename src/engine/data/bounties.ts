@@ -17,7 +17,8 @@ export type Goal =
   | { k: 'noItem' }
   | { k: 'without'; type: DamageType }
   | { k: 'feat'; f: string; text: string }
-  | { k: 'never'; f: string; text: string };
+  | { k: 'never'; f: string; text: string }
+  | { k: 'cracks'; part: string; n: number };
 
 export interface BountyDef {
   id: string; mon: string; name: string; hard?: boolean;
@@ -26,6 +27,8 @@ export interface BountyDef {
 }
 
 const easy = { coin: 120, seals: 1 }, hard = (mat: string) => ({ coin: 250, seals: 2, mat });
+// Stormspire pays more: its gear costs more
+const easy3 = { coin: 180, seals: 1 }, hard3 = (mat: string) => ({ coin: 360, seals: 2, mat });
 
 const ALL: BountyDef[] = [
   // Ashfall Ridge
@@ -53,7 +56,20 @@ const ALL: BountyDef[] = [
   { id: 'whelk3', mon: 'emberwhelk', name: 'Pearl diver', hard: true, goals: [{ k: 'break', part: 'shell' }, { k: 'break', part: 'gills' }, { k: 'taken', n: 80 }], reward: hard('emberpearl') },
   { id: 'mist1', mon: 'mistglass', name: 'Clear sight', goals: [{ k: 'break', part: 'eyes' }, { k: 'noItem' }], reward: easy },
   { id: 'mist2', mon: 'mistglass', name: 'Through the mirror', goals: [{ k: 'without', type: 'Blunt' }], reward: easy },
-  { id: 'mist3', mon: 'mistglass', name: 'Shatterpoint', hard: true, goals: [{ k: 'break', part: 'tail' }, { k: 'turns', n: 8 }], reward: hard('mirrorheart') }
+  { id: 'mist3', mon: 'mistglass', name: 'Shatterpoint', hard: true, goals: [{ k: 'break', part: 'tail' }, { k: 'turns', n: 8 }], reward: hard('mirrorheart') },
+  // Stormspire
+  { id: 'mono1', mon: 'monolith', name: 'Crack it twice', goals: [{ k: 'cracks', part: 'plates', n: 2 }], reward: easy3 },
+  { id: 'mono2', mon: 'monolith', name: 'Hold the mountain', goals: [{ k: 'feat', f: 'interrupt', text: 'Stop a Quake before it lands' }], reward: easy3 },
+  { id: 'mono3', mon: 'monolith', name: 'Heart of the mountain', hard: true, goals: [{ k: 'break', part: 'core' }, { k: 'turns', n: 12 }], reward: hard3('wardencore') },
+  { id: 'roc1', mon: 'stormroc', name: 'Lightning rod', goals: [{ k: 'feat', f: 'interrupt', text: 'Snuff out a Thunderhead' }], reward: easy3 },
+  { id: 'roc2', mon: 'stormroc', name: 'No nets', goals: [{ k: 'noItem' }], reward: easy3 },
+  { id: 'roc3', mon: 'stormroc', name: 'Stormbreaker', hard: true, goals: [{ k: 'break', part: 'crown' }, { k: 'break', part: 'wings' }, { k: 'taken', n: 80 }], reward: hard3('stormheart') },
+  { id: 'slag1', mon: 'slagwyrm', name: 'Quench', goals: [{ k: 'feat', f: 'shatterslag', text: 'Shatter its armour while it stokes' }], reward: easy3 },
+  { id: 'slag2', mon: 'slagwyrm', name: 'Toe to toe', goals: [{ k: 'without', type: 'Pierce' }], reward: easy3 },
+  { id: 'slag3', mon: 'slagwyrm', name: 'Slagbreaker', hard: true, goals: [{ k: 'break', part: 'spine' }, { k: 'turns', n: 8 }], reward: hard3('slagheart') },
+  { id: 'hyd1', mon: 'gorhydra', name: 'Seared shut', goals: [{ k: 'feat', f: 'seal2', text: 'Seal two stumps' }], reward: easy3 },
+  { id: 'hyd2', mon: 'gorhydra', name: 'Bare hands', goals: [{ k: 'noItem' }], reward: easy3 },
+  { id: 'hyd3', mon: 'gorhydra', name: 'Three crowns', hard: true, goals: [{ k: 'break', part: 'middle' }, { k: 'taken', n: 90 }], reward: hard3('hydraheart') }
 ];
 
 /** the bounties of the monsters in this edition */

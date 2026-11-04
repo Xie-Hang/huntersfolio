@@ -151,7 +151,7 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .fnode[aria-current="true"]{background:var(--raise);box-shadow:inset 3px 0 0 var(--gold)}
 .fnode .nm{font-family:var(--f-body);font-weight:600;font-size:var(--fs-md)}
 .fnode .ind{color:var(--line-2);margin-right:6px}
-.fnode.d1 .nmwrap{padding-left:18px}.fnode.d2 .nmwrap{padding-left:36px}
+.fnode.d1 .nmwrap{padding-left:18px}.fnode.d2 .nmwrap{padding-left:36px}.fnode.d3 .nmwrap{padding-left:54px}.fnode.d4 .nmwrap{padding-left:72px}
 .st{font-size:var(--fs-sm);white-space:nowrap;display:flex;align-items:center;gap:6px}
 .st i{width:8px;height:8px;border-radius:50%;display:inline-block}
 .st.owned{color:var(--gold-hi)} .st.owned i{background:var(--gold)}
@@ -268,8 +268,8 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .node .ty{font-family:var(--f-body);font-size:var(--fs-sm);color:var(--muted)}
 .node .stats{font-family:var(--f-body);font-size:var(--fs-sm);color:var(--soft)}
 .node .from{font-family:var(--f-body);font-size:var(--fs-sm);color:var(--muted)}
-.d1{margin-left:28px}.d2{margin-left:56px}
-@media (max-width:600px){.d1{margin-left:12px}.d2{margin-left:24px}}
+.d1{margin-left:28px}.d2{margin-left:56px}.d3{margin-left:84px}.d4{margin-left:112px}
+@media (max-width:600px){.d1{margin-left:12px}.d2{margin-left:24px}.d3{margin-left:36px}.d4{margin-left:48px}}
 .costs{display:flex;flex-direction:column;gap:3px;font-size:var(--fs-sm)}
 .cost{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:4px 0;border-bottom:1px solid var(--line)}
 .cost:last-child{border-bottom:0}
@@ -501,6 +501,7 @@ svg.wc.static *{animation:none!important}
   .wrap{padding-block:10px 16px;gap:10px}
   .tray{padding:4px 0 0}
   .tele .say{font-size:var(--fs-md)}
+  .grid .part:not(.on) .hint{display:none}
 }
 /* controller: glyphs for pad buttons, and a focus ring that always shows while the pad is in use */
 kbd.key.pad{min-width:1.6em;text-align:center;border-radius:999px;font-weight:600}
