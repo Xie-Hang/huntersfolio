@@ -102,22 +102,23 @@
   /* about to take off: crouched, wings raised */
   .pose-takeoff .breath { animation: none; transform: scaleY(.9); }
   .pose-takeoff .wing { transform: rotate(-38deg); }
-  /* in the air: risen, legs tucked, wings beating; the shadow shrinks */
-  .aloft .lift { transform: translateY(-70px) scale(.86); transform-origin: 560px 420px; }
+  /* in the air: flown up past the top of the frame (the plate clips it), so only its underside, tucked legs and
+     beating wings show; kept near full size so it doesn't read as a different, smaller bird. The shadow shrinks. */
+  .aloft .lift { transform: translateY(-250px) scale(.96); transform-origin: 560px 420px; }
   .aloft .legs { transform: scaleY(.45) rotate(18deg); }
   .aloft .shadow { transform: scale(.55); opacity: .4; }
   .pose-air .wing { animation: flap .55s ease-in-out infinite; }
   .pose-air .gusts { animation: wind 1s linear infinite; }
   @keyframes flap { 0%, 100% { transform: rotate(-58deg); } 50% { transform: rotate(10deg); } }
   @keyframes wind { 0% { opacity: 0; transform: translateX(40px); } 30% { opacity: .9; } 100% { opacity: 0; transform: translateX(-80px); } }
-  /* circling high: higher, smaller, gliding */
-  .pose-circle .lift { transform: translateY(-96px) scale(.66); transform-origin: 560px 420px; }
+  /* circling high: higher still, mostly out of view, gliding */
+  .pose-circle .lift { transform: translateY(-310px) scale(.94); transform-origin: 560px 420px; }
   .pose-circle .wing { transform: rotate(-30deg); animation: glide 2s ease-in-out infinite; }
   .pose-circle .breath { animation: drift 2.4s ease-in-out infinite; }
   @keyframes glide { 50% { transform: rotate(-44deg); } }
   @keyframes drift { 50% { transform: translateX(40px) translateY(-16px); } }
   /* diving: pitched head-down, wings folded tight (it's in the air, so the tilt can't hit the ground) */
-  .pose-dive .lift { transform: translateY(-60px) rotate(-24deg) scale(.86); transform-origin: 560px 420px; }
+  .pose-dive .lift { transform: translateY(-200px) rotate(-24deg) scale(.96); transform-origin: 560px 420px; }
   .pose-dive .wing { transform: rotate(14deg); }
   /* beak stuck in the earth after a dive */
   .pose-stuck .head { animation: tug .5s ease-in-out infinite; transform: translate(-30px, 150px) rotate(-62deg); }

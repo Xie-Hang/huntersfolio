@@ -208,7 +208,7 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .tabs button[aria-selected="true"]{color:var(--gold-hi);border-bottom-color:var(--gold)}
 
 /* bestiary + monster */
-.plate{border:1px solid var(--line);border-radius:3px;background:#1a1511;padding:10px 6px 4px}
+.plate{border:1px solid var(--line);border-radius:3px;background:#1a1511;padding:10px 6px 4px;overflow:hidden}
 .plate svg{display:block;width:100%;height:auto}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
 .chip{font-family:var(--f-body);font-size:var(--fs-sm);padding:3px 10px;border-radius:999px;border:1px solid var(--line-2);color:var(--soft)}
