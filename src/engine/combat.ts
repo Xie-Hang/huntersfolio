@@ -14,7 +14,7 @@ export const GUARD_RESIST = 0.7;       // armor element resistance multiplier
 export const CHARGE_BREAK = 30;        // damage that breaks a pending charge
 export const CAPTURE_AT = 0.2;         // capture allowed at or below this share of the monster's HP
 /** Pierce's Expose: a hit leaves the part exposed for 2 turns; any weapon's hits there get these bonuses. Tuned by simulation (4 Nov 2026). */
-export const MEND = 6, BRACE = 12, FINISHER = 1.25;
+export const MEND = 6, BRACE = 12, FINISHER = 1.25, SWAP_WHET = 0.3;
 export const EXPOSE_TURNS = 2, EXPOSE_DMG = 1.15, EXPOSE_BREAK = 2;
 export const DAZE_START = 60, DAZE_STEP = 30, DAZE_LOCK = 2;
 /** each head's meter, for monsters with several heads */
@@ -154,7 +154,10 @@ function flowReroll(h: Hunt, mv: { flow?: boolean }) {
 
 function checkEnrage(h: Hunt) {
   const m = h.mon;
-  if (!m.enraged && m.hp > 0 && m.hp <= m.max / 2) { m.enraged = true; log(h, def(h).enrageText, 'ember'); }
+  if (!m.enraged && m.hp > 0 && m.hp <= m.max / 2) {
+    m.enraged = true; log(h, def(h).enrageText, 'ember');
+    const t = def(h).onPhase?.(h); if (t) log(h, t, 'ember');
+  }
 }
 function finish(h: Hunt, result: 'win' | 'lose') {
   h.over = result;
@@ -201,6 +204,8 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
   if (exposed) { dmg = Math.round(dmg * EXPOSE_DMG); notes.push('exposed +15%'); }
   const mod = MD.hitMod?.(h, h.target, w);
   if (mod) { dmg = Math.round(dmg * mod.mult); notes.push(mod.note); }
+  const soak = MD.absorb?.(h, dmg, w);
+  if (soak) { dmg = soak.dmg; notes.push(soak.note); }
   dmg = Math.min(dmg, m.hp);
   m.hp -= dmg; h.stats.dealt += dmg;
   if ((m.gut ?? 0) > 0 && dmg > 0) {
@@ -222,7 +227,8 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
     else if (e > 0) {
       p.hp = Math.max(0, p.hp - Math.round(dmg * e * (mv.part ?? 1) * (exposed ? EXPOSE_BREAK : 1) * (charged && charmFx(h) === 'chargeBreak' ? 2 : 1)));
       if (p.hp === 0) {
-        p.broken = true; h.stats.broken++; broke = true; log(h, pdef.brk, 'ember');
+        p.broken = true; p.cracks = (p.cracks ?? 0) + 1; h.stats.broken++; broke = true; log(h, pdef.brk, 'ember');
+        { const t = MD.onBreak?.(h, h.target, w); if (t) log(h, t, 'gold'); }
         if (charmFx(h) === 'salvage') { const heal = Math.min(15, h.pmax - h.php); h.php += heal; h.rerolls++; log(h, `Salvager’s Charm: +${heal} HP, +1 reroll.`, 'gold'); }
         if (h.arm.breakHeal) { const heal = Math.min(25, h.pmax - h.php); h.php += heal; h.rerolls++; log(h, `${h.arm.name}: +${heal} HP, +1 reroll.`, 'gold'); }
       }
@@ -283,10 +289,16 @@ export function charge(h: Hunt, idx: number[]): boolean {
   if (h.arm.braced) { h.guard += BRACE; log(h, `${h.arm.name}: +${BRACE} guard while you charge.`, 'gold'); }
   return true;
 }
+/** a quickswap armor's free swap is still available this turn */
+export const freeSwap = (h: Hunt) => !!h.arm.quickswap && !h.freeSwapUsed;
 export function swap(h: Hunt, idx: number[]): boolean {
-  const sel = freeOnly(h, idx); if (sel.length !== 1 || h.over) return false;
-  h.dice[sel[0]].used = 'Swap'; h.weapon = 1 - h.weapon;
+  const sel = freeOnly(h, idx); if (h.over) return false;
+  if (freeSwap(h) && sel.length === 0) h.freeSwapUsed = true;
+  else if (sel.length !== 1) return false;
+  else h.dice[sel[0]].used = 'Swap';
+  h.weapon = 1 - h.weapon;
   log(h, `You switch to the ${currentWeapon(h).name}.`);
+  if (charmFx(h) === 'swapWhet') { h.whet = Math.max(h.whet, SWAP_WHET); log(h, 'Core Charm: your next hit deals +30%.', 'gold'); }
   return true;
 }
 export function capture(h: Hunt, idx: number[]): boolean {
@@ -353,7 +365,7 @@ export function endTurn(h: Hunt): TurnResult {
   if (h.php <= 0) { finish(h, 'lose'); return { taken }; }
   if (h.arm.mend && h.php < h.pmax) { const heal = Math.min(MEND, h.pmax - h.php); h.php += heal; log(h, `Your armor knits shut: +${heal} HP.`, 'gold'); }
   if (h.chargeReady) log(h, 'Your unused charge fades.');
-  h.turn++; h.chargeReady = h.chargePending; h.chargePending = false; h.guard = 0; h.itemUsed = false;
+  h.turn++; h.chargeReady = h.chargePending; h.chargePending = false; h.guard = 0; h.itemUsed = false; h.freeSwapUsed = false;
   rollAll(h);
   h.intent = MD.next(h, type);
   return { taken };

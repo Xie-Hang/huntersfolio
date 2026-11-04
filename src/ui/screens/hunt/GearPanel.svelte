@@ -26,7 +26,7 @@
   const gOk = $derived(!over && n >= 1);
   const cd = $derived(E.chargeDice(h));
   const cOk = $derived(!over && n === cd && !h.chargePending);
-  const sOk = $derived(!over && n === 1);
+  const sOk = $derived(!over && (n === 1 || (n === 0 && E.freeSwap(h))));
   const capLive = $derived(!over && E.canCapture(h));
   const capOk = $derived(capLive && n === 2 && !E.captureBlocked(h));
   const capAt = $derived(Math.floor(h.mon.max * E.CAPTURE_AT));
@@ -68,7 +68,7 @@
     <span><span class="mn"><Key k="C" />Charge</span><span class="md">Your first hit next turn deals double</span></span><span class="need">{cd}</span>
   </button>
   <button class="move dash {sOk ? 'ready' : 'no'}" data-coach="swap" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
-    <span><span class="mn"><Key k="S" pad="RT" />Swap to {other.name}</span><span class="md">{other.type} · <Elem e={other.elem} />{other.elem ?? 'No element'}</span></span><span class="need">1</span>
+    <span><span class="mn"><Key k="S" pad="RT" />Swap to {other.name}</span><span class="md">{other.type} · <Elem e={other.elem} />{other.elem ?? 'No element'}</span></span><span class="need">{E.freeSwap(h) ? 'Free' : '1'}</span>
   </button>
   <!-- Always shown, so players learn it exists before it's available. -->
   <button data-coach="capture" class="move capture {capLive && !E.captureBlocked(h) ? 'live' : ''} {capOk ? 'ready' : 'no'}" aria-disabled={!capOk} onclick={() => capOk && game.capture()}>

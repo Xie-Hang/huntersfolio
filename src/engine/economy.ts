@@ -227,7 +227,9 @@ export function unlockHint(id: string): string {
   const reqs = (Array.isArray(req) ? req : [req]).filter(r => MONSTERS[r]);
   if (reqs.length === 1) return `Beat the ${MONSTERS[reqs[0]].short} first`;
   const tiers = new Set(reqs.map(r => MONSTERS[r].tier));
-  return tiers.size === 1 && tiers.has(1) ? 'Beat every monster on Ashfall Ridge first' : `Beat ${reqs.map(r => MONSTERS[r].short).join(', ')} first`;
+  if (tiers.size === 1 && tiers.has(1)) return 'Beat every monster on Ashfall Ridge first';
+  if (tiers.size === 1 && tiers.has(2)) return 'Beat every monster in the Mirewood first';
+  return `Beat ${reqs.map(r => MONSTERS[r].short).join(', ')} first`;
 }
 
 /** Every monster in this build has been beaten at least once: the end of the content (in the demo, the end of the demo). */
@@ -243,12 +245,12 @@ export function settleHunt(s: Save, h: Hunt) {
   s.hunts++;
   const rec = (s.record[h.mid] ??= { hunts: 0, wins: 0, captures: 0, breaks: {} });
   rec.hunts++;
-  for (const [k, v] of Object.entries(h.mon.parts)) if (v.broken) rec.breaks[k] = (rec.breaks[k] ?? 0) + 1;
+  for (const [k, v] of Object.entries(h.mon.parts)) if (v.broken || (v.cracks ?? 0) > 0) rec.breaks[k] = (rec.breaks[k] ?? 0) + 1;
   if (h.over === 'win') {
     rec.wins++; if (h.captured) rec.captures++;
     const mult = h.captured ? 2 : 1;
     const mats: Record<string, number> = { [MD.common]: h.captured ? 3 : 2 };
-    for (const p of MD.parts) if (h.mon.parts[p.id].broken) mats[p.mat] = (mats[p.mat] ?? 0) + mult;
+    for (const p of MD.parts) if (h.mon.parts[p.id].broken || (h.mon.parts[p.id].cracks ?? 0) > 0) mats[p.mat] = (mats[p.mat] ?? 0) + mult;
     let rare = false;
     if (h.mon.parts[MD.rarePart].broken) {
       const pity = s.pity[MD.rare] ?? 0;

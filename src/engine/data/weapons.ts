@@ -61,6 +61,10 @@ list.push(
   { id: 'mirrorblade', tier: 2, name: 'Mirrorglass Blade', type: 'Cut', elem: 'Frost', kind: 'Longsword', note: 'Tail shards fused into one cold edge. It shows you a second blade.', moves: BLADE, mult: 1.6, from: 'rimefang', cost: { coin: 700, glasstail: 2, glasseye: 1, glassdust: 3 } },
   { id: 'facethammer', tier: 2, name: 'Facet Hammer', type: 'Blunt', elem: 'Frost', kind: 'Maul', note: 'A block of clouded glass facets that rings like a bell.', moves: MAUL, mult: 1.6, from: 'rimehammer', cost: { coin: 700, glassfacet: 2, glasstail: 1, glassdust: 3 } },
   { id: 'mirrorbow', tier: 2, name: 'Mirror Heart Bow', type: 'Pierce', elem: 'Frost', kind: 'Bow', note: 'A Mirror Heart in the grip. You can see the arrow land before it flies.', moves: BOW, mult: 1.6, from: 'rimeshot', cost: { coin: 700, mirrorheart: 1, glasseye: 2, glassdust: 3 } },
+  // step 4 (Tier 3, Stormspire): ×1.9
+  { id: 'monolithblade', tier: 3, name: 'Monolith Blade', type: 'Cut', elem: 'Stone', kind: 'Greatsword', note: 'A slab of Warden plate with one edge ground sharp.', moves: BLADE, mult: 1.9, from: 'bogcleaver', cost: { coin: 1100, wardenarm: 2, wardenplate: 1, wardenstone: 4 } },
+  { id: 'monolithhammer', tier: 3, name: 'Monolith Hammer', type: 'Blunt', elem: 'Stone', kind: 'Maul', note: 'A Warden Core, still faintly lit, sealed inside a block of its own plate.', moves: MAUL, mult: 1.9, from: 'miremaul', cost: { coin: 1100, wardencore: 1, wardenplate: 2, wardenstone: 4 } },
+  { id: 'monolithbow', tier: 3, name: 'Monolith Bow', type: 'Pierce', elem: 'Stone', kind: 'Bow', note: 'Core shards for arrowheads. They hum when drawn.', moves: BOW, mult: 1.9, from: 'wartbow', cost: { coin: 1100, coreshard: 2, wardenarm: 1, wardenstone: 4 } },
   { id: 'gillbow', tier: 2, name: 'Gillfire Bow', type: 'Pierce', elem: 'Ember', kind: 'Bow', note: 'Strung with dried whelk gill. Its arrows smoulder.', moves: BOW, mult: 1.6, from: 'ventfire', cost: { coin: 700, whelkgill: 2, whelkshell: 1, whelkscale: 3 } }
 );
 export const WEAPONS: Record<string, WeaponDef> = Object.fromEntries(list.filter(w => (w.tier ?? 1) <= MAX_TIER).map(w => [w.id, w]));

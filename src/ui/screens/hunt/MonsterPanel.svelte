@@ -13,6 +13,8 @@
   const w = $derived(E.currentWeapon(h));
   const headName = $derived(M.parts.find(p => p.id === M.head)!.name.toLowerCase());
   const mud = $derived(m.wallow > 0 && !m.parts.hide?.broken);
+  const meter = $derived(M.meter?.(h) ?? null);
+  const TONE = { gold: 'var(--gold-hi)', ember: 'var(--ember-soft)', ice: '#b9d3f0', gale: '#8fc3c9', stone: '#c9b89c' } as const;
 </script>
 
 <section class="panel" aria-label="The monster" use:shake={game.shakes.mon}>
@@ -23,6 +25,16 @@
       <div class="ph"><span class="label">HP</span><span class="mono">{m.hp} / {m.max}</span></div>
       <div class="bar" style="height:8px"><i style="width:{pct(m.hp, m.max)}%;background:var(--ember)"></i></div>
     </div>
+    {#if meter}
+      <div class="hpline" aria-label="{meter.label}: {meter.value} of {meter.max}">
+        <div class="ph"><span class="label" style="color:{TONE[meter.tone ?? 'gold']}">{meter.label}</span><span class="mono">{meter.note ?? `${meter.value} / ${meter.max}`}</span></div>
+        {#if meter.pips}
+          <div class="pipbar">{#each Array(meter.max) as _, i}<i class:f={i < meter.value} style="--c:{TONE[meter.tone ?? 'gold']}"></i>{/each}</div>
+        {:else}
+          <div class="bar"><i style="width:{pct(meter.value, meter.max)}%;background:{TONE[meter.tone ?? 'gold']}"></i></div>
+        {/if}
+      </div>
+    {/if}
     {#if E.carries(h, 'Blunt') && M.heads}
       {#each M.heads as hd (hd)}
         {@const reel = (m.reel?.[hd] ?? 0) > 0}
@@ -80,3 +92,9 @@
     {#each game.floats.filter(f => f.at === 'mon') as f (f.id)}<span class="float {f.cls}">{f.text}</span>{/each}
   </div>
 </section>
+
+<style>
+  .pipbar { display: flex; gap: 6px; }
+  .pipbar i { flex: 1; height: 10px; border-radius: 2px; border: 1px solid var(--line-2); background: transparent; }
+  .pipbar i.f { background: var(--c); border-color: var(--c); }
+</style>

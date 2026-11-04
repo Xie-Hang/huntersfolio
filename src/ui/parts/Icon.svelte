@@ -83,6 +83,13 @@
     scoutcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${BONE2}" ${S}/><path d="M24 18 L27 28 L24 38 L21 28 Z" fill="#a8402c" ${S} stroke-width="2"/><circle cx="24" cy="28" r="2.5" fill="${INK}"/>`,
     salvagecharm: `${charmTop}<path d="M12 22 L24 14 L36 22 L36 34 L24 42 L12 34 Z" fill="${ASH}" ${S}/><path d="M18 26 L30 34 M30 26 L18 34" stroke="${GOLDHI}" stroke-width="3" stroke-linecap="round"/>`,
     finishercharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="#a8402c" ${S}/><path d="M24 18 V38 M14 28 H34" stroke="${GOLDHI}" stroke-width="2.6" stroke-linecap="round"/><circle cx="24" cy="28" r="5" fill="none" stroke="${GOLDHI}" stroke-width="2.6"/>`,
+    /* Monolith Warden (Stormspire): stone with a gold core */
+    wardenstone: `<path d="M8 34 L12 16 L26 8 L40 16 L42 34 L28 42 Z" fill="${STONEC}" ${S}/><path d="M12 16 L26 22 L40 16 M26 22 L28 42" fill="none" stroke="${INK}" stroke-width="2" opacity=".55"/>`,
+    wardenplate: `<path d="M6 30 C10 14 38 10 42 24 L40 38 L8 40 Z" fill="${BONE2}" ${S}/><path d="M12 22 C20 16 30 15 38 19" fill="none" stroke="${MOSS}" stroke-width="4" stroke-linecap="round"/><path d="M14 30 H34" stroke="${INK}" stroke-width="2" opacity=".5"/>`,
+    wardenarm: `<circle cx="18" cy="16" r="9" fill="${STONEC}" ${S}/><circle cx="26" cy="28" r="10" fill="${STONEC}" ${S}/><path d="M14 44 Q28 30 42 44 Z" fill="${STONEC}" ${S}/>`,
+    coreshard: `<circle cx="24" cy="24" r="18" fill="${GOLD}" opacity=".2"/><path d="M18 8 L32 18 L26 24 L34 40 L16 30 L22 22 Z" fill="${GOLDHI}" ${S}/>`,
+    wardencore: gem(GOLDHI, GOLD),
+    corecharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${STONEC}" ${S}/><path d="M20 20 L27 26 L21 31 L28 36" fill="none" stroke="${GOLDHI}" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>`,
     duskcharm: `${charmTop}<path d="M38 22 L12 28 L38 34 Z" fill="${BONE2}" ${S}/><path d="M38 34 L14 38 L38 42 Z" fill="${BONE2}" ${S}/>`,
     bogcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${STONEC}" ${S}/><circle cx="20" cy="25" r="3.5" fill="${MOSS}"/><circle cx="28" cy="31" r="3" fill="${MOSS}"/>`
   };

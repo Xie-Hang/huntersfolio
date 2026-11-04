@@ -64,6 +64,8 @@ export interface ArmorDef {
   mend?: boolean;
   /** charging also guards */
   braced?: boolean;
+  /** your first swap each turn costs no die */
+  quickswap?: boolean;
   craft: Cost;
 }
 
@@ -79,7 +81,7 @@ export interface ItemDef {
   effect: ItemEffect;
 }
 
-export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage';
+export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet';
 export interface CharmDef {
   /** monster tier it comes from (default 1); gear above the edition's top tier isn't in that build */
   tier?: number;
@@ -133,7 +135,7 @@ export interface LogEntry { t: string; tone: Tone }
 export interface Die { face: Face; used: string | null }
 
 /** exposed: turns left on a Pierce exposure (+15% damage, ×2 toward the break, from any weapon) */
-export interface PartState { hp: number; max: number; broken: boolean; exposed: number }
+export interface PartState { hp: number; max: number; broken: boolean; exposed: number; /** times broken this hunt, for parts that reform (the Warden's plates); rewards count it */ cracks?: number }
 
 export interface MonsterState {
   hp: number;
@@ -178,6 +180,9 @@ export interface MonsterState {
   hits?: number;
   /** dice frozen solid on your next roll */
   frost?: number;
+  /** T3 Monolith Warden: monster actions left with the core exposed; phase 2 (Crumbling) */
+  core?: number;
+  crumble?: boolean;
 }
 
 export interface WeaponInst extends WeaponDef { lv: number }
@@ -238,6 +243,8 @@ export interface Hunt {
   feats?: string[];
   /** the bounty taken for this hunt */
   bounty?: string;
+  /** a quickswap armor's free swap was used this turn */
+  freeSwapUsed?: boolean;
 }
 
 export interface MonsterDef {
@@ -269,6 +276,14 @@ export interface MonsterDef {
   next(h: Hunt, prev: string | null): string;
   /** resolve a non-damage action (or side effects of a damaging one); `landed` = its damage reached you (not dodged). Returns a log line or null */
   resolve(h: Hunt, type: string, landed?: boolean): string | null;
+  /** Tier 3: the fight changes at half HP (called once, right after the enrage line). Returns a log line */
+  onPhase?(h: Hunt): string | null;
+  /** a part just broke (after the break line). Returns a log line */
+  onBreak?(h: Hunt, partId: string, w: WeaponInst): string | null;
+  /** a bar on the monster panel (storm pips, molten armour, plates) */
+  meter?(h: Hunt): { label: string; value: number; max: number; tone?: 'gold' | 'ember' | 'ice' | 'gale' | 'stone'; note?: string; pips?: boolean } | null;
+  /** damage soaked before it reaches HP (after every multiplier). Returns what's left and a note */
+  absorb?(h: Hunt, dmg: number, w: WeaponInst): { dmg: number; note: string } | null;
   /** extra modifiers for a hit on a part */
   hitMod?(h: Hunt, partId: string, w: WeaponInst): { mult: number; note: string } | null;
   /** the hit strikes an image instead (dice spent, no damage, no daze); return the log line, or null if it lands */

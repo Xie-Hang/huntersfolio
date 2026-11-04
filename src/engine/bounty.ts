@@ -27,7 +27,7 @@ export function goalText(g: Goal, mon: string): string {
 export function goalState(h: Hunt, g: Goal): 'met' | 'failed' | 'open' {
   const done = h.over === 'win';
   switch (g.k) {
-    case 'break': return h.mon.parts[g.part]?.broken ? 'met' : done ? 'failed' : 'open';
+    case 'break': return h.mon.parts[g.part]?.broken || (h.mon.parts[g.part]?.cracks ?? 0) > 0 ? 'met' : done ? 'failed' : 'open';
     case 'capture': return h.captured ? 'met' : done ? 'failed' : 'open';
     case 'turns': return h.turn > g.n ? 'failed' : done ? 'met' : 'open';
     case 'taken': return h.stats.taken > g.n ? 'failed' : done ? 'met' : 'open';

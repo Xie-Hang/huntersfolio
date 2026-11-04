@@ -13,6 +13,7 @@ armors.push({ id: 'bogcoat', tier: 2, name: 'Bogskin Coat', hp: 220, guard: 9, r
 armors.push({ id: 'duskcoat', tier: 2, name: 'Duskweave Coat', hp: 200, guard: 9, rerolls: 3, resist: 'Gale', perk: 'Resists Gale (−30%). Nothing can halve your guard.', steady: true, craft: { coin: 600, duskplume: 4, duskcrest: 2 } });
 armors.push({ id: 'whelkplate', tier: 2, name: 'Whelkshell Plate', hp: 210, guard: 10, rerolls: 2, resist: 'Ember', perk: 'Resists Ember (−30%). Heal 6 at the end of every monster turn.', mend: true, craft: { coin: 600, whelkscale: 4, whelkshell: 2 } });
 armors.push({ id: 'glassmantle', tier: 2, name: 'Glassmist Mantle', hp: 195, guard: 9, rerolls: 3, resist: 'Frost', perk: 'Resists Frost (−30%). Charging also gives you 12 guard.', braced: true, craft: { coin: 600, glassdust: 4, glassfacet: 2 } });
+armors.push({ id: 'wardenmail', tier: 3, name: 'Wardenstone Mail', hp: 240, guard: 11, rerolls: 2, resist: 'Stone', perk: 'Resists Stone (−30%). Your first weapon swap each turn costs no die.', quickswap: true, craft: { coin: 900, wardenstone: 5, wardenplate: 2 } });
 export const ARMORS: Record<string, ArmorDef> = Object.fromEntries(armors.filter(inEdition).map(a => [a.id, a]));
 
 const items: ItemDef[] = [
@@ -43,6 +44,7 @@ charms.push(
   { id: 'salvagecharm', tier: 2, name: 'Salvager’s Charm', src: 'Bounty board', perk: 'Breaking a part heals 15 and gives a reroll.', effect: 'salvage', craft: { coin: 150, seal: 5 } },
   { id: 'finishercharm', tier: 2, name: 'Finisher’s Charm', src: 'Bounty board', perk: 'Hits deal +25% once the monster can be captured.', effect: 'finisher', craft: { coin: 200, seal: 8 } }
 );
+charms.push({ id: 'corecharm', tier: 3, name: 'Core Charm', src: 'Monolith Warden', perk: 'After you swap weapons, your next hit deals +30%.', effect: 'swapWhet', craft: { coin: 200, coreshard: 1, wardenstone: 2 } });
 export const CHARMS: Record<string, CharmDef> = Object.fromEntries(charms.filter(inEdition).map(c => [c.id, c]));
 
 const mats: MaterialDef[] = [
@@ -87,6 +89,11 @@ mats.push(
   { id: 'glassfacet', tier: 2, base: 'Glass Facet', src: 'Mistglass', sell: 90, how: 'Break the Mistglass’s facets (Blunt best)' },
   { id: 'glasseye', tier: 2, base: 'Glass Eye', src: 'Mistglass', sell: 90, how: 'Break the Mistglass’s eyes (Pierce best)' },
   { id: 'mirrorheart', tier: 2, base: 'Mirror Heart', src: 'Mistglass', rare: true, sell: 450, how: 'Rare from Mistglass eye breaks' },
+  { id: 'wardenstone', tier: 3, base: 'Wardenstone', src: 'Monolith Warden', sell: 45, how: 'Every Monolith Warden hunt' },
+  { id: 'wardenplate', tier: 3, base: 'Warden Plate', src: 'Monolith Warden', sell: 130, how: 'Break the Warden’s stone plates (Blunt only)' },
+  { id: 'wardenarm', tier: 3, base: 'Boulder Fist', src: 'Monolith Warden', sell: 130, how: 'Break the Warden’s boulder arms (Cut best)' },
+  { id: 'coreshard', tier: 3, base: 'Core Shard', src: 'Monolith Warden', sell: 130, how: 'Break the Warden’s core while it’s exposed (Pierce best)' },
+  { id: 'wardencore', tier: 3, base: 'Warden Core', src: 'Monolith Warden', rare: true, sell: 650, how: 'Rare from Monolith Warden core breaks' },
   { id: 'seal', tier: 2, base: 'Hunter’s Seal', src: 'Bounty board', sell: 0, how: 'Paid by bounties; crafts the bounty charms' },
   { id: 'mirestone', tier: 2, base: 'Mirestone', src: 'Bogjaw', rare: true, sell: 450, how: 'Rare from Bogjaw stone warts' }
 );
