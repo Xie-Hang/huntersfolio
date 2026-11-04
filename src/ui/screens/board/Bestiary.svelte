@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../parts/Icon.svelte';
   import Elem from '../../parts/Elem.svelte';
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
@@ -53,7 +54,7 @@
     {#each mats as k (k)}
       {@const tn = E.trackedNeed(game.save, k)}
       <div class="row" class:zero={!game.save.mats[k]}>
-        <span>{E.matName(k)}{#if tn}{' '}<span class="need">· {tn}</span>{/if}</span><span class="mono">{game.save.mats[k] ?? 0}</span>
+        <span><Icon id={k} size={18} />{E.matName(k)}{#if tn}{' '}<span class="need">· {tn}</span>{/if}</span><span class="mono">{game.save.mats[k] ?? 0}</span>
       </div>
     {/each}
   </div>

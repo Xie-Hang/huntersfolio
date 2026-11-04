@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../parts/Icon.svelte';
   // Current weapon's moves, then the dice actions (guard, charge, swap, capture) and the item.
   import { MOVE_KEYS } from '../../keys';
   import Elem from '../../parts/Elem.svelte';
@@ -86,7 +87,7 @@
     {@const it = E.ITEMS[h.item]}
     <div class="divider"><span class="label">Item · Free action</span><span class="label">{h.itemCharges} left</span></div>
     <button class="move {iOk ? 'ready' : 'no'}" data-coach="item" aria-disabled={!iOk} onclick={() => iOk && game.item()}>
-      <span><span class="mn"><kbd class="key">I</kbd>{it.name}</span><span class="md">{it.desc}{h.itemUsed ? ' · Used this turn' : it.effect === 'net' && !h.mon.air ? ' · Only while it flies' : it.effect === 'blast' && !h.mon.under ? ' · Only while it’s underground' : it.effect === 'thaw' && !h.mon.plating ? ' · Only while it has ice' : ''}</span></span>
+      <span><span class="mn"><kbd class="key">I</kbd><Icon id={h.item} size={20} />{it.name}</span><span class="md">{it.desc}{h.itemUsed ? ' · Used this turn' : it.effect === 'net' && !h.mon.air ? ' · Only while it flies' : it.effect === 'blast' && !h.mon.under ? ' · Only while it’s underground' : it.effect === 'thaw' && !h.mon.plating ? ' · Only while it has ice' : ''}</span></span>
       <span class="need">Free</span>
     </button>
   {:else}

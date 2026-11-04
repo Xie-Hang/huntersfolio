@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../parts/Icon.svelte';
   // Buy items, craft items from materials, sell materials (with a "keep what recipes need" guard).
   import * as E from '../../engine';
   import { game } from '../game.svelte';
@@ -55,7 +56,7 @@
           {@const max = Math.max(1, Math.floor(s.coin / it.price!))}
           {@const q = clamp(it.id, max)}
           <div class="srow">
-            <span><span class="nm">{it.name}</span><span class="md">{it.desc} Carry up to {it.max} per hunt · you have {s.items[it.id] ?? 0}.</span></span>
+            <span><span class="nm"><Icon id={it.id} />{it.name}</span><span class="md">{it.desc} Carry up to {it.max} per hunt · you have {s.items[it.id] ?? 0}.</span></span>
             <span class="ctl">
               <span class="price">{it.price} each</span>
               {@render stepper(it.id, max)}
@@ -66,7 +67,7 @@
       {:else if tab === 'craft'}
         {#each craftRows as it (it.id)}
           <div class="srow">
-            <span><span class="nm">{it.name}</span><span class="md">{it.desc} Makes {it.yields ?? 1} · you have {s.items[it.id] ?? 0}.</span><Costs cost={it.craft!} /></span>
+            <span><span class="nm"><Icon id={it.id} />{it.name}</span><span class="md">{it.desc} Makes {it.yields ?? 1} · you have {s.items[it.id] ?? 0}.</span><Costs cost={it.craft!} /></span>
             <span class="ctl"><button class="btn primary" data-sound disabled={!E.canPay(s, it.craft!)} onclick={() => run(sv => E.craftItem(sv, it.id))}>Craft {it.yields ?? 1}</button></span>
           </div>
         {/each}
@@ -83,7 +84,7 @@
           {@const q = clamp(key, r.have)}
           <div class="srow">
             <span>
-              <span class="nm">{E.matName(r.m.id)}</span><span class="md">You have {r.have} · {r.m.sell} coin each</span>
+              <span class="nm"><Icon id={r.m.id} />{E.matName(r.m.id)}</span><span class="md">You have {r.have} · {r.m.sell} coin each</span>
               {#if r.tn}<span class="warn">Tracked: {r.tn}</span>
               {:else if r.uses.length}<span class="warn">Keep {r.keep} for {r.uses.slice(0, 2).join(', ')}{r.uses.length > 2 ? ` +${r.uses.length - 2} more` : ''}</span>{/if}
             </span>

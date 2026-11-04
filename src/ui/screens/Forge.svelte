@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../parts/Icon.svelte';
   // List-detail: upgrade trees on the left, the selected recipe on the right.
   import Elem from '../parts/Elem.svelte';
   import * as E from '../../engine';
@@ -77,7 +78,7 @@
           {@const lv = lvHere(r.id)}
           <button class="fnode d{r.depth}" aria-current={sel === r.id} onclick={() => pick(r.id)}>
             <span class="nmwrap">
-              {#if r.depth}<span class="ind">└</span>{/if}<span class="nm">{d.name}{#if lv}{' '}<span class="lv">+{lv}</span>{/if}</span>
+              {#if r.depth}<span class="ind">└</span>{/if}<span class="nm">{#if kind === 'c'}<Icon id={r.id} size={18} />{/if}{d.name}{#if lv}{' '}<span class="lv">+{lv}</span>{/if}</span>
               {#if s.tracked === `${kind}:${r.id}`}<span class="tracked-pin">● Tracked</span>{/if}
               <span class="st {st.cls}"><i></i>{st.text}</span>
             </span>

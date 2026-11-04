@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from './Icon.svelte';
   // Cost rows: name, then have / need. How to get it is a hover hint, not a caption.
   import * as E from '../../engine';
   import { game } from '../game.svelte';
@@ -17,6 +18,6 @@
 
 <div class="costs">
   {#each rows as r (r.k)}
-    <div class="cost {r.ok ? 'ok' : 'miss'}"><span title={r.how}>{r.name}</span><span class="have">{r.have} / {r.v}</span></div>
+    <div class="cost {r.ok ? 'ok' : 'miss'}"><span title={r.how}><Icon id={r.k} size={18} />{r.name}</span><span class="have">{r.have} / {r.v}</span></div>
   {/each}
 </div>

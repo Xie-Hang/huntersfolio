@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../parts/Icon.svelte';
   // What the monster does when you end your turn; becomes the result card when the hunt ends.
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
@@ -35,7 +36,7 @@
       <div>
         <span class="label">Materials</span>
         <ul style="margin-top:6px">
-          {#each Object.entries(r.mats) as [k, v] (k)}<li class:rare={k === M.rare}>{E.matName(k)} ×{v}</li>{/each}
+          {#each Object.entries(r.mats) as [k, v] (k)}<li class:rare={k === M.rare}><Icon id={k} size={18} />{E.matName(k)} ×{v}</li>{/each}
         </ul>
       </div>
       {#if h.mon.parts[M.rarePart].broken && !r.rare}
