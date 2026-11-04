@@ -14,6 +14,8 @@ export const CAPTURE_AT = 0.2;         // capture allowed at or below this share
 /** Pierce's Expose: a hit leaves the part exposed for 2 turns; any weapon's hits there get these bonuses. Tuned by simulation (4 Nov 2026). */
 export const EXPOSE_TURNS = 2, EXPOSE_DMG = 1.15, EXPOSE_BREAK = 2;
 export const DAZE_START = 60, DAZE_STEP = 30, DAZE_LOCK = 2;
+/** each head's meter, for monsters with several heads */
+export const HEAD_DAZE_MAX = 50;
 /** Bump when the Hunt shape changes; in-progress hunts from older builds are refunded, not resumed. */
 export const HUNT_VERSION = 6;
 /** Ice plating: layers a Cut hit breaks; any other hit breaks 1 */
@@ -111,9 +113,9 @@ export function incoming(h: Hunt) {
   if (h.over) return null;
   const info = intentInfo(h); if (!info.dmg) return null;
   const res = h.arm.resist === def(h).elem, after = res ? Math.round(info.dmg * GUARD_RESIST) : info.dmg;
-  if (h.evade) return { raw: info.dmg, after, net: 0, res, g: 0, half: !!info.halfGuard, evade: true };
-  const g = info.halfGuard ? Math.floor(h.guard / 2) : h.guard;
-  return { raw: info.dmg, after, net: Math.max(0, after - g), res, g, half: !!info.halfGuard, evade: false };
+  if (h.evade) return { raw: info.dmg, after, net: 0, res, g: 0, half: !!info.halfGuard && !h.arm.steady, evade: true };
+  const g = info.halfGuard && !h.arm.steady ? Math.floor(h.guard / 2) : h.guard;
+  return { raw: info.dmg, after, net: Math.max(0, after - g), res, g, half: !!info.halfGuard && !h.arm.steady, evade: false };
 }
 
 /** Indices of free dice that satisfy a recipe, preferring the ones in `prefer`. */
@@ -209,11 +211,20 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
     } else if (dmg > 0) log(h, `${w.type} weapons can't break the ${pdef.name.toLowerCase()}. The hit still counts toward the kill.`);
   }
   flowReroll(h, mv);
-  if (mv.daze && h.target === MD.head && reach && m.hp > 0 && m.dazeLock === 0) {
+  if (mv.daze && MD.heads?.includes(h.target) && reach && m.hp > 0 && MD.dazeHead) {
+    const r = MD.dazeHead(h, h.target, mv.daze);
+    if (r.line) log(h, r.line, r.dazed ? 'daze' : '');
+    if (r.dazed) {
+      feat(h, 'daze');
+      if (charmFx(h) === 'dazeWhet') { h.whet = Math.max(h.whet, 0.5); log(h, 'Dusk Charm: your next hit deals +50%.', 'gold'); }
+      if (charmFx(h) === 'dazeHeal') { const heal = Math.min(DAZE_HEAL, h.pmax - h.php); if (heal) { h.php += heal; log(h, `Tusk Charm: +${heal} HP.`, 'gold'); } }
+    }
+  } else if (mv.daze && h.target === MD.head && reach && m.hp > 0 && m.dazeLock === 0) {
     m.daze = Math.min(m.dazeMax, m.daze + mv.daze);
     if (m.daze >= m.dazeMax) {
       m.daze = 0; m.dazeMax += DAZE_STEP; m.dazeLock = DAZE_LOCK; h.intent = 'dazed';
       log(h, 'Daze: the blow rattles its skull. It loses its action!', 'daze');
+      if (charmFx(h) === 'dazeWhet') { h.whet = Math.max(h.whet, 0.5); log(h, 'Dusk Charm: your next hit deals +50%.', 'gold'); }
       if (charmFx(h) === 'dazeHeal') { const heal = Math.min(DAZE_HEAL, h.pmax - h.php); if (heal) { h.php += heal; log(h, `Tusk Charm: +${heal} HP.`, 'gold'); } }
     }
   }
@@ -305,11 +316,11 @@ export function endTurn(h: Hunt): TurnResult {
     else {
       const res = h.arm.resist === MD.elem;
       const raw = res ? Math.round(info.dmg * GUARD_RESIST) : info.dmg;
-      const g = info.halfGuard ? Math.floor(h.guard / 2) : h.guard;
+      const g = info.halfGuard && !h.arm.steady ? Math.floor(h.guard / 2) : h.guard;
       taken = Math.max(0, raw - g); landed = true;
       const blocked = raw - taken;
       h.php = Math.max(0, h.php - taken); h.stats.taken += taken; h.stats.guarded += blocked;
-      log(h, `${info.name} hits you for ${taken}${blocked ? ` (${blocked} blocked${info.halfGuard ? ', guard halved' : ''})` : ''}${res ? ` (${MD.elem} resisted)` : ''}.`, taken >= CHARGE_BREAK ? 'ember' : '');
+      log(h, `${info.name} hits you for ${taken}${blocked ? ` (${blocked} blocked${info.halfGuard && !h.arm.steady ? ', guard halved' : ''})` : ''}${res ? ` (${MD.elem} resisted)` : ''}.`, taken >= CHARGE_BREAK ? 'ember' : '');
       if (h.chargePending && taken >= CHARGE_BREAK) { h.chargePending = false; log(h, 'The hit breaks your focus. Your charge is lost.', 'ember'); }
     }
   }

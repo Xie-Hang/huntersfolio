@@ -58,6 +58,8 @@ export interface ArmorDef {
   burnproof?: boolean;
   /** swallowed: you cut free in half the damage */
   slick?: boolean;
+  /** your guard is never halved (gusts, screeches) */
+  steady?: boolean;
   craft: Cost;
 }
 
@@ -73,7 +75,7 @@ export interface ItemDef {
   effect: ItemEffect;
 }
 
-export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal';
+export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet';
 export interface CharmDef {
   /** monster tier it comes from (default 1); gear above the edition's top tier isn't in that build */
   tier?: number;
@@ -159,6 +161,11 @@ export interface MonsterState {
   /** swallowed (grapplers): how many of your dice are stuck inside, and the damage left to cut free */
   gut?: number;
   gutHp?: number;
+  /** several heads: each head's daze meter, and how many actions it still reels for */
+  headDaze?: Record<string, number>;
+  reel?: Record<string, number>;
+  /** a one-turn debuff on you is coming (e.g. a screech halves your guard next turn) */
+  screech?: number;
 }
 
 export interface WeaponInst extends WeaponDef { lv: number }
@@ -229,6 +236,10 @@ export interface MonsterDef {
   tier: number;
   /** part that Blunt hits build daze on */
   head: string;
+  /** several heads (Duskheron, Gorhydra): each has its own daze meter, handled by dazeHead instead of the shared one */
+  heads?: string[];
+  /** Blunt daze landed on one of `heads`: fill that head's meter; `dazed` when it reels */
+  dazeHead?(h: Hunt, partId: string, amount: number): { line: string | null; dazed: boolean };
   common: string;
   rarePart: string;
   rare: string;

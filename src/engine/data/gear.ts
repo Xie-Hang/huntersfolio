@@ -10,6 +10,7 @@ const armors: ArmorDef[] = [
   { id: 'rimehide', name: 'Rimehide Cloak', hp: 185, guard: 8, rerolls: 3, resist: 'Frost', perk: 'Resists Frost (−30%). Start each hunt with 3 rerolls instead of 2.', craft: { coin: 300, frostfang: 1, barbtail: 1, rimescale: 3 } }
 ];
 armors.push({ id: 'bogcoat', tier: 2, name: 'Bogskin Coat', hp: 220, guard: 9, rerolls: 2, resist: 'Stone', perk: 'Resists Stone (−30%). When swallowed, you cut free twice as fast.', slick: true, craft: { coin: 600, bogskin: 4, throatsac: 2 } });
+armors.push({ id: 'duskcoat', tier: 2, name: 'Duskweave Coat', hp: 200, guard: 9, rerolls: 3, resist: 'Gale', perk: 'Resists Gale (−30%). Nothing can halve your guard.', steady: true, craft: { coin: 600, duskplume: 4, duskcrest: 2 } });
 export const ARMORS: Record<string, ArmorDef> = Object.fromEntries(armors.filter(inEdition).map(a => [a.id, a]));
 
 const items: ItemDef[] = [
@@ -31,6 +32,7 @@ const charms: CharmDef[] = [
   { id: 'rimecharm', name: 'Rime Charm', src: 'Rimetail', perk: 'Light Cut moves deal 4 more damage.', effect: 'lightCut', craft: { coin: 150, barbtail: 1, rimescale: 2 } }
 ];
 charms.push({ id: 'bogcharm', tier: 2, name: 'Bog Charm', src: 'Bogjaw', perk: 'When you cut your way out of a monster, you heal 20.', effect: 'escapeHeal', craft: { coin: 150, bogmolar: 1, bogskin: 2 } });
+charms.push({ id: 'duskcharm', tier: 2, name: 'Dusk Charm', src: 'Duskheron', perk: 'When you daze a monster, your next hit deals +50%.', effect: 'dazeWhet', craft: { coin: 150, duskbeak: 1, duskplume: 2 } });
 export const CHARMS: Record<string, CharmDef> = Object.fromEntries(charms.filter(inEdition).map(c => [c.id, c]));
 
 const mats: MaterialDef[] = [
@@ -60,6 +62,11 @@ mats.push(
   { id: 'bogmolar', tier: 2, base: 'Bog Molar', src: 'Bogjaw', sell: 90, how: 'Break the Bogjaw’s jaw (Blunt best)' },
   { id: 'throatsac', tier: 2, base: 'Throat Sac', src: 'Bogjaw', sell: 90, how: 'Break the Bogjaw’s throat sac (Cut best)' },
   { id: 'wartstone', tier: 2, base: 'Wart Stone', src: 'Bogjaw', sell: 90, how: 'Break the Bogjaw’s stone warts (Pierce best)' },
+  { id: 'duskplume', tier: 2, base: 'Dusk Plume', src: 'Duskheron', sell: 30, how: 'Every Duskheron hunt' },
+  { id: 'duskbeak', tier: 2, base: 'Dusk Beak', src: 'Duskheron', sell: 90, how: 'Break the Duskheron’s upper head (Blunt best)' },
+  { id: 'duskcrest', tier: 2, base: 'Dusk Crest', src: 'Duskheron', sell: 90, how: 'Break the Duskheron’s lower head (Blunt best)' },
+  { id: 'duskpinion', tier: 2, base: 'Dusk Pinion', src: 'Duskheron', sell: 90, how: 'Break the Duskheron’s wings (Pierce best)' },
+  { id: 'twilightquill', tier: 2, base: 'Twilight Quill', src: 'Duskheron', rare: true, sell: 450, how: 'Rare from Duskheron wings' },
   { id: 'mirestone', tier: 2, base: 'Mirestone', src: 'Bogjaw', rare: true, sell: 450, how: 'Rare from Bogjaw stone warts' }
 );
 export const MATERIALS: Record<string, MaterialDef> = Object.fromEntries(mats.filter(inEdition).map(m => [m.id, m]));

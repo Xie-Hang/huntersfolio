@@ -53,6 +53,8 @@ const list: WeaponDef[] = [
 list.push(
   { id: 'bogcleaver', tier: 2, name: 'Bogtooth Cleaver', type: 'Cut', elem: 'Stone', kind: 'Longsword', note: 'A Bogjaw molar set along the edge like a row of teeth.', moves: BLADE, mult: 1.6, from: 'ridgecleaver', cost: { coin: 700, bogmolar: 2, throatsac: 1, bogskin: 3 } },
   { id: 'miremaul', tier: 2, name: 'Mirestone Maul', type: 'Blunt', elem: 'Stone', kind: 'Maul', note: 'A Mirestone still slick with bog water, bound to the head.', moves: MAUL, mult: 1.6, from: 'boulder', cost: { coin: 700, mirestone: 1, wartstone: 2, bogskin: 3 } },
+  { id: 'duskblade', tier: 2, name: 'Duskstorm Blade', type: 'Cut', elem: 'Gale', kind: 'Curved blade', note: 'A Duskheron beak ground into a hooked edge.', moves: BLADE, mult: 1.6, from: 'storm', cost: { coin: 700, duskbeak: 2, duskpinion: 1, duskplume: 3 } },
+  { id: 'twilightbow', tier: 2, name: 'Twilight Bow', type: 'Pierce', elem: 'Gale', kind: 'Bow', note: 'Fletched with a Twilight Quill. Its arrows fly in pairs.', moves: BOW, mult: 1.6, from: 'windbow', cost: { coin: 700, twilightquill: 1, duskpinion: 2, duskplume: 3 } },
   { id: 'wartbow', tier: 2, name: 'Wartstone Bow', type: 'Pierce', elem: 'Stone', kind: 'Bow', note: 'Arrowheads chipped from the Bogjaw’s stone warts.', moves: BOW, mult: 1.6, from: 'ridgebow', cost: { coin: 700, wartstone: 2, throatsac: 1, bogskin: 3 } }
 );
 export const WEAPONS: Record<string, WeaponDef> = Object.fromEntries(list.filter(w => (w.tier ?? 1) <= MAX_TIER).map(w => [w.id, w]));

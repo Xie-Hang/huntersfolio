@@ -22,7 +22,16 @@
       <div class="ph"><span class="label">HP</span><span class="mono">{m.hp} / {m.max}</span></div>
       <div class="bar" style="height:8px"><i style="width:{pct(m.hp, m.max)}%;background:var(--ember)"></i></div>
     </div>
-    {#if E.carries(h, 'Blunt')}
+    {#if E.carries(h, 'Blunt') && M.heads}
+      {#each M.heads as hd (hd)}
+        {@const reel = (m.reel?.[hd] ?? 0) > 0}
+        {@const v = m.headDaze?.[hd] ?? 0}
+        <div class="hpline">
+          <div class="ph"><span class="label" style="color:var(--daze)">Daze · {M.parts.find(p => p.id === hd)!.name}</span><span class="mono">{reel ? 'Reeling' : `${v} / ${E.HEAD_DAZE_MAX}`}</span></div>
+          <div class="bar" class:locked={reel}><i style="width:{pct(v, E.HEAD_DAZE_MAX)}%;background:var(--daze)"></i></div>
+        </div>
+      {/each}
+    {:else if E.carries(h, 'Blunt')}
       <div class="hpline">
         <div class="ph"><span class="label" style="color:var(--daze)">Daze · from Blunt hits to the {headName}</span><span class="mono">{m.dazeLock ? 'Recovering' : `${m.daze} / ${m.dazeMax}`}</span></div>
         <div class="bar" class:locked={m.dazeLock > 0}><i style="width:{pct(m.daze, m.dazeMax)}%;background:var(--daze)"></i></div>

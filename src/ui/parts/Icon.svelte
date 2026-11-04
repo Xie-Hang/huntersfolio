@@ -59,6 +59,12 @@
     throatsac: `<ellipse cx="24" cy="26" rx="17" ry="13" fill="${BONE2}" ${S}/><path d="M12 22 C18 26 30 26 36 22" fill="none" stroke="${INK}" stroke-width="2" opacity=".55"/><path d="M24 13 V6" stroke="${INK}" stroke-width="4" stroke-linecap="round"/>`,
     wartstone: `<circle cx="18" cy="26" r="11" fill="${STONEC}" ${S}/><circle cx="31" cy="20" r="8" fill="${STONEC}" ${S}/><circle cx="31" cy="34" r="6" fill="${STONEC}" ${S}/><path d="M12 30 C16 26 22 26 26 30" fill="none" stroke="${MOSS}" stroke-width="3" stroke-linecap="round"/>`,
     mirestone: gem(MOSS, MOSS),
+    duskplume: feather(GALE),
+    duskbeak: `<path d="M44 20 L8 26 L44 32 Z" fill="${BONE2}" ${S}/><path d="M44 26 L10 26" stroke="${INK}" stroke-width="2"/><path d="M38 14 L44 6 L44 18 Z" fill="${GALE}" ${S} stroke-width="2"/>`,
+    duskpinion: feather(GALE, true),
+    duskcrest: `<path d="M8 40 L14 12 L20 30 L26 6 L31 30 L38 14 L40 40 Z" fill="${GALE}" ${S}/><path d="M6 40 H42" ${S} fill="none"/><circle cx="24" cy="34" r="4" fill="${INK}"/>`,
+    twilightquill: `<circle cx="24" cy="24" r="20" fill="${GALE}" opacity=".22"/>${feather('#5f8fa6', true)}`,
+    duskcharm: `${charmTop}<path d="M38 22 L12 28 L38 34 Z" fill="${BONE2}" ${S}/><path d="M38 34 L14 38 L38 42 Z" fill="${BONE2}" ${S}/>`,
     bogcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${STONEC}" ${S}/><circle cx="20" cy="25" r="3.5" fill="${MOSS}"/><circle cx="28" cy="31" r="3" fill="${MOSS}"/>`
   };
   const body = $derived(ICONS[id]);
