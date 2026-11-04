@@ -112,7 +112,11 @@ ipcMain.on('feedback:info', e => {
   e.returnValue = ok ? { label: links.FEEDBACK_LABEL || null } : null;
 });
 ipcMain.on('feedback:open', () => {
-  if (/^(https:\/\/|mailto:)/i.test(links.FEEDBACK_URL)) shell.openExternal(links.FEEDBACK_URL).catch(() => {});
+  const url = links.FEEDBACK_URL;
+  if (!/^(https:\/\/|mailto:)/i.test(url)) return;
+  // Through the Steam client when it's running: the player is signed in there, so they can post straight away.
+  const viaSteam = steamClient && url.startsWith('https://steamcommunity.com/');
+  shell.openExternal(viaSteam ? `steam://openurl/${url}` : url).catch(() => {});
 });
 ipcMain.on('store:available', e => { e.returnValue = steam.STORE_APP_ID > 0; });
 ipcMain.on('store:open', () => {
