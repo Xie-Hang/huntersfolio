@@ -1,4 +1,5 @@
 import type { DamageType, Move, WeaponDef } from '../types';
+import { MAX_TIER } from '../edition';
 
 /** Daze points per Blunt move. Fixed, so upgrades raise damage but not how often you stun. */
 export const DZ = { light: 10, medium: 20, strong: 35 };
@@ -47,7 +48,14 @@ const list: WeaponDef[] = [
   { id: 'ridgebow', name: 'Ridgestone Bow', type: 'Pierce', elem: 'Stone', kind: 'Bow', note: 'Arrowheads knapped from Ashfall Ridge stone. Heavy, and they shatter on impact.', moves: BOW, mult: 1.1, from: 'bow', cost: { coin: 300, sinew: 1, pelt: 2, hide: 2 } }
 ];
 
-export const WEAPONS: Record<string, WeaponDef> = Object.fromEntries(list.map(w => [w.id, w]));
+// Tier 2 · Mirewood: the Bogjaw's Stone weapons (step 3 of the Stone lines, ×1.6). For now they grow straight from
+// step 1; the step-2 rare weapons can slot in between later.
+list.push(
+  { id: 'bogcleaver', tier: 2, name: 'Bogtooth Cleaver', type: 'Cut', elem: 'Stone', kind: 'Longsword', note: 'A Bogjaw molar set along the edge like a row of teeth.', moves: BLADE, mult: 1.6, from: 'ridgecleaver', cost: { coin: 700, bogmolar: 2, throatsac: 1, bogskin: 3 } },
+  { id: 'miremaul', tier: 2, name: 'Mirestone Maul', type: 'Blunt', elem: 'Stone', kind: 'Maul', note: 'A Mirestone still slick with bog water, bound to the head.', moves: MAUL, mult: 1.6, from: 'boulder', cost: { coin: 700, mirestone: 1, wartstone: 2, bogskin: 3 } },
+  { id: 'wartbow', tier: 2, name: 'Wartstone Bow', type: 'Pierce', elem: 'Stone', kind: 'Bow', note: 'Arrowheads chipped from the Bogjaw’s stone warts.', moves: BOW, mult: 1.6, from: 'ridgebow', cost: { coin: 700, wartstone: 2, throatsac: 1, bogskin: 3 } }
+);
+export const WEAPONS: Record<string, WeaponDef> = Object.fromEntries(list.filter(w => (w.tier ?? 1) <= MAX_TIER).map(w => [w.id, w]));
 
 /** Forge trees: [weapon id, depth] in display order */
 export const TREES: { type: DamageType; nodes: [string, number][] }[] = [

@@ -6,17 +6,20 @@
   import Galeshrike from './plates/Galeshrike.svelte';
   import Cinderback from './plates/Cinderback.svelte';
   import Rimetail from './plates/Rimetail.svelte';
+  import Bogjaw from './plates/Bogjaw.svelte';
+  import { ALL_MONSTERS } from '../../engine';
   import Scene from './Scene.svelte';
   /** scene: draw Ashfall Ridge behind it (the big plates; not the small Hunt Board thumbnails) */
   let { mon, hunt = null, scene = false }: { mon: string; hunt?: Hunt | null; scene?: boolean } = $props();
 </script>
 
 <div class="plate-stage">
-{#if scene}<Scene />{/if}
+{#if scene}<Scene region={(ALL_MONSTERS[mon]?.tier ?? 1) === 2 ? 'mire' : 'ridge'} />{/if}
 {#if mon === 'gorehorn'}<Gorehorn {hunt} />
 {:else if mon === 'galeshrike'}<Galeshrike {hunt} />
 {:else if mon === 'cinderback'}<Cinderback {hunt} />
 {:else if mon === 'rimetail'}<Rimetail {hunt} />
+{:else if mon === 'bogjaw'}<Bogjaw {hunt} />
 {/if}
 </div>
 

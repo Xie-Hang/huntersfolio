@@ -58,7 +58,7 @@
             <span class="thumb" aria-hidden="true"><Plate mon={M.id} /></span>
             <span>
               <span class="nm">{M.short}</span>
-              <span class="meta"><span><Elem e={M.elem} />{M.elem}</span><span>Weak: {M.weak}</span>{#if open}<span class={r.wins ? '' : 'new'}>{r.wins ? `Hunted ×${r.wins}` : 'Not yet hunted'}</span>{:else}<span>Locked · Beat the {E.MONSTERS[M.requires!].short} first</span>{/if}</span>
+              <span class="meta"><span><Elem e={M.elem} />{M.elem}</span><span>Weak: {M.weak}</span>{#if open}<span class={r.wins ? '' : 'new'}>{r.wins ? `Hunted ×${r.wins}` : 'Not yet hunted'}</span>{:else}<span>Locked · {E.unlockHint(M.id)}</span>{/if}</span>
             </span>
           </button>
         {/each}
@@ -72,7 +72,7 @@
         <p class="ital p0">No monsters of that element sighted yet.</p>
       {/each}
     </div>
-    {#if storeAvailable() && game.save.endSeen}
+    {#if E.EDITION === "demo" && storeAvailable() && game.save.endSeen}
       <div class="wishrow"><span class="md">The rest of the hunt is in the full game.</span><button class="btn quiet" onclick={() => openStore()}>Wishlist on Steam</button></div>
     {/if}
   </section>

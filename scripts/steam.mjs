@@ -32,7 +32,9 @@ if (cmd === 'build') {
   writeFileSync(tj, JSON.stringify({ target, app: t.app, store: ids.full?.app || 0 }, null, 2));
   try {
     const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-    const r = spawnSync(npm, ['run', 'dist:win'], { cwd: ROOT, stdio: 'inherit', shell: process.platform === 'win32' });
+    // the demo and the Playtest are the demo edition (Ashfall Ridge only); the full game is everything
+    const env = { ...process.env, HF_EDITION: target === 'full' ? 'full' : 'demo' };
+    const r = spawnSync(npm, ['run', 'dist:win'], { cwd: ROOT, stdio: 'inherit', shell: process.platform === 'win32', env });
     if (r.status !== 0) fail('the Windows build failed (see above).');
   } finally { rmSync(tj, { force: true }); } // so `npm run desktop` doesn't quietly run as a Steam app afterwards
   if (!existsSync(join(content, "Hunter's Folio.exe"))) fail(`no game exe in ${content}`);

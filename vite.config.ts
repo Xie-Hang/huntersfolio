@@ -8,7 +8,7 @@ const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 
 export default defineConfig({
   base: './',
   plugins: [svelte()],
-  define: { __APP_VERSION__: JSON.stringify(pkg.version) },
+  define: { __APP_VERSION__: JSON.stringify(pkg.version), __HF_EDITION__: JSON.stringify(process.env.HF_EDITION === 'demo' ? 'demo' : 'full') },
   test: {
     globals: true,
     include: ['tests/**/*.test.ts'],

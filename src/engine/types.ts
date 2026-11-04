@@ -23,6 +23,8 @@ export interface Move {
 }
 
 export interface WeaponDef {
+  /** monster tier it comes from (default 1); gear above the edition's top tier isn't in that build */
+  tier?: number;
   id: string;
   name: string;
   type: DamageType;
@@ -41,6 +43,8 @@ export interface WeaponDef {
 }
 
 export interface ArmorDef {
+  /** monster tier it comes from (default 1); gear above the edition's top tier isn't in that build */
+  tier?: number;
   id: string;
   name: string;
   hp: number;
@@ -52,6 +56,8 @@ export interface ArmorDef {
   breakHeal?: boolean;
   /** immune to burns from hitting a molten monster */
   burnproof?: boolean;
+  /** swallowed: you cut free in half the damage */
+  slick?: boolean;
   craft: Cost;
 }
 
@@ -67,8 +73,10 @@ export interface ItemDef {
   effect: ItemEffect;
 }
 
-export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut';
+export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal';
 export interface CharmDef {
+  /** monster tier it comes from (default 1); gear above the edition's top tier isn't in that build */
+  tier?: number;
   id: string;
   name: string;
   /** monster whose materials make it */
@@ -79,6 +87,8 @@ export interface CharmDef {
 }
 
 export interface MaterialDef {
+  /** monster tier it comes from (default 1); gear above the edition's top tier isn't in that build */
+  tier?: number;
   id: string;
   /** base name, e.g. 'Tusk' */
   base: string;
@@ -143,6 +153,12 @@ export interface MonsterState {
   molten: number;
   /** layers of ice plating: each hit breaks layers instead of dealing damage (Cut breaks 2) */
   plating: number;
+  /** T2 weighted behaviour: the last few actions (for the fairness rules) and the turn of its last big chain */
+  recent?: string[];
+  lastChain?: number;
+  /** swallowed (grapplers): how many of your dice are stuck inside, and the damage left to cut free */
+  gut?: number;
+  gutHp?: number;
 }
 
 export interface WeaponInst extends WeaponDef { lv: number }
@@ -224,8 +240,8 @@ export interface MonsterDef {
   intent(h: Hunt, type: string): Intent;
   /** choose the next action, given the one that just resolved */
   next(h: Hunt, prev: string | null): string;
-  /** resolve a non-damage action (or side effects of a damaging one); returns a log line or null */
-  resolve(h: Hunt, type: string): string | null;
+  /** resolve a non-damage action (or side effects of a damaging one); `landed` = its damage reached you (not dodged). Returns a log line or null */
+  resolve(h: Hunt, type: string, landed?: boolean): string | null;
   /** extra modifiers for a hit on a part */
   hitMod?(h: Hunt, partId: string, w: WeaponInst): { mult: number; note: string } | null;
   /** can this weapon reach this part right now? */
@@ -250,13 +266,16 @@ export interface MonsterDef {
   /** grows ice plating: layers it starts with (and the UI shows ice notes) */
   plated?: number;
   /** must have beaten this monster before it can be hunted (Tier 1: the Gorehorn) */
-  requires?: string;
+  /** must be beaten first (one id, or every id in the list: a region unlock) */
+  requires?: string | string[];
 }
 
 export interface Loadout { weapons: string[]; armor: string; charm: string | null; item: string | null; target: string }
 export interface MonsterRecord { hunts: number; wins: number; captures: number; breaks: Record<string, number> }
 
 export interface Save {
+  /** which edition last wrote it; the demo never overwrites a save the full game wrote */
+  edition?: 'demo' | 'full';
   version: number;
   coin: number;
   mats: Record<string, number>;

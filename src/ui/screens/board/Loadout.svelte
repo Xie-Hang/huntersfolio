@@ -242,7 +242,7 @@
 
   <div class="campfoot">
     {#if !E.isUnlocked(game.save, mon)}
-      <span class="ital">Beat the {E.MONSTERS[M.requires!].short} to unlock this hunt. You can still read up and prepare.</span>
+      <span class="ital">{E.unlockHint(M.id)} to unlock this hunt. You can still read up and prepare.</span>
       <button class="btn primary" disabled>Locked</button>
     {:else}
       <span class="ital">{nWeapons === 2 ? 'Swap weapons mid-hunt for 1 die.' : 'Choose two weapons to bring.'}</span>

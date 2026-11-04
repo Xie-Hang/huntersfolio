@@ -216,7 +216,17 @@ export function fixLoadout(s: Save) {
 /** Can this monster be hunted? Locked until its prerequisite is beaten. Already-hunted monsters stay open. */
 export function isUnlocked(s: Save, id: string): boolean {
   const req = MONSTERS[id]?.requires;
-  return !req || (s.record[req]?.wins ?? 0) > 0 || (s.record[id]?.hunts ?? 0) > 0;
+  const reqs = req ? (Array.isArray(req) ? req : [req]) : [];
+  return reqs.every(r => (s.record[r]?.wins ?? 0) > 0) || (s.record[id]?.hunts ?? 0) > 0;
+}
+
+/** How to unlock a locked monster, in words: "Beat the Gorehorn first" or "Beat every monster on Ashfall Ridge first". */
+export function unlockHint(id: string): string {
+  const req = MONSTERS[id]?.requires; if (!req) return '';
+  const reqs = (Array.isArray(req) ? req : [req]).filter(r => MONSTERS[r]);
+  if (reqs.length === 1) return `Beat the ${MONSTERS[reqs[0]].short} first`;
+  const tiers = new Set(reqs.map(r => MONSTERS[r].tier));
+  return tiers.size === 1 && tiers.has(1) ? 'Beat every monster on Ashfall Ridge first' : `Beat ${reqs.map(r => MONSTERS[r].short).join(', ')} first`;
 }
 
 /** Every monster in this build has been beaten at least once: the end of the content (in the demo, the end of the demo). */

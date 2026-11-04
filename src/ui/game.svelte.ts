@@ -34,8 +34,9 @@ class Game {
   /* ---------- persistence ---------- */
   load() {
     const raw = read(SAVE_KEY);
-    if (E.isNewerSave(raw)) { lockSaves(); this.newerSave = true; this.save = E.newSave(); return; }
+    if (E.isNewerSave(raw) || E.isFullSaveInDemo(raw, E.EDITION)) { lockSaves(); this.newerSave = true; this.save = E.newSave(); return; }
     this.save = E.loadSave(raw);
+    if (E.EDITION === 'full') this.save.edition = 'full';
     E.fixLoadout(this.save);
     const h = read(HUNT_KEY) as E.Hunt | null;
     // Resume a hunt that was interrupted (app closed mid-hunt). Its item charges already left the stash.

@@ -37,7 +37,7 @@
   let endOpen = $state(false);
   let newerOpen = $state(game.newerSave);
   $effect(() => {
-    if (!game.save.endSeen && !game.inHunt && game.view !== 'hunt' && E.contentComplete(game.save)) {
+    if (E.EDITION === 'demo' && !game.save.endSeen && !game.inHunt && game.view !== 'hunt' && E.contentComplete(game.save)) {
       endOpen = true; game.save.endSeen = true; game.persist();
     }
   });
@@ -172,9 +172,9 @@
     <div class="toast" aria-live="polite">{setToast}</div>
   </Modal>
 
-  <Modal bind:open={newerOpen} title="Your save is from a newer version">
+  <Modal bind:open={newerOpen} title={E.EDITION === 'demo' ? 'Your save is from the full game' : 'Your save is from a newer version'}>
     <div class="endcard">
-      <p class="lead">The save on this PC was made by a newer version of Hunter's Folio, most likely the full game.</p>
+      <p class="lead">The save on this PC was made by {E.EDITION === 'demo' ? 'the full game' : "a newer version of Hunter's Folio"}.</p>
       <p>This version can't open it, so it has left it untouched. Launch the full game to carry on where you left off.</p>
       <p class="md">You can still play here, but nothing will be saved.</p>
       <div class="acts"><button class="btn" onclick={() => (newerOpen = false)}>Play without saving</button></div>

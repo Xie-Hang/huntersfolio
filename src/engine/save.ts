@@ -52,6 +52,11 @@ const MIGRATIONS: ((s: any) => any)[] = [
 
 /** Turn anything loaded from storage into a valid, current Save. Unknown or broken data gives a fresh save. */
 /** A save written by a NEWER build (e.g. the full game, opened later in the demo). The caller must not overwrite it. */
+/** A save the full game wrote, opened in the demo: it may hold gear the demo doesn't have, so the demo mustn't write it. */
+export function isFullSaveInDemo(raw: unknown, edition: 'demo' | 'full'): boolean {
+  return edition === 'demo' && !!raw && typeof raw === 'object' && (raw as { edition?: unknown }).edition === 'full';
+}
+
 export function isNewerSave(raw: unknown): boolean {
   return !!raw && typeof raw === 'object' && typeof (raw as { version?: unknown }).version === 'number' && (raw as { version: number }).version > SAVE_VERSION;
 }

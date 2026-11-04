@@ -68,9 +68,23 @@ export function startHunt(s: Save, seed: number, script?: Face[][]): Hunt {
   return h;
 }
 
+export const SWALLOWED = 'Swallowed';
+/** damage it takes to cut your way out once swallowed; Cut counts double, slick armor halves it */
+export const GUT_ESCAPE = 60;
+/** how much each damage type counts toward cutting free: blades slice out, clubs barely dent the gut wall */
+export const GUT_CUT: Record<string, number> = { Cut: 2, Pierce: 1, Blunt: 0.5 };
+
 function rollAll(h: Hunt) {
   const fixed = h.script?.[h.turn - 1];
-  h.dice = [0, 1, 2, 3].map(i => ({ face: fixed?.[i] ?? rollFace(h), used: null }));
+  h.dice = [0, 1, 2, 3].map(i => ({ face: fixed?.[i] ?? rollFace(h), used: null as string | null }));
+  // swallowed: the last dice are stuck inside the monster until you cut free
+  const g = h.mon.gut ?? 0;
+  for (let i = 4 - g; i < 4; i++) if (i >= 0) h.dice[i].used = SWALLOWED;
+}
+
+/** Swallow lands: `n` of your dice are stuck until you deal the escape damage. */
+export function swallowPlayer(h: Hunt, n: number) {
+  h.mon.gut = n; h.mon.gutHp = h.arm.slick ? GUT_ESCAPE / 2 : GUT_ESCAPE;
 }
 
 /* ---------- reading the state ---------- */
@@ -170,6 +184,16 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
   if (mod) { dmg = Math.round(dmg * mod.mult); notes.push(mod.note); }
   dmg = Math.min(dmg, m.hp);
   m.hp -= dmg; h.stats.dealt += dmg;
+  if ((m.gut ?? 0) > 0 && dmg > 0) {
+    m.gutHp = (m.gutHp ?? GUT_ESCAPE) - Math.round(dmg * GUT_CUT[w.type]);
+    if (m.gutHp <= 0) {
+      m.gut = 0; m.gutHp = 0;
+      for (const d of h.dice) if (d.used === SWALLOWED) d.used = null;
+      log(h, 'You cut your way out! Your dice are free.', 'gold');
+      if (charmFx(h) === 'escapeHeal') { const heal = Math.min(20, h.pmax - h.php); if (heal) { h.php += heal; log(h, `Bog Charm: +${heal} HP.`, 'gold'); } }
+      feat(h, 'escape');
+    }
+  }
   log(h, `${mv.name} hits the ${pdef.name.toLowerCase()} for ${dmg}${notes.length ? ' (' + notes.join(', ') + ')' : ''}.`);
   let broke = false;
   const reach = reachable(h, h.target, w);
@@ -275,21 +299,21 @@ export interface TurnResult { taken: number }
 export function endTurn(h: Hunt): TurnResult {
   if (h.over) return { taken: 0 };
   const type = h.intent, info = intentInfo(h), m = h.mon, MD = def(h);
-  let taken = 0;
+  let taken = 0, landed = false;
   if (info.dmg > 0) {
     if (h.evade) { h.evade = false; log(h, `${info.name} tears through the smoke and misses you.`, 'gold'); }
     else {
       const res = h.arm.resist === MD.elem;
       const raw = res ? Math.round(info.dmg * GUARD_RESIST) : info.dmg;
       const g = info.halfGuard ? Math.floor(h.guard / 2) : h.guard;
-      taken = Math.max(0, raw - g);
+      taken = Math.max(0, raw - g); landed = true;
       const blocked = raw - taken;
       h.php = Math.max(0, h.php - taken); h.stats.taken += taken; h.stats.guarded += blocked;
       log(h, `${info.name} hits you for ${taken}${blocked ? ` (${blocked} blocked${info.halfGuard ? ', guard halved' : ''})` : ''}${res ? ` (${MD.elem} resisted)` : ''}.`, taken >= CHARGE_BREAK ? 'ember' : '');
       if (h.chargePending && taken >= CHARGE_BREAK) { h.chargePending = false; log(h, 'The hit breaks your focus. Your charge is lost.', 'ember'); }
     }
   }
-  const line = MD.resolve(h, type);
+  const line = MD.resolve(h, type, landed);
   if (line) log(h, line);
   if (m.wallow > 0) m.wallow--;
   if (m.dazeLock > 0) m.dazeLock--;

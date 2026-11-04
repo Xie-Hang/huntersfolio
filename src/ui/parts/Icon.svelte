@@ -4,7 +4,7 @@
   // Drawn in a 48 × 48 box; shown beside the name, so they're decorative (aria-hidden).
   let { id, size = 22 }: { id: string; size?: number } = $props();
   const INK = '#1a1410', BONE = '#ecdfc8', BONE2 = '#c9b89c', GOLD = '#e9b949', GOLDHI = '#f3cf7a', EMBER = '#e8773a',
-    GALE = '#8fc3c9', FROST = '#b9d3f0', MUD = '#5b4532', LEAF = '#8aa56a', STEEL = '#d8d2c4', ASH = '#6e6257';
+    GALE = '#8fc3c9', FROST = '#b9d3f0', MUD = '#5b4532', LEAF = '#8aa56a', STEEL = '#d8d2c4', ASH = '#6e6257', MOSS = '#7f9159', STONEC = '#a99f90';
   const S = `stroke="${INK}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"`;
   const scale = (c: string) => `<path d="M24 6 C36 10 42 22 38 34 C34 42 14 42 10 34 C6 22 12 10 24 6 Z" fill="${c}" ${S}/><path d="M14 22 C20 26 28 26 34 22 M16 31 C21 34 27 34 32 31" fill="none" ${S} stroke-width="2.2"/>`;
   const gem = (c: string, glow: string) => `<circle cx="24" cy="25" r="20" fill="${glow}" opacity=".22"/><path d="M10 18 L17 9 H31 L38 18 L24 41 Z" fill="${c}" ${S}/><path d="M10 18 H38 M17 9 L21 18 L24 41 L27 18 L31 9" fill="none" ${S} stroke-width="2"/><path d="M14 17 L18 12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" opacity=".7"/>`;
@@ -52,7 +52,14 @@
     barbtail: `<path d="M8 40 C14 30 20 22 30 16" fill="none" stroke="${INK}" stroke-width="10" stroke-linecap="round"/><path d="M8 40 C14 30 20 22 30 16" fill="none" stroke="${BONE}" stroke-width="5" stroke-linecap="round"/><path d="M28 10 L42 6 L36 20 Z" fill="${FROST}" ${S}/><path d="M18 28 l-6 -4 M23 22 l-5 -5" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`,
     mantleshard: `<path d="M10 34 L16 10 L30 6 L40 20 L34 40 L18 42 Z" fill="${FROST}" ${S}/><path d="M16 10 L24 24 L34 40 M24 24 L40 20 M24 24 L10 34" fill="none" stroke="#ffffff" stroke-width="2" opacity=".75"/>`,
     frostfang: fang(FROST),
-    frostheart: gem(FROST, FROST)
+    frostheart: gem(FROST, FROST),
+    /* Bogjaw (Mirewood): moss green accent */
+    bogskin: `<path d="M8 14 C16 8 32 8 40 14 L38 24 L42 32 L36 40 C28 43 20 43 12 40 L6 32 L10 24 Z" fill="${BONE2}" ${S}/><circle cx="18" cy="22" r="4" fill="${MOSS}" ${S} stroke-width="2"/><circle cx="30" cy="30" r="5" fill="${MOSS}" ${S} stroke-width="2"/><circle cx="28" cy="17" r="3" fill="${MOSS}" ${S} stroke-width="2"/>`,
+    bogmolar: `<path d="M10 14 C10 8 38 8 38 14 L36 26 C34 30 32 30 30 40 C28 44 26 44 25 36 L24 30 L23 36 C22 44 20 44 18 40 C16 30 14 30 12 26 Z" fill="${BONE}" ${S}/><path d="M14 16 H34" stroke="${MOSS}" stroke-width="3" stroke-linecap="round"/>`,
+    throatsac: `<ellipse cx="24" cy="26" rx="17" ry="13" fill="${BONE2}" ${S}/><path d="M12 22 C18 26 30 26 36 22" fill="none" stroke="${INK}" stroke-width="2" opacity=".55"/><path d="M24 13 V6" stroke="${INK}" stroke-width="4" stroke-linecap="round"/>`,
+    wartstone: `<circle cx="18" cy="26" r="11" fill="${STONEC}" ${S}/><circle cx="31" cy="20" r="8" fill="${STONEC}" ${S}/><circle cx="31" cy="34" r="6" fill="${STONEC}" ${S}/><path d="M12 30 C16 26 22 26 26 30" fill="none" stroke="${MOSS}" stroke-width="3" stroke-linecap="round"/>`,
+    mirestone: gem(MOSS, MOSS),
+    bogcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${STONEC}" ${S}/><circle cx="20" cy="25" r="3.5" fill="${MOSS}"/><circle cx="28" cy="31" r="3" fill="${MOSS}"/>`
   };
   const body = $derived(ICONS[id]);
 </script>
