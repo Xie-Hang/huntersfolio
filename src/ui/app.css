@@ -463,3 +463,6 @@ kbd.key{display:inline-block;margin-right:8px;vertical-align:2px}
 .crash-box pre{margin:0;padding:10px;background:var(--bg);border:1px solid var(--line);border-radius:3px;font-size:var(--fs-sm);color:var(--muted);white-space:pre-wrap;word-break:break-word;max-height:120px;overflow:auto}
 .crash-acts{display:flex;gap:10px;flex-wrap:wrap}
 .crash-note{font-size:var(--fs-sm);color:var(--soft);min-height:1em}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap}
+.linkbtn{all:unset;cursor:pointer;color:var(--gold-hi);text-decoration:underline;text-underline-offset:3px}
+.linkbtn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}

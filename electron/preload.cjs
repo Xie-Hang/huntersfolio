@@ -15,6 +15,10 @@ contextBridge.exposeInMainWorld('hf', {
   files: {
     save: (name, text) => ipcRenderer.invoke('file:save', name, text)
   },
+  feedback: {
+    info: ipcRenderer.sendSync('feedback:info'),
+    open: () => ipcRenderer.send('feedback:open')
+  },
   store: {
     available: ipcRenderer.sendSync('store:available'),
     open: () => ipcRenderer.send('store:open')

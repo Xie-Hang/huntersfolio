@@ -5,6 +5,7 @@ const { app, BrowserWindow, ipcMain, Menu, shell, dialog } = require('electron')
 const path = require('node:path');
 const fs = require('node:fs');
 const steam = require('./steam.cjs');
+const links = require('./links.cjs');
 
 // Must happen before the app is ready (Steam needs to hook the process early).
 const steamClient = steam.init();
@@ -106,6 +107,13 @@ process.on('uncaughtException', err => crashLog(`main: ${err && err.stack || err
 
 // The one link the game may open: the full game's Steam store page (the demo's Wishlist button).
 // Through the Steam client when it's running (already signed in, so Wishlist is one click), else the browser.
+ipcMain.on('feedback:info', e => {
+  const ok = /^(https:\/\/|mailto:)/i.test(links.FEEDBACK_URL);
+  e.returnValue = ok ? { label: links.FEEDBACK_LABEL || null } : null;
+});
+ipcMain.on('feedback:open', () => {
+  if (/^(https:\/\/|mailto:)/i.test(links.FEEDBACK_URL)) shell.openExternal(links.FEEDBACK_URL).catch(() => {});
+});
 ipcMain.on('store:available', e => { e.returnValue = steam.STORE_APP_ID > 0; });
 ipcMain.on('store:open', () => {
   const id = steam.STORE_APP_ID;

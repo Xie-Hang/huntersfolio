@@ -2,6 +2,7 @@
 // Any uncaught error is written to the hunt log; the first one also puts up a calm screen with a way out:
 // export a report for the developer, or reload (progress is saved after every action).
 import { logError } from './playlog';
+import { feedbackInfo, feedbackButton, openFeedback } from './store';
 
 let shown = false;
 type Report = () => Promise<boolean>;
@@ -21,13 +22,15 @@ function show(message: string) {
       <p>The game hit an error it didn't expect. Your progress is saved after every action, so reloading is safe.</p>
       <p class="md">If you can, export a report and send it to the developer. It holds your hunt log and this error, nothing personal.</p>
       <pre></pre>
-      <div class="crash-acts"><button class="btn primary" data-act="reload">Reload the game</button><button class="btn" data-act="export">Export report</button></div>
+      <div class="crash-acts"><button class="btn primary" data-act="reload">Reload the game</button><button class="btn" data-act="export">Export report</button>${feedbackInfo() ? `<button class="btn" data-act="send"></button>` : ''}</div>
       <p class="crash-note" aria-live="polite"></p>
     </div>`;
   el.querySelector('pre')!.textContent = message.slice(0, 400);
+  const send = el.querySelector('[data-act="send"]'); if (send) send.textContent = feedbackButton();
   el.addEventListener('click', async e => {
     const act = (e.target as HTMLElement).closest('button')?.dataset.act;
     if (act === 'reload') location.reload();
+    if (act === 'send') openFeedback();
     if (act === 'export') {
       const ok = exportReport ? await exportReport().catch(() => false) : false;
       el.querySelector('.crash-note')!.textContent = ok ? 'Report saved.' : 'Couldn’t save the report. Reloading is still safe.';

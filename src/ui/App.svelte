@@ -4,7 +4,7 @@
   import Modal from './parts/Modal.svelte';
   import Coach from './parts/Coach.svelte';
   import { onHuntKey } from './keys';
-  import { storeAvailable, openStore } from './store';
+  import { storeAvailable, openStore, feedbackInfo, openFeedback, feedbackButton } from './store';
   import * as PL from './playlog';
   import { saveTextFile } from './files';
   import { setReportExporter } from './crash';
@@ -161,8 +161,11 @@
       <button class="btn quiet" role="switch" aria-checked={settings.prefs.tips} onclick={() => coach.setEnabled(!settings.prefs.tips)}>{settings.prefs.tips ? 'On' : 'Off'}</button>
     </div>
     <div class="setrow">
-      <span><span class="nm">Feedback</span><span class="md">The game keeps a hunt log on this PC ({logCount.hunts} hunt{logCount.hunts === 1 ? '' : 's'} so far): what you hunted, how it went, how long turns took. Nothing is sent anywhere. Export it to send to the developer.</span></span>
-      <button class="btn quiet" onclick={exportFromSettings}>Export report</button>
+      <span><span class="nm">Feedback</span><span class="md">The game keeps a hunt log on this PC ({logCount.hunts} hunt{logCount.hunts === 1 ? '' : 's'} so far): what you hunted, how it went, how long turns took. Nothing is sent anywhere. Export it{feedbackInfo() ? ', then attach the file when you send feedback' : ' to send to the developer'}.</span></span>
+      <span class="btnrow">
+        <button class="btn quiet" onclick={exportFromSettings}>Export report</button>
+        {#if feedbackInfo()}<button class="btn quiet" onclick={() => openFeedback()}>{feedbackButton()}</button>{/if}
+      </span>
     </div>
     <div class="setrow"><span><span class="nm">Credits</span><span class="md">Music: placeholder tracks composed in code for Hunter's Folio. Final music to come. Sound effects: synthesized in code.</span></span></div>
     <div class="toast" aria-live="polite">{setToast}</div>
@@ -178,6 +181,7 @@
         {#if storeAvailable()}<button class="btn primary" onclick={() => openStore()}>Wishlist on Steam</button>{/if}
         <button class="btn" onclick={() => (endOpen = false)}>Keep hunting</button>
       </div>
+      {#if feedbackInfo()}<p class="md">How was it? <button class="linkbtn" onclick={() => openFeedback()}>{feedbackButton()}</button>. Settings → Feedback can export your hunt log to attach.</p>{/if}
     </div>
   </Modal>
 
