@@ -12,3 +12,6 @@ art/screens/
 art/store/png/
 art/clips/
 art/trailer/out/
+electron/target.json
+steam/out/
+steam/steamcmd/

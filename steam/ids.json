@@ -1,0 +1,7 @@
+{
+  "_readme": "Fill these in from Steamworks once Valve issues them (see steam/README.md). 0 = not set yet.",
+  "full":     { "app": 0, "depot": 0 },
+  "demo":     { "app": 0, "depot": 0 },
+  "playtest": { "app": 0, "depot": 0 },
+  "branch": "staging"
+}
