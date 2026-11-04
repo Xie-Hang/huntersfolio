@@ -211,6 +211,7 @@
       <li>Reinforcing (+1 to +3) adds 5% weapon damage, or 10 HP and 1 guard to armor, per level. Upgrades keep the reinforcement.</li>
       <li>Rare materials (8%, 12% on capture) get 3% likelier with every miss and are guaranteed on the 12th break of their part.</li>
       <li><strong>Keys in a hunt:</strong> <kbd>1</kbd>–<kbd>4</kbd> select dice · <kbd>Q</kbd> <kbd>W</kbd> <kbd>E</kbd> moves · <kbd>G</kbd> guard · <kbd>C</kbd> charge · <kbd>S</kbd> swap · <kbd>X</kbd> capture · <kbd>I</kbd> item · <kbd>R</kbd> reroll · <kbd>Space</kbd> end turn · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · <kbd>Esc</kbd> clear selection.</li>
+      <li><strong>Controller:</strong> d-pad or left stick moves between controls, <kbd>A</kbd> selects, <kbd>B</kbd> goes back. In a hunt: <kbd>Y</kbd> end turn · <kbd>X</kbd> reroll selected · <kbd>LB</kbd> <kbd>RB</kbd> aim at a part · <kbd>LT</kbd> undo · <kbd>RT</kbd> swap weapon · <kbd>B</kbd> clear selection. Elsewhere <kbd>LB</kbd> <kbd>RB</kbd> switch screens. <kbd>Menu</kbd> settings, <kbd>View</kbd> this help.</li>
       <li>Progress is saved automatically. Reset it from Settings (the gear).</li>
     </ul>
   </Modal>

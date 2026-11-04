@@ -502,3 +502,13 @@ svg.wc.static *{animation:none!important}
   .tray{padding:4px 0 0}
   .tele .say{font-size:var(--fs-md)}
 }
+/* controller: glyphs for pad buttons, and a focus ring that always shows while the pad is in use */
+kbd.key.pad{min-width:1.6em;text-align:center;border-radius:999px;font-weight:600}
+kbd.key.pad-a{color:#7fc06a;border-color:#7fc06a}
+kbd.key.pad-b{color:#e0715a;border-color:#e0715a}
+kbd.key.pad-x{color:#6fa8dc;border-color:#6fa8dc}
+kbd.key.pad-y{color:#e9c14b;border-color:#e9c14b}
+kbd.key.pad-lb,kbd.key.pad-rb,kbd.key.pad-lt,kbd.key.pad-rt{border-radius:6px;font-size:.8em}
+.btn.primary kbd.key.pad{color:var(--ink);border-color:rgba(26,20,16,.55)}
+html[data-input="pad"] :focus{outline:3px solid var(--gold-hi)!important;outline-offset:3px}
+html[data-input="pad"] body{cursor:none}

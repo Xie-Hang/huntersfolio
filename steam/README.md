@@ -22,6 +22,13 @@ Everything Steam-side, in order. Do the parts as they become possible.
 - SteamPipe → Builds: create a branch called `staging` (uploads land there; you set them live on `default` by hand, which Steam doesn't allow from a script).
 - Publish the changes (Publish tab) after each settings change.
 
+## 2b. Controller and Steam Deck (full game and demo)
+The game reads controllers itself (the browser Gamepad API, standard Xbox layout), so Steam only has to pass the pad through.
+- Steamworks > Application > Steam Input: **Default configuration: Gamepad** ("Uses Steam Input API: No"; "Supported controllers": Xbox, PlayStation, generic, Steam Deck). This makes Steam present every pad as an Xbox pad, which is what the game expects.
+- Store page > Basic info > Controller support: **Full controller support** — but only tick it after testing a real pad (below).
+- Steam Deck: after the first build is live, request a compatibility review (Steamworks > Steam Deck compatibility). What Valve checks, and where we stand: controller glyphs (A/B/X/Y/LB/RB/LT/RT shown while a pad is in use: done); everything reachable without mouse or keyboard (done: the d-pad moves focus, tested by playing a whole hunt with a simulated pad); readable at 1280×800 (compact layout, 14 px minimum); no text entry needed (the Shop quantity box also takes left/right on a pad); no launcher.
+- Test on a real pad before ticking anything: plug an Xbox or PlayStation pad into the Windows PC, start the game, press any button. Hints switch to pad buttons; walk the Hunt Board, Forge, Shop, a full hunt, Settings and the help sheet with the d-pad, A and B.
+
 ## 3. Steam Cloud (full game only)
 
 Auto-Cloud: root `WinAppDataRoaming`, subdirectory `Hunter's Folio/saves`, pattern `*.json`, quota 10 MB / 50 files.

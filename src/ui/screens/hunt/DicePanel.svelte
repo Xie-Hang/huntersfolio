@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Key from '../../parts/Key.svelte';
+  import { input } from '../../pad.svelte';
   import { game } from '../../game.svelte';
   const h = $derived(game.hunt!);
   const over = $derived(!!h.over);
@@ -7,7 +9,7 @@
 </script>
 
 <section class="panel" aria-label="Your dice">
-  <div class="ph"><h2>The dice</h2><span class="label">Turn {h.turn} · Click dice to select them</span></div>
+  <div class="ph"><h2>The dice</h2><span class="label">Turn {h.turn} · {input.mode === 'pad' ? 'Press A on dice to select them' : 'Click dice to select them'}</span></div>
   <div class="tray">
     {#each h.dice as d, i}
       {@const sel = game.sel.includes(i)}
@@ -27,15 +29,15 @@
           {:else if d.face === 'T'}<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 5l16 29H4z" fill="#2a1f17" /></svg>
           {:else}<span class="bl">Blank</span>{/if}
         </button>
-        <span class="dietag" class:used={!!d.used}>{#if d.used || sel}{d.used || 'Selected'}{:else if !over}<kbd class="key">{i + 1}</kbd>{/if}</span>
+        <span class="dietag" class:used={!!d.used}>{#if d.used || sel}{d.used || 'Selected'}{:else if !over}<Key k={String(i + 1)} />{/if}</span>
       </div>
     {/each}
   </div>
   <div class="tools">
     <div class="grp">
-      <button class="btn quiet" data-sound data-coach="reroll" disabled={!n || h.rerolls < 1 || over} onclick={() => game.reroll()}><kbd class="key">R</kbd>Reroll selected · {h.rerolls} left</button>
-      <button class="btn quiet" disabled={!game.undoStack.length || over} onclick={() => game.undo()}><kbd class="key">U</kbd>Undo</button>
+      <button class="btn quiet" data-sound data-coach="reroll" disabled={!n || h.rerolls < 1 || over} onclick={() => game.reroll()}><Key k="R" pad="X" />Reroll selected · {h.rerolls} left</button>
+      <button class="btn quiet" disabled={!game.undoStack.length || over} onclick={() => game.undo()}><Key k="U" pad="LT" />Undo</button>
     </div>
-    <button class="btn primary" data-sound data-coach="end" disabled={over} onclick={() => game.endTurn()}><kbd class="key">Space</kbd>End turn</button>
+    <button class="btn primary" data-sound data-coach="end" disabled={over} onclick={() => game.endTurn()}><Key k="Space" pad="Y" />End turn</button>
   </div>
 </section>

@@ -2,6 +2,7 @@
   // The tutorial tip on screen: a small card beside the thing it describes, with a ring around that thing.
   // Placement tries below, above, right, then left of the target, and stays inside the window.
   import { coach } from '../coach.svelte';
+  import { padWords } from '../pad.svelte';
 
   const GAP = 12, W = 320, EDGE = 12;
   let cardH = $state(0);
@@ -57,7 +58,7 @@
   {@const t = coach.current}
   {#if ring}<div class="coach-ring" style="left:{ring.x}px;top:{ring.y}px;width:{ring.w}px;height:{ring.h}px" aria-hidden="true"></div>{/if}
   <div class="coach" role="status" aria-live="polite" bind:clientHeight={cardH} style="left:{pos.x}px;top:{pos.y}px;width:min({W}px, calc(100vw - {EDGE * 2}px))">
-    <p>{t.text()}</p>
+    <p>{padWords(t.text())}</p>
     <div class="coach-acts">
       <button class="coach-skip" onclick={() => coach.skipAll()}>Skip tips</button>
       <button class="btn quiet" onclick={() => coach.dismiss()}>Got it</button>

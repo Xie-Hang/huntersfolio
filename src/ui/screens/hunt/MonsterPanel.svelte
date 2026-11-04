@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { input } from '../../pad.svelte';
   import Elem from '../../parts/Elem.svelte';
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
@@ -50,7 +51,7 @@
       {#if (m.mirage ?? 0) > 0}<span class="chip ice">Images · {m.mirage} turn{m.mirage! > 1 ? 's' : ''} · {(m.hits ?? 0) > 0 ? 'more hits this turn strike an image' : 'only your first hit this turn lands'}</span>{/if}
       {#if E.canCapture(h)}<span class="chip hot">Capturable</span>{/if}
     </div>
-    <div class="ph rule"><span class="label">Parts</span><span class="label">Click a part to aim at it</span></div>
+    <div class="ph rule"><span class="label">Parts</span><span class="label">{input.mode === 'pad' ? 'LB / RB or select a part to aim' : 'Click a part to aim at it'}</span></div>
     <div class="parts" data-coach="parts">
       {#each M.parts as p (p.id)}
         {@const st = m.parts[p.id]}

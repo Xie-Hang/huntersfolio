@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Key from '../../parts/Key.svelte';
   import Icon from '../../parts/Icon.svelte';
   // Current weapon's moves, then the dice actions (guard, charge, swap, capture) and the item.
   import { MOVE_KEYS } from '../../keys';
@@ -52,7 +53,7 @@
     {@const miss = marks.filter(x => !x.have).map(x => (x.c === 'C' ? 'circle' : 'triangle'))}
     <button class="move {ok ? 'ready' : 'no'}" data-coach={i === bestReady ? 'move' : undefined} aria-disabled={!ok} onclick={() => ok && game.move(i)}>
       <span>
-        <span class="mn"><kbd class="key">{MOVE_KEYS[i]}</kbd>{mv.name}{#if mv.flow}<span class="tag flow">Flow</span>{/if}{#if mv.daze}<span class="tag daze">Daze</span>{/if}{#if mv.expose}<span class="tag expose">Expose</span>{/if}</span>
+        <span class="mn"><Key k={MOVE_KEYS[i]} />{mv.name}{#if mv.flow}<span class="tag flow">Flow</span>{/if}{#if mv.daze}<span class="tag daze">Daze</span>{/if}{#if mv.expose}<span class="tag expose">Expose</span>{/if}</span>
         <span class="md">{#if iceNow}{iceLine}{:else}{shownDmg(mv.dmg)} damage{halfAir ? ', halved in the air' : ''}{exposedNow ? ', exposed' : ''}{mv.part ? ` · ×${mv.part} toward breaks` : ''}{mv.daze ? ` · Daze +${mv.daze}` : ''}{/if}</span>
       </span>
       <span class="need" aria-label="Needs {needLabel(mv.need)}{miss.length && !over ? `; missing ${miss.join(', ')}` : ''}">{#each marks as x}{#if x.have || over}{GLYPH[x.c]}{:else}<span class="miss">{HOLLOW[x.c]}</span>{/if}{/each}</span>
@@ -61,18 +62,18 @@
 
   <div class="divider"><span class="label">Or spend selected dice</span><span class="label">{n} selected</span></div>
   <button class="move dash {gOk ? 'ready' : 'no'}" data-coach="guard" aria-disabled={!gOk} onclick={() => gOk && game.guard()}>
-    <span><span class="mn"><kbd class="key">G</kbd>Guard</span><span class="md">Blocks {h.arm.guard} per die{h.arm.blankx2 ? ' · Blanks block double' : ''}</span></span><span class="need">Any</span>
+    <span><span class="mn"><Key k="G" />Guard</span><span class="md">Blocks {h.arm.guard} per die{h.arm.blankx2 ? ' · Blanks block double' : ''}</span></span><span class="need">Any</span>
   </button>
   <button class="move dash {cOk ? 'ready' : 'no'}" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
-    <span><span class="mn"><kbd class="key">C</kbd>Charge</span><span class="md">Your first hit next turn deals double</span></span><span class="need">{cd}</span>
+    <span><span class="mn"><Key k="C" />Charge</span><span class="md">Your first hit next turn deals double</span></span><span class="need">{cd}</span>
   </button>
   <button class="move dash {sOk ? 'ready' : 'no'}" data-coach="swap" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
-    <span><span class="mn"><kbd class="key">S</kbd>Swap to {other.name}</span><span class="md">{other.type} · <Elem e={other.elem} />{other.elem ?? 'No element'}</span></span><span class="need">1</span>
+    <span><span class="mn"><Key k="S" pad="RT" />Swap to {other.name}</span><span class="md">{other.type} · <Elem e={other.elem} />{other.elem ?? 'No element'}</span></span><span class="need">1</span>
   </button>
   <!-- Always shown, so players learn it exists before it's available. -->
   <button data-coach="capture" class="move capture {capLive && !E.captureBlocked(h) ? 'live' : ''} {capOk ? 'ready' : 'no'}" aria-disabled={!capOk} onclick={() => capOk && game.capture()}>
     <span>
-      <span class="mn"><kbd class="key">X</kbd>Capture</span>
+      <span class="mn"><Key k="X" />Capture</span>
       <span class="md">
         {#if !capLive}Unlocks at {capAt} HP or less. Ends the hunt with double part materials
         {:else if E.captureBlocked(h)}{E.monsterOf(h).flier ? 'Bring it down first' : 'Drive it to the surface first'}
@@ -87,7 +88,7 @@
     {@const it = E.ITEMS[h.item]}
     <div class="divider"><span class="label">Item · Free action</span><span class="label">{h.itemCharges} left</span></div>
     <button class="move {iOk ? 'ready' : 'no'}" data-coach="item" aria-disabled={!iOk} onclick={() => iOk && game.item()}>
-      <span><span class="mn"><kbd class="key">I</kbd><Icon id={h.item} size={20} />{it.name}</span><span class="md">{it.desc}{h.itemUsed ? ' · Used this turn' : it.effect === 'net' && !h.mon.air ? ' · Only while it flies' : it.effect === 'blast' && !h.mon.under ? ' · Only while it’s underground' : it.effect === 'thaw' && !h.mon.plating ? ' · Only while it has ice' : ''}</span></span>
+      <span><span class="mn"><Key k="I" /><Icon id={h.item} size={20} />{it.name}</span><span class="md">{it.desc}{h.itemUsed ? ' · Used this turn' : it.effect === 'net' && !h.mon.air ? ' · Only while it flies' : it.effect === 'blast' && !h.mon.under ? ' · Only while it’s underground' : it.effect === 'thaw' && !h.mon.plating ? ' · Only while it has ice' : ''}</span></span>
       <span class="need">Free</span>
     </button>
   {:else}
