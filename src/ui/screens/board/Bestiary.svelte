@@ -15,7 +15,7 @@
 
 <div style="display:flex;flex-direction:column;gap:14px">
   <div class="ph"><h2>{M.name}</h2><span class="label">{M.kind} · {E.TIERS[M.tier]}</span></div>
-  <div class="plate"><Plate {mon} /></div>
+  <div class="plate"><Plate {mon} scene /></div>
   <div class="record" aria-label="Your record">
     <div><b>{r.hunts}</b><span>Hunts</span></div>
     <div><b>{r.wins}</b><span>Wins</span></div>

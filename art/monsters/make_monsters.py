@@ -116,30 +116,44 @@ def emberwhelk():
 
 
 def mistglass():
-    def stag(dx, op):
+    # a glass fox that splits into images: a faceted body that catches the light, a tail of shards,
+    # and two mirage outlines trailing behind it
+    def fox(fill, op, dx, ghost=False):
+        st = f'stroke="{FROST}" stroke-width="5" stroke-dasharray="14 10" fill="none"' if ghost else f'fill="{fill}" stroke="{INK}" stroke-width="9" stroke-linejoin="round"'
         g = f'<g transform="translate({dx} 0)" opacity="{op}">'
-        g += limb(420, 380, 400, 520, 22, FROST) + limb(470, 384, 486, 520, 22, FROST) + limb(700, 384, 690, 520, 22, FROST) + limb(750, 380, 776, 520, 22, FROST)
-        g += part('M380 330 C400 270 500 250 620 252 C740 254 800 290 800 340 C800 380 760 400 620 400 C500 400 400 392 380 330 Z', FROST, hx=(380, 810), hy=(250, 404), below=350)
-        g += f'<path d="M440 290 L520 340 L600 280 L680 340 L760 300" fill="none" stroke="#ffffff" stroke-width="4" opacity=".7"/>'
-        g += neck('M420 320 C390 270 360 230 330 210', 40, FROST)
-        g += part('M260 214 C270 180 320 168 350 184 C378 200 372 236 340 246 C310 254 270 250 258 236 Z', FROST, hatch=False, sw=8)
-        g += spikes([('330 182', '300 90', '346 170'), ('300 96', '262 70', '308 120'), ('344 176', '392 96', '356 186'), ('380 120', '420 100', '372 138')], '#ffffff', 6)
-        g += eye(300, 212, 8)
+        for x1, y1, x2, y2, x3, y3 in [(420, 410, 404, 470, 392, 524), (470, 414, 482, 470, 470, 524), (690, 400, 716, 462, 700, 524), (740, 392, 776, 450, 772, 524)]:
+            g += (f'<path d="M{x1} {y1} L{x2} {y2} L{x3} {y3}" fill="none" stroke="{FROST if ghost else INK}" stroke-width="{6 if ghost else 30}" stroke-linecap="round" stroke-linejoin="round" {"stroke-dasharray=\"14 10\"" if ghost else ""}/>'
+                  + ('' if ghost else f'<path d="M{x1} {y1} L{x2} {y2} L{x3} {y3}" fill="none" stroke="{fill}" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>'))
+        g += f'<path d="M760 330 L900 226 L930 262 L966 250 L944 316 L980 340 L900 372 L800 384 Z" {st}/>'
+        g += f'<path d="M352 360 L440 290 L560 276 L690 290 L770 330 L760 396 L680 424 L540 432 L420 420 Z" {st}/>'
+        g += f'<path d="M352 360 L310 236 L350 286 L380 226 L396 316 Z M352 360 L250 352 L200 380 L290 402 L380 400 Z" {st}/>'
+        if not ghost:
+            g += f'<path d="M440 290 L500 360 L560 276 M500 360 L620 300 L690 290 M620 300 L640 420 M500 360 L420 420 M760 330 L640 420 M900 226 L860 330 L944 316 M352 360 L296 380" fill="none" stroke="#ffffff" stroke-width="4" opacity=".8"/>'
+            g += f'<path d="M352 360 L380 400 L290 402 Z" fill="#9fbfe0" stroke="{INK}" stroke-width="7" stroke-linejoin="round"/>'
+            g += eye(300, 366, 9)
         return g + '</g>'
-    return stag(150, .25) + stag(80, .4) + stag(0, 1)
+    return fox(FROST, .55, 140, True) + fox(FROST, .75, 70, True) + fox(FROST, 1, 0)
 
 
 # ---------- Tier 3 · Stormspire ----------
 def monolith():
-    out = limb(420, 380, 400, 516, 74, STONE) + limb(640, 380, 670, 516, 74, STONE)
-    out += f'<rect x="352" y="500" width="110" height="30" rx="6" fill="{INK}"/><rect x="616" y="500" width="110" height="30" rx="6" fill="{INK}"/>'
-    torso = 'M360 400 L340 200 L420 120 L640 120 L720 200 L700 400 Z'
-    out += part(torso, STONE, hx=(340, 730), hy=(120, 404), below=300, step=16)
-    out += f'<circle cx="530" cy="270" r="60" fill="{GOLD}" opacity=".35"/><path d="M530 220 L572 270 L530 320 L488 270 Z" fill="{GOLDHI}" stroke="{INK}" stroke-width="8" stroke-linejoin="round"/>'
-    for d in ['M352 196 L430 130 L500 140 L470 250 L360 260 Z', 'M562 140 L630 130 L706 196 L700 262 L590 250 Z', 'M360 286 L470 290 L470 392 L366 396 Z', 'M592 290 L698 286 L694 396 L590 392 Z']:
+    # a hunched stone colossus that knuckle-walks on arms of stacked boulders; slabs of plating over its back,
+    # and the core glowing through the crack in its chest (exposed once the plates break)
+    out = limb(730, 420, 760, 470, 80, STONE) + f'<path d="M700 530 Q760 470 822 530 Z" fill="{STONE}" stroke="{INK}" stroke-width="9" stroke-linejoin="round"/>'
+    back = 'M286 340 C270 190 350 100 460 100 C590 100 720 190 820 296 C872 352 852 452 742 460 L400 460 C320 452 292 410 286 340 Z'
+    out += part(back, STONE, hx=(270, 870), hy=(100, 462), below=360, step=16)
+    c = uid(); out += f'<clipPath id="{c}"><path d="{back}"/></clipPath><g clip-path="url(#{c})">'
+    for d in ['M300 220 C330 150 400 110 470 108 L470 230 L320 250 Z', 'M484 106 C580 110 660 160 720 214 L600 250 L490 236 Z',
+              'M300 270 L470 250 L480 352 L300 352 Z', 'M496 254 L610 262 L740 226 C790 262 830 300 850 340 L500 352 Z']:
         out += part(d, BONE2, hatch=False, sw=8)
-    out += limb(350, 220, 250, 420, 64, STONE) + f'<rect x="206" y="416" width="90" height="70" rx="10" fill="{STONE}" stroke="{INK}" stroke-width="9"/>'
-    out += part('M468 120 L470 60 L590 60 L592 120 Z', STONE, hatch=False, sw=9) + f'<rect x="496" y="80" width="68" height="14" rx="4" fill="{GOLDHI}" stroke="{INK}" stroke-width="5"/>'
+    out += '</g>' + f'<path d="{back}" fill="none" stroke="{INK}" stroke-width="10" stroke-linejoin="round"/>'
+    out += f'<path d="M360 140 C400 116 450 106 500 108 M560 116 C610 126 660 150 700 180" fill="none" stroke="{MOSS}" stroke-width="14" stroke-linecap="round"/>'
+    out += f'<circle cx="372" cy="400" r="54" fill="{GOLD}" opacity=".3"/><path d="M350 352 L388 380 L362 404 L396 430 L370 452" fill="none" stroke="{INK}" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/><path d="M350 352 L388 380 L362 404 L396 430 L370 452" fill="none" stroke="{GOLDHI}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>'
+    for (cx, cy, rx, ry) in [(282, 270, 62, 50), (256, 350, 54, 44), (238, 424, 50, 42), (230, 486, 54, 34)]:  # the arm: stacked boulders
+        out += f'<ellipse cx="{cx}" cy="{cy}" rx="{rx}" ry="{ry}" fill="{STONE}" stroke="{INK}" stroke-width="9"/>'
+    out += f'<path d="M172 530 Q232 474 296 530 Z" fill="{STONE}" stroke="{INK}" stroke-width="9" stroke-linejoin="round"/>'
+    out += part('M140 330 L154 280 L234 270 L258 328 L240 366 L156 370 Z', STONE, hatch=False, sw=9)
+    out += f'<path d="M160 314 H206" stroke="{GOLDHI}" stroke-width="9" stroke-linecap="round"/><path d="M154 342 H230" stroke="{INK}" stroke-width="5" opacity=".6"/>'
     return out
 
 

@@ -6,11 +6,21 @@
   import Galeshrike from './plates/Galeshrike.svelte';
   import Cinderback from './plates/Cinderback.svelte';
   import Rimetail from './plates/Rimetail.svelte';
-  let { mon, hunt = null }: { mon: string; hunt?: Hunt | null } = $props();
+  import Scene from './Scene.svelte';
+  /** scene: draw Ashfall Ridge behind it (the big plates; not the small Hunt Board thumbnails) */
+  let { mon, hunt = null, scene = false }: { mon: string; hunt?: Hunt | null; scene?: boolean } = $props();
 </script>
 
+<div class="plate-stage">
+{#if scene}<Scene />{/if}
 {#if mon === 'gorehorn'}<Gorehorn {hunt} />
 {:else if mon === 'galeshrike'}<Galeshrike {hunt} />
 {:else if mon === 'cinderback'}<Cinderback {hunt} />
 {:else if mon === 'rimetail'}<Rimetail {hunt} />
 {/if}
+</div>
+
+<style>
+  .plate-stage { position: relative; }
+  .plate-stage :global(svg.wc) { position: relative; }
+</style>
