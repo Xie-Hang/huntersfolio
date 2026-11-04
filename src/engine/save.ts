@@ -51,8 +51,17 @@ const MIGRATIONS: ((s: any) => any)[] = [
 ];
 
 /** Turn anything loaded from storage into a valid, current Save. Unknown or broken data gives a fresh save. */
+/** A save written by a NEWER build (e.g. the full game, opened later in the demo). The caller must not overwrite it. */
+export function isNewerSave(raw: unknown): boolean {
+  return !!raw && typeof raw === 'object' && typeof (raw as { version?: unknown }).version === 'number' && (raw as { version: number }).version > SAVE_VERSION;
+}
+
+/** A count: a whole number ≥ 0, else the fallback (hand-edited or damaged saves). */
+const count = (x: unknown, fallback = 0) => (typeof x === 'number' && Number.isFinite(x) && x >= 0 ? Math.floor(x) : fallback);
+const counts = (o: unknown) => Object.fromEntries(Object.entries(o && typeof o === 'object' ? o : {}).map(([k, v]) => [k, count(v)]));
+
 export function loadSave(raw: unknown): Save {
-  if (!raw || typeof raw !== 'object') return newSave();
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return newSave();
   let s: any = { ...(raw as object) };
   let v = typeof s.version === 'number' ? s.version : 0;
   if (v > SAVE_VERSION) return newSave(); // from a newer build; don't guess
@@ -62,11 +71,15 @@ export function loadSave(raw: unknown): Save {
   const out: Save = {
     ...base,
     ...s,
-    mats: { ...base.mats, ...(s.mats || {}) },
-    items: { ...base.items, ...(s.items || {}) },
-    loadout: { ...base.loadout, ...(s.loadout || {}) },
+    coin: count(s.coin, base.coin),
+    hunts: count(s.hunts),
+    mats: { ...base.mats, ...counts(s.mats) },
+    items: { ...base.items, ...counts(s.items) },
+    loadout: { ...base.loadout, ...(s.loadout && typeof s.loadout === 'object' ? s.loadout : {}) },
     pity: { ...(typeof s.pity === 'number' ? { heartstone: s.pity } : s.pity || {}) },
-    record: { ...(s.record || {}) },
+    record: Object.fromEntries(Object.entries(s.record && typeof s.record === 'object' ? s.record : {})
+      .filter(([, r]) => r && typeof r === 'object')
+      .map(([k, r]: [string, any]) => [k, { ...r, hunts: count(r.hunts), wins: count(r.wins), captures: count(r.captures), breaks: r.breaks && typeof r.breaks === 'object' ? r.breaks : {} }])),
     weapons: Object.fromEntries(Object.entries(s.weapons || base.weapons).filter(([k]) => WEAPONS[k])) as Save['weapons'],
     armors: Object.fromEntries(Object.entries(s.armors || base.armors).filter(([k]) => ARMORS[k])) as Save['armors'],
     endSeen: s.endSeen === true,
@@ -74,9 +87,14 @@ export function loadSave(raw: unknown): Save {
     tips: Array.isArray(s.tips) ? s.tips.filter((x: unknown) => typeof x === 'string') : [],
     charms: Object.fromEntries(Object.keys(s.charms || {}).filter(k => CHARMS[k]).map(k => [k, true])) as Save['charms']
   };
-  if (!Object.keys(out.weapons).length) out.weapons = base.weapons;
+  // A hunt takes two weapons; only a damaged save can have fewer, so give back the starter pair.
+  if (Object.keys(out.weapons).length < 2) out.weapons = { ...base.weapons, ...out.weapons };
   if (!Object.keys(out.armors).length) out.armors = base.armors;
   if (!MONSTERS[out.loadout.target]) out.loadout.target = 'gorehorn';
+  if (!Array.isArray(out.loadout.weapons)) out.loadout.weapons = [...base.loadout.weapons];
+  out.loadout.weapons = out.loadout.weapons.filter((id: unknown) => typeof id === 'string' && out.weapons[id as string]).slice(0, 2);
+  for (const id of Object.keys(out.weapons)) { if (out.loadout.weapons.length >= 2) break; if (!out.loadout.weapons.includes(id)) out.loadout.weapons.push(id); }
+  if (!out.armors[out.loadout.armor]) out.loadout.armor = Object.keys(out.armors)[0];
   if (out.loadout.charm && !out.charms[out.loadout.charm]) out.loadout.charm = null;
   out.version = SAVE_VERSION;
   return out;

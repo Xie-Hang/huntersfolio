@@ -2,7 +2,7 @@
 // Every rule lives in the engine; this file only calls it, records Undo snapshots,
 // triggers effects (floating numbers, shakes, dice rolls) and persists.
 import * as E from '../engine';
-import { read, write, remove, SAVE_KEY, HUNT_KEY } from './storage';
+import { read, write, remove, lockSaves, SAVE_KEY, HUNT_KEY } from './storage';
 import { sfx, type Sfx } from './sfx';
 import * as PL from './playlog';
 import { checkAchievements } from './achievements';
@@ -15,6 +15,8 @@ let floatId = 0;
 
 class Game {
   save = $state<E.Save>(E.newSave());
+  /** the save on this PC is from a newer build (the full game): play without saving, never overwrite it */
+  newerSave = $state(false);
   hunt = $state<E.Hunt | null>(null);
   view = $state<View>('board');
   /** indices of selected dice */
@@ -31,7 +33,9 @@ class Game {
 
   /* ---------- persistence ---------- */
   load() {
-    this.save = E.loadSave(read(SAVE_KEY));
+    const raw = read(SAVE_KEY);
+    if (E.isNewerSave(raw)) { lockSaves(); this.newerSave = true; this.save = E.newSave(); return; }
+    this.save = E.loadSave(raw);
     E.fixLoadout(this.save);
     const h = read(HUNT_KEY) as E.Hunt | null;
     // Resume a hunt that was interrupted (app closed mid-hunt). Its item charges already left the stash.

@@ -28,7 +28,14 @@ export function read(key: string): unknown {
   }
 }
 
+/** Set when the save on disk came from a newer build: the save and hunt are then never written, so it survives. */
+let locked = false;
+export function lockSaves() { locked = true; }
+export const savesLocked = () => locked;
+const guarded = (key: string) => locked && (key === SAVE_KEY || key === HUNT_KEY);
+
 export function write(key: string, value: unknown) {
+  if (guarded(key)) return;
   try {
     const json = JSON.stringify(value);
     if (desktop()) desktop()!.set(key, json);
@@ -39,6 +46,7 @@ export function write(key: string, value: unknown) {
 }
 
 export function remove(key: string) {
+  if (guarded(key)) return;
   try {
     if (desktop()) desktop()!.remove(key);
     else localStorage.removeItem(PREFIX + key);

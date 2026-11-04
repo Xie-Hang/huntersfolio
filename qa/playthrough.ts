@@ -100,18 +100,26 @@ async function forgeAll(p: Page) {
       await p.click(`.mrow[data-id="${target}"]`);
     }
     await p.click('[data-coach="begin"]'); await p.waitForTimeout(150);
+    const mid = (await getJSON(p, HUNT) as E.Hunt | null)?.mid ?? '?';
+    const winsBefore = ((await getJSON(p, SAVE)) as E.Save).record[mid]?.wins ?? 0;
     const times = await playHunt(p, n); allTimes.push(...times);
-    const h = await getJSON(p, HUNT) as E.Hunt | null;
-    const won = h?.over === 'win';
-    console.log(`hunt ${n}: ${h?.mid} ${h?.over ?? 'unfinished'} in ${h?.turn} turns`);
-    if (!h?.over) { note(`hunt ${n} (${h?.mid}) not over after 60 turns`); await p.click('button:has-text("Abandon hunt")').catch(() => {}); }
+    const left = await getJSON(p, HUNT) as E.Hunt | null; // a finished hunt is removed from storage
+    if (left && !left.over) { note(`hunt ${n} (${mid}) not over after 60 turns`); await p.click('button:has-text("Abandon hunt")').catch(() => {}); }
+    const won = (((await getJSON(p, SAVE)) as E.Save).record[mid]?.wins ?? 0) > winsBefore;
+    console.log(`hunt ${n}: ${mid} ${won ? 'won' : 'lost'} in ${times.length} turns`);
     streak = won ? 0 : streak + 1;
     await check(p, `result ${n}`);
     await p.waitForTimeout(150);
-    if (await p.locator('button:has-text("Keep hunting")').isVisible().catch(() => false)) {
-      endSeenAt = n; await p.screenshot({ path: `${OUT}/demo-end.png` }); await p.click('button:has-text("Keep hunting")');
-    }
+    const dismissEnd = async () => {
+      const keep = p.locator('button:has-text("Keep hunting")');
+      if (await keep.waitFor({ state: 'visible', timeout: 1500 }).then(() => true, () => false)) {
+        if (!endSeenAt) { endSeenAt = n; await p.screenshot({ path: `${OUT}/demo-end.png` }); }
+        await keep.click();
+      }
+    };
+    await dismissEnd();
     await p.click('button:has-text("Hunt Board")').catch(() => {});
+    await dismissEnd();
     await forgeAll(p);
     mem.push((await check(p, `board ${n}`)).mem);
   }

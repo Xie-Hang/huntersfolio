@@ -5,6 +5,7 @@ const { app, BrowserWindow, ipcMain, Menu, shell, dialog } = require('electron')
 const path = require('node:path');
 const fs = require('node:fs');
 const steam = require('./steam.cjs');
+const { saveFiles } = require('./savefiles.cjs');
 const links = require('./links.cjs');
 
 // Must happen before the app is ready (Steam needs to hook the process early).
@@ -18,55 +19,12 @@ app.setPath('userData', path.join(app.getPath('appData'), "Hunter's Folio"));
 // One copy at a time: two windows writing the same save would corrupt progress.
 if (!app.requestSingleInstanceLock()) app.quit();
 
-/* ---------- saves ----------
-   One JSON file per key in <userData>/saves (on Windows: %APPDATA%\Hunter's Folio\saves).
-   Writes go to a temp file and are renamed into place, so a crash mid-write can't
-   leave a half-written save. The previous good save is kept as <key>.bak.json. */
+/* ---------- saves ---------- (file logic in savefiles.cjs, tested in tests/savefiles.test.ts) */
 const saveDir = () => path.join(app.getPath('userData'), 'saves');
-const KEY = /^[a-z0-9-]{1,40}$/;
-const fileFor = (key, ext = '.json') => {
-  if (!KEY.test(key)) throw new Error(`bad save key: ${key}`);
-  return path.join(saveDir(), key + ext);
-};
-const readValid = file => {
-  try {
-    const text = fs.readFileSync(file, 'utf8');
-    JSON.parse(text);
-    return text;
-  } catch {
-    return null;
-  }
-};
-
-ipcMain.on('storage:get', (e, key) => {
-  try {
-    e.returnValue = readValid(fileFor(key)) ?? readValid(fileFor(key, '.bak.json'));
-  } catch {
-    e.returnValue = null;
-  }
-});
-ipcMain.on('storage:set', (e, key, value) => {
-  try {
-    JSON.parse(value); // never write something we couldn't read back
-    fs.mkdirSync(saveDir(), { recursive: true });
-    const file = fileFor(key), tmp = fileFor(key, '.tmp');
-    if (readValid(file)) fs.copyFileSync(file, fileFor(key, '.bak.json'));
-    fs.writeFileSync(tmp, value, 'utf8');
-    fs.renameSync(tmp, file);
-    e.returnValue = true;
-  } catch (err) {
-    console.error('save failed', err);
-    e.returnValue = false;
-  }
-});
-ipcMain.on('storage:remove', (e, key) => {
-  try {
-    fs.rmSync(fileFor(key), { force: true });
-    e.returnValue = true;
-  } catch {
-    e.returnValue = false;
-  }
-});
+const files = saveFiles(saveDir);
+ipcMain.on('storage:get', (e, key) => { e.returnValue = files.get(key); });
+ipcMain.on('storage:set', (e, key, value) => { e.returnValue = files.set(key, value); });
+ipcMain.on('storage:remove', (e, key) => { e.returnValue = files.remove(key); });
 ipcMain.on('window:isFullscreen', e => {
   const w = BrowserWindow.fromWebContents(e.sender);
   e.returnValue = !!w?.isFullScreen();
@@ -75,7 +33,7 @@ ipcMain.on('window:setFullscreen', (e, on) => {
   BrowserWindow.fromWebContents(e.sender)?.setFullScreen(!!on);
 });
 /** The player's settings file, read once at startup so the window opens the way they left it. */
-const startPrefs = () => { try { return JSON.parse(readValid(fileFor('settings')) ?? '{}'); } catch { return {}; } };
+const startPrefs = () => { try { return JSON.parse(files.get('settings') ?? '{}'); } catch { return {}; } };
 
 // Saving a file the player asked for (the feedback report): a normal Save dialog, defaulting to Documents.
 ipcMain.handle('file:save', async (e, name, text) => {

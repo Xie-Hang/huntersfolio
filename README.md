@@ -108,3 +108,12 @@ Uncaught errors show a **crash screen** (`src/ui/crash.ts`, plain DOM so it work
 ## Achievements
 
 Defined in `src/engine/achievements.ts` (16 for the demo). The ids are the Steam API names: enter each one in Steamworks exactly as written (`art/achievements.csv` lists id, display name, description and icon files; placeholder icons are rendered to `art/png/achievements/`). Earned ids are stored in the save (`achievements`) and the whole list is sent to Steam on startup and whenever a new one is earned, so anything earned while Steam wasn't running, or before the App ID existed, catches up. Moments inside a hunt (a daze, a stopped attack, grounding the Galeshrike, unearthing the Cinderback, shattering the Rimetail's ice) are recorded as `feats` on the hunt by the engine.
+
+## QA scripts (`qa/`)
+
+Run with the preview server up (`npm run build && npx vite preview --port 4173`); results go to `qa/out/` (gitignored).
+
+- `npx tsx qa/playthrough.ts 1366 768` plays the whole demo from a fresh save to the demo-end card through the real UI (tutorial on, Forge clicked through, hunts played with the keyboard), and reports errors, crash screens, sideways scrolling, turn times and memory.
+- `node qa/screens.cjs` opens every screen at 1280×720, 1280×800, 1366×768, 1920×1080 and 2560×1440, at 100% and 130% interface size (emulated as real page zoom), and reports cut-off text and overflow; screenshots too.
+- `node qa/saves.cjs` checks save safety: a save from a newer build is never overwritten, reloading mid-turn resumes, a broken save file doesn't crash.
+- `node qa/idle.cjs` measures CPU use while the player just looks at each screen.

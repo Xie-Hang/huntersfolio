@@ -35,6 +35,7 @@
   let settingsOpen = $state(false);
   // "That's the demo": once, the first time every monster in the build has been beaten, after the result card.
   let endOpen = $state(false);
+  let newerOpen = $state(game.newerSave);
   $effect(() => {
     if (!game.save.endSeen && !game.inHunt && game.view !== 'hunt' && E.contentComplete(game.save)) {
       endOpen = true; game.save.endSeen = true; game.persist();
@@ -53,7 +54,7 @@
   const sub = $derived.by(() => {
     const v = game.view, h = game.hunt;
     const label = v === 'hunt' && h ? E.MONSTERS[h.mid].short : NAV.find(n => n[0] === v)?.[1] ?? '';
-    return `${BUILD} · ${label}${v === 'hunt' && h ? ` · Turn ${h.turn}` : ''} · Hunts ${game.save.hunts}`;
+    return `${BUILD} · ${label}${v === 'hunt' && h ? ` · Turn ${h.turn}` : ''} · Hunts ${game.save.hunts}${game.newerSave ? ' · Not saving' : ''}`;
   });
 
   $effect(() => { if (settingsOpen) { setToast = ''; logCount = PL.counts(); } });
@@ -171,6 +172,14 @@
     <div class="toast" aria-live="polite">{setToast}</div>
   </Modal>
 
+  <Modal bind:open={newerOpen} title="Your save is from a newer version">
+    <div class="endcard">
+      <p class="lead">The save on this PC was made by a newer version of Hunter's Folio, most likely the full game.</p>
+      <p>This version can't open it, so it has left it untouched. Launch the full game to carry on where you left off.</p>
+      <p class="md">You can still play here, but nothing will be saved.</p>
+      <div class="acts"><button class="btn" onclick={() => (newerOpen = false)}>Play without saving</button></div>
+    </div>
+  </Modal>
   <Modal bind:open={endOpen} title="That's the demo">
     <div class="endcard">
       <p class="lead">You've hunted every monster on Ashfall Ridge.</p>
