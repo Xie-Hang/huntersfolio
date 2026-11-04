@@ -96,3 +96,9 @@ Steam doesn't use installers: upload the contents of `release/win-unpacked/` as 
 - Final store art and app icon: Mekkman is making these. Placeholders built from the engravings are in `art/` (see `art/README.md`); the current icon is `build/icon.png`
 - Controller and Steam Deck support: planned after Steam Playtest
 - Code signing (Windows SmartScreen will warn on the zip; Steam builds are fine without it)
+
+## Feedback, hunt log and crashes
+
+For Steam Playtest there are no testers to watch, so the game keeps a small local **hunt log** (`src/ui/playlog.ts`, save key `log`): per hunt the monster, loadout, result (win, capture, lose, abandon), active time per turn (turns over 3 minutes count as idle), damage, parts broken, rerolls, what killed the player, and which tutorial tips appeared; plus sessions and errors. It is capped (400 hunts) and never sent anywhere. **Settings → Feedback → Export report** writes it, with a summary of the save and the settings, to a JSON file the player can send.
+
+Uncaught errors show a **crash screen** (`src/ui/crash.ts`, plain DOM so it works even if the UI broke) with Reload and Export report. If the page process itself dies, the desktop shell notes it in `saves/crash.log` and reloads the window.

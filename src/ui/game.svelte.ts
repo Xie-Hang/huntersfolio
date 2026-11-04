@@ -4,6 +4,7 @@
 import * as E from '../engine';
 import { read, write, remove, SAVE_KEY, HUNT_KEY } from './storage';
 import { sfx, type Sfx } from './sfx';
+import * as PL from './playlog';
 
 export type View = 'board' | 'forge' | 'shop' | 'hunt';
 type Panel = 'mon' | 'player';
@@ -66,6 +67,7 @@ class Game {
     E.fixLoadout(this.save);
     if (this.save.loadout.weapons.length !== 2 || !E.isUnlocked(this.save, this.save.loadout.target)) return;
     this.hunt = E.startHunt(this.save, E.randomSeed(), scripted ? E.TUTORIAL_SCRIPT : undefined);
+    PL.huntBegin(this.hunt, this.save);
     this.undoStack = [];
     this.sel = [];
     this.view = 'hunt';
@@ -101,7 +103,7 @@ class Game {
   }
   private after() {
     const h = this.hunt!;
-    if (h.over) { E.settleHunt(this.save, h); E.fixLoadout(this.save); this.undoStack = []; this.sel = []; }
+    if (h.over) { PL.huntEnd(h, this.save); E.settleHunt(this.save, h); E.fixLoadout(this.save); this.undoStack = []; this.sel = []; }
     this.persist();
   }
 
@@ -169,6 +171,7 @@ class Game {
   endTurn() {
     const h = this.hunt;
     if (!h || h.over) return;
+    PL.turnEnd(h);
     const { taken } = E.endTurn(h);
     if (taken) { this.float('player', `−${taken}`, 'hurt'); if (taken >= E.CHARGE_BREAK) this.shake('player'); }
     if (taken) sfx(taken >= E.CHARGE_BREAK ? 'hurtHeavy' : 'hurt');
@@ -181,6 +184,7 @@ class Game {
   abandon() {
     const h = this.hunt;
     if (!h || h.over) return;
+    PL.markAbandon();
     E.abandon(h);
     this.after();
   }

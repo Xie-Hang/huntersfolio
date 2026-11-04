@@ -5,6 +5,9 @@
   import Coach from './parts/Coach.svelte';
   import { onHuntKey } from './keys';
   import { storeAvailable, openStore } from './store';
+  import * as PL from './playlog';
+  import { saveTextFile } from './files';
+  import { setReportExporter } from './crash';
   import { coach } from './coach.svelte';
   import Board from './screens/Board.svelte';
   import Forge from './screens/Forge.svelte';
@@ -17,6 +20,17 @@
 
   const BUILD = `v${__APP_VERSION__}`;
   game.load();
+  PL.sessionStart();
+  /** The feedback report: hunt log + save summary + settings, as one JSON file the player can send. */
+  async function exportReport() {
+    const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-');
+    return saveTextFile(`huntersfolio-report-${stamp}.json`, JSON.stringify(PL.report($state.snapshot(game.save), $state.snapshot(settings.prefs)), null, 1));
+  }
+  setReportExporter(exportReport);
+  let logCount = $state(PL.counts());
+  async function exportFromSettings() {
+    setToast = (await exportReport()) ? 'Report saved. Send the file to the developer.' : 'Not saved.';
+  }
 
   let settingsOpen = $state(false);
   // "That's the demo": once, the first time every monster in the build has been beaten, after the result card.
@@ -42,7 +56,7 @@
     return `${BUILD} · ${label}${v === 'hunt' && h ? ` · Turn ${h.turn}` : ''} · Hunts ${game.save.hunts}`;
   });
 
-  $effect(() => { if (settingsOpen) setToast = ''; });
+  $effect(() => { if (settingsOpen) { setToast = ''; logCount = PL.counts(); } });
 
   // Music follows the game: town loop in town, hunt loop in a hunt, the danger layer on big telegraphs, a sting at the end.
   $effect(() => { music.setVolume(settings.prefs.music); });
@@ -145,6 +159,10 @@
     <div class="setrow">
       <span><span class="nm">Tutorial tips</span><span class="md">Short prompts the first time something happens. Turning them on again replays them from the start.</span></span>
       <button class="btn quiet" role="switch" aria-checked={settings.prefs.tips} onclick={() => coach.setEnabled(!settings.prefs.tips)}>{settings.prefs.tips ? 'On' : 'Off'}</button>
+    </div>
+    <div class="setrow">
+      <span><span class="nm">Feedback</span><span class="md">The game keeps a hunt log on this PC ({logCount.hunts} hunt{logCount.hunts === 1 ? '' : 's'} so far): what you hunted, how it went, how long turns took. Nothing is sent anywhere. Export it to send to the developer.</span></span>
+      <button class="btn quiet" onclick={exportFromSettings}>Export report</button>
     </div>
     <div class="setrow"><span><span class="nm">Credits</span><span class="md">Music: placeholder tracks composed in code for Hunter's Folio. Final music to come. Sound effects: synthesized in code.</span></span></div>
     <div class="toast" aria-live="polite">{setToast}</div>

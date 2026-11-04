@@ -453,3 +453,13 @@ kbd.key{display:inline-block;margin-right:8px;vertical-align:2px}
 .endcard .stats b{color:var(--fg)}
 .endcard .acts{display:flex;gap:10px;flex-wrap:wrap;padding-top:6px}
 .wishrow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding-top:12px;margin-top:8px;border-top:1px solid var(--line)}
+
+/* crash screen (plain DOM, see crash.ts) */
+.crash{position:fixed;inset:0;z-index:1000;background:rgba(10,8,6,.86);display:flex;align-items:center;justify-content:center;padding:24px}
+.crash-box{max-width:560px;background:var(--panel);border:1px solid var(--ember);border-radius:4px;padding:24px;display:flex;flex-direction:column;gap:12px}
+.crash-box h2{margin:0;font-size:var(--fs-lg);font-weight:600}
+.crash-box p{margin:0;font-size:var(--fs-md);line-height:1.45}
+.crash-box .md{font-size:var(--fs-sm);color:var(--soft)}
+.crash-box pre{margin:0;padding:10px;background:var(--bg);border:1px solid var(--line);border-radius:3px;font-size:var(--fs-sm);color:var(--muted);white-space:pre-wrap;word-break:break-word;max-height:120px;overflow:auto}
+.crash-acts{display:flex;gap:10px;flex-wrap:wrap}
+.crash-note{font-size:var(--fs-sm);color:var(--soft);min-height:1em}

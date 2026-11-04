@@ -5,7 +5,17 @@ import '@fontsource/barlow/latin-400-italic.css';
 import '@fontsource/barlow/latin-600.css';
 import App from './ui/App.svelte';
 import './ui/app.css';
+import { installCrashHandlers } from './ui/crash';
+import { logError } from './ui/playlog';
 
-const app = mount(App, { target: document.getElementById('app')! });
+installCrashHandlers();
+let app: ReturnType<typeof mount> | undefined;
+try {
+  app = mount(App, { target: document.getElementById('app')! });
+} catch (err) {
+  // A failure while starting up still gets the crash screen rather than a blank window.
+  logError('startup', err);
+  setTimeout(() => { throw err; });
+}
 
 export default app;
