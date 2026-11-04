@@ -65,12 +65,16 @@ list.push(
 );
 export const WEAPONS: Record<string, WeaponDef> = Object.fromEntries(list.filter(w => (w.tier ?? 1) <= MAX_TIER).map(w => [w.id, w]));
 
-/** Forge trees: [weapon id, depth] in display order */
-export const TREES: { type: DamageType; nodes: [string, number][] }[] = [
-  { type: 'Cut', nodes: [['blade', 0], ['saber', 1], ['ridgecleaver', 1], ['gale', 1], ['storm', 2], ['cinderedge', 1], ['rimefang', 1]] },
-  { type: 'Blunt', nodes: [['maul', 0], ['tusk', 1], ['crusher', 2], ['boulder', 1], ['ember', 1], ['kiln', 2], ['rimehammer', 1]] },
-  { type: 'Pierce', nodes: [['bow', 0], ['sinewbow', 1], ['ridgebow', 1], ['windbow', 1], ['ventfire', 1], ['rimeshot', 1]] }
-];
+/** Forge trees: [weapon id, depth] in display order. Built from each weapon's `from`, so every weapon in this
+ *  edition shows up (a hand-kept list once left the Mirewood weapons out of the Forge). Children follow their
+ *  parent, in the order they're listed above. */
+export const TREES: { type: DamageType; nodes: [string, number][] }[] = (['Cut', 'Blunt', 'Pierce'] as DamageType[]).map(type => {
+  const ws = Object.values(WEAPONS).filter(w => w.type === type);
+  const nodes: [string, number][] = [];
+  const walk = (id: string, depth: number) => { nodes.push([id, depth]); for (const c of ws) if (c.from === id) walk(c.id, depth + 1); };
+  for (const w of ws) if (!w.from || !WEAPONS[w.from]) walk(w.id, 0);
+  return { type, nodes };
+});
 
 export const SIGNATURES: Record<DamageType, { tag: 'flow' | 'daze' | 'expose'; name: string; text: string }> = {
   Cut: { tag: 'flow', name: 'Flow', text: 'Light moves give you a reroll.' },

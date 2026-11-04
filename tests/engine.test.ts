@@ -322,3 +322,13 @@ describe('saves', () => {
     expect(E.loadSave({ version: 999 }).coin).toBe(100);
   });
 });
+
+describe('Forge trees', () => {
+  it('list every weapon in this edition exactly once, children after their parent', async () => {
+    const E = await import('../src/engine');
+    const ids = E.TREES.flatMap(t => t.nodes.map(n => n[0]));
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(ids.sort()).toEqual(Object.keys(E.WEAPONS).sort());
+    for (const t of E.TREES) t.nodes.forEach(([id], i) => { const f = E.WEAPONS[id].from; if (f) expect(t.nodes.findIndex(n => n[0] === f)).toBeLessThan(i); });
+  });
+});
