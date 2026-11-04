@@ -61,6 +61,8 @@
         </g>
         <path d={TAIL} fill={BONE} stroke={INK} stroke-width="9" stroke-linejoin="round" />
         <path d="M730 314 L900 270 M730 330 L912 300 M730 346 L900 330" stroke={INK} stroke-width="5" stroke-linecap="round" opacity=".6" />
+        <!-- the neck, stretched down to the buried beak: only drawn while it's stuck (the head moves a long way) -->
+        <g class="neck"><path d="M430 330 Q392 360 358 394" fill="none" stroke={INK} stroke-width="62" stroke-linecap="round" /><path d="M430 330 Q392 360 358 394" fill="none" stroke={BONE} stroke-width="46" stroke-linecap="round" /></g>
         <path d={BODY} fill={BONE} stroke={INK} stroke-width="10" stroke-linejoin="round" />
         <g clip-path="url(#{uid}b)"><path d={bodyHatch} stroke={INK} stroke-width="5" stroke-linecap="round" /></g>
         <path d="M420 300 q14 20 6 40 M460 288 q14 22 6 44 M500 282 q14 22 6 46" fill="none" stroke={INK} stroke-width="5" stroke-linecap="round" opacity=".55" />
@@ -97,6 +99,8 @@
   .legs { transform-box: view-box; transition: transform .4s ease; }
   .shadow { transform-box: view-box; transform-origin: 560px 534px; transition: transform .6s ease, opacity .6s ease; }
   .gusts { opacity: 0; }
+  .neck { opacity: 0; }
+  .pose-stuck .neck { opacity: 1; }
   @keyframes bob { 0%, 70%, 100% { transform: rotate(0); } 80% { transform: rotate(8deg) translateY(6px); } 90% { transform: rotate(-4deg); } }
 
   /* about to take off: crouched, wings raised */
