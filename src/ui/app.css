@@ -1,3 +1,5 @@
+@font-face{font-family:'IM Fell English';font-weight:400;font-display:swap;src:url('./fonts/im-fell-english-latin-400-normal.woff2') format('woff2')}
+@font-face{font-family:'IM Fell English SC';font-weight:400;font-display:swap;src:url('./fonts/im-fell-english-sc-latin-400-normal.woff2') format('woff2')}
 /* Global stylesheet. Single dark look by choice.
    Type: one family (Barlow), two weights, four sizes (--fs-*), sentence case. See the type note in :root and the design doc (World, tone and presentation). */
 /* Layout: forge-ledger panels. Town nav in the header (Hunt Board, Forge, Shop). Hunt = monster left, HP + telegraph + dice centre, gear right. One column on phones. Single dark look by choice (matches Ember & Anvil). */
@@ -22,8 +24,10 @@ b,strong,h1,h2,h3,h4,th{font-weight:600}
 button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 
 .top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--line)}
-.top h1{margin:0;font-family:var(--f-body);font-weight:600;font-size:var(--fs-logo);line-height:1;text-wrap:balance}
+.top h1{margin:0;font-family:'IM Fell English',Georgia,serif;font-weight:400;font-size:calc(var(--fs-logo) * 1.15);line-height:1;text-wrap:balance}
 .top h1 span{color:var(--ember)}
+/* the logo, as on the store page: small-caps HUNTER'S in bone over an ember Folio (fonts: SIL Open Font License, src/ui/fonts) */
+.top h1 .hn{font-family:'IM Fell English SC',Georgia,serif;font-size:.62em;letter-spacing:.06em;color:var(--fg)}
 .sub{font-family:var(--f-body);font-size:var(--fs-sm);color:var(--muted)}
 .top-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .purse{font-family:var(--f-body);font-variant-numeric:tabular-nums;font-size:var(--fs-sm);color:var(--gold-hi);padding:8px 12px;border:1px solid var(--line-2);border-radius:3px}
@@ -73,9 +77,6 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .mrow[aria-current="true"]{border-color:var(--gold);background:var(--raise)}
 .mrow .thumb{width:64px;height:36px;border:1px solid var(--line);border-radius:2px;background:#1a1511;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .mrow .thumb svg{width:100%;height:auto}
-.mrow .thumb svg:not(.wc) path,.mrow .thumb svg:not(.wc) circle{fill:none;stroke:#8c7a62;stroke-width:3}
-.mrow .thumb .eye{fill:#8c7a62}
-.mrow .thumb .hatch{stroke:none}
 .mrow .nm{font-family:var(--f-body);font-weight:600;font-size:var(--fs-md);display:block}
 .mrow[aria-current="true"] .nm{color:var(--gold-hi)}
 .mrow .meta{font-size:var(--fs-sm);color:var(--muted);display:flex;gap:6px;flex-wrap:wrap}
@@ -209,11 +210,6 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 /* bestiary + monster */
 .plate{border:1px solid var(--line);border-radius:3px;background:#1a1511;padding:10px 6px 4px}
 .plate svg{display:block;width:100%;height:auto}
-.plate svg:not(.wc) path,.plate svg:not(.wc) circle{fill:none;stroke:#8c7a62;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:stroke .2s}
-.plate .hatch{stroke:#4d4136;stroke-width:1}
-.plate .eye{fill:#8c7a62}
-.plate .on{stroke:var(--gold-hi);stroke-width:2.2}
-.plate .broke{stroke:var(--ember);stroke-dasharray:4 4}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
 .chip{font-family:var(--f-body);font-size:var(--fs-sm);padding:3px 10px;border-radius:999px;border:1px solid var(--line-2);color:var(--soft)}
 .chip.hot{border-color:var(--ember);color:var(--ember-soft)}
@@ -364,8 +360,6 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .move.dash{border-style:dashed;border-color:var(--line-2)}
 .move.dash.ready{border-style:solid}
 /* Capture is the one move that ends the hunt early: inverted (gold fill, dark ink) when it's live */
-.plate .molten path:not(.hatch):not(.broke){stroke:var(--ember)}
-.plate .ice:not(.broke),.plate path.ice{stroke:#b9d3f0}
 .float.ice{color:#b9d3f0;font-size:var(--fs-lg)}
 .chip.ice{border-color:#b9d3f0;color:#b9d3f0}
 .cant{margin:0;font-size:var(--fs-sm);color:var(--ember-soft)}
@@ -466,3 +460,16 @@ kbd.key{display:inline-block;margin-right:8px;vertical-align:2px}
 .btnrow{display:flex;gap:8px;flex-wrap:wrap}
 .linkbtn{all:unset;cursor:pointer;color:var(--gold-hi);text-decoration:underline;text-underline-offset:3px}
 .linkbtn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+/* woodcut monster plates (src/ui/parts/plates): shared motion */
+svg.wc{display:block;width:100%;height:auto;overflow:visible;transform:scaleX(-1)}
+svg.wc .rig,svg.wc .breath,svg.wc .head,svg.wc .leg,svg.wc .shin,svg.wc .stars,svg.wc .snort,svg.wc .wing,svg.wc .tail,svg.wc .fx{transform-box:view-box}
+svg.wc .stars{opacity:0}
+svg.wc.pose-dazed .stars{opacity:1;animation:wc-orbit 1.4s linear infinite}
+@keyframes wc-orbit{to{transform:rotate(360deg)}}
+@keyframes wc-breathe{50%{transform:scaleY(1.045) scaleX(.99)}}
+@keyframes wc-reel{0%,100%{transform:skewX(-9deg) translateX(-14px)}50%{transform:skewX(9deg) translateX(14px)}}
+@keyframes wc-puff{0%{opacity:.9;transform:translateY(0) scale(.6)}100%{opacity:0;transform:translateY(-90px) scale(1.5)}}
+@keyframes wc-glow{50%{opacity:.45}}
+svg.wc.static *{animation:none!important}
+@media (prefers-reduced-motion: reduce){svg.wc *{animation:none!important;transition:none!important}}

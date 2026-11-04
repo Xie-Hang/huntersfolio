@@ -5,7 +5,7 @@
   // a wobble when dazed, a droop when exhausted, nosing for roots. One-shots: a lunge when it attacks,
   // a flinch when it's hit. Parts light up when aimed at and change when broken.
   import type { Hunt } from '../../../engine';
-  import { game } from '../../game.svelte';
+  import { oneShots } from './motion.svelte';
 
   let { hunt = null }: { hunt?: Hunt | null } = $props();
 
@@ -40,20 +40,8 @@
   const mud = $derived(!!m && m.wallow > 0 && !m.parts.hide?.broken);
   const enraged = $derived(!!m?.enraged);
 
-  // one-shot motion: lunge when it attacks, flinch when hit (Web Animations, so the loop underneath keeps running)
   let rig: SVGGElement;
-  const reduce = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let seenAct = game.pulse.act, seenHit = game.pulse.hit;
-  $effect(() => {
-    const a = game.pulse.act;
-    if (!hunt || a === seenAct) return; seenAct = a;
-    if (!reduce) rig?.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(40px) scaleY(.92) skewX(8deg)', offset: 0.22 }, { transform: 'translateX(-190px) skewX(-14deg)', offset: 0.5 }, { transform: 'translateX(-150px) skewX(-6deg)', offset: 0.62 }, { transform: 'translateX(0)' }], { duration: 640, easing: 'cubic-bezier(.3,.7,.3,1)' });
-  });
-  $effect(() => {
-    const t = game.pulse.hit;
-    if (!hunt || t === seenHit) return; seenHit = t;
-    if (!reduce) rig?.animate([{ transform: 'translateX(0)', filter: 'brightness(1.9)' }, { transform: 'translateX(60px) scaleY(.94) skewX(10deg)', filter: 'brightness(1.3)', offset: 0.25 }, { transform: 'translateX(-10px) skewX(-3deg)', offset: 0.6 }, { transform: 'translateX(0)', filter: 'brightness(1)' }], { duration: 420, easing: 'ease-out' });
-  });
+  oneShots(() => rig, () => hunt);
 </script>
 
 <svg class="wc pose-{pose}" class:static={!hunt} viewBox="60 40 940 520" role="img" aria-label="Engraving of the Gorehorn, a great ridge boar{pose === 'windup' ? ', lowering its head to charge' : ''}">
@@ -75,7 +63,7 @@
             <g class="shin" style="transform-origin:{L.kn[0]}px {L.kn[1]}px;{lame ? 'transform:rotate(-28deg)' : ''}">
               <path d="M{L.kn[0]} {L.kn[1]} L{L.hf[0]} {L.hf[1]}" stroke={legs.on ? GOLD : INK} stroke-width={legs.on ? 52 : 40} stroke-linecap="round" />
               <path d="M{L.kn[0]} {L.kn[1]} L{L.hf[0]} {L.hf[1]}" stroke={L.far ? FAR : BONE} stroke-width="28" stroke-linecap="round" />
-              <path d="M{L.hf[0] - 18} {L.hf[1] - 6} h36 l6 18 h-48 Z" fill={INK} stroke={BONE2} stroke-width="3" stroke-linejoin="round" />
+              <path data-foot d="M{L.hf[0] - 18} {L.hf[1] - 6} h36 l6 18 h-48 Z" fill={INK} stroke={BONE2} stroke-width="3" stroke-linejoin="round" />
               {#if lame}<path d="M{L.kn[0] - 14} {L.kn[1] + 10} l10 12 l-8 10 l12 10" fill="none" stroke={EMBER} stroke-width="6" stroke-linecap="round" />{/if}
             </g>
           </g>

@@ -52,7 +52,7 @@ electron/        The desktop wrapper: window, save files, Steam hookup
 
 **Adding a monster** is mostly adding a file in `src/engine/data/monsters/` and listing it in the roster. The simulator and balance tests pick it up from the same data.
 
-**A new monster also needs a plate:** its engraving lives in `src/ui/parts/Plate.svelte` until real art arrives.
+**A new monster also needs a plate:** a woodcut drawing in `src/ui/parts/plates/<Monster>.svelte`, listed in `src/ui/parts/Plate.svelte`. Plates are drawn facing left in a 1000 × 600 space (the same space as the store key art in `art/keyart.py`) and flipped to face the player. Poses come from the hunt (intent, airborne, underground, molten, ice layers, broken parts); one-shot moves (attack, flinch) come from `game.pulse` via `plates/motion.svelte.ts`. Whole-body motion uses translate, scale and skew around the ground line, never a body rotation, so feet stay on the ground (mark feet with `data-foot` to test it).
 
 ## Tutorial
 

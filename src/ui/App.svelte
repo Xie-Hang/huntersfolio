@@ -103,7 +103,7 @@
 <div class="wrap">
   <header class="top">
     <div>
-      <h1>Hunter's <span>Folio</span></h1>
+      <h1 aria-label="Hunter's Folio"><span class="hn">Hunter’s</span> <span>Folio</span></h1>
       <div class="sub">{sub}</div>
     </div>
     <div class="top-right">
@@ -167,7 +167,7 @@
         {#if feedbackInfo()}<button class="btn quiet" onclick={() => openFeedback()}>{feedbackButton()}</button>{/if}
       </span>
     </div>
-    <div class="setrow"><span><span class="nm">Credits</span><span class="md">Music: placeholder tracks composed in code for Hunter's Folio. Final music to come. Sound effects: synthesized in code.</span></span></div>
+    <div class="setrow"><span><span class="nm">Credits</span><span class="md">Music: placeholder tracks composed in code for Hunter's Folio. Final music to come. Sound effects: synthesized in code. Logo type: IM Fell English, digitised by Igino Marini (SIL Open Font License).</span></span></div>
     <div class="toast" aria-live="polite">{setToast}</div>
   </Modal>
 
