@@ -135,6 +135,8 @@ function finish(h: Hunt, result: 'win' | 'lose') {
 }
 
 export interface HitResult { dmg: number; broke: boolean }
+/** remember a notable moment of this hunt (achievements read them when it ends) */
+function feat(h: Hunt, f: string) { (h.feats ??= []).includes(f) || h.feats.push(f); }
 
 /** Use weapon move i. `prefer` lists selected dice to spend first. */
 export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | null {
@@ -143,11 +145,13 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
   if (!canHit(h, w)) return null;
   const picks = pickDice(h, mv.need, prefer); if (!picks) return null;
   const wasCapturable = canCapture(h);
+  const before = { intent: h.intent, threat: intentInfo(h).threat, air: m.air, under: m.under };
   picks.forEach(j => (h.dice[j].used = mv.name));
   if (m.plating > 0) {
     // Ice plating: the hit is spent on the ice. Charge and whetstone bonuses are used up too.
     const strip = Math.min(m.plating, iceBreak(w));
     m.plating -= strip; h.chargeReady = false; h.whet = 0;
+    if (strip >= 2 && m.plating === 0) feat(h, 'shatter');
     log(h, `${mv.name} breaks ${strip} layer${strip > 1 ? 's' : ''} of ice. ${m.plating ? `${m.plating} left.` : 'The plating is gone!'}`, m.plating ? '' : 'gold');
     flowReroll(h, mv);
     return { dmg: 0, broke: false };
@@ -201,6 +205,10 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
     const b = Math.min(burn, h.php - 1);
     if (b > 0) { h.php -= b; h.stats.taken += b; log(h, `The molten shell sears you for ${b}.`, 'ember'); }
   }
+  if (h.intent === 'dazed' && before.intent !== 'dazed') feat(h, 'daze');
+  if (before.threat >= 3 && h.intent !== before.intent) feat(h, 'interrupt');
+  if (before.air && !m.air) feat(h, 'grounded');
+  if (before.under && !m.under) feat(h, 'unearthed');
   checkEnrage(h);
   if (m.hp > 0 && !wasCapturable && canCapture(h)) log(h, `${MD.short} is weak enough to capture!`, 'gold');
   if (m.hp <= 0) finish(h, 'win');

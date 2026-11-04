@@ -269,6 +269,38 @@ describe('tutorial', () => {
   });
 });
 
+describe('achievements', () => {
+  it('a new save has none; progress awards them once', () => {
+    const s = starter();
+    expect(E.award(s)).toEqual([]);
+    s.record.gorehorn = { hunts: 1, wins: 1, captures: 0, breaks: {} };
+    expect(E.award(s)).toEqual(['FIRST_HUNT']);
+    expect(E.award(s)).toEqual([]);
+  });
+  it('one Cut hit that clears the Rimetail\'s ice is a Shatter', () => {
+    const s = starter(); s.loadout.target = 'rimetail';
+    const h = E.startHunt(s, 7);
+    h.dice = h.dice.map(() => ({ face: 'C' as const, used: null }));
+    E.useMove(h, 0);
+    expect(h.feats).toContain('shatter');
+    h.over = 'lose';
+    expect(E.award(s, h)).toContain('SHATTER');
+  });
+  it('filling the daze meter on the Gorehorn\'s charge stops it cold', () => {
+    const s = starter(); s.loadout.weapons = ['maul', 'blade'];
+    const h = E.startHunt(s, 3);
+    h.intent = 'charge'; h.target = 'tusks'; h.mon.daze = h.mon.dazeMax - 5;
+    h.dice = h.dice.map(() => ({ face: 'C' as const, used: null }));
+    E.useMove(h, 0);
+    expect(h.feats).toEqual(expect.arrayContaining(['daze', 'interrupt']));
+  });
+  it('every id is a valid Steam API name and unique', () => {
+    const ids = E.ACHIEVEMENTS.map(a => a.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const id of ids) expect(id).toMatch(/^[A-Z0-9_]{1,64}$/);
+  });
+});
+
 describe('saves', () => {
   it('migrates a browser-prototype save (no version, numeric pity)', () => {
     const proto = { coin: 640, mats: { hide: 4, tusk: 2 }, weapons: { blade: { lv: 1 }, maul: { lv: 0 } }, armors: { jerkin: { lv: 0 } }, items: { salve: 2 }, loadout: { weapons: ['blade', 'maul'], armor: 'jerkin', item: 'salve', target: 'gorehorn' }, pity: 3, hunts: 7 };

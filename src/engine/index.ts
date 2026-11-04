@@ -8,3 +8,4 @@ export { WEAPONS, TREES, SIGNATURES } from './data/weapons';
 export { ARMORS, ITEMS, MATERIALS, CHARMS, matName } from './data/gear';
 export { MONSTERS, TIERS, UNKNOWN } from './data/monsters';
 export * from './util';
+export * from './achievements';

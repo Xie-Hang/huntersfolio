@@ -100,7 +100,7 @@ export function tier1Campaign(seed: number, policy: Policy, maxHunts = 80) {
     const item = c && s.items[c] > 0 ? c : s.items.salve > 0 ? 'salve' : null;
     s.loadout = { ...s.loadout, target, weapons: [first, second], armor: arms[0], item };
     const h = playHunt(E.startHunt(s, seed * 100_003 + n), { ...policy });
-    E.settleHunt(s, h);
+    E.settleHunt(s, h); E.award(s, h);
     hunts++; turns += h.turn;
     if (h.over === 'win') { firstWin[target] ??= n; if (target !== 'gorehorn' || streak < 2) streak = 0; else streak = 0; }
     else { fails++; streak++; }
@@ -111,6 +111,7 @@ export function tier1Campaign(seed: number, policy: Policy, maxHunts = 80) {
         .filter(r => E.recipeState(s, r.kind, r.id).cls === 'ready' && !(r.kind === 'w' && E.lvOf(s.weapons, r.id) >= 1 && E.recipeOf(s, 'w', r.id).action === 'reinforce'));
       if (!ready.length || !E.forgeDo(s, ready[0].kind, ready[0].id)) break;
     }
+    E.award(s);
   }
-  return { hunts, turns, fails, firstWin, done: T1.every(id => (s.record[id]?.wins ?? 0) > 0) };
+  return { hunts, turns, fails, firstWin, achievements: [...s.achievements], done: T1.every(id => (s.record[id]?.wins ?? 0) > 0) };
 }

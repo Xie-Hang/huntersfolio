@@ -9,6 +9,9 @@ contextBridge.exposeInMainWorld('hf', {
     remove: key => ipcRenderer.sendSync('storage:remove', key)
   },
   steam: ipcRenderer.sendSync('steam:info'),
+  achievements: {
+    unlock: ids => ipcRenderer.send('steam:achievements', Array.isArray(ids) ? ids.map(String) : [])
+  },
   files: {
     save: (name, text) => ipcRenderer.invoke('file:save', name, text)
   },

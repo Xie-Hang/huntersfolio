@@ -182,3 +182,32 @@ write('piece_dice', page(420, 140, die(70, 66, 110, 'C', 0) + die(210, 66, 110, 
                          .replace('</g>', f'<text y="8" text-anchor="middle" font-family="Barlow" font-weight="600" font-size="22" fill="{C["ink"]}" opacity=".72">Blank</text></g>'),
                          frame=False, transparent=True))
 print('ok', len(list(OUT.glob('*.svg'))))
+
+# ---------- achievement icons (Steamworks: 256x256, an achieved and an unachieved version each) ----------
+import json, subprocess
+ACH_MOTIF = {  # id -> ('plate', monster) | ('die', face)
+    'FIRST_HUNT': ('plate', 'gorehorn'), 'RIDGE_CLEARED': ('dice', ''), 'FIRST_CAPTURE': ('die', 'T'),
+    'RIDGE_CAPTURED': ('dice', 'T'), 'TAKEN_APART': ('plate', 'cinderback'), 'BARELY_SCRATCHED': ('die', 'B'),
+    'LIGHTS_OUT': ('plate', 'gorehorn'), 'STOPPED_COLD': ('plate', 'gorehorn'), 'GROUNDED': ('plate', 'galeshrike'),
+    'UNEARTHED': ('plate', 'cinderback'), 'SHATTER': ('plate', 'rimetail'), 'RARE_FIND': ('die', 'C'),
+    'FIRST_FORGE': ('die', 'C'), 'TEMPERED': ('die', 'T'), 'FIRST_CHARM': ('die', 'C'), 'ALL_CHARMS': ('dice', 'C'),
+}
+def ach_icon(motif, done):
+    W = 256
+    body = f'<rect width="{W}" height="{W}" fill="url(#glow)"/>'
+    ring = C['gold'] if done else C['line2']
+    body += f'<rect x="10" y="10" width="{W-20}" height="{W-20}" fill="none" stroke="{ring}" stroke-width="4"/>'
+    body += f'<rect x="20" y="20" width="{W-40}" height="{W-40}" fill="none" stroke="{C["line"]}" stroke-width="2"/>'
+    kind, v = motif
+    if kind == 'plate': body += place(v, 18, 70, 220, weight=3.2, ground=False)
+    elif kind == 'die': body += die(W / 2, W / 2 - 6, 120, v or 'C', -10 if done else 0).replace('</g>', f'<text y="10" text-anchor="middle" font-family="Barlow" font-weight="600" font-size="26" fill="{C["ink"]}" opacity=".72">Blank</text></g>') if v == 'B' else die(W / 2, W / 2 - 6, 120, v or 'C', -10 if done else 0)
+    else: body += die(W / 2 - 42, W / 2, 92, 'C', -12) + die(W / 2 + 42, W / 2 + 6, 92, v or 'T', 10)
+    svg = page(W, W, body, frame=False)
+    if not done:  # unachieved: the same mark, greyed and dimmed
+        svg = svg.replace('<svg ', '<svg style="filter:grayscale(1) brightness(.55)" ', 1)
+    return svg
+ACH_DIR = OUT / 'achievements'; ACH_DIR.mkdir(exist_ok=True)
+for aid, motif in ACH_MOTIF.items():
+    (ACH_DIR / f'{aid}.svg').write_text(ach_icon(motif, True))
+    (ACH_DIR / f'{aid}_locked.svg').write_text(ach_icon(motif, False))
+print('achievement icons', len(ACH_MOTIF) * 2)

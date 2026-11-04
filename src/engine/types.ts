@@ -197,6 +197,8 @@ export interface Hunt {
   rng: number;
   /** tutorial: fixed faces for the opening turns (index 0 = turn 1); later turns roll normally */
   script?: Face[][];
+  /** notable moments this hunt, for achievements: 'daze' | 'interrupt' | 'grounded' | 'unearthed' | 'shatter' */
+  feats?: string[];
 }
 
 export interface MonsterDef {
@@ -273,4 +275,6 @@ export interface Save {
   tips: string[];
   /** the end-of-content card ("That's the demo") has been shown */
   endSeen: boolean;
+  /** achievement ids earned (kept locally so they reach Steam whenever it's available) */
+  achievements: string[];
 }

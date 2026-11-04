@@ -5,6 +5,7 @@ import * as E from '../engine';
 import { read, write, remove, SAVE_KEY, HUNT_KEY } from './storage';
 import { sfx, type Sfx } from './sfx';
 import * as PL from './playlog';
+import { checkAchievements } from './achievements';
 
 export type View = 'board' | 'forge' | 'shop' | 'hunt';
 type Panel = 'mon' | 'player';
@@ -41,6 +42,7 @@ class Game {
         write(SAVE_KEY, $state.snapshot(this.save));
       }
     }
+    if (checkAchievements(this.save).length) write(SAVE_KEY, $state.snapshot(this.save));
   }
   persist() {
     write(SAVE_KEY, $state.snapshot(this.save));
@@ -103,7 +105,7 @@ class Game {
   }
   private after() {
     const h = this.hunt!;
-    if (h.over) { PL.huntEnd(h, this.save); E.settleHunt(this.save, h); E.fixLoadout(this.save); this.undoStack = []; this.sel = []; }
+    if (h.over) { PL.huntEnd(h, this.save); E.settleHunt(this.save, h); checkAchievements(this.save, h); E.fixLoadout(this.save); this.undoStack = []; this.sel = []; }
     this.persist();
   }
 
@@ -193,6 +195,7 @@ class Game {
   town(fn: (s: E.Save) => string | null, sound?: Sfx): string | null {
     const msg = fn(this.save);
     if (msg && sound) sfx(sound);
+    if (msg) checkAchievements(this.save);
     this.persist();
     return msg;
   }

@@ -1,0 +1,17 @@
+API name,Display name,Description,Icon,Locked icon
+FIRST_HUNT,"First blood","Win your first hunt.",FIRST_HUNT.jpg,FIRST_HUNT_locked.jpg
+RIDGE_CLEARED,"Ashfall Ridge","Beat every monster on Ashfall Ridge.",RIDGE_CLEARED.jpg,RIDGE_CLEARED_locked.jpg
+FIRST_CAPTURE,"Snared","Capture a monster.",FIRST_CAPTURE.jpg,FIRST_CAPTURE_locked.jpg
+RIDGE_CAPTURED,"Living folio","Capture every monster on Ashfall Ridge.",RIDGE_CAPTURED.jpg,RIDGE_CAPTURED_locked.jpg
+TAKEN_APART,"Taken apart","Break every part of one monster, over any number of hunts.",TAKEN_APART.jpg,TAKEN_APART_locked.jpg
+BARELY_SCRATCHED,"Barely scratched","Win a hunt taking 40 damage or less.",BARELY_SCRATCHED.jpg,BARELY_SCRATCHED_locked.jpg
+LIGHTS_OUT,"Lights out","Daze a monster.",LIGHTS_OUT.jpg,LIGHTS_OUT_locked.jpg
+STOPPED_COLD,"Stopped cold","Stop a monster’s big attack before it lands.",STOPPED_COLD.jpg,STOPPED_COLD_locked.jpg
+GROUNDED,"Grounded","Shoot the Galeshrike out of the sky.",GROUNDED.jpg,GROUNDED_locked.jpg
+UNEARTHED,"Unearthed","Drive the Cinderback out of the ground with a hammer blow.",UNEARTHED.jpg,UNEARTHED_locked.jpg
+SHATTER,"Shatter","Clear all of the Rimetail’s ice with one hit.",SHATTER.jpg,SHATTER_locked.jpg
+RARE_FIND,"Rare find","Carry home a rare material.",RARE_FIND.jpg,RARE_FIND_locked.jpg
+FIRST_FORGE,"Fresh from the forge","Craft or upgrade a weapon.",FIRST_FORGE.jpg,FIRST_FORGE_locked.jpg
+TEMPERED,"Tempered","Reinforce a weapon to +3.",TEMPERED.jpg,TEMPERED_locked.jpg
+FIRST_CHARM,"Lucky charm","Craft a charm.",FIRST_CHARM.jpg,FIRST_CHARM_locked.jpg
+ALL_CHARMS,"Charm collector","Craft every charm.",ALL_CHARMS.jpg,ALL_CHARMS_locked.jpg

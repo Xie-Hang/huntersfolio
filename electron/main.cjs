@@ -113,6 +113,8 @@ ipcMain.on('store:open', () => {
   shell.openExternal(steamClient ? `steam://store/${id}` : `https://store.steampowered.com/app/${id}/`).catch(() => {});
 });
 
+ipcMain.on('steam:achievements', (_e, ids) => steam.unlock(steamClient, ids));
+
 ipcMain.on('steam:info', e => {
   e.returnValue = steam.info(steamClient);
 });

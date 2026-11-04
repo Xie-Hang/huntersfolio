@@ -6,7 +6,7 @@ import { WEAPONS } from './data/weapons';
 import { ARMORS } from './data/gear';
 import { MONSTERS } from './data/monsters';
 
-export const SAVE_VERSION = 5;
+export const SAVE_VERSION = 6;
 
 export function newSave(): Save {
   return {
@@ -23,7 +23,8 @@ export function newSave(): Save {
     tracked: null,
     charms: {},
     tips: [],
-    endSeen: false
+    endSeen: false,
+    achievements: []
   };
 }
 
@@ -44,7 +45,9 @@ const MIGRATIONS: ((s: any) => any)[] = [
   // v3 → v4: tutorial tips (4 Nov 2026). Existing saves start with none seen; tips only show when they fit.
   s => ({ ...s, tips: [], version: 4 }),
   // v4 → v5: the end-of-content card (4 Nov 2026). Not seen yet; it shows if every monster is already beaten.
-  s => ({ ...s, endSeen: false, version: 5 })
+  s => ({ ...s, endSeen: false, version: 5 }),
+  // v5 → v6: achievements (4 Nov 2026). Start empty; the ones a save already qualifies for are awarded on load.
+  s => ({ ...s, achievements: [], version: 6 })
 ];
 
 /** Turn anything loaded from storage into a valid, current Save. Unknown or broken data gives a fresh save. */
@@ -67,6 +70,7 @@ export function loadSave(raw: unknown): Save {
     weapons: Object.fromEntries(Object.entries(s.weapons || base.weapons).filter(([k]) => WEAPONS[k])) as Save['weapons'],
     armors: Object.fromEntries(Object.entries(s.armors || base.armors).filter(([k]) => ARMORS[k])) as Save['armors'],
     endSeen: s.endSeen === true,
+    achievements: Array.isArray(s.achievements) ? s.achievements.filter((x: unknown) => typeof x === 'string') : [],
     tips: Array.isArray(s.tips) ? s.tips.filter((x: unknown) => typeof x === 'string') : [],
     charms: Object.fromEntries(Object.keys(s.charms || {}).filter(k => CHARMS[k]).map(k => [k, true])) as Save['charms']
   };

@@ -37,4 +37,13 @@ function info(client) {
   }
 }
 
-module.exports = { init, info, STEAM_APP_ID, STORE_APP_ID };
+/** Unlock achievements by API name. Safe to repeat: Steam ignores ones already unlocked. */
+function unlock(client, ids) {
+  if (!client || !Array.isArray(ids)) return;
+  for (const id of ids) {
+    try { if (typeof id === 'string' && !client.achievement.isActivated(id)) client.achievement.activate(id); }
+    catch (err) { console.warn('achievement failed', id, err && err.message); }
+  }
+}
+
+module.exports = { init, info, unlock, STEAM_APP_ID, STORE_APP_ID };
