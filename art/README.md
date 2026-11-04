@@ -16,3 +16,6 @@ The current store and library set is built from `keyart.py` (the charging Goreho
 
 ## Store clips
 `clips.cjs` records three staged gameplay moments (Gorehorn charge read and guarded, Cinderback driven up with a Blunt hit, Rimetail ice shattered by a Cut). Cut commands are in the file header. Output is gitignored.
+
+## Achievement icons v2 (woodcut)
+`ach2/capture.cjs` captures the in-game plates in chosen poses (preview server on :4173), `ach2/make_achievements.py` draws the 16 icons (monster ones from those poses, the rest drawn: crossed blade and maul, the ridge, net, folio, shield, gem, anvil, tempered blade, charms), `ach2/render.cjs` renders 256x256 JPGs, achieved + locked (grey, dim), into `ach2/out/`. Same API names and files as `achievements.csv`.
