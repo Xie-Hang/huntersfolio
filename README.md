@@ -89,6 +89,6 @@ Steam doesn't use installers: upload the contents of `release/win-unpacked/` as 
 
 ## Not done yet
 
-- App icon (the default Electron icon is used) and Steam store art: Mekkman is making these
+- Final store art and app icon: Mekkman is making these. Placeholders built from the engravings are in `art/` (see `art/README.md`); the current icon is `build/icon.png`
 - Controller and Steam Deck support: planned after Steam Playtest
 - Code signing (Windows SmartScreen will warn on the zip; Steam builds are fine without it)
