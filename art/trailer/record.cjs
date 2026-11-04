@@ -6,7 +6,7 @@
 // then turns each shot into a constant 30 fps master. Prints a timeline of marks per shot for the edit.
 const { chromium } = require('playwright');
 const fs = require('fs'); const { execFileSync } = require('child_process');
-const OUT = process.argv[2]; const ONLY = process.argv.slice(3);
+const OUT = require('path').resolve(process.argv[2]); const ONLY = process.argv.slice(3);
 const K = 4; // the page runs K× slower while recording; the footage is sped back up
 const dice = s => [...s].map(f => ({ face: f, used: null }));
 const hunt = (mon, su) => ({ mon, su });

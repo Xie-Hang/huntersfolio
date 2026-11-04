@@ -5,7 +5,8 @@
 //   MP4 (Steam description video, ≤12 s, 780 wide):
 //     ffmpeg -ss 2.4 -t 14.6 -i in.webm -an -vf "crop=982:720:40:128,setpts=PTS/1.25,fps=30,scale=780:-2,format=yuv420p" -c:v libx264 -crf 20 out.mp4
 //   GIF fallback (616 wide): same crop/speed, fps=15,scale=616:-1, then palettegen/paletteuse.
-// Speed-ups used: gorehorn 1.25 (from 2.4 s, 14.6 s long), cinderback 1.4 (2.3 s, 16.4 s), rimetail 1 (2.3 s, 8.6 s).
+// Speed-ups used: gorehorn 1.25 (14.6 s long), cinderback 1.4 (16.4 s), rimetail 1 (8.6 s); start each about 0.3 s before the printed "start" time.
+const { chromium } = require('playwright');
 const dice = s => [...s].map(f => ({ face: f, used: null }));
 const CLIPS = {
   gorehorn: { setup: { intent: 'windup', dice: 'CCTB', script: { 3: 'TTTB', 4: 'CCTT' }, turn: 3, target: 'hide' },

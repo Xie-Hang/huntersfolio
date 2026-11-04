@@ -3,8 +3,8 @@
 // Crops are in the 3840×2160 source (the page renders at 2.4× zoom, so CSS px × 2.4).
 import { execFileSync } from 'node:child_process';
 import { writeFileSync, mkdirSync } from 'node:fs';
-import { join } from 'node:path';
-const [DIR, OUT] = process.argv.slice(2);
+import { join, resolve } from 'node:path';
+const [DIR, OUT] = process.argv.slice(2).map(p => resolve(p));
 const SEG = join(DIR, 'seg'); mkdirSync(SEG, { recursive: true });
 const BAR = 8 / 3;
 const C = {
