@@ -9,6 +9,10 @@ contextBridge.exposeInMainWorld('hf', {
     remove: key => ipcRenderer.sendSync('storage:remove', key)
   },
   steam: ipcRenderer.sendSync('steam:info'),
+  store: {
+    available: ipcRenderer.sendSync('store:available'),
+    open: () => ipcRenderer.send('store:open')
+  },
   display: {
     isFullscreen: () => ipcRenderer.sendSync('window:isFullscreen'),
     setFullscreen: on => ipcRenderer.send('window:setFullscreen', !!on),

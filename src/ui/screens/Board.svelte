@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { storeAvailable, openStore } from '../store';
   import Elem from '../parts/Elem.svelte';
   import * as E from '../../engine';
   import { game } from '../game.svelte';
@@ -71,6 +72,9 @@
         <p class="ital p0">No monsters of that element sighted yet.</p>
       {/each}
     </div>
+    {#if storeAvailable() && game.save.endSeen}
+      <div class="wishrow"><span class="md">The rest of the hunt is in the full game.</span><button class="btn quiet" onclick={() => openStore()}>Wishlist on Steam</button></div>
+    {/if}
   </section>
 
   <section class="panel" aria-label="Bestiary entry" bind:this={bestiaryEl}>

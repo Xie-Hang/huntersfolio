@@ -2,7 +2,7 @@
 // If a change to numbers breaks one of these, either the change is wrong or the
 // target should be revisited deliberately (and the design doc updated).
 import { describe, expect, it } from 'vitest';
-import { gorehornCampaign, matchup, median, type Setup } from '../src/sim/scenarios';
+import { gorehornCampaign, matchup, median, tier1Campaign, type Setup } from '../src/sim/scenarios';
 
 const N = 400;
 const starterSalves = (target: string): Setup => ({ weapons: [['blade', 0], ['maul', 0]], armor: 'jerkin', item: 'salve', target });
@@ -117,5 +117,15 @@ describe('daze', () => {
     }
     expect(chains).toBe(0);
     expect(dazes / turns).toBeLessThan(0.25);
+  });
+});
+
+describe('demo length (Tier 1, new save to every monster beaten once)', () => {
+  // 4 Nov 2026: casual median 8 hunts / 89 turns (p10 5, p90 17); skilled 4 hunts / 36 turns.
+  const R = Array.from({ length: 100 }, (_, i) => tier1Campaign(i + 1, { skill: 'casual', capture: false }));
+  it('every casual run reaches the end', () => { expect(R.every(r => r.done)).toBe(true); });
+  it('casual players need 6-12 hunts (median)', () => {
+    const m = median(R.map(r => r.hunts));
+    expect(m).toBeGreaterThanOrEqual(6); expect(m).toBeLessThanOrEqual(12);
   });
 });

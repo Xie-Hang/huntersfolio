@@ -4,6 +4,7 @@
   import Modal from './parts/Modal.svelte';
   import Coach from './parts/Coach.svelte';
   import { onHuntKey } from './keys';
+  import { storeAvailable, openStore } from './store';
   import { coach } from './coach.svelte';
   import Board from './screens/Board.svelte';
   import Forge from './screens/Forge.svelte';
@@ -18,6 +19,17 @@
   game.load();
 
   let settingsOpen = $state(false);
+  // "That's the demo": once, the first time every monster in the build has been beaten, after the result card.
+  let endOpen = $state(false);
+  $effect(() => {
+    if (!game.save.endSeen && !game.inHunt && game.view !== 'hunt' && E.contentComplete(game.save)) {
+      endOpen = true; game.save.endSeen = true; game.persist();
+    }
+  });
+  const totals = $derived.by(() => {
+    const r = Object.values(game.save.record);
+    return { captures: r.reduce((n, x) => n + x.captures, 0), breaks: r.reduce((n, x) => n + Object.values(x.breaks).reduce((a, b) => a + b, 0), 0) };
+  });
   let helpOpen = $state(false);
   let resetArmed = $state(false);
   let setToast = $state('');
@@ -136,6 +148,19 @@
     </div>
     <div class="setrow"><span><span class="nm">Credits</span><span class="md">Music: placeholder tracks composed in code for Hunter's Folio. Final music to come. Sound effects: synthesized in code.</span></span></div>
     <div class="toast" aria-live="polite">{setToast}</div>
+  </Modal>
+
+  <Modal bind:open={endOpen} title="That's the demo">
+    <div class="endcard">
+      <p class="lead">You've hunted every monster on Ashfall Ridge.</p>
+      <div class="stats"><span>Hunts <b>{game.save.hunts}</b></span><span>Parts broken <b>{totals.breaks}</b></span><span>Captures <b>{totals.captures}</b></span></div>
+      <p>The full game goes on beyond the ridge, with new regions, new monsters and the weapons forged from them.</p>
+      <p class="md">You can keep playing: there are still weapons to upgrade, charms to make and monsters to capture.</p>
+      <div class="acts">
+        {#if storeAvailable()}<button class="btn primary" onclick={() => openStore()}>Wishlist on Steam</button>{/if}
+        <button class="btn" onclick={() => (endOpen = false)}>Keep hunting</button>
+      </div>
+    </div>
   </Modal>
 
   <Modal bind:open={helpOpen} title="How to play" wide>

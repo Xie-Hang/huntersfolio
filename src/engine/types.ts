@@ -271,4 +271,6 @@ export interface Save {
   charms: Record<string, true>;
   /** tutorial tips this save has already shown */
   tips: string[];
+  /** the end-of-content card ("That's the demo") has been shown */
+  endSeen: boolean;
 }

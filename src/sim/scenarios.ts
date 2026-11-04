@@ -74,3 +74,43 @@ export function gorehornCampaign(seed: number, policy: Policy, maxHunts = 60) {
 export function median(xs: number[]): number {
   const s = [...xs].sort((a, b) => a - b); return s[Math.floor(s.length / 2)];
 }
+
+/** The whole demo: a player starting from a new save until every Tier 1 monster has been beaten once.
+ *  Each hunt they go after the first unbeaten monster that's open, with the two owned weapons that do best
+ *  against it (different types if possible), its counter item when they can afford one, and they spend
+ *  everything at the Forge between hunts. Two failures in a row against a new monster → one farming hunt
+ *  on the easiest monster already beaten. Returns hunts, turns and fails. */
+export function tier1Campaign(seed: number, policy: Policy, maxHunts = 80) {
+  const s = E.newSave();
+  const T1 = Object.values(E.MONSTERS).filter(M => M.tier === 1).map(M => M.id);
+  const COUNTER: Record<string, string> = { galeshrike: 'net', cinderback: 'blast', rimetail: 'firepot' };
+  let turns = 0, fails = 0, streak = 0, hunts = 0;
+  const firstWin: Record<string, number> = {};
+  const wpn = (id: string) => E.weaponInst(id, E.lvOf(s.weapons, id));
+  for (let n = 1; n <= maxHunts; n++) {
+    const beaten = (id: string) => (s.record[id]?.wins ?? 0) > 0;
+    const todo = T1.filter(id => E.isUnlocked(s, id) && !beaten(id));
+    if (!todo.length && T1.every(beaten)) break;
+    const target = streak >= 2 ? 'gorehorn' : todo[0];
+    const owned = Object.keys(s.weapons).sort((a, b) => E.avgVs(wpn(b), target) - E.avgVs(wpn(a), target));
+    const first = owned[0], second = owned.find(id => E.WEAPONS[id].type !== E.WEAPONS[first].type) ?? owned[1];
+    const arms = Object.keys(s.armors).sort((a, b) => Number(E.ARMORS[b].resist === E.MONSTERS[target].elem) - Number(E.ARMORS[a].resist === E.MONSTERS[target].elem) || E.ARMORS[b].hp - E.ARMORS[a].hp);
+    const c = COUNTER[target];
+    if (c && (s.items[c] ?? 0) < 1 && s.coin >= E.ITEMS[c].price! * 2) E.buyItem(s, c, 2);
+    const item = c && s.items[c] > 0 ? c : s.items.salve > 0 ? 'salve' : null;
+    s.loadout = { ...s.loadout, target, weapons: [first, second], armor: arms[0], item };
+    const h = playHunt(E.startHunt(s, seed * 100_003 + n), { ...policy });
+    E.settleHunt(s, h);
+    hunts++; turns += h.turn;
+    if (h.over === 'win') { firstWin[target] ??= n; if (target !== 'gorehorn' || streak < 2) streak = 0; else streak = 0; }
+    else { fails++; streak++; }
+    while (s.items.salve < 3 && s.coin >= 30 * 4) E.buyItem(s, 'salve', 1);
+    // spend at the Forge: anything ready, cheapest first; crafted items too
+    for (let k = 0; k < 20; k++) {
+      const ready = (['w', 'a', 'c'] as const).flatMap(kind => Object.keys(kind === 'w' ? E.WEAPONS : kind === 'a' ? E.ARMORS : E.CHARMS).map(id => ({ kind, id })))
+        .filter(r => E.recipeState(s, r.kind, r.id).cls === 'ready' && !(r.kind === 'w' && E.lvOf(s.weapons, r.id) >= 1 && E.recipeOf(s, 'w', r.id).action === 'reinforce'));
+      if (!ready.length || !E.forgeDo(s, ready[0].kind, ready[0].id)) break;
+    }
+  }
+  return { hunts, turns, fails, firstWin, done: T1.every(id => (s.record[id]?.wins ?? 0) > 0) };
+}

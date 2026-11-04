@@ -6,6 +6,9 @@
 //   2. launch the game from Steam (or with Steam running) and the overlay + user name will work
 //   3. achievements, cloud saves and rich presence get added here
 const STEAM_APP_ID = Number(process.env.HF_STEAM_APP_ID || 0);
+// The FULL game's store page, for the demo's Wishlist button. A Steam demo has its own App ID,
+// so this is a separate number from STEAM_APP_ID. 0 = no store page yet: the button stays hidden.
+const STORE_APP_ID = Number(process.env.HF_STORE_APP_ID || 0);
 
 let steamworks = null;
 
@@ -34,4 +37,4 @@ function info(client) {
   }
 }
 
-module.exports = { init, info, STEAM_APP_ID };
+module.exports = { init, info, STEAM_APP_ID, STORE_APP_ID };

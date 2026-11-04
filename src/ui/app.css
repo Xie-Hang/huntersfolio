@@ -444,3 +444,12 @@ kbd{font-family:var(--f-body);font-size:var(--fs-sm);font-weight:400;line-height
 kbd.key{display:inline-block;margin-right:8px;vertical-align:2px}
 .btn.primary kbd.key,.move.capture.live kbd.key{color:var(--ink);border-color:rgba(26,20,16,.45)}
 .dietag kbd.key{margin:0}
+
+/* end-of-content card */
+.endcard{display:flex;flex-direction:column;gap:12px;max-width:52ch}
+.endcard p{margin:0}
+.endcard .lead{font-size:var(--fs-lg);color:var(--gold-hi)}
+.endcard .stats{display:flex;gap:18px;flex-wrap:wrap;font-size:var(--fs-sm);color:var(--soft)}
+.endcard .stats b{color:var(--fg)}
+.endcard .acts{display:flex;gap:10px;flex-wrap:wrap;padding-top:6px}
+.wishrow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding-top:12px;margin-top:8px;border-top:1px solid var(--line)}

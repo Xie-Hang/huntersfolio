@@ -85,6 +85,8 @@ The current ones are **placeholders** composed in code. Re-render them with `nod
 
 `electron/steam.cjs` is a placeholder: it does nothing until the game has a Steam App ID. To test locally with Valve's public test app, run with `HF_STEAM_APP_ID=480` while Steam is open. Once Steamworks gives us an App ID, it goes in that file, and achievements, cloud saves and the overlay are added there.
 
+**The demo's Wishlist button** opens the full game's store page, which has its own App ID (a Steam demo is a separate app). Set it as `STORE_APP_ID` in `electron/steam.cjs` (or `HF_STORE_APP_ID` to test); until then the button stays hidden. The "That's the demo" card shows once, the first time every monster in the build has been beaten (`contentComplete` in the engine), so the full game never shows it.
+
 Steam doesn't use installers: upload the contents of `release/win-unpacked/` as the Windows depot.
 
 ## Not done yet

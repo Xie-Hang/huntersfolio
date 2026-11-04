@@ -219,6 +219,11 @@ export function isUnlocked(s: Save, id: string): boolean {
   return !req || (s.record[req]?.wins ?? 0) > 0 || (s.record[id]?.hunts ?? 0) > 0;
 }
 
+/** Every monster in this build has been beaten at least once: the end of the content (in the demo, the end of the demo). */
+export function contentComplete(s: Save): boolean {
+  return Object.keys(MONSTERS).every(id => (s.record[id]?.wins ?? 0) > 0);
+}
+
 /** Apply a finished hunt's results to the save. Safe to call more than once. */
 export function settleHunt(s: Save, h: Hunt) {
   if (!h.over || h.reward) return;

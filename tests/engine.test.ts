@@ -256,6 +256,13 @@ describe('tutorial', () => {
     expect(a.dice.length).toBe(4);
     expect(b.script).toBeUndefined();
   });
+  it('the end of the content is every monster beaten once', () => {
+    const s = starter();
+    expect(E.contentComplete(s)).toBe(false);
+    for (const id of Object.keys(E.MONSTERS)) s.record[id] = { hunts: 1, wins: 1, captures: 0, breaks: {} };
+    expect(E.contentComplete(s)).toBe(true);
+    expect(E.loadSave({ version: 4, coin: 5 }).endSeen).toBe(false);
+  });
   it('saves keep the tips already shown, and old saves start with none', () => {
     expect(E.loadSave({ ...starter(), tips: ['aim', 7] }).tips).toEqual(['aim']);
     expect(E.loadSave({ version: 3, coin: 5 }).tips).toEqual([]);

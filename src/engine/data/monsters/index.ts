@@ -10,7 +10,7 @@ export const TIERS: Record<number, string> = { 1: 'Tier 1 · Ashfall Ridge', 2: 
 
 /** Planned roster slots that aren't in the game yet (shown as Unknown on the Hunt Board). */
 export const UNKNOWN: { tier: number; elem: Element | null; n: number; hint: string }[] = [
-  { tier: 2, elem: null, n: 4, hint: '4 monsters unsighted' },
-  { tier: 3, elem: null, n: 4, hint: '4 monsters unsighted' },
+  { tier: 2, elem: null, n: 4, hint: 'Beyond Ashfall Ridge, in the full game' },
+  { tier: 3, elem: null, n: 4, hint: 'Further still, in the full game' },
   { tier: 4, elem: null, n: 1, hint: 'Something vast stirs beyond the ridge' }
 ];

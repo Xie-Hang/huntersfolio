@@ -1,7 +1,7 @@
 // Electron main process: one window, file-based saves, and the Steam hookup.
 // The game itself (dist/) knows nothing about Electron; it talks to this file
 // only through the small bridge in preload.cjs.
-const { app, BrowserWindow, ipcMain, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, shell } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 const steam = require('./steam.cjs');
@@ -70,6 +70,15 @@ ipcMain.on('window:setFullscreen', (e, on) => {
 });
 /** The player's settings file, read once at startup so the window opens the way they left it. */
 const startPrefs = () => { try { return JSON.parse(readValid(fileFor('settings')) ?? '{}'); } catch { return {}; } };
+
+// The one link the game may open: the full game's Steam store page (the demo's Wishlist button).
+// Through the Steam client when it's running (already signed in, so Wishlist is one click), else the browser.
+ipcMain.on('store:available', e => { e.returnValue = steam.STORE_APP_ID > 0; });
+ipcMain.on('store:open', () => {
+  const id = steam.STORE_APP_ID;
+  if (!id) return;
+  shell.openExternal(steamClient ? `steam://store/${id}` : `https://store.steampowered.com/app/${id}/`).catch(() => {});
+});
 
 ipcMain.on('steam:info', e => {
   e.returnValue = steam.info(steamClient);
