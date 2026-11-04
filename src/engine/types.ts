@@ -68,6 +68,8 @@ export interface ArmorDef {
   quickswap?: boolean;
   /** lightning (Thunderhead) deals half */
   rod?: boolean;
+  /** every monster hit on you is reduced by this much */
+  ward?: number;
   craft: Cost;
 }
 
@@ -83,7 +85,7 @@ export interface ItemDef {
   effect: ItemEffect;
 }
 
-export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet' | 'airPierce';
+export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet' | 'airPierce' | 'bigHeal';
 export interface CharmDef {
   /** monster tier it comes from (default 1); gear above the edition's top tier isn't in that build */
   tier?: number;
@@ -189,6 +191,12 @@ export interface MonsterState {
   storm?: number;
   stormTick?: number;
   skyLock?: boolean;
+  /** T3 Slagwyrm: molten armour left this turn, turns it stays shattered, stoked (double), phase 2 (meltdown) */
+  armour?: number;
+  shatter?: number;
+  stoked?: boolean;
+  melt?: boolean;
+  burnedTurn?: number;
 }
 
 export interface WeaponInst extends WeaponDef { lv: number }

@@ -41,12 +41,12 @@ describe('Tier 3: the Stormcrown Roc', () => {
   it('the Stormfeather Cloak halves Thunderhead', () => {
     const s = ready(); s.armors = { stormcloak: { lv: 0 } } as never; s.loadout.armor = 'stormcloak';
     const h = E.startHunt(s, 5); h.intent = 'thunder';
-    expect(E.intentInfo(h).dmg).toBe(40);
+    expect(E.intentInfo(h).dmg).toBe(35);
   });
   it('is a Pierce check (simulated, casual)', () => {
-    const run = (w: [string, number][]) => matchup({ weapons: w, armor: 'duskcoat', armorLv: 2, item: 'salve', items: 3, target: 'stormroc' }, { skill: 'casual', capture: false }, 200, 17).win;
+    const run = (w: [string, number][]) => matchup({ weapons: w, armor: 'glassmantle', armorLv: 2, item: 'salve', items: 3, target: 'stormroc' }, { skill: 'casual', capture: false }, 200, 17).win;
     const bow = run([['gillbow', 2], ['pearlhammer', 2]]), none = run([['pearlhammer', 2], ['whelkedge', 2]]);
-    expect(bow).toBeGreaterThan(0.85);
+    expect(bow).toBeGreaterThan(0.75);
     expect(bow - none).toBeGreaterThan(0.3);
   });
 });

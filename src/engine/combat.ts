@@ -14,7 +14,7 @@ export const GUARD_RESIST = 0.7;       // armor element resistance multiplier
 export const CHARGE_BREAK = 30;        // damage that breaks a pending charge
 export const CAPTURE_AT = 0.2;         // capture allowed at or below this share of the monster's HP
 /** Pierce's Expose: a hit leaves the part exposed for 2 turns; any weapon's hits there get these bonuses. Tuned by simulation (4 Nov 2026). */
-export const MEND = 6, BRACE = 12, FINISHER = 1.25, SWAP_WHET = 0.3, AIR_PIERCE = 1.2;
+export const MEND = 6, BRACE = 12, FINISHER = 1.25, SWAP_WHET = 0.3, AIR_PIERCE = 1.2, BIG_HIT = 40;
 export const EXPOSE_TURNS = 2, EXPOSE_DMG = 1.15, EXPOSE_BREAK = 2;
 export const DAZE_START = 60, DAZE_STEP = 30, DAZE_LOCK = 2;
 /** each head's meter, for monsters with several heads */
@@ -259,6 +259,7 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
     p.exposed = EXPOSE_TURNS + (charmFx(h) === 'longExpose' ? 1 : 0);
   }
   if (mv.pin) { const t = MD.onPin?.(h); if (t) log(h, t, 'gold'); }
+  if (charmFx(h) === 'bigHeal' && w.type === 'Blunt' && dmg >= BIG_HIT) { const heal = Math.min(10, h.pmax - h.php); if (heal) { h.php += heal; log(h, `Slag Charm: +${heal} HP.`, 'gold'); } }
   if (m.hp > 0) { const t = MD.onHit?.(h, mv, w); if (t) log(h, t, 'gold'); }
   const burn = m.hp > 0 && !h.arm.burnproof ? MD.burn?.(h, w) ?? 0 : 0;
   if (burn > 0) {
@@ -350,7 +351,7 @@ export function endTurn(h: Hunt): TurnResult {
       const res = h.arm.resist === MD.elem;
       const raw = res ? Math.round(info.dmg * GUARD_RESIST) : info.dmg;
       const g = info.halfGuard && !h.arm.steady ? Math.floor(h.guard / 2) : h.guard;
-      taken = Math.max(0, raw - g); landed = true;
+      taken = Math.max(0, raw - g - (h.arm.ward ?? 0)); landed = true;
       const blocked = raw - taken;
       h.php = Math.max(0, h.php - taken); h.stats.taken += taken; h.stats.guarded += blocked;
       log(h, `${info.name} hits you for ${taken}${blocked ? ` (${blocked} blocked${info.halfGuard && !h.arm.steady ? ', guard halved' : ''})` : ''}${res ? ` (${MD.elem} resisted)` : ''}.`, taken >= CHARGE_BREAK ? 'ember' : '');

@@ -3,9 +3,9 @@
 // A storm builds in its crown: one pip a turn, and at three it casts Thunderhead. A Pierce hit on the Crown drains
 // a pip, and one landed while Thunderhead is telegraphed snuffs it out.
 // Phase 2 at half HP: it never lands again (a net or Pinning Shot grounds it for one turn), so melee deals half
-// for the rest of the hunt, except the turn it lands to recover after each Thunderhead.
-// Tuned by simulation (5 Nov 2026, casual, Mirewood gear +2): with a Pierce weapon 99%, without 48%; skilled 100%;
-// Frost (its weakness) ~100% in ~10 turns.
+// in the air, except the turn after each swooping Rake (it's low) and the turn it lands to recover after a Thunderhead.
+// Tuned by simulation (5 Nov 2026, casual, Mirewood gear +2, armor that doesn't resist it): with a Pierce weapon 83%,
+// without 23% (the hardest wall in the game for melee, by design); skilled 100% either way.
 // Parts: Wings (Pierce; breaking them in phase 2 forces one landing), Crown (Pierce; the daze part; drains the
 // storm; rare Stormheart), Talons (Cut; weaker Rake and Dive).
 import type { Hunt, Intent, MonsterDef } from '../../types';
@@ -26,7 +26,7 @@ export const stormroc: MonsterDef = {
   elem: 'Gale',
   weak: 'Frost',
   resist: 'Stone',
-  hp: 900,
+  hp: 800,
   tier: 3,
   requires: ['bogjaw', 'duskheron', 'emberwhelk', 'mistglass'],
   head: 'crown',
@@ -46,12 +46,12 @@ export const stormroc: MonsterDef = {
     const m = h.mon, enr = m.enraged, tb = m.parts.talons.broken, half = (m.screech ?? 0) > 0;
     const rod = !!h.arm.rod;
     switch (type) {
-      case 'rake': return { name: m.air ? 'Swooping Rake' : 'Talon Rake', text: m.air ? 'It swoops low, talons first.' : 'It lunges with its talons.', dmg: tb ? 22 : enr ? 36 : 30, threat: 2, halfGuard: half };
-      case 'buffet': return { name: 'Gale Buffet', text: 'It drives a wall of wind at you.', dmg: enr ? 26 : 22, threat: 1, halfGuard: half, note: 'Your guard is halved next turn' };
+      case 'rake': return { name: m.air ? 'Swooping Rake' : 'Talon Rake', text: m.air ? 'It swoops low, talons first.' : 'It lunges with its talons.', dmg: tb ? 20 : enr ? 32 : 26, threat: 2, halfGuard: half };
+      case 'buffet': return { name: 'Gale Buffet', text: 'It drives a wall of wind at you.', dmg: enr ? 22 : 18, threat: 1, halfGuard: half, note: 'Your guard is halved next turn' };
       case 'takeoff': return { name: 'Taking off', text: 'It spreads its wings and rises into the storm.', dmg: 0, threat: 0, note: 'Airborne: Cut and Blunt deal half damage' };
-      case 'dive': return { name: 'Stoop Dive', text: 'It folds its wings and falls on you like a thunderbolt!', dmg: tb ? 46 : enr ? 68 : 60, threat: 3, halfGuard: half, note: 'Then it lands for a turn' };
+      case 'dive': return { name: 'Stoop Dive', text: 'It folds its wings and falls on you like a thunderbolt!', dmg: tb ? 40 : enr ? 60 : 52, threat: 3, halfGuard: half, note: 'Then it lands for a turn' };
       case 'perched': return { name: 'Landed', text: 'It lands hard, spent, and shakes the rain from its wings.', dmg: 0, threat: 0, note: 'Grounded for a turn: full damage, and every weapon reaches the crown' };
-      case 'thunder': { const d = enr ? 88 : 80; return { name: 'Thunderhead', text: 'Its crown blazes white. Lightning is coming down!', dmg: rod ? Math.round(d / 2) : d, threat: 4, halfGuard: half, note: carries(h, 'Pierce') ? 'A Pierce hit on the crown snuffs it out' : undefined }; }
+      case 'thunder': { const d = enr ? 78 : 70; return { name: 'Thunderhead', text: 'Its crown blazes white. Lightning is coming down!', dmg: rod ? Math.round(d / 2) : d, threat: 4, halfGuard: half, note: carries(h, 'Pierce') ? 'A Pierce hit on the crown snuffs it out' : undefined }; }
       case 'gutter': return { name: 'Storm snuffed', text: 'The light in its crown gutters and goes out.', dmg: 0, threat: 0, note: 'Its Thunderhead is lost' };
       case 'crashed': return { name: 'Brought down', text: 'It crashes into the rocks in a tangle of wings.', dmg: 0, threat: 0, note: 'Grounded for a turn. Its action is lost' };
       case 'dazed': return { name: 'Dazed', text: 'It reels, its crown flickering.', dmg: 0, threat: 0, note: 'Its action is lost' };
@@ -79,6 +79,8 @@ export const stormroc: MonsterDef = {
 
   resolve(h, type) {
     const m = h.mon, lines: string[] = [];
+    // phase 2: a swoop leaves it low for one of your turns; it climbs again on its next action
+    if (m.skyLock && !m.air && type !== 'crashed' && type !== 'perched') m.air = true;
     if (type === 'thunder') m.storm = 0;
     else if (type !== 'dazed' && type !== 'gutter' && type !== 'crashed') {
       // the storm builds every turn; a broken crown builds it every other turn
@@ -90,6 +92,7 @@ export const stormroc: MonsterDef = {
       case 'takeoff': m.air = true; m.airLeft = AIR_TURNS; lines.push('It’s airborne!'); break;
       case 'dive': m.air = false; m.airLeft = 0; break;
       case 'buffet': m.screech = 2; break;
+      case 'rake': if (m.skyLock) { m.air = false; lines.push('It’s low after the swoop: every weapon reaches it this turn.'); } break;
       case 'crashed': if (m.skyLock) { m.air = true; lines.push('It beats its way back into the sky.'); } else lines.push('It scrambles back up.'); break;
       case 'perched': if (m.skyLock) { m.air = true; lines.push('It beats back up into the storm.'); } else lines.push('It gathers itself.'); break;
       case 'dazed': lines.push('It shakes off the daze.'); break;
@@ -115,7 +118,7 @@ export const stormroc: MonsterDef = {
     const m = h.mon;
     m.skyLock = true;
     if (!m.air) { m.air = true; m.airLeft = 0; }
-    return 'It climbs into the storm and will not come down again. Cut and Blunt deal half from here on.';
+    return 'It climbs into the storm and won’t land again. Cut and Blunt deal half while it’s up; hit it when it swoops low.';
   },
 
   reachable(h, partId, w) {

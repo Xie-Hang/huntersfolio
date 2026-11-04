@@ -15,6 +15,7 @@ armors.push({ id: 'whelkplate', tier: 2, name: 'Whelkshell Plate', hp: 210, guar
 armors.push({ id: 'glassmantle', tier: 2, name: 'Glassmist Mantle', hp: 195, guard: 9, rerolls: 3, resist: 'Frost', perk: 'Resists Frost (−30%). Charging also gives you 12 guard.', braced: true, craft: { coin: 600, glassdust: 4, glassfacet: 2 } });
 armors.push({ id: 'wardenmail', tier: 3, name: 'Wardenstone Mail', hp: 240, guard: 11, rerolls: 2, resist: 'Stone', perk: 'Resists Stone (−30%). Your first weapon swap each turn costs no die.', quickswap: true, craft: { coin: 900, wardenstone: 5, wardenplate: 2 } });
 armors.push({ id: 'stormcloak', tier: 3, name: 'Stormfeather Cloak', hp: 225, guard: 10, rerolls: 3, resist: 'Gale', perk: 'Resists Gale (−30%). Lightning (Thunderhead) deals half.', rod: true, craft: { coin: 900, rocplume: 5, rocpinion: 2 } });
+armors.push({ id: 'slagplate', tier: 3, name: 'Slagforged Plate', hp: 250, guard: 10, rerolls: 2, resist: 'Ember', perk: 'Resists Ember (−30%). Every hit you take is reduced by 6.', ward: 6, craft: { coin: 900, slagscale: 5, slagspine: 2 } });
 export const ARMORS: Record<string, ArmorDef> = Object.fromEntries(armors.filter(inEdition).map(a => [a.id, a]));
 
 const items: ItemDef[] = [
@@ -47,6 +48,7 @@ charms.push(
 );
 charms.push({ id: 'corecharm', tier: 3, name: 'Core Charm', src: 'Monolith Warden', perk: 'After you swap weapons, your next hit deals +30%.', effect: 'swapWhet', craft: { coin: 200, coreshard: 1, wardenstone: 2 } });
 charms.push({ id: 'crowncharm', tier: 3, name: 'Crown Charm', src: 'Stormcrown Roc', perk: 'Pierce hits on an airborne monster deal +20%.', effect: 'airPierce', craft: { coin: 200, stormcrown: 1, rocplume: 2 } });
+charms.push({ id: 'slagcharm', tier: 3, name: 'Slag Charm', src: 'Slagwyrm', perk: 'A Blunt hit of 40 or more heals you 10.', effect: 'bigHeal', craft: { coin: 200, slagspine: 1, slagscale: 2 } });
 export const CHARMS: Record<string, CharmDef> = Object.fromEntries(charms.filter(inEdition).map(c => [c.id, c]));
 
 const mats: MaterialDef[] = [
@@ -101,6 +103,11 @@ mats.push(
   { id: 'stormcrown', tier: 3, base: 'Crown Shard', src: 'Stormcrown Roc', sell: 130, how: 'Break the Roc’s storm crown (Pierce best)' },
   { id: 'roctalon', tier: 3, base: 'Roc Talon', src: 'Stormcrown Roc', sell: 130, how: 'Break the Roc’s talons (Cut best)' },
   { id: 'stormheart', tier: 3, base: 'Stormheart', src: 'Stormcrown Roc', rare: true, sell: 650, how: 'Rare from Stormcrown Roc crown breaks' },
+  { id: 'slagscale', tier: 3, base: 'Slag Scale', src: 'Slagwyrm', sell: 45, how: 'Every Slagwyrm hunt' },
+  { id: 'slagspine', tier: 3, base: 'Spine Plate', src: 'Slagwyrm', sell: 130, how: 'Break the Slagwyrm’s spine plates (Blunt best)' },
+  { id: 'slagjaw', tier: 3, base: 'Slag Fang', src: 'Slagwyrm', sell: 130, how: 'Break the Slagwyrm’s jaw (Pierce best)' },
+  { id: 'slagtail', tier: 3, base: 'Slag Tail', src: 'Slagwyrm', sell: 130, how: 'Sever the Slagwyrm’s tail (Cut best)' },
+  { id: 'slagheart', tier: 3, base: 'Slagheart', src: 'Slagwyrm', rare: true, sell: 650, how: 'Rare from Slagwyrm spine breaks' },
   { id: 'seal', tier: 2, base: 'Hunter’s Seal', src: 'Bounty board', sell: 0, how: 'Paid by bounties; crafts the bounty charms' },
   { id: 'mirestone', tier: 2, base: 'Mirestone', src: 'Bogjaw', rare: true, sell: 450, how: 'Rare from Bogjaw stone warts' }
 );

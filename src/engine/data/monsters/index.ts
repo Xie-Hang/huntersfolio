@@ -9,10 +9,11 @@ import { emberwhelk } from './emberwhelk';
 import { mistglass } from './mistglass';
 import { monolith } from './monolith';
 import { stormroc } from './stormroc';
+import { slagwyrm } from './slagwyrm';
 import { MAX_TIER, EDITION } from '../../edition';
 
 /** every monster that's built; MONSTERS is the ones in this edition (the demo stops at Ashfall Ridge) */
-export const ALL_MONSTERS: Record<string, MonsterDef> = { gorehorn, galeshrike, cinderback, rimetail, bogjaw, duskheron, emberwhelk, mistglass, monolith, stormroc };
+export const ALL_MONSTERS: Record<string, MonsterDef> = { gorehorn, galeshrike, cinderback, rimetail, bogjaw, duskheron, emberwhelk, mistglass, monolith, stormroc, slagwyrm };
 export const MONSTERS: Record<string, MonsterDef> = Object.fromEntries(Object.entries(ALL_MONSTERS).filter(([, M]) => M.tier <= MAX_TIER));
 const builtIn = (t: number) => Object.values(MONSTERS).filter(M => M.tier === t).length;
 

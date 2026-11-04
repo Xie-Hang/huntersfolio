@@ -97,6 +97,13 @@
     roctalon: claw('#d8d2c4'),
     stormheart: gem(GALE, GOLDHI),
     crowncharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${GALE}" ${S}/><path d="M25 18 L19 29 H24 L21 38 L30 26 H25 L28 18 Z" fill="${GOLDHI}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>`,
+    /* Slagwyrm (Stormspire): ash and magma */
+    slagscale: scale('#8a6a52'),
+    slagspine: `<path d="M8 36 L18 10 L40 30 L32 40 L14 40 Z" fill="${ASH}" ${S}/><path d="M18 24 l6 6 l8 -6" fill="none" stroke="${EMBER}" stroke-width="3" stroke-linecap="round"/>`,
+    slagjaw: fang('#e8a06a'),
+    slagtail: `<path d="M6 30 C16 22 30 22 42 30 C34 36 22 40 6 38 Z" fill="${BONE2}" ${S}/><path d="M12 32 h4 M20 31 h4 M28 31 h4" stroke="${EMBER}" stroke-width="3" stroke-linecap="round"/>`,
+    slagheart: `<circle cx="24" cy="26" r="20" fill="${EMBER}" opacity=".25"/><path d="M24 42 C10 32 6 24 10 16 C14 9 22 10 24 16 C26 10 34 9 38 16 C42 24 38 32 24 42 Z" fill="${ASH}" ${S}/><path d="M16 22 l5 4 l4 -6 l5 6 l3 -3" fill="none" stroke="#f0a85a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`,
+    slagcharm: `${charmTop}<path d="M12 22 L24 14 L36 22 L32 40 L16 40 Z" fill="${ASH}" ${S}/><path d="M18 28 l6 5 l6 -5" fill="none" stroke="${EMBER}" stroke-width="3" stroke-linecap="round"/>`,
     duskcharm: `${charmTop}<path d="M38 22 L12 28 L38 34 Z" fill="${BONE2}" ${S}/><path d="M38 34 L14 38 L38 42 Z" fill="${BONE2}" ${S}/>`,
     bogcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${STONEC}" ${S}/><circle cx="20" cy="25" r="3.5" fill="${MOSS}"/><circle cx="28" cy="31" r="3" fill="${MOSS}"/>`
   };
