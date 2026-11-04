@@ -12,7 +12,7 @@ export const GUARD_RESIST = 0.7;       // armor element resistance multiplier
 export const CHARGE_BREAK = 30;        // damage that breaks a pending charge
 export const CAPTURE_AT = 0.2;         // capture allowed at or below this share of the monster's HP
 /** Pierce's Expose: a hit leaves the part exposed for 2 turns; any weapon's hits there get these bonuses. Tuned by simulation (4 Nov 2026). */
-export const MEND = 6;
+export const MEND = 6, BRACE = 12;
 export const EXPOSE_TURNS = 2, EXPOSE_DMG = 1.15, EXPOSE_BREAK = 2;
 export const DAZE_START = 60, DAZE_STEP = 30, DAZE_LOCK = 2;
 /** each head's meter, for monsters with several heads */
@@ -71,7 +71,7 @@ export function startHunt(s: Save, seed: number, script?: Face[][]): Hunt {
   return h;
 }
 
-export const SWALLOWED = 'Swallowed';
+export const SWALLOWED = 'Swallowed', FROZEN = 'Frozen';
 /** damage it takes to cut your way out once swallowed; Cut counts double, slick armor halves it */
 export const GUT_ESCAPE = 60;
 /** how much each damage type counts toward cutting free: blades slice out, clubs barely dent the gut wall */
@@ -83,6 +83,10 @@ function rollAll(h: Hunt) {
   // swallowed: the last dice are stuck inside the monster until you cut free
   const g = h.mon.gut ?? 0;
   for (let i = 4 - g; i < 4; i++) if (i >= 0) h.dice[i].used = SWALLOWED;
+  // frozen: the first free dice are iced over for this roll only
+  let f = h.mon.frost ?? 0;
+  for (const d of h.dice) if (f > 0 && !d.used) { d.used = FROZEN; f--; }
+  h.mon.frost = 0;
 }
 
 /** Swallow lands: `n` of your dice are stuck until you deal the escape damage. */
@@ -164,6 +168,8 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
   const wasCapturable = canCapture(h);
   const before = { intent: h.intent, threat: intentInfo(h).threat, air: m.air, under: m.under };
   picks.forEach(j => (h.dice[j].used = mv.name));
+  const miss = MD.dodge?.(h, w);
+  if (miss) { log(h, miss); return { dmg: 0, broke: false }; }
   if (m.plating > 0) {
     // Ice plating: the hit is spent on the ice. Charge and whetstone bonuses are used up too.
     const strip = Math.min(m.plating, iceBreak(w));
@@ -175,6 +181,7 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
   }
   let dmg = mv.dmg; const notes: string[] = [];
   if (mv.flow && w.type === 'Cut' && charmFx(h) === 'lightCut') { dmg += LIGHT_CUT_BONUS; notes.push('Rime Charm +4'); }
+  const charged = h.chargeReady;
   if (h.chargeReady) { dmg *= 2; h.chargeReady = false; notes.push('charged ×2'); }
   if (h.whet) { dmg = Math.round(dmg * (1 + h.whet)); notes.push(`whetted +${Math.round(h.whet * 100)}%`); h.whet = 0; }
   const em = elemMult(w.elem, h.mid);
@@ -204,7 +211,7 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
     const e = pdef.eff[w.type];
     if (!reach) log(h, `The ${pdef.name.toLowerCase()} is out of reach right now. Only Pierce gets there.`);
     else if (e > 0) {
-      p.hp = Math.max(0, p.hp - Math.round(dmg * e * (mv.part ?? 1) * (exposed ? EXPOSE_BREAK : 1)));
+      p.hp = Math.max(0, p.hp - Math.round(dmg * e * (mv.part ?? 1) * (exposed ? EXPOSE_BREAK : 1) * (charged && charmFx(h) === 'chargeBreak' ? 2 : 1)));
       if (p.hp === 0) {
         p.broken = true; h.stats.broken++; broke = true; log(h, pdef.brk, 'ember');
         if (h.arm.breakHeal) { const heal = Math.min(25, h.pmax - h.php); h.php += heal; h.rerolls++; log(h, `${h.arm.name}: +${heal} HP, +1 reroll.`, 'gold'); }
@@ -262,6 +269,7 @@ export function charge(h: Hunt, idx: number[]): boolean {
   const sel = freeOnly(h, idx); if (sel.length !== chargeDice(h) || h.chargePending || h.over) return false;
   sel.forEach(i => (h.dice[i].used = 'Charge')); h.chargePending = true;
   log(h, 'You plant your feet and build up power.');
+  if (h.arm.braced) { h.guard += BRACE; log(h, `${h.arm.name}: +${BRACE} guard while you charge.`, 'gold'); }
   return true;
 }
 export function swap(h: Hunt, idx: number[]): boolean {

@@ -62,6 +62,8 @@ export interface ArmorDef {
   steady?: boolean;
   /** you heal a little at the end of every monster turn */
   mend?: boolean;
+  /** charging also guards */
+  braced?: boolean;
   craft: Cost;
 }
 
@@ -77,7 +79,7 @@ export interface ItemDef {
   effect: ItemEffect;
 }
 
-export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose';
+export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak';
 export interface CharmDef {
   /** monster tier it comes from (default 1); gear above the edition's top tier isn't in that build */
   tier?: number;
@@ -171,6 +173,11 @@ export interface MonsterState {
   /** regenerators: in its shell (your hits deal half), and turns left on the burning slime on you */
   shell?: number;
   slime?: number;
+  /** mirage: turns left on its images (only the first hit each turn lands), and your hits so far this turn */
+  mirage?: number;
+  hits?: number;
+  /** dice frozen solid on your next roll */
+  frost?: number;
 }
 
 export interface WeaponInst extends WeaponDef { lv: number }
@@ -260,6 +267,8 @@ export interface MonsterDef {
   resolve(h: Hunt, type: string, landed?: boolean): string | null;
   /** extra modifiers for a hit on a part */
   hitMod?(h: Hunt, partId: string, w: WeaponInst): { mult: number; note: string } | null;
+  /** the hit strikes an image instead (dice spent, no damage, no daze); return the log line, or null if it lands */
+  dodge?(h: Hunt, w: WeaponInst): string | null;
   /** can this weapon reach this part right now? */
   reachable?(h: Hunt, partId: string, w: WeaponInst): boolean;
   /** pin interaction; returns a log line when it lands */

@@ -71,6 +71,13 @@
     whelkfoot: `<path d="M6 36 C6 28 14 24 24 24 C34 24 42 28 42 36 C42 40 6 40 6 36 Z" fill="${BONE}" ${S}/><path d="M12 32 l3 4 M20 30 l3 5 M28 30 l3 5 M36 32 l2 4" stroke="${INK}" stroke-width="2" stroke-linecap="round" opacity=".55"/><path d="M8 40 C16 44 30 44 40 40" fill="none" stroke="#f0a85a" stroke-width="3" stroke-linecap="round"/>`,
     emberpearl: `<circle cx="24" cy="24" r="20" fill="${EMBER}" opacity=".25"/><circle cx="24" cy="25" r="13" fill="${EMBER}" ${S}/><circle cx="19" cy="20" r="4" fill="${GOLDHI}"/><path d="M14 30 C18 34 30 34 34 30" fill="none" stroke="${INK}" stroke-width="2" opacity=".45"/>`,
     whelkcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="#9a7a5e" ${S}/><path d="M24 28 C26 28 27 26 25 25 C22 23 19 26 20 29 C21 33 28 34 31 30" fill="none" stroke="${EMBER}" stroke-width="3" stroke-linecap="round"/>`,
+    /* Mistglass (Mirewood): frost glass with white light */
+    glassdust: `<path d="M8 38 L14 24 L22 30 L20 42 Z" fill="#cfe3ec" ${S}/><path d="M22 30 L30 14 L38 24 L34 40 L20 42 Z" fill="${FROST}" ${S}/><path d="M34 40 L38 24 L44 34 Z" fill="#cfe3ec" ${S}/><path d="M30 14 L28 34 M14 24 L18 36" stroke="#fff" stroke-width="2" opacity=".85"/><path d="M12 6 L13.5 10.5 L18 12 L13.5 13.5 L12 18 L10.5 13.5 L6 12 L10.5 10.5 Z" fill="#fff" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/>`,
+    glasstail: `<path d="M8 40 L26 8 L30 22 L40 14 L34 30 L44 32 L20 42 Z" fill="${FROST}" ${S}/><path d="M26 8 L22 34 L40 14" fill="none" stroke="#fff" stroke-width="2" opacity=".85"/>`,
+    glassfacet: `<path d="M8 22 L20 8 L38 10 L42 28 L28 42 L10 36 Z" fill="#cfe3ec" ${S}/><path d="M20 8 L24 24 L42 28 M24 24 L10 36 M24 24 L28 42" fill="none" stroke="#fff" stroke-width="2.2" opacity=".9"/>`,
+    glasseye: `<circle cx="24" cy="24" r="20" fill="#7fd4ff" opacity=".22"/><path d="M6 24 C14 12 34 12 42 24 C34 36 14 36 6 24 Z" fill="#cfe3ec" ${S}/><circle cx="24" cy="24" r="7" fill="#7fd4ff" ${S} stroke-width="2.4"/><circle cx="24" cy="24" r="3" fill="${INK}"/>`,
+    mirrorheart: gem('#cfe3ec', '#7fd4ff'),
+    glasscharm: `${charmTop}<path d="M14 26 L24 14 L34 26 L24 42 Z" fill="#cfe3ec" ${S}/><path d="M24 14 V42 M14 26 H34" stroke="#fff" stroke-width="2" opacity=".85"/>`,
     duskcharm: `${charmTop}<path d="M38 22 L12 28 L38 34 Z" fill="${BONE2}" ${S}/><path d="M38 34 L14 38 L38 42 Z" fill="${BONE2}" ${S}/>`,
     bogcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${STONEC}" ${S}/><circle cx="20" cy="25" r="3.5" fill="${MOSS}"/><circle cx="28" cy="31" r="3" fill="${MOSS}"/>`
   };

@@ -80,9 +80,9 @@ export function median(xs: number[]): number {
  *  against it (different types if possible), its counter item when they can afford one, and they spend
  *  everything at the Forge between hunts. Two failures in a row against a new monster → one farming hunt
  *  on the easiest monster already beaten. Returns hunts, turns and fails. */
-export function tier1Campaign(seed: number, policy: Policy, maxHunts = 80) {
+export function tier1Campaign(seed: number, policy: Policy, maxHunts = 80, tiers: number[] = [1]) {
   const s = E.newSave();
-  const T1 = Object.values(E.MONSTERS).filter(M => M.tier === 1).map(M => M.id);
+  const T1 = Object.values(E.MONSTERS).filter(M => tiers.includes(M.tier)).map(M => M.id);
   const COUNTER: Record<string, string> = { galeshrike: 'net', cinderback: 'blast', rimetail: 'firepot' };
   let turns = 0, fails = 0, streak = 0, hunts = 0;
   const firstWin: Record<string, number> = {};

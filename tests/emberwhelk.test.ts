@@ -14,10 +14,10 @@ describe('Tier 2: the Emberwhelk', () => {
   it('heals every turn until its gills break', () => {
     const h = E.startHunt(ready(), 2);
     h.mon.hp = 300; h.intent = 'rear'; E.endTurn(h);
-    expect(h.mon.hp).toBe(318);
+    expect(h.mon.hp).toBe(315);
     h.mon.parts.gills.broken = true; h.mon.parts.gills.hp = 0;
     E.endTurn(h); // the lunge
-    expect(h.mon.hp).toBe(318);
+    expect(h.mon.hp).toBe(315);
   });
   it('Molten Slime burns you for 2 more turns, and never knocks you out', () => {
     const h = E.startHunt(ready(), 3);
@@ -54,6 +54,6 @@ describe('Tier 2: the Emberwhelk', () => {
     const pierce = matchup({ weapons: [['tusk', 2], ['bow', 2]], armor: 'vest', armorLv: 2, item: 'salve', items: 3, target: 'emberwhelk' }, { skill: 'casual', capture: false }, 200, 17);
     const none = matchup({ weapons: [['blade', 3], ['tusk', 2]], armor: 'vest', armorLv: 2, item: 'salve', items: 3, target: 'emberwhelk' }, { skill: 'casual', capture: false }, 200, 17);
     expect(pierce.win).toBeGreaterThan(0.8);
-    expect(pierce.win - none.win).toBeGreaterThan(0.3);
+    expect(pierce.win - none.win).toBeGreaterThan(0.25);
   });
 });

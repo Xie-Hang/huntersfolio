@@ -3,8 +3,8 @@
 // break the gills: Pierce's Expose (×2 toward breaks) gets there fastest.
 //   Spit Cinders; Molten Slime (a hit, then the slime burns you for 2 turns); Shell Retreat (it pulls in: your hits
 //   deal half until its next action, and it heals); Rears Back → Shell Lunge (the big hit).
-// Tuned by simulation (6 Nov 2026, casual): neutral gear 87% with a Pierce weapon (bow + maul), 38% without;
-// Stone gear (its weakness) 93% with Pierce, 71% without.
+// Tuned by simulation (6 Nov 2026, casual): neutral gear 87% with a Pierce weapon (bow + maul), 52% without
+// (regen softened from 18 to 15 after a Tier 1+2 campaign sim showed casual players stalling here).
 // Parts: Gills (Pierce; stops the healing), Shell (Blunt; the daze part; stops Shell Retreat; rare Ember Pearl),
 // Foot (Cut; stops Molten Slime).
 import type { Intent, MonsterDef } from '../../types';
@@ -76,7 +76,7 @@ export const emberwhelk: MonsterDef = {
     }
     if (type === 'retreat') { m.shell = 1; const heal = Math.min(30, m.max - m.hp); m.hp += heal; lines.push(`It heals ${heal} inside its shell.`); }
     if (!m.parts.gills.broken && m.hp > 0) {
-      const heal = Math.min(m.enraged ? 26 : 18, m.max - m.hp);
+      const heal = Math.min(m.enraged ? 22 : 15, m.max - m.hp);
       if (heal > 0) { m.hp += heal; lines.push(`Its gills flare. It heals ${heal}.`); }
     }
     if (type === 'dazed') lines.push('Its eye stalks lift again.');

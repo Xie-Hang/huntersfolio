@@ -9,6 +9,7 @@
   import Bogjaw from './plates/Bogjaw.svelte';
   import Duskheron from './plates/Duskheron.svelte';
   import Emberwhelk from './plates/Emberwhelk.svelte';
+  import Mistglass from './plates/Mistglass.svelte';
   import { ALL_MONSTERS } from '../../engine';
   import Scene from './Scene.svelte';
   /** scene: draw Ashfall Ridge behind it (the big plates; not the small Hunt Board thumbnails) */
@@ -24,6 +25,7 @@
 {:else if mon === 'bogjaw'}<Bogjaw {hunt} />
 {:else if mon === 'duskheron'}<Duskheron {hunt} />
 {:else if mon === 'emberwhelk'}<Emberwhelk {hunt} />
+{:else if mon === 'mistglass'}<Mistglass {hunt} />
 {/if}
 </div>
 
