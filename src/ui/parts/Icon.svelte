@@ -64,6 +64,13 @@
     duskpinion: feather(GALE, true),
     duskcrest: `<path d="M8 40 L14 12 L20 30 L26 6 L31 30 L38 14 L40 40 Z" fill="${GALE}" ${S}/><path d="M6 40 H42" ${S} fill="none"/><circle cx="24" cy="34" r="4" fill="${INK}"/>`,
     twilightquill: `<circle cx="24" cy="24" r="20" fill="${GALE}" opacity=".22"/>${feather('#5f8fa6', true)}`,
+    /* Emberwhelk (Mirewood): ember accent on a dark shell */
+    whelkscale: scale('#9a7a5e'),
+    whelkgill: `<path d="M24 42 L10 14 C14 10 18 12 20 16 L24 8 C26 10 28 12 28 16 C30 12 34 10 38 14 Z" fill="#c9604a" ${S}/><path d="M24 40 L16 18 M24 40 V14 M24 40 L32 18" fill="none" stroke="${INK}" stroke-width="2" opacity=".55"/>`,
+    whelkshell: `<circle cx="24" cy="25" r="17" fill="#9a7a5e" ${S}/><path d="M24 25 C27 25 28 22 26 20 C23 17 18 20 18 25 C18 31 25 34 30 31 C36 27 35 17 28 13" fill="none" stroke="${EMBER}" stroke-width="3.4" stroke-linecap="round"/><path d="M24 25 C27 25 28 22 26 20 C23 17 18 20 18 25 C18 31 25 34 30 31 C36 27 35 17 28 13" fill="none" stroke="${INK}" stroke-width="1.6" stroke-linecap="round"/>`,
+    whelkfoot: `<path d="M6 36 C6 28 14 24 24 24 C34 24 42 28 42 36 C42 40 6 40 6 36 Z" fill="${BONE}" ${S}/><path d="M12 32 l3 4 M20 30 l3 5 M28 30 l3 5 M36 32 l2 4" stroke="${INK}" stroke-width="2" stroke-linecap="round" opacity=".55"/><path d="M8 40 C16 44 30 44 40 40" fill="none" stroke="#f0a85a" stroke-width="3" stroke-linecap="round"/>`,
+    emberpearl: `<circle cx="24" cy="24" r="20" fill="${EMBER}" opacity=".25"/><circle cx="24" cy="25" r="13" fill="${EMBER}" ${S}/><circle cx="19" cy="20" r="4" fill="${GOLDHI}"/><path d="M14 30 C18 34 30 34 34 30" fill="none" stroke="${INK}" stroke-width="2" opacity=".45"/>`,
+    whelkcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="#9a7a5e" ${S}/><path d="M24 28 C26 28 27 26 25 25 C22 23 19 26 20 29 C21 33 28 34 31 30" fill="none" stroke="${EMBER}" stroke-width="3" stroke-linecap="round"/>`,
     duskcharm: `${charmTop}<path d="M38 22 L12 28 L38 34 Z" fill="${BONE2}" ${S}/><path d="M38 34 L14 38 L38 42 Z" fill="${BONE2}" ${S}/>`,
     bogcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${STONEC}" ${S}/><circle cx="20" cy="25" r="3.5" fill="${MOSS}"/><circle cx="28" cy="31" r="3" fill="${MOSS}"/>`
   };

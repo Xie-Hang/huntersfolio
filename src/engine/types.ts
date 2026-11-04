@@ -60,6 +60,8 @@ export interface ArmorDef {
   slick?: boolean;
   /** your guard is never halved (gusts, screeches) */
   steady?: boolean;
+  /** you heal a little at the end of every monster turn */
+  mend?: boolean;
   craft: Cost;
 }
 
@@ -75,7 +77,7 @@ export interface ItemDef {
   effect: ItemEffect;
 }
 
-export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet';
+export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose';
 export interface CharmDef {
   /** monster tier it comes from (default 1); gear above the edition's top tier isn't in that build */
   tier?: number;
@@ -166,6 +168,9 @@ export interface MonsterState {
   reel?: Record<string, number>;
   /** a one-turn debuff on you is coming (e.g. a screech halves your guard next turn) */
   screech?: number;
+  /** regenerators: in its shell (your hits deal half), and turns left on the burning slime on you */
+  shell?: number;
+  slime?: number;
 }
 
 export interface WeaponInst extends WeaponDef { lv: number }

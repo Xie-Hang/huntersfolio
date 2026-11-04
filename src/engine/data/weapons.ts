@@ -55,7 +55,10 @@ list.push(
   { id: 'miremaul', tier: 2, name: 'Mirestone Maul', type: 'Blunt', elem: 'Stone', kind: 'Maul', note: 'A Mirestone still slick with bog water, bound to the head.', moves: MAUL, mult: 1.6, from: 'boulder', cost: { coin: 700, mirestone: 1, wartstone: 2, bogskin: 3 } },
   { id: 'duskblade', tier: 2, name: 'Duskstorm Blade', type: 'Cut', elem: 'Gale', kind: 'Curved blade', note: 'A Duskheron beak ground into a hooked edge.', moves: BLADE, mult: 1.6, from: 'storm', cost: { coin: 700, duskbeak: 2, duskpinion: 1, duskplume: 3 } },
   { id: 'twilightbow', tier: 2, name: 'Twilight Bow', type: 'Pierce', elem: 'Gale', kind: 'Bow', note: 'Fletched with a Twilight Quill. Its arrows fly in pairs.', moves: BOW, mult: 1.6, from: 'windbow', cost: { coin: 700, twilightquill: 1, duskpinion: 2, duskplume: 3 } },
-  { id: 'wartbow', tier: 2, name: 'Wartstone Bow', type: 'Pierce', elem: 'Stone', kind: 'Bow', note: 'Arrowheads chipped from the Bogjaw’s stone warts.', moves: BOW, mult: 1.6, from: 'ridgebow', cost: { coin: 700, wartstone: 2, throatsac: 1, bogskin: 3 } }
+  { id: 'wartbow', tier: 2, name: 'Wartstone Bow', type: 'Pierce', elem: 'Stone', kind: 'Bow', note: 'Arrowheads chipped from the Bogjaw’s stone warts.', moves: BOW, mult: 1.6, from: 'ridgebow', cost: { coin: 700, wartstone: 2, throatsac: 1, bogskin: 3 } },
+  { id: 'whelkedge', tier: 2, name: 'Whelkfire Edge', type: 'Cut', elem: 'Ember', kind: 'Longsword', note: 'A spiral of whelk shell, still glowing along the edge.', moves: BLADE, mult: 1.6, from: 'cinderedge', cost: { coin: 700, whelkfoot: 2, whelkgill: 1, whelkscale: 3 } },
+  { id: 'pearlhammer', tier: 2, name: 'Pearlforge Hammer', type: 'Blunt', elem: 'Ember', kind: 'Maul', note: 'An Ember Pearl set in a whelk-shell head. It never cools.', moves: MAUL, mult: 1.6, from: 'kiln', cost: { coin: 700, emberpearl: 1, whelkshell: 2, whelkscale: 3 } },
+  { id: 'gillbow', tier: 2, name: 'Gillfire Bow', type: 'Pierce', elem: 'Ember', kind: 'Bow', note: 'Strung with dried whelk gill. Its arrows smoulder.', moves: BOW, mult: 1.6, from: 'ventfire', cost: { coin: 700, whelkgill: 2, whelkshell: 1, whelkscale: 3 } }
 );
 export const WEAPONS: Record<string, WeaponDef> = Object.fromEntries(list.filter(w => (w.tier ?? 1) <= MAX_TIER).map(w => [w.id, w]));
 

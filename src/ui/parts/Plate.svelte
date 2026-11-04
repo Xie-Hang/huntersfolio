@@ -8,6 +8,7 @@
   import Rimetail from './plates/Rimetail.svelte';
   import Bogjaw from './plates/Bogjaw.svelte';
   import Duskheron from './plates/Duskheron.svelte';
+  import Emberwhelk from './plates/Emberwhelk.svelte';
   import { ALL_MONSTERS } from '../../engine';
   import Scene from './Scene.svelte';
   /** scene: draw Ashfall Ridge behind it (the big plates; not the small Hunt Board thumbnails) */
@@ -22,6 +23,7 @@
 {:else if mon === 'rimetail'}<Rimetail {hunt} />
 {:else if mon === 'bogjaw'}<Bogjaw {hunt} />
 {:else if mon === 'duskheron'}<Duskheron {hunt} />
+{:else if mon === 'emberwhelk'}<Emberwhelk {hunt} />
 {/if}
 </div>
 

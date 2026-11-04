@@ -12,6 +12,7 @@ export const GUARD_RESIST = 0.7;       // armor element resistance multiplier
 export const CHARGE_BREAK = 30;        // damage that breaks a pending charge
 export const CAPTURE_AT = 0.2;         // capture allowed at or below this share of the monster's HP
 /** Pierce's Expose: a hit leaves the part exposed for 2 turns; any weapon's hits there get these bonuses. Tuned by simulation (4 Nov 2026). */
+export const MEND = 6;
 export const EXPOSE_TURNS = 2, EXPOSE_DMG = 1.15, EXPOSE_BREAK = 2;
 export const DAZE_START = 60, DAZE_STEP = 30, DAZE_LOCK = 2;
 /** each head's meter, for monsters with several heads */
@@ -230,7 +231,7 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
   }
   if (mv.expose && reach && !p.broken && m.hp > 0) {
     if (!p.exposed) log(h, `Expose: the ${pdef.name.toLowerCase()} ${pdef.name.endsWith('s') ? 'are' : 'is'} exposed. Hits there deal +15% and count double toward the break for 2 turns.`, 'gold');
-    p.exposed = EXPOSE_TURNS;
+    p.exposed = EXPOSE_TURNS + (charmFx(h) === 'longExpose' ? 1 : 0);
   }
   if (mv.pin) { const t = MD.onPin?.(h); if (t) log(h, t, 'gold'); }
   if (m.hp > 0) { const t = MD.onHit?.(h, mv, w); if (t) log(h, t, 'gold'); }
@@ -331,6 +332,7 @@ export function endTurn(h: Hunt): TurnResult {
   if (m.molten > 0) m.molten--;
   for (const part of Object.values(m.parts)) if (part.exposed > 0) part.exposed--;
   if (h.php <= 0) { finish(h, 'lose'); return { taken }; }
+  if (h.arm.mend && h.php < h.pmax) { const heal = Math.min(MEND, h.pmax - h.php); h.php += heal; log(h, `Your armor knits shut: +${heal} HP.`, 'gold'); }
   if (h.chargeReady) log(h, 'Your unused charge fades.');
   h.turn++; h.chargeReady = h.chargePending; h.chargePending = false; h.guard = 0; h.itemUsed = false;
   rollAll(h);
