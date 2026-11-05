@@ -44,7 +44,7 @@
       <h2 style="margin:0;font-weight:600">{M.name} is {h.captured ? 'captured' : 'down'}</h2>
       {#if M.promotion && (game.save.record[M.id]?.wins ?? 0) === 1}
         <!-- the first win of a promotion hunt: the rank-up moment -->
-        <div class="promoted" role="status"><RankMedal rank={M.promotion} size={48} /><span><b>Promoted!</b> You're now a rank {M.promotion} hunter.{M.promotion !== 'C' ? ' New hunts are open on the Hunt Board.' : ' Low Rank is yours.'}</span></div>
+        <div class="promoted" role="status"><RankMedal rank={M.promotion} size={52} /><span><b>Promoted!</b> You're now a rank {M.promotion} hunter.{M.promotion !== 'C' ? ' New hunts are open on the Hunt Board.' : ' Low Rank is yours.'}</span></div>
       {/if}
       <span class="coin">+{r.coin} coin</span>
       <div>

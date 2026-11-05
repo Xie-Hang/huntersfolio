@@ -32,7 +32,7 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .top-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .rankseal{display:inline-flex;align-items:center;gap:8px;cursor:default;padding-right:4px}
 .rankseal .rl{display:flex;flex-direction:column;line-height:1.15;font-size:var(--fs-sm);color:var(--muted)}
-.rankseal .rl span:last-child{color:var(--gold-hi);font-weight:600}
+.rankseal .rl span:last-child{color:var(--fg);font-weight:600}
 .purse{font-family:var(--f-body);font-variant-numeric:tabular-nums;font-size:var(--fs-sm);color:var(--gold-hi);padding:8px 12px;border:1px solid var(--line-2);border-radius:3px}
 .nav{display:flex;gap:6px;flex-wrap:wrap}
 .iconbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;background:transparent;border:1px solid var(--line-2);border-radius:3px;color:var(--soft);cursor:pointer}

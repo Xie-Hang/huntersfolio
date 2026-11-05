@@ -73,7 +73,7 @@
     </div>
     {#each sections as sec (sec.rank)}
       <div class="ranksec" class:current={sec.rank === myRank}>
-        <h3 class="rankhead"><RankMedal rank={sec.rank} size={42} dim={sec.rank !== myRank} /><span>Rank {sec.rank} · {E.RANK_REGION[sec.rank]}</span><span class="label rs">{rankState(sec.rank)}</span></h3>
+        <h3 class="rankhead"><RankMedal rank={sec.rank} size={44} dim={sec.rank !== myRank} /><span>Rank {sec.rank} · {E.RANK_REGION[sec.rank]}</span><span class="label rs">{rankState(sec.rank)}</span></h3>
         {#each sec.groups as g (g.t)}
           <div class="region">
             <h4 class="group">{E.TIERS[g.t]}{#if sec.optional.includes(g.t)}<span class="opt"> · optional</span>{/if}</h4>
