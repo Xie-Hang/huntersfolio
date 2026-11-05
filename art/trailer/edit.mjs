@@ -10,7 +10,7 @@ const BAR = 8 / 3;
 // Re-measured 6 Nov 2026 for the current hunt layout (plate top-left of the stage, telegraph beside it), each 16:9:
 //   plate = the monster art, tele = the telegraph panel, wide = the play area below the header, page = with the header.
 const C = {
-  plate: [872, 424, 768, 432], tele: [1636, 309, 1056, 594], wide: [288, 240, 3264, 1836], page: [288, 43, 3264, 1836]
+  plate: [828, 486, 884, 498], tele: [1659, 448, 990, 557], wide: [288, 290, 3264, 1836], page: [288, 43, 3264, 1836]
 };
 // [kind, source, in, out, crop, zoomFrom, zoomTo]; card: ['card', name, seconds]
 const EDIT = [

@@ -38,7 +38,7 @@ const SHOTS = {
       s.tips = ['begin','g-next','g-hp','aim','move','g-blank','guard','end','g-pick','reroll','g-free','windup','charge','swap','open','mud','enraged','item','capture','forge','track','bounties','broke','sell']; s.loadout = { ...s.loadout, bounty: null };
       localStorage.setItem('huntersfolio-save', JSON.stringify(s)); localStorage.removeItem('huntersfolio-hunt');
       localStorage.setItem('huntersfolio-settings', JSON.stringify({ music: 0, sfx: 0, fullscreen: false, uiSize: 1, tips: false })); });
-    await p.evaluate(() => { const s = JSON.parse(localStorage.getItem('huntersfolio-save')); s.record.gorehorn = { hunts: 3, wins: 2, captures: 1, breaks: {} }; s.record.galeshrike = { hunts: 1, wins: 1, captures: 0, breaks: {} }; s.mats = { ...s.mats, tusk: 3, hide: 2, sinew: 1 }; s.coin = 640; s.tracked = null; localStorage.setItem('huntersfolio-save', JSON.stringify(s)); });
+    await p.evaluate(() => { const s = JSON.parse(localStorage.getItem('huntersfolio-save')); s.record.gorehorn = { hunts: 3, wins: 2, captures: 1, breaks: {} }; s.record.galeshrike = { hunts: 1, wins: 1, captures: 0, breaks: {} }; s.mats = { ...s.mats, tusk: 3, hide: 2, sinew: 1 }; s.coin = 640; s.tracked = null; s.hunts = 4; localStorage.setItem('huntersfolio-save', JSON.stringify(s)); });
     await p.reload(); await p.waitForTimeout(400);
     if (sh.hunt) {
       await p.click('[data-coach="nav-board"]').catch(() => {});

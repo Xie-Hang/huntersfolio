@@ -10,3 +10,5 @@
 6. `ffmpeg -i out/picture.mp4 -i out/music.wav -map 0:v -map 1:a -af "loudnorm=I=-14:TP=-1.5:LRA=9,aresample=48000" -c:v libx264 -preset slow -crf 17 -pix_fmt yuv420p -c:a aac -b:a 192k -t 64 -movflags +faststart out/Hunters-Folio-trailer.mp4`
 
 The edit list in `edit.mjs` says which shot, which seconds and which crop go where. To use real music, drop step 5 and mux your track instead; cuts land on bar lines at 90 BPM.
+
+Re-recorded 6 Nov 2026 on the current build: setup writes the save directly (the old menu path is gone), shots guard their spare dice (ending a turn with dice unspent now asks to confirm), crops in edit.mjs re-measured from a recorded frame, no build version (init script hides `.sub .build`).
