@@ -22,7 +22,7 @@ export const ARMORS: Record<string, ArmorDef> = Object.fromEntries(armors.filter
 const items: ItemDef[] = [
   { id: 'salve', name: 'Bitterroot Salve', max: 3, price: 30, desc: 'Heal 30.', effect: 'heal30' },
   // Playtest (Nov 2026): capture was free and safe. A snare costs coin, and it can be torn free.
-  { id: 'snare', name: 'Snare', max: 2, price: 40, desc: 'Needed to capture. You carry up to 2 on every hunt, outside your item slot. Each attempt uses one.', effect: 'snare', pouch: true },
+  { id: 'snare', name: 'Snare', max: 2, price: 40, desc: 'Needed to capture. Carried on every hunt outside your item slot; each attempt uses one.', effect: 'snare', pouch: true },
   { id: 'smoke', name: 'Smoke Pouch', max: 2, price: 50, desc: "The monster's next attack misses.", effect: 'smoke' },
   { id: 'whet', name: 'Whetstone', max: 2, price: 40, desc: 'Your next hit deals +50%.', effect: 'whet50' },
   { id: 'net', name: 'Weighted Net', max: 2, price: 50, desc: 'Brings an airborne monster down. It loses its action.', effect: 'net' },

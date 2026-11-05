@@ -217,6 +217,13 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .stepper input{width:44px;height:36px;text-align:center;background:transparent;border:0;border-left:1px solid var(--line-2);border-right:1px solid var(--line-2);color:var(--fg);font:inherit;-moz-appearance:textfield}
 .stepper input::-webkit-outer-spin-button,.stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .price{font-size:var(--fs-sm);color:var(--gold-hi);white-space:nowrap}
+/* Shop rows: every control keeps a fixed width so they line up row to row and don't shift as the totals change
+   (Mekkman: the quantity controls moved with the Buy button's text) */
+.srow .ctl{flex-wrap:nowrap}
+.srow .ctl .price{min-width:64px;text-align:right;font-variant-numeric:tabular-nums}
+.srow .ctl .btn.primary{min-width:188px;text-align:center;font-variant-numeric:tabular-nums}
+.stepper input{font-variant-numeric:tabular-nums}
+@media (max-width:600px){.srow .ctl{flex-wrap:wrap}.srow .ctl .btn.primary{min-width:0}}
 .sellbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--raise)}
 @media (max-width:900px){.campgrid,.towngrid{grid-template-columns:minmax(0,1fr)}}
 
