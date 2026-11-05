@@ -1,6 +1,8 @@
 // Captures the in-game woodcut plates in chosen poses as transparent PNGs (for achievement icons and other art).
 //   node art/ach2/capture.cjs   (preview server on :4173)   → art/ach2/poses/<name>.png
-const { chromium } = require('playwright'); const fs = require('fs'); const path = require('path');
+const { chromium } = require('playwright');
+// collateral (store art, achievement icons): never show the build version
+const COLLATERAL_CSS = '.sub .build{display:none!important}'; const fs = require('fs'); const path = require('path');
 const OUT = path.join(__dirname, 'poses'); fs.mkdirSync(OUT, { recursive: true });
 const ONLY = process.argv.slice(2);
 const POSES = {
@@ -38,7 +40,7 @@ const POSES = {
       localStorage.setItem('huntersfolio-hunt', JSON.stringify(h));
     }, st);
     await cdp.send('Animation.setPlaybackRate', { playbackRate: 1 });
-    await p.reload(); await p.waitForTimeout(1600);
+    await p.reload(); await p.addStyleTag({ content: COLLATERAL_CSS }); await p.waitForTimeout(1600);
     await cdp.send('Animation.setPlaybackRate', { playbackRate: 0 });
     await p.addStyleTag({ content: '.plate{background:transparent!important;border-color:transparent!important} body,html{background:transparent!important} svg.wc > path:first-of-type{opacity:0} svg.scene{display:none!important}' });
     const el = await p.$('.plate svg.wc');

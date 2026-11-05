@@ -54,7 +54,7 @@
   const sub = $derived.by(() => {
     const v = game.view, h = game.hunt;
     const label = v === 'hunt' && h ? E.MONSTERS[h.mid].short : NAV.find(n => n[0] === v)?.[1] ?? '';
-    return `${BUILD} · ${label}${v === 'hunt' && h ? ` · Turn ${h.turn}` : ''} · Hunts ${game.save.hunts}${game.newerSave ? ' · Not saving' : ''}`;
+    return `${label}${v === 'hunt' && h ? ` · Turn ${h.turn}` : ''} · Hunts ${game.save.hunts}${game.newerSave ? ' · Not saving' : ''}`;
   });
 
   $effect(() => { if (settingsOpen) { setToast = ''; logCount = PL.counts(); } });
@@ -107,7 +107,8 @@
   <header class="top">
     <div>
       <h1 aria-label="Hunter's Folio"><span class="hn">Hunter’s</span> <span>Folio</span></h1>
-      <div class="sub">{sub}</div>
+      <!-- the build version has its own span so collateral captures can hide it (Mekkman, Nov 2026: no build version on store art) -->
+      <div class="sub"><span class="build">{BUILD} · </span>{sub}</div>
     </div>
     <div class="top-right">
       {#if !game.inHunt}

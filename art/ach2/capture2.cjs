@@ -1,6 +1,8 @@
 // Captures the changed Ashfall Ridge and Sovereign plates (Nov 2026) from a built single-file game.
 //   node art/ach2/capture2.cjs <path to test.html>   → art/ach2/poses/<name>.png
-const { chromium } = require('playwright'); const fs = require('fs'); const path = require('path');
+const { chromium } = require('playwright');
+// collateral (store art, achievement icons): never show the build version
+const COLLATERAL_CSS = '.sub .build{display:none!important}'; const fs = require('fs'); const path = require('path');
 const OUT = path.join(__dirname, 'poses'); const FILE = process.argv[2];
 const POSES = {
   squall_gather: ['squallhorn', { intent: 'gather', mon: { wind: 2 } }, '.plate .variant'],
@@ -22,7 +24,7 @@ const POSES = {
     await p.reload(); await p.waitForTimeout(300); await p.click('[data-coach="begin"]'); await p.waitForTimeout(400);
     await p.evaluate(st => { const h = JSON.parse(localStorage.getItem('huntersfolio-hunt')); h.intent = st.intent; h.target = '__none'; Object.assign(h.mon, st.mon || {}); if (st.over) { h.over = st.over; h.mon.hp = 0; } localStorage.setItem('huntersfolio-hunt', JSON.stringify(h)); }, st);
     await cdp.send('Animation.setPlaybackRate', { playbackRate: 1 });
-    await p.reload(); await p.waitForTimeout(1600);
+    await p.reload(); await p.addStyleTag({ content: COLLATERAL_CSS }); await p.waitForTimeout(1600);
     await cdp.send('Animation.setPlaybackRate', { playbackRate: 0 });
     await p.addStyleTag({ content: '.plate{background:transparent!important;border-color:transparent!important} body,html{background:transparent!important} svg.wc > path:first-of-type{opacity:0} svg.scene{display:none!important} .scene{display:none!important} .panel,.stage,.plate-stage,.stagebody,.wrap,main,#app{background:transparent!important;box-shadow:none!important}' });
     const el = await p.$(sel); await el.screenshot({ path: path.join(OUT, `${name}.png`), omitBackground: true });
