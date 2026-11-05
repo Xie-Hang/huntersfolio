@@ -45,6 +45,8 @@ def sovereign(stance='rest'):
     sp = 1 if stance == 'gale' else 0.4
     # in flight the far wing opens too, from behind the top of the body (never across its face)
     if stance == 'gale': out += wing(X(560), Y(240), sp, -1)
+    # folded (at rest, Stone, Frost): the far wing peeks out behind the near one, higher up
+    elif stance != 'ember': out += wing(X(560), Y(215), sp, 1)
     # the slime body: pale green-grey, translucent sheen
     out += f'<path d="{d}" fill="{SLIME}" {S}/>'
     hatch = ''.join(f'M{x} 400 L{x - 60} 560 ' for x in range(160, 900, 16))
