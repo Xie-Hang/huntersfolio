@@ -156,12 +156,15 @@ class Game {
     if (r.broke || r.dmg >= 50) this.shake('mon');
     if (h.rerolls > rr0) this.float('player', `+${h.rerolls - rr0} reroll`, 'heal');
   }
-  guard() { if (this.act(h => E.guard(h, this.sel), ok => ok)) sfx('guard'); }
-  charge() { if (this.act(h => E.charge(h, this.sel), ok => ok)) sfx('charge'); }
-  swap() { if (this.act(h => E.swap(h, this.sel), ok => ok)) sfx('swap'); }
+  /** the selected dice, or the ones the action would take on its own (E.autoDice) */
+  private diceFor(a: E.DiceAction): number[] { return this.sel.length || !this.hunt ? this.sel : E.autoDice(this.hunt, a) ?? []; }
+  guard() { const d = this.diceFor('guard'); if (this.act(h => E.guard(h, d), ok => ok)) sfx('guard'); }
+  charge() { const d = this.diceFor('charge'); if (this.act(h => E.charge(h, d), ok => ok)) sfx('charge'); }
+  swap() { const d = this.diceFor('swap'); if (this.act(h => E.swap(h, d), ok => ok)) sfx('swap'); }
   capture() {
     // the engine logs a reason when capture is blocked (airborne); keep that on screen
-    const r = this.act(h => E.capture(h, this.sel), ok => ok);
+    const d = this.diceFor('capture');
+    const r = this.act(h => E.capture(h, d), ok => ok);
     if (r) sfx('capture');
     if (r === false) this.persist();
   }

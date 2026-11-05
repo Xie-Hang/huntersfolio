@@ -93,3 +93,22 @@ describe('Failed hunts', () => {
     expect(h.reward!.mats).toEqual({ pelt: 1 });
   });
 });
+
+describe('Dice actions pick their own dice (no selection)', () => {
+  const hunt = () => { const s = E.newSave(); s.loadout = { ...s.loadout, target: 'gorehorn' }; return E.startHunt(s, 4); };
+  it('Guard takes the blanks; with none, the dice left if no move can use them', () => {
+    const h = hunt(); dice(h, 'CBTB');
+    expect(E.autoDice(h, 'guard')).toEqual([1, 3]);
+    dice(h, 'CTCT'); expect(E.autoDice(h, 'guard')).toBeNull();
+    h.dice[0].used = 'x' as never; h.dice[1].used = 'x' as never; h.dice[2].used = 'x' as never;
+    expect(E.autoDice(h, 'guard')).toEqual([3]);
+  });
+  it('Charge, Swap and Capture take blanks first, else exactly the dice left, else ask', () => {
+    const h = hunt(); dice(h, 'BCBT');
+    expect(E.autoDice(h, 'charge')).toEqual([0, 2]);
+    expect(E.autoDice(h, 'swap')).toEqual([0]);
+    dice(h, 'CTCB'); expect(E.autoDice(h, 'charge')).toBeNull();
+    h.dice[0].used = 'x' as never; h.dice[1].used = 'x' as never;
+    expect(E.autoDice(h, 'capture')).toEqual([2, 3]);
+  });
+});

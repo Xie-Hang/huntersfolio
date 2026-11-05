@@ -31,12 +31,15 @@
   const em = $derived(E.elemMult(w.elem, h.mid));
   const elemColor = $derived(em > 1 ? 'var(--gale)' : em < 1 ? 'var(--ember-soft)' : 'var(--muted)');
 
-  const gOk = $derived(!over && n >= 1);
+  /** with nothing selected, the dice each action would take on its own (blanks first; see E.autoDice) */
+  const auto = $derived({ guard: n ? null : E.autoDice(h, 'guard'), charge: n ? null : E.autoDice(h, 'charge'), swap: n ? null : E.autoDice(h, 'swap'), capture: n ? null : E.autoDice(h, 'capture') });
+  const usesLine = (d: number[] | null) => !d ? '' : !d.length ? '' : d.every(i => h.dice[i].face === 'B') ? `Uses ${d.length === 1 ? 'your blank' : `${d.length} blanks`}` : `Uses your last ${d.length === 1 ? 'die' : `${d.length} dice`}`;
+  const gOk = $derived(!over && (n >= 1 || !!auto.guard?.length));
   const cd = $derived(E.chargeDice(h));
-  const cOk = $derived(!over && n === cd && !h.chargePending);
-  const sOk = $derived(!over && (n === 1 || (n === 0 && E.freeSwap(h))));
+  const cOk = $derived(!over && !h.chargePending && (n === cd || (n === 0 && !!auto.charge)));
+  const sOk = $derived(!over && (n === 1 || (n === 0 && !!auto.swap)));
   const capLive = $derived(!over && E.canCapture(h));
-  const capOk = $derived(capLive && n === 2 && E.captureReady(h));
+  const capOk = $derived(capLive && E.captureReady(h) && (n === 2 || (n === 0 && !!auto.capture)));
   const capAt = $derived(Math.floor(h.mon.max * E.CAPTURE_AT));
   const iOk = $derived(!over && E.itemUsable(h));
   const freeFaces = $derived(h.dice.filter(d => !d.used).map(d => d.face as string));
@@ -68,15 +71,15 @@
     </button>
   {/each}
 
-  <div class="divider"><span class="label">Or spend selected dice</span><span class="label">{n} selected</span></div>
+  <div class="divider"><span class="label">Or spend dice · blanks first</span><span class="label">{n} selected</span></div>
   <button class="move dash {gOk ? 'ready' : 'no'}" data-coach="guard" aria-disabled={!gOk} onclick={() => gOk && game.guard()}>
-    <span><span class="mn"><Key k="G" />Guard</span><span class="md">{selGuard ? `Blocks ${selGuard} with the selected dice` : `Blocks ${h.arm.guard} per die, ${Math.round(h.arm.guard * (h.arm.blankx2 ? E.VEST_BLANK_GUARD : E.BLANK_GUARD))} per blank`}</span></span><span class="need">Any</span>
+    <span><span class="mn"><Key k="G" />Guard</span><span class="md">{selGuard ? `Blocks ${selGuard} with the selected dice` : auto.guard?.length ? `${usesLine(auto.guard)}: blocks ${auto.guard.reduce((a, i) => a + E.guardOf(h, i), 0)}` : `Blocks ${h.arm.guard} per die, ${Math.round(h.arm.guard * (h.arm.blankx2 ? E.VEST_BLANK_GUARD : E.BLANK_GUARD))} per blank · select dice`}</span></span><span class="need">Any</span>
   </button>
   <button class="move dash {cOk ? 'ready' : 'no'}" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
-    <span><span class="mn"><Key k="C" />Charge</span><span class="md">{chargeRisk ? `The −${inc?.net} coming would break it: guard it under ${E.CHARGE_BREAK} first` : `Your first hit next turn deals double · a hit of ${E.CHARGE_BREAK}+ breaks it`}</span></span><span class="need">{cd}</span>
+    <span><span class="mn"><Key k="C" />Charge</span><span class="md">{chargeRisk ? `The −${inc?.net} coming would break it: guard it under ${E.CHARGE_BREAK} first` : `Your first hit next turn deals double · a hit of ${E.CHARGE_BREAK}+ breaks it`}{!chargeRisk && auto.charge ? ` · ${usesLine(auto.charge)}` : ''}</span></span><span class="need">{cd}</span>
   </button>
   <button class="move dash {sOk ? 'ready' : 'no'}" data-coach="swap" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
-    <span><span class="mn"><Key k="S" pad="RT" /><WeaponArt id={other.id} size={22} />Swap to {other.name}{#if swapCounter}<span class="tag counter">Counter</span>{/if}</span><span class="md">{other.type} · <Elem e={other.elem} />{other.elem ?? 'No element'}</span></span><span class="need">{E.freeSwap(h) ? 'Free' : '1'}</span>
+    <span><span class="mn"><Key k="S" pad="RT" /><WeaponArt id={other.id} size={22} />Swap to {other.name}{#if swapCounter}<span class="tag counter">Counter</span>{/if}</span><span class="md">{other.type} · <Elem e={other.elem} />{other.elem ?? 'No element'}{auto.swap?.length ? ` · ${usesLine(auto.swap)}` : ''}</span></span><span class="need">{E.freeSwap(h) ? 'Free' : '1'}</span>
   </button>
   <!-- Always shown, so players learn it exists before it's available. -->
   <button data-coach="capture" class="move capture {capLive && E.captureReady(h) ? 'live' : ''} {capOk ? 'ready' : 'no'}" aria-disabled={!capOk} onclick={() => capOk && game.capture()}>
@@ -87,6 +90,7 @@
         {:else if !capLive}Unlocks at {capAt} HP or less. Uses a Snare · {h.snares ? `${h.snares} carried` : 'none carried'}
         {:else if !h.snares}You have no Snare left. Buy them in the Shop
         {:else if E.captureBlocked(h)}{E.monsterOf(h).flier ? 'Bring it down first' : 'Drive it to the surface first'}
+        {:else if n === 0 && auto.capture}{usesLine(auto.capture)}. Holds unless its move hits you for {E.CHARGE_BREAK}+ · {h.snares} Snare{h.snares > 1 ? 's' : ''}
         {:else if n !== 2}Select 2 dice. Holds unless its move hits you for {E.CHARGE_BREAK}+ · {h.snares} Snare{h.snares > 1 ? 's' : ''}
         {:else}Holds unless its move hits you for {E.CHARGE_BREAK}+. Double part materials{/if}
       </span>

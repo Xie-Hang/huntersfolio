@@ -300,6 +300,22 @@ export function charge(h: Hunt, idx: number[]): boolean {
 }
 /** a quickswap armor's free swap is still available this turn */
 export const freeSwap = (h: Hunt) => !!h.arm.quickswap && !h.freeSwapUsed;
+export type DiceAction = 'guard' | 'charge' | 'swap' | 'capture';
+/** Dice an action takes when the player hasn't selected any (Mekkman, playtest): blanks first, since they fit no
+ *  move; failing that, the dice left when they're exactly what the action needs (Guard: all of them, if no move can
+ *  use them). null = the player has to choose. Swap with a free swap needs none ([]). */
+export function autoDice(h: Hunt, action: DiceAction): number[] | null {
+  const free = freeDice(h), blanks = free.filter(i => h.dice[i].face === 'B');
+  if (action === 'guard') {
+    if (blanks.length) return blanks;
+    if (free.length && (free.length === 1 || !currentWeapon(h).moves.some((_, i) => canUseMove(h, i)))) return free;
+    return null;
+  }
+  if (action === 'swap' && freeSwap(h)) return [];
+  const n = action === 'charge' ? chargeDice(h) : action === 'swap' ? 1 : 2;
+  if (blanks.length >= n) return blanks.slice(0, n);
+  return free.length === n ? free : null;
+}
 export function swap(h: Hunt, idx: number[]): boolean {
   const sel = freeOnly(h, idx); if (h.over) return false;
   if (freeSwap(h) && sel.length === 0) h.freeSwapUsed = true;

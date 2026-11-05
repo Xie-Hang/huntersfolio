@@ -81,21 +81,13 @@ export const TIPS: Tip[] = [
     done: () => { const h = hunt(); return !!h && h.dice.some(d => d.used && d.used !== 'Guard'); }
   },
   {
-    id: 'g-blank', guide: true, at: ['die-blank'],
-    when: () => { const h = hunt(); return !!h && h.turn === 1 && !unusedTurn(h) && !anyMoveReady(h) && freeDice(h) > 0 && h.guard === 0 && !game.sel.length; },
-    text: () => {
-      const h = hunt()!, n = freeDice(h);
-      return `Your turn isn't over: you can keep acting until your dice run out. ${n === 1 ? 'This die fits no move' : 'These dice fit no move'}, but any die can Guard. Click ${n === 1 ? 'it' : 'one'} to select it.`;
-    },
-    done: () => game.sel.length > 0
-  },
-  {
     id: 'guard', guide: true, learn: true, at: ['guard'],
-    when: () => {
-      const h = hunt();
-      return !!h && !unusedTurn(h) && freeDice(h) > 0 && !anyMoveReady(h) && h.guard === 0 && game.sel.length > 0;
+    when: () => { const h = hunt(); return !!h && !unusedTurn(h) && freeDice(h) > 0 && !anyMoveReady(h) && h.guard === 0; },
+    text: () => {
+      const h = hunt()!, inc = E.incoming(h), d = game.sel.length ? game.sel : E.autoDice(h, 'guard') ?? [], g = d.reduce((a, i) => a + E.guardOf(h, i), 0);
+      const blank = d.length && d.every(i => h.dice[i].face === 'B');
+      return `Your turn isn't over: you can keep acting until your dice run out. ${blank ? 'A blank fits no move, but it guards better than a shape.' : 'Dice that fit no move can still Guard.'} Click Guard: it takes ${blank ? (d.length === 1 ? 'the blank' : 'the blanks') : 'those dice'} on its own and blocks ${g}${inc?.net ? `, so the ${inc.raw} becomes ${Math.max(0, inc.raw - g)}` : ''}.`;
     },
-    text: () => { const h = hunt()!, inc = E.incoming(h); const g = game.sel.reduce((a, i) => a + E.guardOf(h, i), 0); return `Now click Guard. A blank blocks more than a shape: this one blocks ${g} damage this turn${inc?.net ? `, so the ${inc.raw} becomes ${Math.max(0, inc.raw - g)}` : ''}.`; },
     done: () => (hunt()?.guard ?? 0) > 0
   },
   {

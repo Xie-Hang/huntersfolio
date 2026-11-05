@@ -24,6 +24,9 @@ type Name = 'town' | 'hunt' | 'danger' | 'victory' | 'defeat';
 /** Per-track level trims so the loops sit at the same loudness (placeholders: town measures ~4.5 dB hotter). */
 const TRIM: Record<Name, number> = { town: 0.6, hunt: 1, danger: 1, victory: 0.8, defeat: 0.8 };
 const FADE = 1.2, DANGER_FADE = 1.5;
+/** Overall music level under the slider: playtesters turned music down to 50%, so 100% on the slider is now what
+ *  50% used to be (the default slider value stays 70%). Sound effects are unchanged. */
+const MUSIC_LEVEL = 0.5;
 /** the very first track fades in fast: there's nothing to crossfade from (playtest: "a few seconds before the music") */
 const FIRST_FADE = 0.25;
 const ALL: Name[] = ['town', 'hunt', 'danger', 'victory', 'defeat'];
@@ -52,7 +55,7 @@ class Music {
     if (!ctx) return;
     this.ctx = ctx;
     this.bus = this.ctx.createGain();
-    this.bus.gain.value = this.volume;
+    this.bus.gain.value = this.volume * MUSIC_LEVEL;
     this.bus.connect(this.ctx.destination);
     void this.setScene(this.wanted, true);
     // decode the rest now, in the background, so the hunt music and stings are ready when they're needed
@@ -61,7 +64,7 @@ class Music {
 
   setVolume(v: number) {
     this.volume = Math.max(0, Math.min(1, v));
-    if (this.bus && this.ctx) this.bus.gain.setTargetAtTime(this.volume, this.ctx.currentTime, 0.05);
+    if (this.bus && this.ctx) this.bus.gain.setTargetAtTime(this.volume * MUSIC_LEVEL, this.ctx.currentTime, 0.05);
   }
 
   private decoding = new Map<Name, Promise<AudioBuffer | null>>();
