@@ -4,7 +4,8 @@
   // Drawn in a 48 × 48 box; shown beside the name, so they're decorative (aria-hidden).
   let { id, size = 22 }: { id: string; size?: number } = $props();
   const INK = '#1a1410', BONE = '#ecdfc8', BONE2 = '#c9b89c', GOLD = '#e9b949', GOLDHI = '#f3cf7a', EMBER = '#e8773a',
-    GALE = '#8fc3c9', FROST = '#b9d3f0', MUD = '#5b4532', LEAF = '#8aa56a', STEEL = '#d8d2c4', ASH = '#6e6257', MOSS = '#7f9159', STONEC = '#a99f90';
+    GALE = '#8fc3c9', FROST = '#b9d3f0', MUD = '#5b4532', LEAF = '#8aa56a', STEEL = '#d8d2c4', ASH = '#6e6257', MOSS = '#7f9159', STONEC = '#a99f90',
+    SPORE = '#9fc062', SPORE_DK = '#6f8a3e', SPARK = '#f0dd6e', BLOOD = '#c4565c';
   const S = `stroke="${INK}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"`;
   const scale = (c: string) => `<path d="M24 6 C36 10 42 22 38 34 C34 42 14 42 10 34 C6 22 12 10 24 6 Z" fill="${c}" ${S}/><path d="M14 22 C20 26 28 26 34 22 M16 31 C21 34 27 34 32 31" fill="none" ${S} stroke-width="2.2"/>`;
   const gem = (c: string, glow: string) => `<circle cx="24" cy="25" r="20" fill="${glow}" opacity=".22"/><path d="M10 18 L17 9 H31 L38 18 L24 41 Z" fill="${c}" ${S}/><path d="M10 18 H38 M17 9 L21 18 L24 41 L27 18 L31 9" fill="none" ${S} stroke-width="2"/><path d="M14 17 L18 12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" opacity=".7"/>`;
@@ -144,7 +145,46 @@
     sovtail: `<path d="M8 40 C14 30 20 22 30 16" fill="none" stroke="${INK}" stroke-width="10" stroke-linecap="round"/><path d="M8 40 C14 30 20 22 30 16" fill="none" stroke="${BONE2}" stroke-width="5" stroke-linecap="round"/><path d="M28 18 L40 6 L34 22 Z" fill="${FROST}" ${S} stroke-width="2.4"/>`,
     sovheart: gem('#d9e3c8', GOLDHI),
     sovcharm: `${charmTop}<path d="M12 40 C10 30 16 18 24 16 C32 18 38 30 36 40 C30 43 18 43 12 40 Z" fill="#d9e3c8" ${S}/><path d="M18 24 L22 18 L26 24 L30 18" fill="none" stroke="${GOLDHI}" stroke-width="2.6" stroke-linecap="round"/>`,
-    ashcharm: `${charmTop}<path d="M24 12 L33 26 L24 44 L15 26 Z" fill="${EMBER}" ${S}/><path d="M24 16 V40 M19 26 H29" stroke="${GOLDHI}" stroke-width="2"/>`
+    ashcharm: `${charmTop}<path d="M24 12 L33 26 L24 44 L15 26 Z" fill="${EMBER}" ${S}/><path d="M24 16 V40 M19 26 H29" stroke="${GOLDHI}" stroke-width="2"/>`,
+    /* the Gloamhollow (Nov 2026): spore green, spark yellow, blood red; its deeper versions in their new element */
+    purge: `<path d="M18 6 H30 V14 C36 18 38 24 38 30 C38 38 32 43 24 43 C16 43 10 38 10 30 C10 24 12 18 18 14 Z" fill="${BONE}" ${S}/><path d="M12 30 C16 34 32 34 36 30 C36 37 31 41 24 41 C17 41 12 37 12 30 Z" fill="${SPORE}"/><path d="M18 6 H30 V14 C36 18 38 24 38 30 C38 38 32 43 24 43 C16 43 10 38 10 30 C10 24 12 18 18 14 Z" fill="none" ${S}/><path d="M20 22 l8 8 M28 22 l-8 8" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`,
+    groundsalt: `<path d="M10 22 C10 16 38 16 38 22 L35 40 C34 44 14 44 13 40 Z" fill="${BONE2}" ${S}/><path d="M10 22 C10 27 38 27 38 22" fill="none" ${S}/><path d="M22 4 L16 14 H22 L19 22 L30 10 H24 L27 4 Z" fill="${SPARK}" ${S} stroke-width="2.2"/><path d="M18 34 h12" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/>`,
+    rotspore: `<path d="M8 30 C8 18 18 10 24 10 C30 10 40 18 40 30 Z" fill="${BONE}" ${S}/><path d="M18 30 V40 H30 V30" fill="${BONE2}" ${S}/><circle cx="17" cy="21" r="3.5" fill="${SPORE}" ${S} stroke-width="2"/><circle cx="29" cy="18" r="3" fill="${SPORE}" ${S} stroke-width="2"/>`,
+    capflesh: `<path d="M6 34 C8 20 18 10 30 10 C38 10 42 18 42 26 L36 34 Z" fill="${BONE}" ${S}/><path d="M12 32 l4 -6 M20 32 l3 -8 M28 32 l2 -9" stroke="${SPORE_DK}" stroke-width="2.4" stroke-linecap="round"/><circle cx="30" cy="18" r="4" fill="${SPORE}" ${S} stroke-width="2"/>`,
+    rotjaw: fang(BONE2) + `<circle cx="34" cy="36" r="4" fill="${SPORE}" ${S} stroke-width="2"/>`,
+    rootleg: `<path d="M24 6 C20 18 26 26 18 42" fill="none" stroke="${INK}" stroke-width="11" stroke-linecap="round"/><path d="M24 6 C20 18 26 26 18 42" fill="none" stroke="${BONE2}" stroke-width="6" stroke-linecap="round"/><path d="M18 42 l-8 2 M18 42 l2 5 M21 34 l10 4" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`,
+    sporeheart: gem(SPORE, '#c4e07a'),
+    sporecharm: `${charmTop}<path d="M10 32 C10 22 18 16 24 16 C30 16 38 22 38 32 Z" fill="${BONE}" ${S}/><circle cx="20" cy="25" r="3.5" fill="${SPORE}"/><circle cx="29" cy="24" r="3" fill="${SPORE}"/><path d="M20 32 V40 H28 V32" fill="${BONE2}" ${S} stroke-width="2.4"/>`,
+    arcdust: `<path d="M8 36 C14 28 34 28 40 36 C34 42 14 42 8 36 Z" fill="${BONE2}" ${S}/><path d="M14 14 l4 -6 l-1 5 l5 -1 l-4 6 l1 -5 z M30 20 l4 -6 l-1 5 l5 -1 l-4 6 l1 -5 z M22 26 l3 -5 l-1 4 l4 -1 l-3 5 l1 -4 z" fill="${SPARK}" ${S} stroke-width="1.6"/>`,
+    arcwing: `<path d="M8 40 C10 22 24 8 42 6 C40 24 28 38 8 40 Z" fill="${BONE}" ${S}/><ellipse cx="28" cy="20" rx="6" ry="5" fill="${SPARK}" ${S} stroke-width="2.2"/><circle cx="28" cy="20" r="2" fill="${INK}"/>`,
+    arcfeeler: `<path d="M10 42 C14 26 22 14 38 6" fill="none" stroke="${INK}" stroke-width="4" stroke-linecap="round"/><path d="M14 32 l-6 -2 M18 24 l-6 -4 M24 16 l-4 -6 M30 11 l-2 -6 M17 34 l6 0 M22 26 l6 -1 M27 19 l6 -2 M33 13 l5 -3" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>`,
+    arcthorax: `<path d="M10 24 C10 14 18 8 24 8 C30 8 38 14 38 24 C38 34 30 40 24 40 C18 40 10 34 10 24 Z" fill="${BONE}" ${S}/><path d="M16 14 l-3 6 M22 11 l-2 7 M28 11 l1 7 M34 15 l2 6 M14 28 l-2 5 M34 28 l2 5" stroke="${INK}" stroke-width="2" opacity=".6"/>`,
+    sparkgland: gem(SPARK, '#fff3a0'),
+    arccharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${BONE}" ${S}/><path d="M26 18 L18 30 H24 L21 38 L30 26 H24 Z" fill="${SPARK}" ${S} stroke-width="2"/>`,
+    palehide: scale('#e6dccd'),
+    palefang: fang(BONE),
+    bloodsac: `<path d="M14 12 C8 24 12 40 24 42 C36 40 40 24 34 12 Z" fill="${BLOOD}" ${S}/><path d="M14 12 H34" ${S} fill="none"/><path d="M20 22 C19 28 21 34 25 36" fill="none" stroke="#fff" stroke-width="2.4" opacity=".5"/>`,
+    palewing: `<path d="M6 30 C14 12 30 6 42 8 L36 16 L42 20 L34 26 L40 32 L28 34 C20 36 12 34 6 30 Z" fill="${BONE2}" ${S}/><path d="M10 30 L34 12 M14 32 L36 22" stroke="${INK}" stroke-width="2" opacity=".55"/>`,
+    bloodpearl: gem(BLOOD, '#ff8a8a'),
+    fangcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${BONE}" ${S}/><path d="M24 20 C28 25 30 29 30 32 A6 6 0 0 1 18 32 C18 29 20 25 24 20 Z" fill="${BLOOD}" ${S} stroke-width="2"/>`,
+    blightspore: `<path d="M8 30 C8 18 18 10 24 10 C30 10 40 18 40 30 Z" fill="#8a6a52" ${S}/><path d="M18 30 V40 H30 V30" fill="${BONE2}" ${S}/><path d="M14 22 l4 2 l4 -3 l4 3 l4 -2 l4 2" fill="none" stroke="${EMBER}" stroke-width="2.4" stroke-linecap="round"/>`,
+    crustcap: `<path d="M6 34 C8 20 18 10 30 10 C38 10 42 18 42 26 L36 34 Z" fill="#8a6a52" ${S}/><path d="M14 26 l5 -4 l5 4 l5 -5 l5 4" fill="none" stroke="${EMBER}" stroke-width="2.4" stroke-linecap="round"/>`,
+    blightjaw: fang('#c9a07a') + `<circle cx="34" cy="36" r="4" fill="${EMBER}" ${S} stroke-width="2"/>`,
+    blightroot: `<path d="M24 6 C20 18 26 26 18 42" fill="none" stroke="${INK}" stroke-width="11" stroke-linecap="round"/><path d="M24 6 C20 18 26 26 18 42" fill="none" stroke="#8a6a52" stroke-width="6" stroke-linecap="round"/><path d="M22 18 l4 3 M21 28 l4 3" stroke="${EMBER}" stroke-width="2.4" stroke-linecap="round"/>`,
+    blightheart: gem('#c46a3a', EMBER),
+    blightcharm: `${charmTop}<path d="M10 32 C10 22 18 16 24 16 C30 16 38 22 38 32 Z" fill="#8a6a52" ${S}/><path d="M16 26 l4 -3 l4 3 l4 -3 l4 3" fill="none" stroke="${EMBER}" stroke-width="2.4" stroke-linecap="round"/><path d="M20 32 V40 H28 V32" fill="${BONE2}" ${S} stroke-width="2.4"/>`,
+    glaredust: `<path d="M8 36 C14 28 34 28 40 36 C34 42 14 42 8 36 Z" fill="${FROST}" ${S}/><path d="M16 10 l3 6 l-3 6 l-3 -6 z M32 16 l3 6 l-3 6 l-3 -6 z M24 20 l2 4 l-2 4 l-2 -4 z" fill="#fff" ${S} stroke-width="1.6"/>`,
+    glarepinion: `<path d="M8 40 C10 22 24 8 42 6 C40 24 28 38 8 40 Z" fill="${FROST}" ${S}/><ellipse cx="28" cy="20" rx="6" ry="5" fill="#fff" ${S} stroke-width="2.2"/><circle cx="28" cy="20" r="2" fill="${INK}"/>`,
+    glarefeeler: `<path d="M10 42 C14 26 22 14 38 6" fill="none" stroke="${INK}" stroke-width="4" stroke-linecap="round"/><path d="M14 32 l-6 -2 M18 24 l-6 -4 M24 16 l-4 -6 M30 11 l-2 -6 M17 34 l6 0 M22 26 l6 -1 M27 19 l6 -2 M33 13 l5 -3" stroke="${FROST}" stroke-width="2.4" stroke-linecap="round"/>`,
+    glarethorax: `<path d="M10 24 C10 14 18 8 24 8 C30 8 38 14 38 24 C38 34 30 40 24 40 C18 40 10 34 10 24 Z" fill="${FROST}" ${S}/><path d="M16 14 l-3 6 M22 11 l-2 7 M28 11 l1 7 M34 15 l2 6" stroke="${INK}" stroke-width="2" opacity=".6"/>`,
+    glaregland: gem(FROST, '#ffffff'),
+    glarecharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${FROST}" ${S}/><path d="M26 18 L18 30 H24 L21 38 L30 26 H24 Z" fill="#fff" ${S} stroke-width="2"/>`,
+    gravehide: scale('#8a9a8c'),
+    gravetooth: fang('#c8d4c4'),
+    gravesac: `<path d="M14 12 C8 24 12 40 24 42 C36 40 40 24 34 12 Z" fill="#8a4a52" ${S}/><path d="M14 12 H34" ${S} fill="none"/><path d="M14 30 q10 -4 20 0" stroke="${GALE}" stroke-width="2.4" fill="none"/>`,
+    gravewing: `<path d="M6 30 C14 12 30 6 42 8 L36 16 L42 20 L34 26 L40 32 L28 34 C20 36 12 34 6 30 Z" fill="#8a9a8c" ${S}/><path d="M10 30 L34 12 M14 32 L36 22" stroke="${INK}" stroke-width="2" opacity=".55"/>`,
+    gravepearl: gem('#8a4a52', GALE),
+    gravecharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="#8a9a8c" ${S}/><path d="M24 20 C28 25 30 29 30 32 A6 6 0 0 1 18 32 C18 29 20 25 24 20 Z" fill="#8a4a52" ${S} stroke-width="2"/>`
   };
   const body = $derived(ICONS[id]);
 </script>

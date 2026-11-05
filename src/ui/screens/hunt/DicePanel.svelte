@@ -22,9 +22,10 @@
           class:blank={d.face === 'B'}
           class:sel
           class:used={!!d.used}
+          class:charged={d.charged && !d.used}
           class:rolling={game.rolling.includes(i)}
           aria-pressed={sel}
-          aria-label="{label(d.face)} die{d.used ? `, used for ${d.used}` : ''}"
+          aria-label="{label(d.face)} die{d.charged && !d.used ? ', charged: attack with it or it goes off' : ''}{d.used ? `, used for ${d.used}` : ''}"
           disabled={!!d.used || over}
           onclick={() => game.toggleDie(i)}
         >
@@ -32,7 +33,7 @@
           {:else if d.face === 'T'}<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 5l16 29H4z" fill="#2a1f17" /></svg>
           {:else}<span class="bl">Blank</span>{/if}
         </button>
-        <span class="dietag" class:used={!!d.used}>{#if d.used || sel}{d.used || 'Selected'}{:else if !over}<Key k={String(i + 1)} />{/if}</span>
+        <span class="dietag" class:used={!!d.used} class:charged={d.charged && !d.used}>{#if d.used || sel}{d.used || 'Selected'}{:else if d.charged}Charged{:else if !over}<Key k={String(i + 1)} />{/if}</span>
       </div>
     {/each}
   </div>
@@ -49,6 +50,9 @@
 </section>
 
 <style>
+  /* Glarewing: a charged die can only attack (guarding with it, or leaving it, sets it off) */
+  .die.charged { box-shadow: 0 0 0 3px #f0dd6e, 0 0 14px 2px rgba(240, 221, 110, .55); }
+  .dietag.charged { color: #f0dd6e; font-weight: 700; }
   .diceline { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: space-between; }
   .diceline .tray { flex: 0 1 auto; justify-content: flex-start; padding: 4px 0 0; gap: 12px; }
   .endbtn { min-height: 52px; padding-inline: 22px; display: flex; align-items: center; justify-content: center; gap: 10px; }

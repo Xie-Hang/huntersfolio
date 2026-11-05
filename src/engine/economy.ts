@@ -272,6 +272,8 @@ export function unlockHint(id: string): string {
   const tiers = new Set(reqs.map(r => MONSTERS[r].tier));
   if (tiers.size === 1 && tiers.has(1)) return 'Beat every monster on Ashfall Ridge first';
   if (tiers.size === 1 && tiers.has(2)) return 'Beat every monster in the Mirewood first';
+  const mire = Object.values(MONSTERS).filter(M => M.tier === 2).map(M => M.id), rest = reqs.filter(r => !mire.includes(r));
+  if (mire.length && mire.every(r => reqs.includes(r)) && rest.length === 1) return `Beat every monster in the Mirewood and the ${MONSTERS[rest[0]].short} first`;
   return `Beat ${reqs.map(r => MONSTERS[r].short).join(', ')} first`;
 }
 

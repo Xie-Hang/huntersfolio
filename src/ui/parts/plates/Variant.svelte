@@ -7,6 +7,9 @@
   import Galeshrike from './Galeshrike.svelte';
   import Cinderback from './Cinderback.svelte';
   import Rimetail from './Rimetail.svelte';
+  import Rotcap from './Rotcap.svelte';
+  import Arcmoth from './Arcmoth.svelte';
+  import Hollowfang from './Hollowfang.svelte';
 
   let { mon, hunt = null }: { mon: string; hunt?: Hunt | null } = $props();
 
@@ -15,7 +18,11 @@
     squallhorn: { base: 'gorehorn', label: 'a storm-maned boar', tint: 'sepia(.25) hue-rotate(120deg) saturate(.85) brightness(.96)', map: { gather: 'windup', cyclone: 'charge', winded: 'exhausted', tailwind: '' } },
     rimeshrike: { base: 'galeshrike', label: 'an ice-feathered raptor', tint: 'sepia(.3) hue-rotate(170deg) saturate(1.3) brightness(1.03)', map: {} },
     quakeback: { base: 'cinderback', label: 'a rock-backed burrower', tint: 'grayscale(.85) brightness(.92) contrast(1.06)', map: { rockfall: 'swipe', tremor: '', rockburst: 'erupt', settle: 'venting' } },
-    ashtail: { base: 'rimetail', label: 'a stalker with glowing cinder scales', tint: 'sepia(.5) hue-rotate(-15deg) saturate(1.7)', map: { kindle: 'rimecoat' } }
+    ashtail: { base: 'rimetail', label: 'a stalker with glowing cinder scales', tint: 'sepia(.5) hue-rotate(-15deg) saturate(1.7)', map: { kindle: 'rimecoat' } },
+    // the Gloamhollow, deeper (Nov 2026)
+    blightcrown: { base: 'rotcap', label: 'a spore beast under a crusted, smouldering cap', tint: 'sepia(.55) hue-rotate(-25deg) saturate(1.5) brightness(.88)', map: {} },
+    glarewing: { base: 'arcmoth', label: 'a frost-white moth whose dust glitters', tint: 'sepia(.25) hue-rotate(165deg) saturate(1.2) brightness(1.08)', map: {} },
+    gravefang: { base: 'hollowfang', label: 'a huge cave leech with sail-like wings', tint: 'sepia(.3) hue-rotate(110deg) saturate(.7) brightness(.82)', map: { shriek: '', exsang: 'latch' } }
   };
   const v = $derived(VARIANTS[mon]);
   // the original plate reads hunt.intent; give it the matching pose name
@@ -25,6 +32,7 @@
   const shroud = $derived(mon === 'rimeshrike' && !!hunt && (m?.shroud ?? 0) > 0);
   const quake = $derived(mon === 'quakeback' && !!hunt && (hunt.intent === 'tremor' || hunt.intent === 'rockburst'));
   const flare = $derived(mon === 'ashtail' ? (hunt ? (m?.plating ?? 0) : 2) : 0);
+  const bloom = $derived(mon === 'blightcrown' && !!hunt && (hunt.intent === 'bloom' || hunt.intent === 'burst'));
 
   const STREAKS = ['M200 110 q120 -30 240 0 t240 -6', 'M160 200 q140 -26 280 4 t260 -10', 'M240 290 q110 -20 220 0 t230 -4', 'M120 150 q80 -14 160 0', 'M600 250 q90 -16 180 0'];
   const HAIL = Array.from({ length: 22 }, (_, i) => ({ x: 90 + ((i * 137) % 880), y: 50 + ((i * 61) % 180), d: (i % 5) * 0.31 }));
@@ -37,6 +45,9 @@
     {#if v.base === 'gorehorn'}<Gorehorn hunt={shown} />
     {:else if v.base === 'galeshrike'}<Galeshrike hunt={shown} />
     {:else if v.base === 'cinderback'}<Cinderback hunt={shown} />
+    {:else if v.base === 'rotcap'}<Rotcap hunt={shown} />
+    {:else if v.base === 'arcmoth'}<Arcmoth hunt={shown} />
+    {:else if v.base === 'hollowfang'}<Hollowfang hunt={shown} />
     {:else}<Rimetail hunt={shown} />{/if}
   </div>
   <svg class="wc vfx" class:static={!hunt} viewBox="60 40 940 520" aria-hidden="true">
@@ -54,6 +65,18 @@
         {#each DUST as p}<circle cx={p.x} cy="520" r={p.r} style="animation-delay:{p.d}s" />{/each}
       </g>
       <path d="M140 532 l40 -10 l30 12 l46 -14 M720 532 l36 -12 l28 10 l40 -12" fill="none" stroke="#1a1410" stroke-width="4" stroke-linejoin="round" opacity={quake ? 0.9 : 0.45} />
+    {:else if mon === 'blightcrown'}
+      <g class="embers" fill="#f3b25a" stroke="#1a1410" stroke-width="1.5" style="opacity:{bloom ? 0.95 : 0.5}">
+        {#each EMBERS as p}<circle cx={p.x} cy={p.y - 140} r="4" style="animation-delay:{p.d}s" />{/each}
+      </g>
+    {:else if mon === 'glarewing'}
+      <g class="hail" fill="#e6f0fb" stroke="#1a1410" stroke-width="1.5" style="opacity:.75">
+        {#each HAIL.slice(0, 14) as p}<path d="M{p.x} {p.y} l4 -9 l4 9 l-4 9 z" style="animation-delay:{p.d}s" />{/each}
+      </g>
+    {:else if mon === 'gravefang'}
+      <g class="wind" style="opacity:{hunt?.mon.air ? 0.8 : 0.35}" fill="none" stroke="#8fc3c9" stroke-width="5" stroke-linecap="round">
+        {#each STREAKS.slice(0, 3) as d, i}<path {d} style="animation-delay:{i * 0.27}s" />{/each}
+      </g>
     {:else if mon === 'ashtail'}
       <g class="embers" fill="#f3b25a" stroke="#1a1410" stroke-width="1.5" style="opacity:{0.3 + flare * 0.3}">
         {#each EMBERS as p}<circle cx={p.x} cy={p.y} r="4" style="animation-delay:{p.d}s" />{/each}
@@ -67,7 +90,7 @@
   .body { filter: var(--tint); }
   .variant > :global(svg.wc.vfx) { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
   .wind path { animation: v-wind 2.4s ease-in-out infinite; }
-  .hail circle { animation: v-fall 2.2s linear infinite; }
+  .hail circle, .hail path { animation: v-fall 2.2s linear infinite; }
   .embers circle { animation: v-rise 2.6s ease-out infinite; }
   .dust.shake circle { animation: v-hop .5s ease-in-out infinite; }
   @keyframes v-wind { 0%, 100% { transform: translateX(0); opacity: .6; } 50% { transform: translateX(-40px); opacity: 1; } }

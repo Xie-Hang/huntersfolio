@@ -18,6 +18,9 @@ export const pct = (a: number, b: number) => Math.max(0, Math.min(100, Math.roun
 
 export const SLOT_LABEL: Record<string, string> = { w0: 'Weapon 1', w1: 'Weapon 2', armor: 'Armor', charm: 'Charm', item: 'Item' };
 export const ELEMS: E.Element[] = ['Stone', 'Gale', 'Ember', 'Frost'];
+/** a weapon's element, or its status for status weapons (which carry no element) */
+export const elemLabel = (w: { elem: E.Element | null; status?: E.Status }) => w.status ?? w.elem ?? 'No element';
+export const markOf = (w: { elem: E.Element | null; status?: E.Status }) => w.status ?? w.elem;
 export const DAMAGE_TYPES: E.DamageType[] = ['Cut', 'Blunt', 'Pierce'];
 
 export const record = (s: E.Save, mon: string): E.MonsterRecord => s.record[mon] ?? { hunts: 0, wins: 0, captures: 0, breaks: {} };

@@ -22,6 +22,15 @@ armors.push({ id: 'squallcoat', tier: 2.5, name: 'Squallhide Coat', hp: 225, gua
 armors.push({ id: 'rimemantle', tier: 2.5, name: 'Rimeplume Mantle', hp: 210, guard: 10, rerolls: 3, resist: 'Frost', perk: 'Resists Frost (−30%). Your first weapon swap each hunt costs no die.', swapOnce: true, craft: { coin: 750, rimeplume: 4, rimepinion: 2 } });
 armors.push({ id: 'quakemail', tier: 2.5, name: 'Quakestone Plate', hp: 235, guard: 10, rerolls: 2, resist: 'Stone', perk: 'Resists Stone (−30%). Tremors can’t shake your dice loose.', steadyfoot: true, craft: { coin: 750, quakescale: 4, quakeclaw: 2 } });
 armors.push({ id: 'ashcoat', tier: 2.5, name: 'Ashscale Coat', hp: 220, guard: 10, rerolls: 2, resist: 'Ember', perk: 'Resists Ember (−30%). Hot scales and molten shells can’t burn you.', burnproof: true, craft: { coin: 750, ashscale: 4, ashfang: 2 } });
+// the Gloamhollow (status monsters, Nov 2026): tier 2.2 beside the Mirewood, its deeper versions 3.2 beside the Stormspire
+armors.push(
+  { id: 'sporecoat', tier: 2.2, name: 'Sporecap Coat', hp: 215, guard: 9, rerolls: 2, resist: 'Stone', perk: 'Resists Stone (−30%). Being infected lasts 1 turn less.', infectLess: 1, craft: { coin: 650, rotspore: 4, rootleg: 2 } },
+  { id: 'arccloak', tier: 2.2, name: 'Arcdust Cloak', hp: 200, guard: 9, rerolls: 3, resist: 'Gale', perk: 'Resists Gale (−30%). A Spark Discharge on you deals a third less.', sparkLess: 0.35, craft: { coin: 650, arcdust: 4, arcwing: 2 } },
+  { id: 'palemail', tier: 2.2, name: 'Palehide Mail', hp: 210, guard: 10, rerolls: 2, resist: 'Frost', perk: 'Resists Frost (−30%). A latch lasts 2 turns at most.', latchMax: 2, craft: { coin: 650, palehide: 4, bloodsac: 2 } },
+  { id: 'blightmail', tier: 3.2, name: 'Blightcrown Mail', hp: 245, guard: 11, rerolls: 2, resist: 'Ember', perk: 'Resists Ember (−30%). Being infected lasts 2 turns less.', infectLess: 2, craft: { coin: 950, blightspore: 5, blightroot: 2 } },
+  { id: 'glarecloak', tier: 3.2, name: 'Glarewing Cloak', hp: 230, guard: 10, rerolls: 3, resist: 'Frost', perk: 'Resists Frost (−30%). Your dice can’t be charged, and a Discharge on you deals a third less.', chargeProof: true, sparkLess: 0.35, craft: { coin: 950, glaredust: 5, glarepinion: 2 } },
+  { id: 'gravecoat', tier: 3.2, name: 'Gravehide Coat', hp: 240, guard: 11, rerolls: 2, resist: 'Gale', perk: 'Resists Gale (−30%). A latch lasts 1 turn at most.', latchMax: 1, craft: { coin: 950, gravehide: 5, gravesac: 2 } }
+);
 // the apex
 armors.push({ id: 'sovmantle', tier: 4, name: 'Sovereign Mantle', hp: 260, guard: 12, rerolls: 3, resist: null, perk: 'Resists whatever element the monster is attacking with (−30%).', adaptive: true, craft: { coin: 1400, sovgel: 6, sovheart: 1 } });
 export const ARMORS: Record<string, ArmorDef> = Object.fromEntries(armors.filter(inEdition).map(a => [a.id, a]));
@@ -35,9 +44,11 @@ const items: ItemDef[] = [
   { id: 'net', name: 'Weighted Net', max: 2, price: 50, desc: 'Brings an airborne monster down. It loses its action.', effect: 'net' },
   { id: 'firepot', name: 'Firepot', max: 2, price: 50, desc: 'Melts all of a monster’s ice plating at once.', effect: 'thaw' },
   { id: 'blast', name: 'Blast Powder', max: 2, price: 50, desc: 'Forces a burrowed monster to the surface. It loses its action.', effect: 'blast' },
+  { id: 'purge', tier: 2.2, name: 'Purging Tonic', max: 2, price: 50, desc: 'Cures an infection on you.', effect: 'cureInfect' },
+  { id: 'groundsalt', tier: 2.2, name: 'Grounding Salt', max: 2, price: 50, desc: 'Clears the Spark pips on you and your charged dice.', effect: 'cureSpark' },
   { id: 'tuskwhet', name: 'Tusk Whetstone', max: 2, craft: { tusk: 1, coin: 20 }, yields: 2, desc: 'Your next hit deals +100%.', effect: 'whet100' }
 ];
-export const ITEMS: Record<string, ItemDef> = Object.fromEntries(items.map(i => [i.id, i]));
+export const ITEMS: Record<string, ItemDef> = Object.fromEntries(items.filter(inEdition).map(i => [i.id, i]));
 
 /** One charm per monster: a single small perk that deepens a playstyle. Crafted, never reinforced. */
 const charms: CharmDef[] = [
@@ -64,6 +75,14 @@ charms.push({ id: 'squallcharm', tier: 2.5, name: 'Squall Charm', src: 'Squallho
 charms.push({ id: 'shroudcharm', tier: 2.5, name: 'Shroud Charm', src: 'Rimeshrike', perk: 'Hits on a flier while it’s on the ground deal +15%.', effect: 'groundHit', craft: { coin: 175, rimecrest: 1, rimeplume: 2 } });
 charms.push({ id: 'quakecharm', tier: 2.5, name: 'Quake Charm', src: 'Quakeback', perk: 'Breaking a part frees a frozen or shaken die.', effect: 'breakFree', craft: { coin: 175, backridge: 1, quakescale: 2 } });
 charms.push({ id: 'ashcharm', tier: 2.5, name: 'Ash Charm', src: 'Ashtail', perk: 'Pierce hits clear 1 more layer of ice or scales.', effect: 'pierceStrip', craft: { coin: 175, emberbarb: 1, ashscale: 2 } });
+charms.push(
+  { id: 'sporecharm', tier: 2.2, name: 'Spore Charm', src: 'Rotcap', perk: 'Infect weapons fill the meter 1 faster per hit.', effect: 'infectBuild', craft: { coin: 175, rotjaw: 1, rotspore: 2 } },
+  { id: 'arccharm', tier: 2.2, name: 'Arc Charm', src: 'Arcmoth', perk: 'Spark weapons fill the meter 1 faster per hit.', effect: 'sparkBuild', craft: { coin: 175, arcfeeler: 1, arcdust: 2 } },
+  { id: 'fangcharm', tier: 2.2, name: 'Fang Charm', src: 'Hollowfang', perk: 'Drain heals 5% more of your max HP.', effect: 'drainUp', craft: { coin: 175, palefang: 1, palehide: 2 } },
+  { id: 'blightcharm', tier: 3.2, name: 'Blight Charm', src: 'Blightcrown', perk: 'Your Infect lasts 5 turns instead of 3.', effect: 'infectLong', craft: { coin: 225, blightjaw: 1, blightspore: 2 } },
+  { id: 'glarecharm', tier: 3.2, name: 'Glare Charm', src: 'Glarewing', perk: 'Your Spark Discharge deals +40%.', effect: 'sparkBig', craft: { coin: 225, glarefeeler: 1, glaredust: 2 } },
+  { id: 'gravecharm', tier: 3.2, name: 'Grave Charm', src: 'Gravefang', perk: 'Drain’s meter grows by 3 each time instead of 6.', effect: 'drainTol', craft: { coin: 225, gravetooth: 1, gravehide: 2 } }
+);
 charms.push({ id: 'sovcharm', tier: 4, name: 'Sovereign Charm', src: 'Wanderer Sovereign', perk: 'Breaking a part makes your next hit deal +50%.', effect: 'breakWhet', craft: { coin: 300, sovgel: 4 } });
 export const CHARMS: Record<string, CharmDef> = Object.fromEntries(charms.filter(inEdition).map(c => [c.id, c]));
 
@@ -152,6 +171,38 @@ mats.push(
   { id: 'ashmantle', tier: 2.5, base: 'Mantle Ember', src: 'Ashtail', sell: 110, how: 'Break the Ashtail’s ember mantle (Blunt best)' },
   { id: 'ashfang', tier: 2.5, base: 'Ash Fang', src: 'Ashtail', sell: 110, how: 'Break the Ashtail’s jaw (Pierce best)' },
   { id: 'ashheart', tier: 2.5, base: 'Ashheart', src: 'Ashtail', rare: true, sell: 550, how: 'Rare from Ashtail ember mantle breaks' }
+);
+mats.push(
+  { id: 'rotspore', tier: 2.2, base: 'Rot Spore', src: 'Rotcap', sell: 30, how: 'Every Rotcap hunt' },
+  { id: 'capflesh', tier: 2.2, base: 'Cap Flesh', src: 'Rotcap', sell: 90, how: 'Break the Rotcap’s cap (Pierce best)' },
+  { id: 'rotjaw', tier: 2.2, base: 'Rot Jaw', src: 'Rotcap', sell: 90, how: 'Break the Rotcap’s jaw (Blunt best)' },
+  { id: 'rootleg', tier: 2.2, base: 'Root Leg', src: 'Rotcap', sell: 90, how: 'Break the Rotcap’s root legs (Cut best)' },
+  { id: 'sporeheart', tier: 2.2, base: 'Sporeheart', src: 'Rotcap', rare: true, sell: 450, how: 'Rare from Rotcap cap breaks' },
+  { id: 'arcdust', tier: 2.2, base: 'Arc Dust', src: 'Arcmoth', sell: 30, how: 'Every Arcmoth hunt' },
+  { id: 'arcwing', tier: 2.2, base: 'Arc Wing', src: 'Arcmoth', sell: 90, how: 'Break the Arcmoth’s wings (Pierce best)' },
+  { id: 'arcfeeler', tier: 2.2, base: 'Feeler', src: 'Arcmoth', sell: 90, how: 'Break the Arcmoth’s antennae (Cut best)' },
+  { id: 'arcthorax', tier: 2.2, base: 'Thorax Plate', src: 'Arcmoth', sell: 90, how: 'Break the Arcmoth’s thorax (Blunt best, on the ground)' },
+  { id: 'sparkgland', tier: 2.2, base: 'Spark Gland', src: 'Arcmoth', rare: true, sell: 450, how: 'Rare from Arcmoth thorax breaks' },
+  { id: 'palehide', tier: 2.2, base: 'Pale Hide', src: 'Hollowfang', sell: 30, how: 'Every Hollowfang hunt' },
+  { id: 'palefang', tier: 2.2, base: 'Pale Fang', src: 'Hollowfang', sell: 90, how: 'Break the Hollowfang’s fangs (Blunt best)' },
+  { id: 'bloodsac', tier: 2.2, base: 'Blood Sac', src: 'Hollowfang', sell: 90, how: 'Break the Hollowfang’s throat sac (Cut best)' },
+  { id: 'palewing', tier: 2.2, base: 'Pale Wing', src: 'Hollowfang', sell: 90, how: 'Break the Hollowfang’s wings (Pierce best)' },
+  { id: 'bloodpearl', tier: 2.2, base: 'Blood Pearl', src: 'Hollowfang', rare: true, sell: 450, how: 'Rare from Hollowfang fang breaks' },
+  { id: 'blightspore', tier: 3.2, base: 'Blight Spore', src: 'Blightcrown', sell: 45, how: 'Every Blightcrown hunt' },
+  { id: 'crustcap', tier: 3.2, base: 'Crusted Cap', src: 'Blightcrown', sell: 130, how: 'Break the Blightcrown’s cap (Pierce best)' },
+  { id: 'blightjaw', tier: 3.2, base: 'Blight Jaw', src: 'Blightcrown', sell: 130, how: 'Break the Blightcrown’s jaw (Blunt best)' },
+  { id: 'blightroot', tier: 3.2, base: 'Blight Root', src: 'Blightcrown', sell: 130, how: 'Break the Blightcrown’s root legs (Cut best)' },
+  { id: 'blightheart', tier: 3.2, base: 'Blightheart', src: 'Blightcrown', rare: true, sell: 650, how: 'Rare from Blightcrown jaw breaks' },
+  { id: 'glaredust', tier: 3.2, base: 'Glare Dust', src: 'Glarewing', sell: 45, how: 'Every Glarewing hunt' },
+  { id: 'glarepinion', tier: 3.2, base: 'Glare Wing', src: 'Glarewing', sell: 130, how: 'Break the Glarewing’s wings (Pierce best)' },
+  { id: 'glarefeeler', tier: 3.2, base: 'Glare Feeler', src: 'Glarewing', sell: 130, how: 'Break the Glarewing’s antennae (Cut best)' },
+  { id: 'glarethorax', tier: 3.2, base: 'Glare Thorax', src: 'Glarewing', sell: 130, how: 'Break the Glarewing’s thorax (Blunt best, on the ground)' },
+  { id: 'glaregland', tier: 3.2, base: 'Glare Gland', src: 'Glarewing', rare: true, sell: 650, how: 'Rare from Glarewing thorax breaks' },
+  { id: 'gravehide', tier: 3.2, base: 'Grave Hide', src: 'Gravefang', sell: 45, how: 'Every Gravefang hunt' },
+  { id: 'gravetooth', tier: 3.2, base: 'Grave Fang', src: 'Gravefang', sell: 130, how: 'Break the Gravefang’s fangs (Blunt best)' },
+  { id: 'gravesac', tier: 3.2, base: 'Grave Sac', src: 'Gravefang', sell: 130, how: 'Break the Gravefang’s throat sac (Pierce only)' },
+  { id: 'gravewing', tier: 3.2, base: 'Grave Wing', src: 'Gravefang', sell: 130, how: 'Break the Gravefang’s wings (Pierce best)' },
+  { id: 'gravepearl', tier: 3.2, base: 'Grave Pearl', src: 'Gravefang', rare: true, sell: 650, how: 'Rare from Gravefang fang breaks' }
 );
 mats.push(
   { id: 'sovgel', tier: 4, base: 'Sovereign Gel', src: 'Wanderer Sovereign', sell: 60, how: 'Every Wanderer Sovereign hunt' },

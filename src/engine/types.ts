@@ -3,6 +3,8 @@
 export type Face = 'C' | 'T' | 'B'; // circle, triangle, blank
 export type DamageType = 'Cut' | 'Blunt' | 'Pierce';
 export type Element = 'Ember' | 'Frost' | 'Gale' | 'Stone';
+/** status effects (Nov 2026, the Gloamhollow): status weapons carry one instead of an element */
+export type Status = 'Infect' | 'Spark' | 'Drain';
 /** 'coin' or a material id → amount */
 export type Cost = Record<string, number>;
 
@@ -40,6 +42,10 @@ export interface WeaponDef {
   cost?: Cost;
   /** recipe uses stand-in materials until a monster of this element exists */
   placeholder?: Element;
+  /** a status weapon (no element): its hits fill this status meter on the monster */
+  status?: Status;
+  /** what a full meter does: Infect damage a turn, Spark's Discharge, or Drain's share of your max HP healed */
+  statusPow?: number;
 }
 
 export interface ArmorDef {
@@ -80,11 +86,21 @@ export interface ArmorDef {
   swapOnce?: boolean;
   /** resists whatever element the monster attacks with (Sovereign Mantle) */
   adaptive?: boolean;
+  /** being infected lasts this many turns less (Rotcap, Blightcrown) */
+  infectLess?: number;
+  /** a Spark Discharge on you deals this share less (Arcmoth, Glarewing) */
+  sparkLess?: number;
+  /** your dice can't be charged (Glarewing) */
+  chargeProof?: boolean;
+  /** a latch lasts at most this many turns (Hollowfang, Gravefang) */
+  latchMax?: number;
   craft: Cost;
 }
 
-export type ItemEffect = 'heal30' | 'smoke' | 'whet50' | 'whet100' | 'net' | 'blast' | 'thaw' | 'snare';
+export type ItemEffect = 'heal30' | 'smoke' | 'whet50' | 'whet100' | 'net' | 'blast' | 'thaw' | 'snare' | 'cureInfect' | 'cureSpark';
 export interface ItemDef {
+  /** monster tier it belongs with (default 1); items above the edition's top tier aren't in that build */
+  tier?: number;
   id: string;
   name: string;
   max: number;
@@ -97,7 +113,7 @@ export interface ItemDef {
   pouch?: boolean;
 }
 
-export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet' | 'airPierce' | 'bigHeal' | 'sealHeal' | 'chargeDaze' | 'groundHit' | 'breakFree' | 'pierceStrip' | 'breakWhet';
+export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet' | 'airPierce' | 'bigHeal' | 'sealHeal' | 'chargeDaze' | 'groundHit' | 'breakFree' | 'pierceStrip' | 'breakWhet' | 'infectBuild' | 'sparkBuild' | 'drainUp' | 'infectLong' | 'sparkBig' | 'drainTol';
 export interface CharmDef {
   /** monster tier it comes from (default 1); gear above the edition's top tier isn't in that build */
   tier?: number;
@@ -150,12 +166,14 @@ export interface Intent {
   /** how much of `dmg` carries the monster's element (resist armor only reduces this part); default from
    *  MonsterDef.elemental by move name, else 0 = a physical attack */
   elemDmg?: number;
+  /** guard can't block any of it (a latch drinking) */
+  noGuard?: boolean;
 }
 
 export type Tone = '' | 'gold' | 'ember' | 'daze';
 export interface LogEntry { t: string; tone: Tone }
 
-export interface Die { face: Face; used: string | null }
+export interface Die { face: Face; used: string | null; /** Glarewing: left unused at the end of your turn, it discharges into you */ charged?: boolean }
 
 /** exposed: turns left on a Pierce exposure (+15% damage, ×2 toward the break, from any weapon) */
 export interface PartState { hp: number; max: number; broken: boolean; exposed: number; /** times broken this hunt, for parts that reform (the Warden's plates); rewards count it */ cracks?: number }
@@ -234,6 +252,22 @@ export interface MonsterState {
   stump?: Record<string, number>;
   sealed?: Record<string, boolean>;
   justCut?: string;
+  /** status meters filled by status weapons, and how much each needs to fill (it grows each time: tolerance) */
+  sm?: Partial<Record<Status, number>>;
+  smax?: Partial<Record<Status, number>>;
+  /** the monster is infected: turns left, damage a turn */
+  infected?: number;
+  infectDmg?: number;
+  /** statuses on YOU: infected (turns, damage a turn), Spark pips, a latch drinking (turns left), dice charged next roll */
+  pInf?: number;
+  pInfDmg?: number;
+  pSpark?: number;
+  latch?: number;
+  charge?: number;
+  /** Gloamhollow bookkeeping: the Rotcap's bloom, the Gravefang's frenzy, HP drunk during the current latch */
+  bloom?: number;
+  frenzy?: number;
+  drank?: number;
 }
 
 export interface WeaponInst extends WeaponDef { lv: number }
@@ -383,6 +417,8 @@ export interface MonsterDef {
   burn?(h: Hunt, w: WeaponInst): number;
   /** takes to the air: the UI shows air notes (Pierce full damage, nets work) */
   flier?: boolean;
+  /** the status it puts on you (the Gloamhollow): the loadout notes which items and armor answer it */
+  inflicts?: Status;
   /** burrows: the UI shows underground notes (only Blunt reaches it, Blast Powder works) */
   burrower?: boolean;
   /** grows ice plating: layers it starts with (and the UI shows ice notes) */

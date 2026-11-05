@@ -67,11 +67,11 @@ function evaluate(h: Hunt, plan: Omit<Plan, 'score'>, p: Policy): number | null 
   const php0 = c.php, hp0 = c.mon.hp, part0 = c.mon.parts[c.target].hp, intent0 = c.intent;
   const inc0 = E.incoming(c)?.net ?? 0;
   for (const i of plan.moves) if (!E.useMove(c, i)) return null;
+  if (c.over === 'win') return 10_000 + (hp0 - c.mon.hp); // the kill: nothing after it matters (guarding would fail)
   if (plan.guard.length && !E.guard(c, plan.guard)) return null;
   if (plan.charge.length && !E.charge(c, plan.charge)) return null;
   // ice broken is worth about what a hit would have dealt, since it clears the way for the next one
   const dealt = hp0 - c.mon.hp + ICE_VALUE * (h.mon.plating - c.mon.plating), partProg = part0 - c.mon.parts[c.target].hp;
-  if (c.over === 'win') return 10_000 + dealt;
   const taken = E.incoming(c)?.net ?? 0;
   const prevented = c.intent !== intent0 ? inc0 : 0;
   if (p.skill === 'casual') return dealt * 10 + partProg;
@@ -79,6 +79,7 @@ function evaluate(h: Hunt, plan: Omit<Plan, 'score'>, p: Policy): number | null 
   const burned = php0 - c.php;
   let score = dealt + 0.5 * partProg - risk * (taken + burned) + 0.3 * prevented + (plan.charge.length ? 30 : 0);
   if (E.currentWeapon(c).moves[0].flow) score += 4 * plan.moves.filter(i => i === 0).length;
+  score -= risk * E.CHARGED_HIT * c.dice.filter(d => d.charged && (!d.used || d.used === 'Guard')).length;
   if (c.php - taken <= 0) score -= 1000;
   return score;
 }
@@ -163,6 +164,8 @@ export function playTurn(h: Hunt, p: Policy) {
     else if (fx === 'thaw' && h.mon.plating >= 2) E.useItem(h);
     else if (fx === 'blast' && h.intent === 'erupt' && !E.canHit(h, E.currentWeapon(h))) E.useItem(h);
     else if (fx === 'smoke' && inc >= 40) E.useItem(h);
+    else if (fx === 'cureInfect' && (h.mon.pInf ?? 0) >= 2) E.useItem(h);
+    else if (fx === 'cureSpark' && ((h.mon.pSpark ?? 0) >= 2 || h.dice.filter(d => d.charged && !d.used).length >= 2)) E.useItem(h);
   }
   // one reroll toward the strong recipe
   const w = E.currentWeapon(h), sn = need(w.moves[2].need);

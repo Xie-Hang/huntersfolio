@@ -1,8 +1,10 @@
 <script lang="ts">
   /** ridge: Ashfall Ridge (Tier 1). mire: the Mirewood (Tier 2), reeds and still water under mist.
    *  spire: the Stormspire (Tier 3), wind-scoured crags under storm cloud, rain and far-off lightning.
-   *  caldera: the apex's crater (Nov 2026): the rim rising at both sides, smoke columns, glowing cracks, rising embers. */
-  let { region = 'ridge' }: { region?: 'ridge' | 'mire' | 'spire' | 'caldera' } = $props();
+   *  caldera: the apex's crater (Nov 2026): the rim rising at both sides, smoke columns, glowing cracks, rising embers.
+   *  hollow: the Gloamhollow (Nov 2026), a cave: a jagged roof, hanging stalactites, pale fungus glowing faintly on the
+   *  walls and spores drifting. */
+  let { region = 'ridge' }: { region?: 'ridge' | 'mire' | 'spire' | 'caldera' | 'hollow' } = $props();
   // Ashfall Ridge behind the monster plates: a far ridge and nearer hills in low-contrast hatching, a hazy sun,
   // and ash drifting down. Kept dark and quiet so the monster always reads first. Same space as the plates.
   const flakes = [[140, 0], [260, 3.2], [380, 1.4], [520, 4.6], [640, 2.1], [760, 5.4], [880, 0.8], [200, 6.1], [700, 7.3]] as const;
@@ -18,6 +20,10 @@
   const RIM = 'M60 220 L120 236 L190 290 L260 340 L340 380 L440 404 L560 410 L680 400 L780 372 L860 320 L930 262 L1000 230 V532 H60 Z';
   const FLOOR = 'M60 460 C220 448 380 470 520 462 C680 454 840 474 1000 458 V532 H60 Z';
   const SMOKE = [[220, 0], [520, 2.6], [800, 5.1]] as const;
+  const ROOF = 'M60 40 H1000 V150 L960 130 L930 190 L890 140 L850 160 L820 236 L790 150 L740 170 L700 120 L660 200 L630 140 L580 150 L540 108 L500 176 L470 130 L420 150 L380 230 L350 140 L300 160 L260 120 L220 196 L190 136 L140 160 L100 120 L60 150 Z';
+  const WALLS = 'M60 150 L120 200 L140 330 L110 470 L60 480 Z M1000 150 L950 210 L930 340 L960 470 L1000 480 Z';
+  const CAVEFLOOR = 'M60 470 C200 452 320 476 480 466 C640 456 800 476 1000 462 V532 H60 Z';
+  const FUNGUS = [[118, 300], [134, 360], [946, 280], [956, 330], [940, 400], [380, 214], [660, 186]] as const;
   const REEDS = Array.from({ length: 26 }, (_, i) => [80 + i * 36 + (i % 3) * 7, 470 - (i % 4) * 14] as const);
 </script>
 
@@ -35,6 +41,15 @@
     <path d="M60 470 H1000 V532 H60 Z" fill="url(#{uid}w)" />
     <path d="M90 488 h70 M240 502 h110 M430 492 h60 M560 506 h120 M760 494 h80 M880 508 h70" stroke="#2c322d" stroke-width="4" stroke-linecap="round" />
     {#each REEDS as [x, top]}<path d="M{x} 476 Q{x - 4} {top + 20} {x + 6} {top}" stroke="#2b3026" stroke-width="4" fill="none" stroke-linecap="round" />{/each}
+  {:else if region === 'hollow'}
+    <path d={ROOF} fill="#191714" />
+    <path d={hatch(60, 1080, 40, 240, 18)} stroke="#211e1a" stroke-width="4" clip-path="url(#{uid}h)" />
+    <clipPath id="{uid}h"><path d={ROOF} /></clipPath>
+    <path d={ROOF} fill="none" stroke="#2a2621" stroke-width="5" stroke-linejoin="round" />
+    <path d={WALLS} fill="#1b1916" />
+    <path d={CAVEFLOOR} fill="#151311" />
+    <path d="M150 496 h60 M330 504 h90 M560 494 h70 M760 506 h100" stroke="#221f1b" stroke-width="4" stroke-linecap="round" />
+    {#each FUNGUS as [x, y], i}<g class="glow" style="animation-delay:-{i * 0.7}s"><path d="M{x - 14} {y} q14 -16 28 0 z" fill="#3c4a2c" /><path d="M{x} {y} v10" stroke="#2c3424" stroke-width="4" /></g>{/each}
   {:else if region === 'caldera'}
     <clipPath id="{uid}r"><path d={RIM} /></clipPath>
     <rect x="60" y="300" width="940" height="200" fill="#2a1a12" opacity=".5" />
@@ -64,7 +79,7 @@
   <path d={hatch(60, 1080, 396, 540, 14)} stroke="#241d17" stroke-width="4" clip-path="url(#{uid}n)" />
 
   {/if}
-  {#if region !== 'spire'}{#each flakes as [x, d]}<circle class="ash" class:mote={region === 'mire'} class:ember={region === 'caldera'} cx={x} cy="40" r="3.5" fill="#4a3f35" style="animation-delay:-{d}s" />{/each}{/if}
+  {#if region !== 'spire'}{#each flakes as [x, d]}<circle class="ash" class:mote={region === 'mire'} class:ember={region === 'caldera'} class:spore={region === 'hollow'} cx={x} cy="40" r="3.5" fill="#4a3f35" style="animation-delay:-{d}s" />{/each}{/if}
 </svg>
 
 <style>
@@ -72,6 +87,7 @@
   .ash { animation: fall 9s linear infinite; transform-box: view-box; }
   @keyframes fall { 0% { transform: translate(0, 0); opacity: 0; } 10% { opacity: .9; } 100% { transform: translate(-60px, 480px); opacity: 0; } }
   .mote { fill: #3a4236; }
+  .spore { fill: #3f4a30; animation-duration: 14s; }
   .ember { fill: #7a3a1e; animation-name: rise; }
   @keyframes rise { 0% { transform: translate(0, 460px); opacity: 0; } 15% { opacity: .9; } 100% { transform: translate(40px, -20px); opacity: 0; } }
   .smoke { animation: drift 12s ease-in-out infinite; transform-box: view-box; }

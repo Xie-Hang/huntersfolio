@@ -29,6 +29,8 @@
       {#if h.chargeReady}<span class="gold">Charged: first hit ×2</span>{:else if h.chargePending}<span class="gold">Charging for next turn</span>{/if}
       {#if h.whet}<span class="gold">Sharpened: next hit +{Math.round(h.whet * 100)}%</span>{/if}
       {#if h.evade}<span class="gold">Hidden in smoke</span>{/if}
+      {#if (h.mon.pInf ?? 0) > 0}<span class="bad inf" title="You lose this much at the end of each turn. It can’t knock you out on its own. A Purging Tonic cures it.">Infected −{h.mon.pInfDmg} · {h.mon.pInf} turn{h.mon.pInf! > 1 ? 's' : ''}</span>{/if}
+      {#if (h.mon.pSpark ?? 0) > 0}<span class="bad spk" title="At {E.SPARK_CAP} the charge goes off through you, and guard can’t stop it. Any Blunt move grounds a pip; Grounding Salt clears them.">Spark {h.mon.pSpark} of {E.SPARK_CAP}</span>{/if}
     </div>
     </div>
   </div>
@@ -38,6 +40,7 @@
 </section>
 
 <style>
+  .pstat .bad { font-weight: 700; } .pstat .inf { color: #9fc062; } .pstat .spk { color: #f0dd6e; }
   .statrow { display: flex; flex-wrap: wrap; gap: 4px 18px; align-items: baseline; justify-content: space-between; }
   .youline { display: flex; align-items: center; gap: 14px; }
   .youline .hpbig { flex: 1; }

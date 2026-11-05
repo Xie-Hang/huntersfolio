@@ -6,7 +6,7 @@
   import { coach } from '../../coach.svelte';
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
-  import { SLOT_LABEL, bestParts, movesLine, weaponVs } from '../../fmt';
+  import { SLOT_LABEL, bestParts, movesLine, weaponVs, elemLabel, markOf } from '../../fmt';
   import { tick } from 'svelte';
 
   type Slot = 'w0' | 'w1' | 'armor' | 'charm' | 'item';
@@ -76,6 +76,9 @@
 
 {#snippet armorNote(a: E.ArmorInst)}
   {#if a.burnproof && M.burrower}<span class="good">Immune to its molten shell</span>{' · '}{/if}
+  {#if a.infectLess && M.inflicts === 'Infect'}<span class="good">Shorter infections</span>{' · '}{/if}
+  {#if (a.sparkLess || a.chargeProof) && M.inflicts === 'Spark'}<span class="good">{a.chargeProof && M.id === 'glarewing' ? 'Your dice can’t be charged' : 'Weaker Discharge'}</span>{' · '}{/if}
+  {#if a.latchMax && M.inflicts === 'Drain'}<span class="good">Shorter latches</span>{' · '}{/if}
   {#if a.adaptive}<span class="good">Resists whatever element it attacks with −30%</span>
   {:else if !a.resist}<span class="neutral">No resistance</span>
   {:else if M.elemOf}<span class="neutral">Resists its {a.resist} stance's attacks</span>
@@ -105,7 +108,7 @@
             <span class="sl">{SLOT_LABEL[slot]}</span>
             <span>
               <span class="nm"><WeaponArt id={id} size={34} />{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}{' '}<span class="avg">{weaponVs(game.save, id, mon)} avg</span></span>
-              <span class="sub2"><span><span class="tag {sg.tag}" style="margin:0 4px 0 0">{sg.name}</span>{w.type} · <Elem e={w.elem} />{w.elem ?? 'No element'}</span><span>{@render weaponNotes(w)}</span></span>
+              <span class="sub2"><span><span class="tag {sg.tag}" style="margin:0 4px 0 0">{sg.name}</span>{w.type} · <Elem e={markOf(w)} />{elemLabel(w)}</span><span>{@render weaponNotes(w)}</span></span>
             </span>
             <span class="chg">Change</span>
           </button>
@@ -178,7 +181,7 @@
             <button class="prow" aria-current={id === cur} onclick={() => choose(id)}>
               <span>
                 <span class="nm"><WeaponArt id={id} size={28} />{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}{#if id === cur}<span class="badge">Equipped</span>{:else if id === other}<span class="badge">In {SLOT_LABEL[idx ? 'w0' : 'w1']}</span>{/if}</span>
-                <span class="ty">{w.type} · <Elem e={w.elem} />{w.elem ?? 'No element'} · {movesLine(w.moves)}</span>
+                <span class="ty">{w.type} · <Elem e={markOf(w)} />{elemLabel(w)} · {movesLine(w.moves)}</span>
                 <span class="note">{@render weaponNotes(w)}</span>
               </span>
               <span class="num">{v}{#if id === cur}<small class="delta same">Equipped</small>{:else}{@render delta(v, curV)}{/if}</span>
@@ -236,6 +239,8 @@
                 <span class="ty">{it.desc}</span>
                 {#if it.effect === 'net'}<span class="note">{#if M.flier}<span class="good">Grounds the {M.short}</span>{:else}<span class="bad">Only works on fliers</span>{/if}</span>{/if}
                 {#if it.effect === 'thaw'}<span class="note">{#if M.plated && M.plateHot}<span class="bad">Does nothing to burning scales</span>{:else if M.plated}<span class="good">Melts the {M.short}’s ice</span>{:else}<span class="bad">Only works on plated monsters</span>{/if}</span>{/if}
+                {#if it.effect === 'cureInfect'}<span class="note">{#if M.inflicts === 'Infect'}<span class="good">Cures the {M.short}’s infection</span>{:else}<span class="bad">It doesn’t infect</span>{/if}</span>{/if}
+                {#if it.effect === 'cureSpark'}<span class="note">{#if M.inflicts === 'Spark'}<span class="good">Clears the {M.short}’s spark</span>{:else}<span class="bad">It doesn’t spark</span>{/if}</span>{/if}
                 {#if it.effect === 'blast'}<span class="note">{#if M.burrower}<span class="good">Forces the {M.short} up</span>{:else}<span class="bad">Only works on burrowers</span>{/if}</span>{/if}
               </span>
               <span class="num">{Math.min(have, it.max)}</span><span class="num">{have}</span>

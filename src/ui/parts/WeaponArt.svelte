@@ -8,17 +8,20 @@
   let { id, size = 40 }: { id: string; size?: number } = $props();
 
   const INK = '#1a1410', BONE = '#ecdfc8', BONE2 = '#c9b89c', STEEL = '#d8d2c4', WOOD = '#8a6a48', LEATHER = '#5b4532', GOLD = '#e9b949';
-  const ELEM: Record<string, string> = { Stone: '#a99f90', Gale: '#8fc3c9', Ember: '#e8773a', Frost: '#b9d3f0' };
+  const ELEM: Record<string, string> = { Stone: '#a99f90', Gale: '#8fc3c9', Ember: '#e8773a', Frost: '#b9d3f0', Infect: '#9fc062', Spark: '#f0dd6e', Drain: '#d0545b' };
   const S = (w = 3) => `stroke="${INK}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
 
   const d = $derived(E.WEAPONS[id]);
-  const band = $derived(Math.min(3, Math.max(1, d?.tier ?? 1)));
-  const accent = $derived(d?.elem ? ELEM[d.elem] : STEEL);
+  const band = $derived(Math.min(3, Math.max(1, Math.floor(d?.tier ?? 1))));
+  const accent = $derived(d?.status ? ELEM[d.status] : d?.elem ? ELEM[d.elem] : STEEL);
 
   /** the element's mark, small, centred on (x, y) */
   function mark(e: string | null | undefined, x: number, y: number) {
     if (!e) return '';
     const c = ELEM[e], t = `translate(${x - 6} ${y - 6})`;
+    if (e === 'Infect') return `<g transform="${t}"><path d="M4 .5 6.6 3 4 5.5 1.4 3zM8.8 3.4l2.4 2.4-2.4 2.4-2.4-2.4zM4.4 6.6 7 9.1 4.4 11.6 1.8 9.1z" fill="${c}" ${S(1.2)}/></g>`;
+    if (e === 'Spark') return `<g transform="${t}"><path d="M7.4.2 1.6 7h3.8L4.2 11.8l6.2-7.2H6.6z" fill="${c}" ${S(1.3)}/></g>`;
+    if (e === 'Drain') return `<g transform="${t}"><path d="M6 .4C7.8 3.4 10.2 5.6 10.2 8.1a4.2 4.2 0 0 1-8.4 0C1.8 5.6 4.2 3.4 6 .4z" fill="${c}" ${S(1.3)}/></g>`;
     if (e === 'Stone') return `<g transform="${t}"><rect x="1.5" y="1.5" width="9" height="9" rx="1" fill="${c}" ${S(1.6)}/></g>`;
     if (e === 'Gale') return `<g transform="${t}" fill="none"><path d="M0 4.5c2-1.8 4 1.8 6 0s4-1.8 6 0M0 8.5c2-1.8 4 1.8 6 0s4-1.8 6 0" stroke="${INK}" stroke-width="3.4" stroke-linecap="round"/><path d="M0 4.5c2-1.8 4 1.8 6 0s4-1.8 6 0M0 8.5c2-1.8 4 1.8 6 0s4-1.8 6 0" stroke="${c}" stroke-width="1.6" stroke-linecap="round"/></g>`;
     if (e === 'Ember') return `<g transform="${t}"><path d="M6 .5C7.3 3.3 10.5 4.8 10.5 8A4.5 4.5 0 0 1 1.5 8c0-1.8 1-2.9 1.9-3.5.1 1.3.8 2.1 1.6 2.3C4.7 4.7 5.1 2.5 6 .5z" fill="${c}" ${S(1.4)}/></g>`;
@@ -85,7 +88,7 @@
     if (!d) return '';
     const body = d.type === 'Cut' ? blade(band, accent, d.kind === 'Curved blade') : d.type === 'Blunt' ? maul(band, accent) : bow(band, accent);
     const at = d.type === 'Cut' ? [52, 54] : d.type === 'Blunt' ? [54, 54] : [52, 50];
-    return body + mark(d.elem, at[0], at[1]);
+    return body + mark(d.status ?? d.elem, at[0], at[1]);
   });
 </script>
 

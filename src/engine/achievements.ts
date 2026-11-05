@@ -20,6 +20,7 @@ const tier1 = () => Object.values(MONSTERS).filter(M => M.tier === 1).map(M => M
 const tier2 = () => Object.values(MONSTERS).filter(M => M.tier === 2).map(M => M.id);
 const tier3 = () => Object.values(MONSTERS).filter(M => M.tier === 3).map(M => M.id);
 const changed = () => Object.values(MONSTERS).filter(M => M.tier === 2.5).map(M => M.id);
+const gloam = () => Object.values(MONSTERS).filter(M => M.tier === 2.2 || M.tier === 3.2).map(M => M.id);
 const STARTERS = ['blade', 'maul'];
 
 export const ACHIEVEMENTS: AchievementDef[] = [
@@ -49,11 +50,16 @@ if (EDITION === 'full') ACHIEVEMENTS.push(
   { id: 'FIRST_BOUNTY', name: 'Bounty hunter', desc: 'Complete a bounty.', save: s => Object.keys(s.bounties).length > 0 },
   { id: 'RIDGE_CHANGED', name: 'The ridge, changed', desc: 'Beat all four changed Ashfall Ridge monsters.', save: s => changed().length > 0 && changed().every(id => (s.record[id]?.wins ?? 0) > 0) },
   { id: 'SOVEREIGN', name: 'Sovereign', desc: 'Beat the Wanderer Sovereign.', save: s => !!MONSTERS.sovereign && (s.record.sovereign?.wins ?? 0) > 0 },
-  { id: 'BARE_HANDED', name: 'Bare-handed', desc: 'Beat the Wanderer Sovereign without using an item.', hunt: h => h.mid === 'sovereign' && h.over === 'win' && h.itemCharges === h.carried },
+  { id: 'BARE_HANDED', name: 'Bare-handed', desc: 'Beat the Wanderer Sovereign without using an item or healing with Drain.', hunt: h => h.mid === 'sovereign' && h.over === 'win' && h.itemCharges === h.carried && !h.feats?.includes('drainheal') },
   { id: 'STORMSPIRE_CLEARED', name: 'Stormspire', desc: 'Beat every monster on the Stormspire.', save: s => tier3().length > 0 && tier3().every(id => (s.record[id]?.wins ?? 0) > 0) },
   { id: 'QUENCHED', name: 'Quenched', desc: 'Shatter the Slagwyrm’s armour while it stokes.', hunt: h => !!h.feats?.includes('shatterslag') },
   { id: 'SEARED_SHUT', name: 'Seared shut', desc: 'Seal all three of the Gorhydra’s stumps in one hunt.', hunt: h => !!h.feats?.includes('sealall') },
   { id: 'STORM_CHASER', name: 'Storm chaser', desc: 'Drain the Stormcrown Roc’s storm from full to nothing with arrows.', hunt: h => !!h.feats?.includes('stormdrain') },
+  // the Gloamhollow (Nov 2026): one per status, beaten without it ever landing on you, and the region
+  { id: 'CLEAN_BILL', name: 'Clean bill', desc: 'Beat the Rotcap without ever being infected.', hunt: h => h.mid === 'rotcap' && won(h) && !h.feats?.includes('infected') },
+  { id: 'EARTHED', name: 'Earthed', desc: 'Beat the Arcmoth without a Spark ever going off through you.', hunt: h => h.mid === 'arcmoth' && won(h) && !h.feats?.includes('discharged') },
+  { id: 'BLOODLESS', name: 'Bloodless', desc: 'Beat the Hollowfang without it ever latching on.', hunt: h => h.mid === 'hollowfang' && won(h) && !h.feats?.includes('latched') },
+  { id: 'GLOAMHOLLOW', name: 'The Gloamhollow', desc: 'Beat all six monsters of the Gloamhollow, deeper ones too.', save: s => gloam().length > 0 && gloam().every(id => (s.record[id]?.wins ?? 0) > 0) },
   { id: 'ALL_BOUNTIES', name: 'Every name on the board', desc: 'Complete every bounty.', save: s => Object.keys(BOUNTIES).length > 0 && Object.keys(BOUNTIES).every(id => s.bounties[id]) }
 );
 

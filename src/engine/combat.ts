@@ -1,6 +1,6 @@
 // Combat rules. Every action mutates the hunt in place and returns true if it happened.
 // The UI keeps its own snapshots for Undo (structuredClone the hunt before an action).
-import type { Face, Hunt, Intent, Save, Tone, WeaponInst } from './types';
+import type { Face, Hunt, Intent, Save, Status, Tone, WeaponInst } from './types';
 import { MONSTERS } from './data/monsters';
 import { groundFlier } from './data/monsters/galeshrike';
 import { unearth } from './data/monsters/cinderback';
@@ -9,6 +9,8 @@ import { armorInst, elemMult, fixLoadout, lvOf, weaponInst } from './economy';
 import { rollFace } from './rng';
 import { BOUNTIES } from './data/bounties';
 import { bountyOpen } from './bounty';
+import { CHARGED_HIT } from './status';
+export * from './status';
 
 export const GUARD_RESIST = 0.7;       // armor element resistance multiplier
 export const CHARGE_BREAK = 30;        // damage that breaks a pending charge
@@ -31,6 +33,41 @@ export const iceBreak = (w: WeaponInst) => (w.type === 'Cut' ? CUT_ICE_BREAK : 1
 /** layers of this monster's plating a hit with this weapon clears (ice by default; the Ashtail's cinder scales
  *  differ), plus the Ash Charm's extra layer for Pierce */
 export const plateBreak = (h: Hunt, w: WeaponInst) => (MONSTERS[h.mid].plateBreak?.(w) ?? iceBreak(w)) + (w.type === 'Pierce' && charmFx(h) === 'pierceStrip' ? 1 : 0);
+
+/* ---------- status effects (Nov 2026, the Gloamhollow) ---------- */
+/** A status weapon's hits fill a meter by the dice the move used; a full meter fires and then needs STATUS_TOL more
+ *  next time (tolerance), so a status opens a hunt well but can't carry it alone. */
+export const STATUS_FIRST = 6, STATUS_TOL = 4, INFECT_TURNS = 3;
+/** Drain's meter grows faster: healing is the strongest thing a status does */
+export const DRAIN_TOL = 6;
+export const STATUS_WORD: Record<Status, string> = { Infect: 'Infect', Spark: 'Spark', Drain: 'Drain' };
+export const statusOf = (h: Hunt, st: Status) => ({ value: h.mon.sm?.[st] ?? 0, max: h.mon.smax?.[st] ?? STATUS_FIRST });
+/** The carried status weapon's meter fills by `n`; fires when full. */
+function buildStatus(h: Hunt, w: WeaponInst, n: number) {
+  const st = w.status, m = h.mon; if (!st || m.hp <= 0 || h.over) return;
+  const fx = charmFx(h);
+  if ((fx === 'infectBuild' && st === 'Infect') || (fx === 'sparkBuild' && st === 'Spark')) n++;
+  m.sm ??= {}; m.smax ??= {};
+  const max = m.smax[st] ?? STATUS_FIRST;
+  m.sm[st] = (m.sm[st] ?? 0) + n;
+  if (m.sm[st]! < max) return;
+  m.sm[st] = 0; m.smax[st] = max + (st === 'Drain' ? (fx === 'drainTol' ? 3 : DRAIN_TOL) : STATUS_TOL);
+  const pow = w.statusPow ?? 0;
+  if (st === 'Infect') {
+    m.infected = INFECT_TURNS + (fx === 'infectLong' ? 2 : 0); m.infectDmg = pow;
+    feat(h, 'infect');
+    log(h, `Infect: it’s infected! ${m.infectDmg} a turn for ${m.infected} turns.`, 'gold');
+  } else if (st === 'Spark') {
+    const d = Math.min(m.hp, Math.round(pow * (fx === 'sparkBig' ? 1.4 : 1)));
+    m.hp -= d; h.stats.dealt += d; feat(h, 'spark');
+    log(h, `Spark: the charge in it discharges for ${d}!`, 'gold');
+  } else {
+    const heal = Math.min(h.pmax - h.php, Math.round(h.pmax * (pow + (fx === 'drainUp' ? 0.05 : 0))));
+    feat(h, 'drainheal');
+    log(h, heal > 0 ? `Drain: you drink its strength. +${heal} HP.` : 'Drain: the meter fills, but you’re already at full HP.', 'gold');
+    h.php += heal;
+  }
+}
 
 const def = (h: Hunt) => MONSTERS[h.mid];
 export const monsterOf = def;
@@ -107,6 +144,10 @@ function rollAll(h: Hunt) {
   let k = h.arm.steadyfoot ? 0 : h.mon.shake ?? 0;
   for (let i = 3; i >= 0; i--) if (k > 0 && !h.dice[i].used) { h.dice[i].used = SHAKEN; k--; }
   h.mon.shake = 0;
+  // charged: the Glarewing's dust; a charged die you don't spend this turn discharges into you
+  let c = h.arm.chargeProof ? 0 : h.mon.charge ?? 0;
+  for (const d of h.dice) if (c > 0 && !d.used) { d.charged = true; c--; }
+  h.mon.charge = 0;
 }
 
 /** Swallow lands: `n` of your dice are stuck until you deal the escape damage. */
@@ -137,6 +178,8 @@ export function itemBlockReason(h: Hunt): string | null {
   if (fx === 'net') return next === 'takeoff' ? 'Only works while it flies. It takes off after this turn: throw it next turn' : 'Only works while it flies, and it’s on the ground now';
   if (fx === 'blast') return next === 'burrow' ? 'Only works while it’s underground. It digs in after this turn: throw it next turn' : 'Only works while it’s underground';
   if (fx === 'thaw') return def(h).plateHot ? 'Its scales are already burning: a Firepot does nothing' : 'Only works while it has ice plating';
+  if (fx === 'cureInfect') return 'Only works while you’re infected';
+  if (fx === 'cureSpark') return 'Only works with Spark pips on you or charged dice';
   return null;
 }
 export function itemUsable(h: Hunt): boolean {
@@ -144,6 +187,8 @@ export function itemUsable(h: Hunt): boolean {
   if (ITEMS[h.item].effect === 'net') return h.mon.air;
   if (ITEMS[h.item].effect === 'blast') return h.mon.under;
   if (ITEMS[h.item].effect === 'thaw') return h.mon.plating > 0 && !def(h).plateHot;
+  if (ITEMS[h.item].effect === 'cureInfect') return (h.mon.pInf ?? 0) > 0;
+  if (ITEMS[h.item].effect === 'cureSpark') return (h.mon.pSpark ?? 0) > 0 || h.dice.some(d => d.charged && !d.used);
   return true;
 }
 
@@ -165,9 +210,9 @@ export function incoming(h: Hunt) {
   if (h.over) return null;
   const info = intentInfo(h); if (!info.dmg) return null;
   const r = afterResist(h, info), res = r.resisted, after = r.after;
-  const parts = { phys: r.phys, elem: r.elem, wearsResist: r.wearsResist };
+  const parts = { phys: r.phys, elem: r.elem, wearsResist: r.wearsResist, noGuard: !!info.noGuard };
   if (h.evade) return { raw: info.dmg, after, net: 0, res, g: 0, half: !!info.halfGuard && !h.arm.steady, evade: true, ...parts };
-  const g = info.halfGuard && !h.arm.steady ? Math.floor(h.guard / 2) : h.guard;
+  const g = info.noGuard ? 0 : info.halfGuard && !h.arm.steady ? Math.floor(h.guard / 2) : h.guard;
   return { raw: info.dmg, after, net: Math.max(0, after - g), res, g, half: !!info.halfGuard && !h.arm.steady, evade: false, ...parts };
 }
 
@@ -322,6 +367,8 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
     const b = Math.min(burn, h.php - 1); if (b > 0) feat(h, 'burned');
     if (b > 0) { h.php -= b; h.stats.taken += b; log(h, `The molten shell sears you for ${b}.`, 'ember'); }
   }
+  if (dmg > 0) buildStatus(h, w, mv.need.length);
+  if (w.type === 'Blunt' && (m.pSpark ?? 0) > 0) { m.pSpark!--; log(h, `You ground yourself: a Spark pip goes into the earth (${m.pSpark} left).`, 'gold'); }
   if (h.intent === 'dazed' && before.intent !== 'dazed') feat(h, 'daze');
   if (before.threat >= 3 && h.intent !== before.intent) feat(h, 'interrupt');
   if (before.air && !m.air) feat(h, 'grounded');
@@ -341,6 +388,13 @@ export const guardOf = (h: Hunt, i: number) => Math.round(h.arm.guard * (h.dice[
 export function guard(h: Hunt, idx: number[]): boolean {
   const sel = freeOnly(h, idx); if (!sel.length || h.over) return false;
   for (const i of sel) { h.guard += guardOf(h, i); h.dice[i].used = 'Guard'; }
+  // a charged die (Glarewing) can only attack: guarding with it sets it off
+  const zap = sel.filter(i => h.dice[i].charged).length;
+  if (zap) {
+    for (const i of sel) h.dice[i].charged = false;
+    const d = zap * CHARGED_HIT; h.php = Math.max(1, h.php - d); h.stats.taken += d; feat(h, 'chargehit');
+    log(h, `The charged ${zap > 1 ? 'dice go' : 'die goes'} off in your hand as you brace: ${d} damage.`, 'ember');
+  }
   return true;
 }
 export function charge(h: Hunt, idx: number[]): boolean {
@@ -360,6 +414,9 @@ export type DiceAction = 'guard' | 'charge' | 'swap' | 'capture';
 export function autoDice(h: Hunt, action: DiceAction): number[] | null {
   const free = freeDice(h), blanks = free.filter(i => h.dice[i].face === 'B');
   if (action === 'guard') {
+    // never auto-pick a charged die to guard with: it would go off (Glarewing)
+    const safe = free.filter(i => !h.dice[i].charged), sb = safe.filter(i => h.dice[i].face === 'B');
+    if (free.length !== safe.length) return sb.length ? sb : null;
     if (blanks.length) return blanks;
     if (free.length && (free.length === 1 || !currentWeapon(h).moves.some((_, i) => canUseMove(h, i)))) return free;
     return null;
@@ -410,6 +467,8 @@ export function useItem(h: Hunt): boolean {
     case 'net': groundFlier(h); log(h, 'The net wraps its wings. It crashes to the ground!', 'gold'); break;
     case 'thaw': h.mon.plating = 0; log(h, 'The firepot bursts against its back. The ice plating melts away!', 'gold'); break;
     case 'blast': unearth(h); log(h, 'The powder goes off in its tunnel. It bursts up, stunned!', 'gold'); break;
+    case 'cureInfect': h.mon.pInf = 0; h.mon.pInfDmg = 0; log(h, `${it.name}: the infection is gone.`, 'gold'); break;
+    case 'cureSpark': h.mon.pSpark = 0; for (const d of h.dice) d.charged = false; log(h, `${it.name}: the spark drains out of you.`, 'gold'); break;
   }
   return true;
 }
@@ -426,12 +485,18 @@ export function endTurn(h: Hunt): TurnResult {
   if (h.over) return { taken: 0 };
   const type = h.intent, info = intentInfo(h), m = h.mon, MD = def(h);
   let taken = 0, landed = false;
+  const live = h.dice.filter(d => d.charged && !d.used).length;
+  if (live) {
+    const d = live * CHARGED_HIT; h.php = Math.max(0, h.php - d); h.stats.taken += d; feat(h, 'chargehit');
+    log(h, `${live} charged ${live > 1 ? 'dice' : 'die'} you didn’t use discharge${live > 1 ? '' : 's'} into you for ${d}.`, 'ember');
+    if (h.php <= 0) { finish(h, 'lose'); return { taken: d }; }
+  }
   if (info.dmg > 0) {
     if (h.evade) { h.evade = false; log(h, `${info.name} tears through the smoke and misses you.`, 'gold'); }
     else {
       const ar = afterResist(h, info), res = ar.resisted;
       const raw = ar.after;
-      const g = info.halfGuard && !h.arm.steady ? Math.floor(h.guard / 2) : h.guard;
+      const g = info.noGuard ? 0 : info.halfGuard && !h.arm.steady ? Math.floor(h.guard / 2) : h.guard;
       taken = Math.max(0, raw - g - (h.arm.ward ?? 0)); landed = true;
       const blocked = raw - taken;
       h.php = Math.max(0, h.php - taken); h.stats.taken += taken; h.stats.guarded += blocked;
@@ -449,6 +514,18 @@ export function endTurn(h: Hunt): TurnResult {
   }
   const line = MD.resolve(h, type, landed);
   if (line) log(h, line);
+  if ((m.infected ?? 0) > 0 && m.hp > 0) {
+    const d = Math.min(m.hp, m.infectDmg ?? 0); m.hp -= d; h.stats.dealt += d; m.infected!--;
+    log(h, `The infection eats at it: ${d}.${m.infected ? '' : ' It shakes it off.'}`, 'gold');
+    checkEnrage(h);
+    if (m.hp <= 0) { finish(h, 'win'); return { taken }; }
+  }
+  if ((m.pInf ?? 0) > 0 && h.php > 0) {
+    // the infection never finishes you off: it wears you down for the next hit
+    const d = Math.min(m.pInfDmg ?? 0, h.php - 1); m.pInf!--;
+    if (d > 0) { h.php -= d; h.stats.taken += d; log(h, `The infection eats at you: ${d}.${m.pInf ? '' : ' It clears.'}`, 'ember'); }
+    if (!m.pInf) m.pInfDmg = 0;
+  }
   if (m.wallow > 0) m.wallow--;
   if (m.dazeLock > 0) m.dazeLock--;
   if (m.molten > 0) m.molten--;

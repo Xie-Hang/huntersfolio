@@ -106,6 +106,34 @@ list.push(
   for (const el of ['Stone', 'Gale', 'Ember', 'Frost'] as const) for (const [type, kind, moves, nm] of [['Cut', el === 'Gale' ? 'Curved blade' : 'Greatsword', el === 'Gale' ? GALE : BLADE, 'Sovereign Blade'], ['Blunt', 'Maul', MAUL, 'Sovereign Maul'], ['Pierce', 'Bow', BOW, 'Sovereign Bow']] as const)
     list.push({ id: `sov${type.toLowerCase()}${el.toLowerCase()}`, tier: 4, name: `${ADJ[el]} ${nm}`, type, elem: el, kind, note: NOTE[el], moves: moves as Move[], mult: 2.1, from: BASE[el][type], cost: { coin: 1600, [PART[el]]: 3, sovgel: 4 } });
 }
+// Status weapons (Nov 2026, the Gloamhollow): no element; their hits fill a status meter instead. Two steps: the
+// Gloamhollow monster crafts step 1 (×1.4), its deeper version upgrades it (×1.7). Against an element weakness
+// (×1.6/×1.9 ×1.5) they lose; against a monster you haven't learned, or the Sovereign's shifting stances, they don't care.
+{
+  type Line = { st: 'Infect' | 'Spark' | 'Drain'; pow: [number, number]; ids: Record<DamageType, [string, string]>; names: Record<DamageType, [string, string]>; notes: Record<DamageType, [string, string]>; mats: Record<DamageType, [string, string]>; common: [string, string]; side: Record<DamageType, [string, string]> };
+  const LINES: Line[] = [
+    { st: 'Infect', pow: [20, 28],
+      ids: { Cut: ['rotblade', 'blightblade'], Blunt: ['rotmaul', 'blightmaul'], Pierce: ['rotbow', 'blightbow'] },
+      names: { Cut: ['Rotroot Cleaver', 'Blightcrown Cleaver'], Blunt: ['Sporeburst Maul', 'Blightcrown Maul'], Pierce: ['Sporeshot Bow', 'Blightcrown Bow'] },
+      notes: { Cut: ['Root legs twisted into a blade. The cut festers.', 'The crust on the edge flakes off into every wound.'], Blunt: ['A Rotcap jaw for a head. Each blow leaves a puff of spores.', 'A crusted cap bolted to the haft. It smokes when it lands.'], Pierce: ['The arrowheads are packed with cap flesh.', 'Crust-tipped arrows that crumble inside the hide.'] },
+      mats: { Cut: ['rootleg', 'blightroot'], Blunt: ['rotjaw', 'blightjaw'], Pierce: ['capflesh', 'crustcap'] }, side: { Cut: ['rotjaw', 'blightjaw'], Blunt: ['capflesh', 'crustcap'], Pierce: ['rootleg', 'blightroot'] }, common: ['rotspore', 'blightspore'] },
+    { st: 'Spark', pow: [70, 100],
+      ids: { Cut: ['arcblade', 'glareblade'], Blunt: ['arcmaul', 'glaremaul'], Pierce: ['arcbow', 'glarebow'] },
+      names: { Cut: ['Feeler Blade', 'Glarewing Blade'], Blunt: ['Arcmoth Maul', 'Glarewing Maul'], Pierce: ['Arcdust Bow', 'Glarewing Bow'] },
+      notes: { Cut: ['Two Arcmoth feelers wound round the edge. Your hair stands up when you draw it.', 'The edge glitters with dust that crackles in the dark.'], Blunt: ['A thorax plate for a head. It snaps with static on every swing.', 'It hums before it lands, and the air smells of storms.'], Pierce: ['The fletching is Arcmoth wing. The arrows spark in flight.', 'Glarewing scales on the string. Each shot leaves a white streak.'] },
+      mats: { Cut: ['arcfeeler', 'glarefeeler'], Blunt: ['arcthorax', 'glarethorax'], Pierce: ['arcwing', 'glarepinion'] }, side: { Cut: ['arcwing', 'glarepinion'], Blunt: ['arcfeeler', 'glarefeeler'], Pierce: ['arcthorax', 'glarethorax'] }, common: ['arcdust', 'glaredust'] },
+    { st: 'Drain', pow: [0.15, 0.15],
+      ids: { Cut: ['fangblade', 'graveblade'], Blunt: ['fangmaul', 'gravemaul'], Pierce: ['fangbow', 'gravebow'] },
+      names: { Cut: ['Bloodletter', 'Grave Bloodletter'], Blunt: ['Palefang Maul', 'Gravefang Maul'], Pierce: ['Palewing Bow', 'Gravefang Bow'] },
+      notes: { Cut: ['A blood sac stretched along the spine of the blade. It fills as you fight.', 'The grave sac on the spine is never quite empty.'], Blunt: ['A ring of Hollowfang fangs round the head. They grip on impact.', 'Grave fangs set in the head. It pulls back heavier than it went in.'], Pierce: ['Strung with wing membrane. The arrows are hollow.', 'Hollow arrows that come back to the string dark.'] },
+      mats: { Cut: ['bloodsac', 'gravesac'], Blunt: ['palefang', 'gravetooth'], Pierce: ['palewing', 'gravewing'] }, side: { Cut: ['palefang', 'gravetooth'], Blunt: ['palewing', 'gravewing'], Pierce: ['bloodsac', 'gravesac'] }, common: ['palehide', 'gravehide'] }
+  ];
+  for (const L of LINES) for (const [type, kind, moves] of [['Cut', 'Longsword', BLADE], ['Blunt', 'Maul', MAUL], ['Pierce', 'Bow', BOW]] as const) {
+    const [a, b] = L.ids[type];
+    list.push({ id: a, tier: 2.2, name: L.names[type][0], type, elem: null, status: L.st, statusPow: L.pow[0], kind, note: L.notes[type][0], moves: moves as Move[], mult: 1.4, craft: { coin: 700, [L.mats[type][0]]: 2, [L.side[type][0]]: 1, [L.common[0]]: 3 } });
+    list.push({ id: b, tier: 3.2, name: L.names[type][1], type, elem: null, status: L.st, statusPow: L.pow[1], kind, note: L.notes[type][1], moves: moves as Move[], mult: 1.7, from: a, cost: { coin: 1100, [L.mats[type][1]]: 2, [L.side[type][1]]: 1, [L.common[1]]: 4 } });
+  }
+}
 export const WEAPONS: Record<string, WeaponDef> = Object.fromEntries(list.filter(w => (w.tier ?? 1) <= MAX_TIER).map(w => [w.id, w]));
 
 /** Forge trees: [weapon id, depth] in display order. Built from each weapon's `from`, so every weapon in this

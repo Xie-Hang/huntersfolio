@@ -6,7 +6,7 @@
   import Elem from '../parts/Elem.svelte';
   import * as E from '../../engine';
   import { game } from '../game.svelte';
-  import { glyphs, needLabel } from '../fmt';
+  import { glyphs, needLabel, elemLabel, markOf } from '../fmt';
   import Costs from '../parts/Costs.svelte';
   import { tick } from 'svelte';
 
@@ -156,7 +156,7 @@
           <div class="fd-type">
             <span class="tag {sg.tag}" style="margin:0">{sg.name}</span>
             <span>{d.type}</span><span class="sep">·</span>
-            <span>{#if d.elem}<Elem e={d.elem} />{d.elem}{:else}No element{/if}</span>
+            <span>{#if d.elem || d.status}<Elem e={markOf(d)} />{elemLabel(d)}{:else}No element{/if}</span>
           </div>
           <p class="fd-sig">{sg.text}</p>
         {:else if kind === 'c'}

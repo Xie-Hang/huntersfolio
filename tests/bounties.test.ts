@@ -15,7 +15,7 @@ describe('the bounty board', () => {
       const M = E.MONSTERS[b.mon]; expect(M).toBeTruthy();
       for (const g of b.goals) if (g.k === 'break') expect(M.parts.some(p => p.id === g.part)).toBe(true);
       if (b.reward.mat) expect(E.MATERIALS[b.reward.mat]).toBeTruthy();
-      expect(E.bountiesFor(b.mon).length).toBe(M.variantOf ? 2 : 3); // the changed Ashfall Ridge has two each
+      expect(E.bountiesFor(b.mon).length).toBe(M.variantOf || M.tier === 2.2 ? 2 : 3); // the changed Ashfall Ridge and the Gloamhollow have two each
     }
   });
   it('only opens once its monster is beaten, and only once', () => {

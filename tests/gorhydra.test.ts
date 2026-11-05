@@ -50,6 +50,6 @@ describe('Tier 3: the Gorhydra', () => {
     const run = (w: [string, number][]) => matchup({ weapons: w, armor: 'bogcoat', armorLv: 2, item: 'salve', items: 3, target: 'gorhydra' }, { skill: 'casual', capture: false }, 200, 17).win;
     const ember = run([['whelkedge', 2], ['pearlhammer', 2]]), none = run([['bogcleaver', 2], ['miremaul', 2]]);
     expect(ember).toBeGreaterThan(0.8);
-    expect(ember - none).toBeGreaterThan(0.3);
+    expect(ember - none).toBeGreaterThan(0.25); // 0.3 before the bot learned to land a killing blow while guarding (Nov 2026): ~0.3 now
   });
 });
