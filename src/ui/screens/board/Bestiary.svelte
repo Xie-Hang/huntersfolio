@@ -6,7 +6,9 @@
   import { DAMAGE_TYPES, effName, record } from '../../fmt';
   import Plate from '../../parts/Plate.svelte';
 
-  let { mon }: { mon: string } = $props();
+  /** `main`: the plate, record, elements and habits; `side`: bounties, parts and materials (Nov 2026: the monster page
+   *  shows these in a column of their own on the left, so nothing sits below the fold) */
+  let { mon, part = 'all' }: { mon: string; part?: 'all' | 'main' | 'side' } = $props();
   const M = $derived(E.MONSTERS[mon]);
   const r = $derived(record(game.save, mon));
   const breaks = $derived(Object.values(r.breaks).reduce((a, b) => a + b, 0));
@@ -17,6 +19,7 @@
 </script>
 
 <div style="display:flex;flex-direction:column;gap:14px">
+  {#if part !== 'side'}
   <div class="ph"><h2>{M.name}</h2><span class="label">{M.kind} · {M.variantOf ? `a changed ${E.MONSTERS[M.variantOf]?.short ?? ""}` : E.TIERS[M.tier]}</span></div>
   <div class="plate"><Plate {mon} scene /></div>
   <div class="record" aria-label="Your record">
@@ -44,6 +47,9 @@
     {:else if M.elemental?.length}<dt>{M.elem} attacks</dt><dd>{M.elemental.join(', ')}. Its other attacks are physical: armor that resists {M.elem} only cuts these.</dd>{/if}
     <dt>Reward</dt><dd><b>{E.REWARD.base} coin</b>, +{E.REWARD.perPart} per part broken, +{E.REWARD.capture} for a capture.</dd>
   </dl>
+  {/if}
+  {#if part !== 'main'}
+  {#if part === 'side'}<div class="ph"><h2>{bounties.length && beaten ? 'Bounties' : 'Parts and materials'}</h2><span class="label">{M.short}</span></div>{/if}
   {#if bounties.length && beaten}
     {@const nx = E.nextBountyCharm(game.save)}
     <div class="label rule" data-coach="bounties">Bounties · {bounties.filter(b => game.save.bounties[b.id]).length} of {bounties.length} done here · {E.bountiesDone(game.save)} in all{#if nx}{' '}· next unlock: {nx.name} at {nx.need}{/if}</div>
@@ -92,6 +98,7 @@
       </div>
     {/each}
   </div>
+  {/if}
 </div>
 
 <style>

@@ -94,8 +94,15 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 /* Hunt Board (Nov 2026): page 1 is a grid of monster plates by region; page 2 is one monster's entry beside the loadout */
 .monpage{display:flex;flex-direction:column;gap:12px}
 .backbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.mongrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
-@media (max-width:960px){.mongrid{grid-template-columns:minmax(0,1fr)}}
+.mongrid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1fr) minmax(0,1.05fr);grid-template-areas:'side main load';gap:18px;align-items:start}
+.monside{grid-area:side}.monmain{grid-area:main}.monload{grid-area:load;min-width:0}
+/* in the monster page's narrower column the slot name sits above its gear, not beside it */
+.monload .slot{grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;padding:10px 14px}
+.monload .slot .sl{grid-column:1 / -1;font-size:var(--fs-sm)}
+/* the Hunt button never scrolls away: the loadout's footer sticks to the bottom of the window */
+.monload .campfoot{position:sticky;bottom:0;z-index:5;margin:0 -20px -20px;padding:14px 20px calc(14px + env(safe-area-inset-bottom, 0px));background:var(--panel);border-top:1px solid var(--line);border-radius:0 0 4px 4px;box-shadow:0 -14px 18px -6px var(--bg)}
+@media (max-width:1180px){.mongrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:'main load' 'side load'}}
+@media (max-width:960px){.mongrid{grid-template-columns:minmax(0,1fr);grid-template-areas:'main' 'load' 'side'}}
 .boardpanel{gap:16px}
 .boardpanel .region{display:flex;flex-direction:column;gap:10px}
 .mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
