@@ -6,6 +6,7 @@
   import { effCls, effName, pct } from '../../fmt';
   import { shake } from '../../fx';
   import Plate from '../../parts/Plate.svelte';
+  import Telegraph from './Telegraph.svelte';
 
   const h = $derived(game.hunt!);
   const M = $derived(E.MONSTERS[h.mid]);
@@ -17,14 +18,19 @@
   const TONE = { gold: 'var(--gold-hi)', ember: 'var(--ember-soft)', ice: '#b9d3f0', gale: '#8fc3c9', stone: '#c9b89c' } as const;
 </script>
 
-<section class="panel" aria-label="The monster" use:shake={game.shakes.mon}>
-  <div style="display:flex;flex-direction:column;gap:14px">
-    <div class="ph"><h2>{M.name}</h2><span class="label">{M.kind} · <Elem e={M.elem} />{M.elem}</span></div>
-    <div class="plate"><Plate mon={h.mid} hunt={h} scene /></div>
+<section class="panel stage" aria-label="The monster" use:shake={game.shakes.mon}>
+  <div style="display:flex;flex-direction:column;gap:12px">
     <div class="hpline">
-      <div class="ph"><span class="label">HP</span><span class="mono">{m.hp} / {m.max}</span></div>
-      <div class="bar" style="height:8px"><i style="width:{pct(m.hp, m.max)}%;background:var(--ember)"></i></div>
+      <div class="ph"><h2>{M.name} <span class="label kind"><Elem e={M.elem} />{M.elem}</span><span class="chip sm gale hdchip"><Elem e={M.weak} />Weak to {M.weak}</span><span class="chip sm hdchip"><Elem e={M.resist} />Resists {M.resist}</span></h2><span class="mono">{m.hp} / {m.max} HP</span></div>
+      <div class="bar" style="height:10px"><i style="width:{pct(m.hp, m.max)}%;background:var(--ember)"></i></div>
     </div>
+    <div class="stagebody">
+      <div class="plate"><Plate mon={h.mid} hunt={h} scene /></div>
+      <Telegraph />
+    </div>
+    {#if !h.over && E.canCapture(h)}<div class="stagetip capture">It's weak enough to capture. Select 2 dice and use Capture for double part materials.</div>{/if}
+    <div class="metarow">
+      <div class="meters">
     {#if meter}
       <div class="hpline" aria-label="{meter.label}: {meter.value} of {meter.max}">
         <div class="ph"><span class="label" style="color:{TONE[meter.tone ?? 'gold']}">{meter.label}</span><span class="mono">{meter.note ?? `${meter.value} / ${meter.max}`}</span></div>
@@ -37,8 +43,8 @@
     {/if}
     {#if E.carries(h, 'Blunt') && M.heads}
       <div class="hpline">
-        <div class="ph"><span class="label" style="color:var(--daze)">Daze · each head has its own meter</span></div>
         <div class="heads">
+          <span class="label" style="color:var(--daze)">Daze</span>
           {#each M.heads.filter(x => !m.parts[x].broken) as hd (hd)}
             {@const reel = (m.reel?.[hd] ?? 0) > 0}
             {@const v = m.headDaze?.[hd] ?? 0}
@@ -51,12 +57,12 @@
       </div>
     {:else if E.carries(h, 'Blunt')}
       <div class="hpline">
-        <div class="ph"><span class="label" style="color:var(--daze)">Daze · from Blunt hits to the {headName}</span><span class="mono">{m.dazeLock ? 'Recovering' : `${m.daze} / ${m.dazeMax}`}</span></div>
+        <div class="ph"><span class="label" style="color:var(--daze)">Daze · Blunt hits to the {headName}</span><span class="mono">{m.dazeLock ? 'Recovering' : `${m.daze} / ${m.dazeMax}`}</span></div>
         <div class="bar" class:locked={m.dazeLock > 0}><i style="width:{pct(m.daze, m.dazeMax)}%;background:var(--daze)"></i></div>
       </div>
     {/if}
+      </div>
     <div class="chips">
-      <span class="chip gale"><Elem e={M.weak} />Weak to {M.weak}</span><span class="chip"><Elem e={M.resist} />Resists {M.resist}</span>
       {#if m.enraged}<span class="chip hot">Enraged</span>{/if}
       {#if mud}<span class="chip mud">Mud-caked</span>{/if}
       {#if m.air}<span class="chip gale">Airborne</span>{/if}
@@ -68,31 +74,6 @@
       {#if (m.mirage ?? 0) > 0}<span class="chip ice">Images · {m.mirage} turn{m.mirage! > 1 ? 's' : ''} · {(m.hits ?? 0) > 0 ? 'more hits this turn strike an image' : 'only your first hit this turn lands'}</span>{/if}
       {#if E.canCapture(h)}<span class="chip hot">Capturable</span>{/if}
     </div>
-    <div class="ph rule"><span class="label">Parts</span><span class="label">{input.mode === 'pad' ? 'LB / RB or select a part to aim' : 'Click a part to aim at it'}</span></div>
-    <div class="parts" data-coach="parts">
-      {#each M.parts as p (p.id)}
-        {@const st = m.parts[p.id]}
-        {@const on = h.target === p.id}
-        {@const e = p.eff[w.type]}
-        {@const reach = E.canHit(h, w) && E.reachable(h, p.id, w)}
-        {@const note = M.partNote?.(h, p.id) ?? null}
-        <button class="part" class:on class:broken={st.broken} aria-pressed={on} disabled={!!h.over} onclick={() => game.target(p.id)}>
-          <span class="row">
-            <span class="nm">{p.name}</span>
-            <span style="display:flex;gap:8px;align-items:baseline">
-              {#if !st.broken}
-                {#if !reach}<span class="chip sm none">{m.under ? 'Underground' : 'Out of reach'}</span>
-                {:else}<span class="chip sm {effCls(e)}">{w.type}: {effName(e)}</span>{/if}
-                {#if st.exposed > 0}<span class="chip sm exposed">Exposed · {st.exposed}</span>{/if}
-              {/if}
-              {#if note}<span class="chip sm exposed">{note.chip}</span>{/if}
-              <span class="mono" style="color:{st.broken ? 'var(--ember-soft)' : 'var(--soft)'}">{st.broken ? (note ? '' : 'Broken') : `${st.hp} / ${st.max}`}</span>
-            </span>
-          </span>
-          {#if !st.broken}<span class="bar"><i style="width:{pct(st.hp, st.max)}%;background:{on ? 'var(--gold)' : '#8c7a62'}"></i></span>{/if}
-          <span class="hint">{note ? note.hint : st.broken ? 'Hits here still damage it.' : p.hint}</span>
-        </button>
-      {/each}
     </div>
   </div>
   <div class="fx">
@@ -101,8 +82,20 @@
 </section>
 
 <style>
-  .heads { display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 10px; }
-  .heads .hd { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .kind { margin-left: 10px; font-size: var(--fs-sm); font-weight: 400; }
+  .metarow { display: flex; gap: 10px 18px; align-items: flex-end; flex-wrap: wrap; }
+  .metarow .meters { flex: 1 1 260px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px 16px; min-width: 0; }
+  .metarow .chips:empty { display: none; }
+  .metarow .ph { flex-wrap: nowrap; }
+  .metarow .ph .label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .hdchip { margin-left: 8px; vertical-align: middle; font-weight: 400; }
+  .metarow .meters:empty { display: none; }
+  .metarow .chips { flex: 0 1 auto; }
+  .stagebody { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+  @media (max-width: 720px) { .stagebody { grid-template-columns: minmax(0, 1fr); } }
+  .heads { display: flex; align-items: center; gap: 12px; }
+  .heads .hd { flex: 1; display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .heads .hd .bar { flex: 1; }
   .heads .label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   .pipbar { display: flex; gap: 6px; }

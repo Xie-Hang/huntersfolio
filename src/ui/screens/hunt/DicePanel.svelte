@@ -9,7 +9,8 @@
 </script>
 
 <section class="panel" aria-label="Your dice">
-  <div class="ph"><h2>The dice</h2><span class="label">Turn {h.turn} · {input.mode === 'pad' ? 'Press A on dice to select them' : 'Click dice to select them'}</span></div>
+  <div class="ph"><span class="label">Your dice · turn {h.turn}</span><span class="label">{input.mode === 'pad' ? 'Select any dice (A), then pick a move, or reroll them' : 'Click any dice to select them, then pick a move, or reroll them'}</span></div>
+  <div class="diceline">
   <div class="tray">
     {#each h.dice as d, i}
       {@const sel = game.sel.includes(i)}
@@ -33,11 +34,21 @@
       </div>
     {/each}
   </div>
-  <div class="tools">
+  <div class="acts">
+  <button class="btn primary endbtn" data-sound data-coach="end" disabled={over} onclick={() => game.endTurn()}><Key k="Space" pad="Y" />End turn</button>
     <div class="grp">
-      <button class="btn quiet" data-sound data-coach="reroll" disabled={!n || h.rerolls < 1 || over} onclick={() => game.reroll()}><Key k="R" pad="X" />Reroll selected · {h.rerolls} left</button>
+      <button class="btn quiet" data-sound data-coach="reroll" disabled={!n || h.rerolls < 1 || over} onclick={() => game.reroll()}><Key k="R" pad="X" />Reroll · {h.rerolls} left</button>
       <button class="btn quiet" disabled={!game.undoStack.length || over} onclick={() => game.undo()}><Key k="U" pad="LT" />Undo</button>
     </div>
-    <button class="btn primary" data-sound data-coach="end" disabled={over} onclick={() => game.endTurn()}><Key k="Space" pad="Y" />End turn</button>
+  </div>
   </div>
 </section>
+
+<style>
+  .diceline { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: space-between; }
+  .diceline .tray { flex: 0 1 auto; justify-content: flex-start; padding: 4px 0 0; gap: 12px; }
+  .endbtn { min-height: 52px; padding-inline: 22px; }
+  .acts { flex: 1 0 230px; max-width: 300px; display: flex; flex-direction: column; gap: 8px; align-items: stretch; }
+  .acts .grp { display: flex; gap: 8px; }
+  .acts .grp .btn { flex: 1; white-space: nowrap; }
+</style>

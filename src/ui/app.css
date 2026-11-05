@@ -63,6 +63,34 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 @media (max-width:1100px){.grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.center{grid-column:1 / -1;order:-1}}
 @media (max-width:720px){.grid{grid-template-columns:minmax(0,1fr)}.center{order:0}}
 .center{display:flex;flex-direction:column;gap:18px;min-width:0}
+/* hunt: log | monster, parts, you, dice | moves */
+.grid.hunt{grid-template-columns:minmax(0,220px) minmax(0,1fr) minmax(0,340px)}
+.grid.hunt .side{display:flex;flex-direction:column;gap:12px;min-width:0;position:sticky;top:16px}
+.grid.hunt .huntlog .log{max-height:calc(100vh - 320px)}
+.hunttip{border-color:var(--line-2);background:var(--raise)}
+.hunttip p{margin:0;font-size:var(--fs-md);line-height:1.4}
+.stage .plate{display:flex;align-items:center}
+.stage .tele{margin:0;padding:14px 16px}
+.parts.row{flex-direction:row;flex-wrap:wrap}
+.parts.row{align-items:flex-start}
+.parts.row .part{flex:1 1 150px;min-width:0}
+.parts.row .part:not(.on) .hint{display:none}
+.partspanel{padding:12px 14px;gap:8px}
+.parts.row .part .hint{display:none}
+.grid.hunt .center{gap:12px}
+@media (max-height:820px){.youbox > .panel{padding:12px 16px;gap:8px}.partspanel{padding:10px 14px;gap:6px}.wrap.hunting .top h1{font-size:calc(var(--fs-logo) * .72)}.wrap.hunting .top{padding-bottom:8px}.wrap.hunting{padding-block:10px 16px}}
+.stagetip{display:flex;align-items:center;gap:8px;font-size:var(--fs-sm);color:var(--fg);background:var(--raise);border:1px solid var(--line-2);border-radius:3px;padding:6px 12px}
+.stagetip.capture{border-color:var(--gold);color:var(--gold-hi)}
+@media (min-width:721px){.stage .stagebody{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.parts.row .part{padding:8px 10px;gap:4px}
+.parts.row .part .nm{font-size:var(--fs-md)}
+.youbox > .panel{padding:14px 18px;gap:10px}
+.youbox .tools{padding-top:8px}
+.youbox{border:1px solid var(--line);border-radius:4px;background:var(--panel)}
+.youbox > .panel{border:0;background:transparent}
+.youbox > .panel + .panel{border-top:1px solid var(--line);border-radius:0}
+@media (max-width:1100px){.grid.hunt{grid-template-columns:minmax(0,1fr) minmax(0,320px)}.grid.hunt .center{grid-column:1;order:0}.grid.hunt .side{grid-column:1 / -1;order:2;position:static}}
+@media (max-width:720px){.grid.hunt{grid-template-columns:minmax(0,1fr)}.grid.hunt .side{order:3}}
 .campgrid{display:grid;grid-template-columns:minmax(0,270px) minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
 @media (max-width:1180px){.campgrid{grid-template-columns:minmax(0,260px) minmax(0,1fr)}.campgrid > .loadout{grid-column:1 / -1}}
 /* monster list */
@@ -490,6 +518,7 @@ svg.wc.static *{animation:none!important}
   .grid .move .mn{font-size:var(--fs-md)}
   .grid .divider{padding:2px 0}
   .grid .die{width:66px;height:66px}
+  .grid .diebox{width:70px}
   .grid .die svg{width:32px;height:32px}
   .tele .tip{padding:6px 10px}
   .tele .meta{padding-top:8px}

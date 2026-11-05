@@ -10,6 +10,7 @@
   const info = $derived(E.intentInfo(h));
   const tip = $derived(E.tip(h));
   const inc = $derived(E.incoming(h));
+  const multi = $derived(info.name.includes(' + '));
   const cls = $derived(h.over ? 'end' : info.threat >= 3 ? 'danger' : info.threat === 0 ? 'calm' : '');
 </script>
 
@@ -56,26 +57,34 @@
     {@render stats()}
   {:else}
     <div class="ph">
-      <span class="kicker">When you end your turn</span>
+      <span class="kicker">Its next move</span>
       <span class="pips" aria-label="Threat {info.threat} of 4"><span class="label" style="margin-right:6px">Threat</span>{#each [1, 2, 3, 4] as n}<i class:f={n <= info.threat}></i>{/each}</span>
     </div>
-    <p class="say">{info.text}</p>
+    <div class="nextline">
+      {#if multi}<h3 class="mvname multi">{#each info.name.split(' + ') as n, i}{#if i}<span class="sep" aria-hidden="true">&nbsp;·&nbsp;</span>{/if}<span>{n}</span>{/each}</h3>
+      {:else}<h3 class="mvname">{info.name}</h3>{/if}
+      {#if inc}
+        {#if inc.net}<span class="big" aria-label="{inc.net} damage to you">−{inc.net}</span>{:else}<span class="big safe">{inc.evade ? 'Dodged' : 'Blocked'}</span>{/if}
+      {/if}
+    </div>
+    {#if !multi}<p class="say">{info.text}</p>{/if}
     {#if inc}
-      <div class="incoming">
-        <div style="display:flex;flex-direction:column;gap:4px">
-          <span class="label">Incoming damage</span>
-          {#if inc.net}<span class="big">−{inc.net}</span>{:else}<span class="big safe">{inc.evade ? 'Dodged' : 'Fully blocked'}</span>{/if}
-        </div>
-        <div class="calc">
-          <b>{inc.raw}</b> {M.elem}
-          {#if inc.res}<br />Resisted → <b>{inc.after}</b>{/if}
-          {#if inc.evade}<br />Smoke: <b>misses</b>{:else if h.guard}<br />− <b>{inc.g}</b> guard{inc.half ? ' (halved)' : ''}{/if}
-          {#if !inc.evade && inc.net}<br /><span style="color:var(--muted)">Guard dice to reduce{inc.half ? ' (half as well)' : ''}</span>{/if}
-        </div>
+      <div class="calc">
+        <b>{inc.raw}</b> {M.elem}{#if inc.res} · resisted → <b>{inc.after}</b>{/if}{#if inc.evade} · smoke: <b>misses</b>{:else if h.guard} · − <b>{inc.g}</b> guard{inc.half ? ' (halved)' : ''}{/if}{#if !inc.evade && inc.net} · <span style="color:var(--muted)">guard dice to reduce{inc.half ? ' (half as well)' : ''}</span>{/if}
       </div>
     {/if}
-    {#if tip}<div class="tip"><Tagged text={tip} /></div>{/if}
-    {#if E.canCapture(h)}<div class="tip capture">It's weak enough to capture. Select 2 dice and use Capture for double part materials.</div>{/if}
-    <div class="meta"><span style="color:var(--fg)">{info.name}</span>{#if info.note}<span>{info.note}</span>{/if}</div>
+    {#if info.note}<div class="note">{info.note}</div>{/if}
   {/if}
 </section>
+
+<style>
+  .nextline { display: flex; justify-content: space-between; align-items: baseline; gap: 6px 14px; flex-wrap: wrap; }
+  .mvname.multi { font-size: var(--fs-lg); }
+  .mvname .sep { color: var(--muted); }
+  .mvname { margin: 0; font-family: var(--f-body); font-weight: 600; font-size: var(--fs-xl); line-height: 1.1; color: var(--fg); text-wrap: balance; }
+  .big { font-family: var(--f-body); font-variant-numeric: tabular-nums; font-size: var(--fs-xl); line-height: 1; font-weight: 600; color: var(--ember-soft); }
+  .big.safe { color: var(--gold-hi); }
+  .calc { font-family: var(--f-body); font-size: var(--fs-sm); color: var(--soft); }
+  .calc b { color: var(--fg); font-weight: 600; }
+  .note { font-family: var(--f-body); font-size: var(--fs-md); color: var(--gold-hi); }
+</style>

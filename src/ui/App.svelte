@@ -101,7 +101,7 @@
 
 <svelte:window onpointerdown={() => music.unlock()} onkeydown={e => { music.unlock(); onHuntKey(e); }} onclickcapture={uiClick} />
 
-<div class="wrap">
+<div class="wrap" class:hunting={game.inHunt}>
   <header class="top">
     <div>
       <h1 aria-label="Hunter's Folio"><span class="hn">Hunter’s</span> <span>Folio</span></h1>

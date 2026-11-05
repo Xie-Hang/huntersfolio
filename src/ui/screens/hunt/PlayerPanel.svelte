@@ -14,14 +14,14 @@
 </script>
 
 <section class="panel" aria-label="Your state" use:shake={game.shakes.player}>
-  <div style="display:flex;flex-direction:column;gap:10px">
-    <div class="ph">
-      <h2>Your HP</h2>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div class="youline">
+      <h2 class="you">You</h2>
+      <div class="hpbig" role="img" aria-label="{h.php} of {h.pmax} HP{net ? `, about to take ${net}` : ''}">
+        <i style="width:{pct(after, h.pmax)}%;background:var(--life)"></i>
+        {#if net}<i class="ghost" style="width:{pct(net, h.pmax)}%"></i>{/if}
+      </div>
       <span class="mono">{h.php} / {h.pmax}{#if net}{' '}<span style="color:var(--ember-soft)">→ {after}</span>{/if}</span>
-    </div>
-    <div class="hpbig" role="img" aria-label="{h.php} of {h.pmax} HP{net ? `, about to take ${net}` : ''}">
-      <i style="width:{pct(after, h.pmax)}%;background:var(--life)"></i>
-      {#if net}<i class="ghost" style="width:{pct(net, h.pmax)}%"></i>{/if}
     </div>
     <div class="pstat">
       <span>{h.arm.name}{h.arm.lv ? ` +${h.arm.lv}` : ''}</span>
@@ -44,6 +44,10 @@
 </section>
 
 <style>
+  .youline { display: flex; align-items: center; gap: 14px; }
+  .youline .hpbig { flex: 1; }
+  .youline .mono { white-space: nowrap; }
+  .you { font-size: var(--fs-lg); margin: 0; line-height: 1; }
   .bounty { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: var(--fs-sm); color: var(--soft); }
   .bounty .bn { color: var(--gold-hi); font-weight: 600; }
   .bounty .g b { margin-right: 5px; }
