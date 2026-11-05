@@ -25,7 +25,7 @@
   const sg = $derived(E.SIGNATURES[w.type]);
   const halfAir = $derived(E.airborneHalf(h, w) && E.canHit(h, w)); // fliers (Nov 2026) block non-bows outright: the reason line says so instead
   const iceNow = $derived(h.mon.plating > 0);
-  const iceLine = $derived.by(() => { const n = Math.min(h.mon.plating, E.plateBreak(h, w)), word = E.monsterOf(h).plateWord ?? 'ice', hot = (E.monsterOf(h).burn?.(h, w) ?? 0) > 0 && !h.arm.burnproof ? `, burns you ${E.monsterOf(h).burn!(h, w)}` : ''; return n >= h.mon.plating ? `Breaks all the ${word === 'ice' ? 'ice' : 'scales'} (${n} layer${n > 1 ? 's' : ''}). No damage${hot}` : `Breaks ${n} layer of ${word}. No damage${hot}`; });
+  const iceLine = $derived.by(() => { const n = Math.min(h.mon.plating, E.plateBreak(h, w)), word = E.monsterOf(h).plateWord ?? 'ice', hot = (E.monsterOf(h).burn?.(h, w) ?? 0) > 0 && !h.arm.burnproof ? `, burns you ${E.monsterOf(h).burn!(h, w)}` : ''; return n >= h.mon.plating ? `Breaks all the ${word === 'scale' ? 'scales' : word} (${n} layer${n > 1 ? 's' : ''}). No damage${hot}` : `Breaks ${n} layer of ${word}. No damage${hot}`; });
   const exposedNow = $derived(h.mon.parts[h.target]?.exposed > 0 && !h.mon.parts[h.target].broken);
   /** the number the move will roughly deal now: air halves it, an exposed target adds Expose's bonus */
   const shownDmg = (d: number) => { let x = halfAir ? Math.round(d / 2) : d; if (exposedNow) x = Math.round(x * E.EXPOSE_DMG); return x; };

@@ -73,7 +73,7 @@
   {#if M.elemOf}{#if w.elem}<span class="neutral">Hits its {w.elem === 'Stone' ? 'Ember' : w.elem === 'Gale' ? 'Stone' : w.elem === 'Ember' ? 'Frost' : 'Gale'} stance's weakness</span>{/if}{:else if m > 1}<span class="good">Hits weakness</span>{:else if m < 1}<span class="bad">Resisted</span>{/if}
   {#if best.length}{m !== 1 ? ' · ' : ''}<span class="best">Breaks {best.join(', ')}</span>{/if}
   {#if M.flier}{' · '}{#if w.type === 'Pierce'}<span class="good">Reaches it in the air</span>{:else}<span class="bad">Can’t reach it in the air</span>{/if}{/if}
-  {#if M.plated}{@const n = M.plateBreak?.(w) ?? (w.type === 'Cut' ? 2 : 1)}{@const word = M.plateWord ? 'scales' : 'ice'}{' · '}{#if n >= M.plated}<span class="good">Clears its {word} in one hit</span>{:else}<span class="bad">Takes {Math.ceil(M.plated / n)} hits to clear its {word}</span>{/if}{#if M.plateHot && w.type === 'Cut'}{' · '}<span class="bad">Hot scales burn your hand</span>{/if}{/if}
+  {#if M.plated}{@const n = M.plateBreak?.(w) ?? (w.type === 'Cut' ? 2 : 1)}{@const word = M.plateWord === 'scale' ? 'scales' : (M.plateWord ?? 'ice')}{' · '}{#if n >= M.plated}<span class="good">Clears its {word} in one hit</span>{:else}<span class="bad">Takes {Math.ceil(M.plated / n)} hits to clear its {word}</span>{/if}{#if M.plateHot && w.type === 'Cut'}{' · '}<span class="bad">Hot scales burn your hand</span>{/if}{/if}
   {#if M.id === 'rimeshrike' && w.type === 'Pierce'}{' · '}<span class="bad">Glances off its shroud on the ground</span>{/if}
   {#if M.burrower}{' · '}{#if w.type === 'Blunt'}<span class="good">Reaches it underground</span>{:else}<span class="bad">Can’t reach it underground</span>{/if}{/if}
 {/snippet}

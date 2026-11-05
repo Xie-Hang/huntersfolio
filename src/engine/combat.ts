@@ -179,7 +179,7 @@ export function itemBlockReason(h: Hunt): string | null {
   const fx = ITEMS[h.item].effect, next = h.intent;
   if (fx === 'net') return next === 'takeoff' ? 'Only works while it flies. It takes off after this turn: throw it next turn' : 'Only works while it flies, and it’s on the ground now';
   if (fx === 'blast') return next === 'burrow' ? 'Only works while it’s underground. It digs in after this turn: throw it next turn' : 'Only works while it’s underground';
-  if (fx === 'thaw') return def(h).plateHot ? 'Its scales are already burning: a Firepot does nothing' : 'Only works while it has ice plating';
+  if (fx === 'thaw') return def(h).plateHot ? 'Its scales are already burning: a Firepot does nothing' : 'Only works while it has plating (ice or slate)';
   if (fx === 'cureInfect') return 'Only works while you’re infected';
   if (fx === 'cureSpark') return 'Only works with Spark pips on you or charged dice';
   return null;
