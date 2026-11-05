@@ -26,6 +26,7 @@ export interface HuntRecord {
   hpLeft: number; monHpLeft: number;
   killedBy: string | null;    // the attack that ended a lost hunt
   tips: string[];             // tutorial tips first shown during this hunt
+  resumed?: number;           // times the game was reloaded mid-hunt (the clock restarts at each reload)
 }
 export interface ErrorRecord { at: string; build: string; where: string; message: string; stack?: string }
 export interface PlayLog { v: 1; sessions: { at: string; build: string }[]; hunts: HuntRecord[]; errors: ErrorRecord[] }
@@ -50,8 +51,18 @@ const save = () => {
 
 export function sessionStart() { log.sessions.push({ at: now(), build: BUILD }); save(); }
 
-/* ---------- the hunt in progress (lives in memory; a reload mid-hunt starts a fresh clock) ---------- */
-let cur: { rec: HuntRecord; turnStart: number; tipsBefore: string[]; abandoned: boolean } | null = null;
+/* ---------- the hunt in progress ----------
+ * Kept in storage too (Nov 2026 fix: hunts resumed after a reload used to go unlogged, since this lived only in
+ * memory). After a reload the record carries on; time while the game was closed isn't counted. */
+const CUR = 'log-cur';
+type Cur = { rec: HuntRecord; turnStart: number; tipsBefore: string[]; abandoned: boolean };
+let cur: Cur | null = (() => {
+  const c = read(CUR) as Cur | null;
+  if (!c || !c.rec || typeof c.rec.mid !== 'string') return null;
+  c.rec.resumed = (c.rec.resumed ?? 0) + 1; c.turnStart = Date.now();
+  return c;
+})();
+const keep = () => write(CUR, cur);
 
 export function huntBegin(h: E.Hunt, s: E.Save) {
   cur = {
@@ -63,6 +74,7 @@ export function huntBegin(h: E.Hunt, s: E.Save) {
     },
     turnStart: Date.now(), tipsBefore: [...s.tips], abandoned: false
   };
+  keep();
 }
 /** Call just before the engine resolves the monster's turn; `intent` is what is about to hit. */
 export function turnEnd(h: E.Hunt) {
@@ -72,8 +84,9 @@ export function turnEnd(h: E.Hunt) {
   cur.rec.turnMs.push(Math.min(ms, IDLE_MS));
   cur.rec.killedBy = E.intentInfo(h).name;
   cur.turnStart = Date.now();
+  keep();
 }
-export function markAbandon() { if (cur) cur.abandoned = true; }
+export function markAbandon() { if (cur) { cur.abandoned = true; keep(); } }
 /** Call once the hunt is over (any way it ended). */
 export function huntEnd(h: E.Hunt, s: E.Save) {
   if (!cur || cur.rec.mid !== h.mid) return;
@@ -84,7 +97,7 @@ export function huntEnd(h: E.Hunt, s: E.Save) {
   r.broken = Object.entries(h.mon.parts).filter(([, p]) => p.broken).map(([k]) => k);
   if (r.result !== 'lose') r.killedBy = null;
   r.tips = s.tips.filter(t => !cur!.tipsBefore.includes(t));
-  log.hunts.push(r); cur = null; save();
+  log.hunts.push(r); cur = null; keep(); save();
 }
 
 export function logError(where: string, err: unknown) {

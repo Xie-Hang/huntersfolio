@@ -289,6 +289,29 @@ ICONS.update({
     'STORM_CHASER': lambda: plate('roc_calm', -10, 20, 276, (380, 100, 380, 330)) + arrow_through(150, 92, -18),
 })
 
+# ---------- the changed Ashfall Ridge and the apex (full game, 6 Nov 2026) ----------
+def plate_sz(name, x, y, w, size, crop=None):
+    """A captured plate of any size (capture2.cjs). crop = (cx, cy, cw, ch) in PNG pixels."""
+    data = base64.b64encode((POSES / f'{name}.png').read_bytes()).decode()
+    pw, ph = size
+    cx, cy, cw, ch = crop or (0, 0, pw, ph)
+    h = w * ch / cw
+    return f'<svg x="{x}" y="{y}" width="{w}" height="{h:.1f}" viewBox="{cx} {cy} {cw} {ch}"><image width="{pw}" height="{ph}" xlink:href="data:image/png;base64,{data}"/></svg>'
+
+
+def no_salve(cx, cy):
+    body = (f'<g transform="translate({cx - 34} {cy - 34}) scale(1.4)"><path d="M17 10 H31 V15 C37 18 40 24 40 30 C40 38 33 43 24 43 C15 43 8 38 8 30 C8 24 11 18 17 15 Z" fill="{BONE}" stroke="{INK}" stroke-width="3.4" stroke-linejoin="round"/>'
+            f'<path d="M10 29 C14 33 34 33 38 29 C38 37 32 41 24 41 C16 41 10 37 10 29 Z" fill="#8aa56a"/><path d="M15 6 H33 V11 H15 Z" fill="{MUD}" stroke="{INK}" stroke-width="3" stroke-linejoin="round"/></g>')
+    return body + f'<path d="M{cx - 36} {cy - 36} L{cx + 36} {cy + 36} M{cx + 36} {cy - 36} L{cx - 36} {cy + 36}" stroke="{INK}" stroke-width="15" stroke-linecap="round"/><path d="M{cx - 36} {cy - 36} L{cx + 36} {cy + 36} M{cx + 36} {cy - 36} L{cx - 36} {cy + 36}" stroke="{EMBER}" stroke-width="8" stroke-linecap="round"/>'
+
+
+V = (886, 490)
+ICONS.update({
+    'RIDGE_CHANGED': lambda: ''.join(plate_sz(n, x, y, 112, V, (60, 40, 790, 450)) for n, x, y in [('squall_gather', 18, 44), ('rimeshrike_idle', 128, 44), ('quake_idle', 18, 132), ('ash_scaled', 128, 132)]),
+    'SOVEREIGN': lambda: plate_sz('sov_rest', -14, 56, 284, (888, 510)),
+    'BARE_HANDED': lambda: plate_sz('sov_rest', -30, 92, 250, (888, 510)) + no_salve(188, 74),
+})
+
 for aid, fn in ICONS.items():
     body = fn()
     (SVG / f'{aid}.svg').write_text(frame(body, True))

@@ -1,7 +1,8 @@
 <script lang="ts">
   /** ridge: Ashfall Ridge (Tier 1). mire: the Mirewood (Tier 2), reeds and still water under mist.
-   *  spire: the Stormspire (Tier 3), wind-scoured crags under storm cloud, rain and far-off lightning. */
-  let { region = 'ridge' }: { region?: 'ridge' | 'mire' | 'spire' } = $props();
+   *  spire: the Stormspire (Tier 3), wind-scoured crags under storm cloud, rain and far-off lightning.
+   *  caldera: the apex's crater (Nov 2026): the rim rising at both sides, smoke columns, glowing cracks, rising embers. */
+  let { region = 'ridge' }: { region?: 'ridge' | 'mire' | 'spire' | 'caldera' } = $props();
   // Ashfall Ridge behind the monster plates: a far ridge and nearer hills in low-contrast hatching, a hazy sun,
   // and ash drifting down. Kept dark and quiet so the monster always reads first. Same space as the plates.
   const flakes = [[140, 0], [260, 3.2], [380, 1.4], [520, 4.6], [640, 2.1], [760, 5.4], [880, 0.8], [200, 6.1], [700, 7.3]] as const;
@@ -14,6 +15,9 @@
   const SPIRE = 'M60 400 L120 330 L170 352 L230 250 L260 268 L300 120 L330 140 L352 96 L380 150 L420 260 L470 300 L540 232 L600 280 L680 200 L720 226 L760 150 L800 196 L860 286 L930 260 L1000 320 V532 H60 Z';
   const LEDGE = 'M60 470 L180 446 L300 458 L420 440 L560 452 L700 436 L840 456 L1000 444 V532 H60 Z';
   const RAIN = Array.from({ length: 22 }, (_, i) => [70 + i * 44, (i * 37) % 9] as const);
+  const RIM = 'M60 220 L120 236 L190 290 L260 340 L340 380 L440 404 L560 410 L680 400 L780 372 L860 320 L930 262 L1000 230 V532 H60 Z';
+  const FLOOR = 'M60 460 C220 448 380 470 520 462 C680 454 840 474 1000 458 V532 H60 Z';
+  const SMOKE = [[220, 0], [520, 2.6], [800, 5.1]] as const;
   const REEDS = Array.from({ length: 26 }, (_, i) => [80 + i * 36 + (i % 3) * 7, 470 - (i % 4) * 14] as const);
 </script>
 
@@ -31,6 +35,15 @@
     <path d="M60 470 H1000 V532 H60 Z" fill="url(#{uid}w)" />
     <path d="M90 488 h70 M240 502 h110 M430 492 h60 M560 506 h120 M760 494 h80 M880 508 h70" stroke="#2c322d" stroke-width="4" stroke-linecap="round" />
     {#each REEDS as [x, top]}<path d="M{x} 476 Q{x - 4} {top + 20} {x + 6} {top}" stroke="#2b3026" stroke-width="4" fill="none" stroke-linecap="round" />{/each}
+  {:else if region === 'caldera'}
+    <clipPath id="{uid}r"><path d={RIM} /></clipPath>
+    <rect x="60" y="300" width="940" height="200" fill="#2a1a12" opacity=".5" />
+    {#each SMOKE as [x, d]}<g class="smoke" style="animation-delay:-{d}s"><circle cx={x} cy="200" r="40" fill="#2a2420" /><circle cx={x + 30} cy="150" r="52" fill="#262019" /><circle cx={x - 10} cy="96" r="60" fill="#221c17" /></g>{/each}
+    <path d={RIM} fill="#1e1712" />
+    <path d={hatch(60, 1080, 220, 540, 18)} stroke="#271e18" stroke-width="4" clip-path="url(#{uid}r)" />
+    <path d={RIM} fill="none" stroke="#33281f" stroke-width="5" stroke-linejoin="round" />
+    <path d={FLOOR} fill="#181210" />
+    <path class="glow" d="M120 494 l50 -10 l40 14 l60 -12 M420 504 l70 -12 l40 10 M660 496 l56 -14 l44 12 l50 -8 M880 506 l60 -10" fill="none" stroke="#7a3a1e" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" />
   {:else if region === 'spire'}
     <path d="M60 40 H1000 V170 C880 150 760 186 620 166 C480 146 340 182 200 160 C140 150 100 156 60 164 Z" fill="#1f1c1c" />
     <path d="M60 120 C200 104 320 132 460 118 C600 104 760 130 1000 112" stroke="#252121" stroke-width="10" fill="none" stroke-linecap="round" />
@@ -51,7 +64,7 @@
   <path d={hatch(60, 1080, 396, 540, 14)} stroke="#241d17" stroke-width="4" clip-path="url(#{uid}n)" />
 
   {/if}
-  {#if region !== 'spire'}{#each flakes as [x, d]}<circle class="ash" class:mote={region === 'mire'} cx={x} cy="40" r="3.5" fill="#4a3f35" style="animation-delay:-{d}s" />{/each}{/if}
+  {#if region !== 'spire'}{#each flakes as [x, d]}<circle class="ash" class:mote={region === 'mire'} class:ember={region === 'caldera'} cx={x} cy="40" r="3.5" fill="#4a3f35" style="animation-delay:-{d}s" />{/each}{/if}
 </svg>
 
 <style>
@@ -59,9 +72,15 @@
   .ash { animation: fall 9s linear infinite; transform-box: view-box; }
   @keyframes fall { 0% { transform: translate(0, 0); opacity: 0; } 10% { opacity: .9; } 100% { transform: translate(-60px, 480px); opacity: 0; } }
   .mote { fill: #3a4236; }
+  .ember { fill: #7a3a1e; animation-name: rise; }
+  @keyframes rise { 0% { transform: translate(0, 460px); opacity: 0; } 15% { opacity: .9; } 100% { transform: translate(40px, -20px); opacity: 0; } }
+  .smoke { animation: drift 12s ease-in-out infinite; transform-box: view-box; }
+  @keyframes drift { 0%, 100% { transform: translate(0, 0); opacity: .8; } 50% { transform: translate(30px, -20px); opacity: 1; } }
+  .glow { animation: glow 3s ease-in-out infinite; }
+  @keyframes glow { 0%, 100% { opacity: .6; } 50% { opacity: 1; } }
   .rain { animation: rain 1.5s linear infinite; transform-box: view-box; }
   @keyframes rain { 0% { transform: translate(0, 0); opacity: 0; } 15% { opacity: .9; } 100% { transform: translate(-90px, 460px); opacity: 0; } }
   .flash { opacity: 0; animation: flash 9s linear infinite; }
   @keyframes flash { 0%, 91%, 93%, 95%, 100% { opacity: 0; } 92%, 94% { opacity: 1; } }
-  @media (prefers-reduced-motion: reduce) { .ash, .rain, .flash { animation: none; opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .ash, .rain, .flash { animation: none; opacity: 0; } .smoke, .glow { animation: none; } }
 </style>
