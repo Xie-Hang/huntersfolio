@@ -64,7 +64,7 @@
     {@render stats()}
   {:else}
     <div class="ph">
-      <span class="kicker">Its next move</span>
+      <span class="kicker">When you end your turn, it will</span>
       <span class="pips" aria-label="Threat {info.threat} of 4"><span class="label" style="margin-right:6px">Threat</span>{#each [1, 2, 3, 4] as n}<i class:f={n <= info.threat}></i>{/each}</span>
     </div>
     <div class="nextline">

@@ -112,3 +112,18 @@ describe('Dice actions pick their own dice (no selection)', () => {
     expect(E.autoDice(h, 'capture')).toEqual([2, 3]);
   });
 });
+
+describe('Items say why they can\'t be used yet', () => {
+  it('the Net on a Galeshrike that is only about to take off', () => {
+    const s = E.newSave(); for (const id of Object.keys(E.MONSTERS)) s.record[id] = { hunts: 1, wins: 1, captures: 0, breaks: {} };
+    s.items.net = 2; s.loadout = { ...s.loadout, target: 'galeshrike', item: 'net' };
+    const h = E.startHunt(s, 3);
+    h.intent = 'takeoff'; h.mon.air = false;
+    expect(E.itemUsable(h)).toBe(false);
+    expect(E.itemBlockReason(h)).toMatch(/takes off after this turn/);
+    E.endTurn(h);
+    expect(h.mon.air).toBe(true);
+    expect(E.itemUsable(h)).toBe(true);
+    expect(E.itemBlockReason(h)).toBeNull();
+  });
+});

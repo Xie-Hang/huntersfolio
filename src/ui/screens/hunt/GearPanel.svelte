@@ -102,10 +102,14 @@
     {@const it = E.ITEMS[h.item]}
     <div class="divider"><span class="label">Item · Free action</span><span class="label">{h.itemCharges} left</span></div>
     <button class="move {iOk ? 'ready' : 'no'}" data-coach="item" aria-disabled={!iOk} onclick={() => iOk && game.item()}>
-      <span><span class="mn"><Key k="I" /><Icon id={h.item} size={20} />{it.name}</span><span class="md">{it.desc}{h.itemUsed ? ' · Used this turn' : it.effect === 'net' && !h.mon.air ? ' · Only while it flies' : it.effect === 'blast' && !h.mon.under ? ' · Only while it’s underground' : it.effect === 'thaw' && !h.mon.plating ? ' · Only while it has ice' : ''}</span></span>
+      <span><span class="mn"><Key k="I" /><Icon id={h.item} size={20} />{it.name}</span><span class="md">{#if E.itemBlockReason(h)}<span class="why">{E.itemBlockReason(h)}</span>{:else}{it.desc}{/if}</span></span>
       <span class="need">Free</span>
     </button>
   {:else}
     <div class="divider"><span class="label">Item</span><span class="label">None carried</span></div>
   {/if}
 </section>
+
+<style>
+  .why { color: var(--ember-soft); }
+</style>

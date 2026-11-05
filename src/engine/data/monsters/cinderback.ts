@@ -48,7 +48,7 @@ export const cinderback: MonsterDef = {
     const m = h.mon, enr = m.enraged, pb = m.parts.plate.broken;
     switch (type) {
       case 'swipe': return { name: enr ? 'Raking Swipes' : 'Claw Swipe', text: enr ? 'It rears up, claws glowing, and slashes twice.' : 'It scrapes forward, claws dragging sparks from the rock.', dmg: enr ? 34 : 26, threat: enr ? 2 : 1 };
-      case 'burrow': return { name: 'Burrowing', text: 'It tears into the ground and vanishes in a spray of hot grit.', dmg: 0, threat: 0, note: 'Underground next turn, then erupts' };
+      case 'burrow': return { name: 'Burrowing', text: 'It tears into the ground and vanishes in a spray of hot grit.', dmg: 0, threat: 0, note: 'Still on the surface now: hit it while you can. After your turn it\'s underground, then erupts' };
       case 'erupt': return { name: 'Eruption', text: 'The ground under your feet glows and bulges. Something is coming up!', dmg: pb ? (enr ? 60 : 48) : (enr ? 80 : 64), threat: enr ? 4 : 3, note: m.parts.vents.broken ? 'Drive it up with a heavy Blunt hit to cancel' : 'Drive it up to cancel. Then its shell is molten for 2 turns' };
       case 'venting': return { name: 'Venting', text: 'It squats on the surface, steam pouring from its back.', dmg: 0, threat: 0, note: 'A free turn. Mind the molten shell' };
       case 'unearthed': return { name: 'Driven up', text: 'It bursts out of the ground, dazed and blinking.', dmg: 0, threat: 0, note: 'Eruption cancelled. Its action is lost' };

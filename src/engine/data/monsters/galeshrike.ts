@@ -44,7 +44,7 @@ export const galeshrike: MonsterDef = {
     const m = h.mon, enr = m.enraged, tb = m.parts.talons.broken;
     switch (type) {
       case 'rake': return { name: 'Talon Rake', text: tb ? 'It hops forward, slashing with its one good foot.' : 'It hops forward, talons spread wide.', dmg: tb ? 18 : 28, threat: 1 };
-      case 'takeoff': { const n = airTurns(h); return { name: 'Taking off', text: 'It spreads its wings and leaps into the wind.', dmg: 0, threat: 0, note: `Airborne for ${n} turn${n > 1 ? 's' : ''}: Cut and Blunt deal half damage` }; }
+      case 'takeoff': { const n = airTurns(h); return { name: 'Taking off', text: 'It spreads its wings and leaps into the wind.', dmg: 0, threat: 0, note: `Still on the ground now. After your turn it's airborne for ${n} turn${n > 1 ? 's' : ''}: Cut and Blunt deal half damage` }; }
       case 'gust': return { name: enr ? 'Gale Storm' : 'Gust Buffet', text: enr ? 'It hammers the air with both wings, again and again.' : 'It beats its wings hard, driving a wall of wind at you.', dmg: enr ? 38 : 28, threat: enr ? 2 : 1, halfGuard: true, note: 'Ignores half your guard' };
       case 'circle': return { name: 'Circling high', text: 'It climbs into a wide circle overhead, watching you.', dmg: 0, threat: 0, note: 'Dives next turn' };
       case 'dive': return { name: 'Plunging Dive', text: 'It folds its wings and drops like a stone!', dmg: tb ? (enr ? 70 : 60) : (enr ? 95 : 80), threat: enr ? 4 : 3, note: 'Then it’s stuck for a turn' };

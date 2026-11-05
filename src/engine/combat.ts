@@ -115,6 +115,19 @@ export const reachable = (h: Hunt, partId: string, w: WeaponInst) => def(h).reac
 export const airborneHalf = (h: Hunt, w: WeaponInst) => h.mon.air && w.type !== 'Pierce';
 export const freeDice = (h: Hunt) => h.dice.map((d, i) => (d.used ? -1 : i)).filter(i => i >= 0);
 
+/** Why the carried item can't be used right now (null when it can, or when the reason is simply "used up").
+ *  Playtest (Nov 2026): two players threw the Net while the Galeshrike was "Taking off" and nothing happened:
+ *  the telegraph is what it does AFTER your turn, so it was still on the ground. Say so on the button. */
+export function itemBlockReason(h: Hunt): string | null {
+  if (!h.item || h.over || itemUsable(h)) return null;
+  if (h.itemUsed) return 'One item per turn: used this turn';
+  if (h.itemCharges < 1) return 'None left';
+  const fx = ITEMS[h.item].effect, next = h.intent;
+  if (fx === 'net') return next === 'takeoff' ? 'Only works while it flies. It takes off after this turn: throw it next turn' : 'Only works while it flies, and it’s on the ground now';
+  if (fx === 'blast') return next === 'burrow' ? 'Only works while it’s underground. It digs in after this turn: throw it next turn' : 'Only works while it’s underground';
+  if (fx === 'thaw') return 'Only works while it has ice plating';
+  return null;
+}
 export function itemUsable(h: Hunt): boolean {
   if (!h.item || h.itemUsed || h.itemCharges < 1 || h.over) return false;
   if (ITEMS[h.item].effect === 'net') return h.mon.air;
