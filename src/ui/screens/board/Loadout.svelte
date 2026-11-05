@@ -9,7 +9,7 @@
   import { SLOT_LABEL, bestParts, movesLine, weaponVs, elemLabel, markOf } from '../../fmt';
   import { tick } from 'svelte';
 
-  type Slot = 'w0' | 'w1' | 'armor' | 'charm' | 'item';
+  type Slot = 'w0' | 'w1' | 'armor' | 'charm' | 'item' | 'bounty';
   type Sort = 'best' | 'avg' | 'name';
   let picker = $state<{ slot: Slot; ftype: 'All' | E.DamageType; sort: Sort } | null>(null);
   let root: HTMLElement;
@@ -21,6 +21,10 @@
   const openBounties = $derived(E.BOUNTIES_ON ? E.bountiesFor(mon).filter(b => E.bountyOpen(game.save, b.id) && !game.save.bounties[b.id]).length : 0);
   const B = $derived(L.bounty && E.BOUNTIES[L.bounty]?.mon === mon && E.bountyOpen(game.save, L.bounty) ? E.BOUNTIES[L.bounty] : null);
   const breaks = $derived(B ? E.loadoutBreaks(game.save) : null);
+  const allB = $derived(E.BOUNTIES_ON ? E.bountiesFor(mon) : []);
+  const beaten = $derived((game.save.record[mon]?.wins ?? 0) > 0);
+  const doneN = $derived(allB.filter(b => game.save.bounties[b.id]).length);
+  function takeB(id: string | null) { L.bounty = id; game.persist(); if (picker?.slot === 'bounty') close(); }
 
   async function open(slot: Slot) {
     picker = { slot, ftype: 'All', sort: 'best' };
@@ -153,6 +157,47 @@
         </button>
       {/if}
     </div>
+    <!-- the bounty is not gear: an optional contract pinned beside the loadout, drawn as a notice, not a slot -->
+    {#if allB.length}
+      <div class="bnotice-wrap">
+        <div class="label bnlabel"><span>Bounty · optional</span><span>{doneN} of {allB.length} done</span></div>
+        {#if !beaten}
+          <div class="bnotice locked"><span class="pin" aria-hidden="true"></span><span class="nm">Locked</span><span class="sub">Beat the {M.short} once to open its {allB.length} bounties: extra coin, and rare materials on the hard one.</span></div>
+        {:else}
+          <button class="bnotice" class:open={!B && openBounties > 0} class:taken={!!B} data-slot="bounty" data-coach="bounties" onclick={() => open('bounty')}>
+            <span class="pin" aria-hidden="true"></span>
+            {#if B}
+              {@const pay = E.bountyPay(game.save, B.id)}
+              <span class="bnrow"><span class="nm">{B.name}{#if B.hard}{' '}<span class="tag hard">Hard</span>{/if}</span><span class="chg">Change</span></span>
+              <span class="sub">Win, and: {B.goals.map(g => E.goalText(g, mon)).join(' · ')}</span>
+              <span class="pay">Pays {pay.coin} coin{#if pay.mat}{' · '}<Icon id={pay.mat} size={16} />{E.matName(pay.mat)}{/if}</span>
+              {#if breaks}<span class="bad">{breaks}: change a weapon or it won’t pay.</span>{/if}
+            {:else}
+              <span class="bnrow"><span class="nm">{openBounties ? `${openBounties} bounties open` : 'All done'}</span><span class="chg">Choose</span></span>
+              <span class="sub">{openBounties ? 'Take one for extra coin. Each new one counts toward the bounty charms.' : 'Repeat any of them for half the coin.'}</span>
+            {/if}
+          </button>
+        {/if}
+      </div>
+    {/if}
+  {:else if picker.slot === 'bounty'}
+    <div class="picker">
+      <div class="pickhead"><h3>Choose a bounty</h3><button class="btn quiet" onclick={close}>Done</button></div>
+      <p class="ital" style="margin:0">Optional. Win and meet its goals for extra coin; every new one counts toward the bounty charms.</p>
+      <div class="plist one">
+        <button class="prow" aria-current={!B} onclick={() => takeB(null)}><span><span class="nm">No bounty{#if !B}<span class="badge">Chosen</span>{/if}</span><span class="ty">Just the hunt.</span></span><span class="num"></span></button>
+        {#each allB as b (b.id)}
+          {@const done = !!game.save.bounties[b.id]}
+          {@const pay = E.bountyPay(game.save, b.id)}
+          <button class="prow" aria-current={L.bounty === b.id} onclick={() => takeB(b.id)}>
+            <span><span class="nm">{b.name}{#if b.hard}{' '}<span class="tag hard">Hard</span>{/if}{#if L.bounty === b.id}<span class="badge">Chosen</span>{:else if done}<span class="badge">Done</span>{/if}</span>
+            <span class="ty">Win, and: {b.goals.map(g => E.goalText(g, mon)).join(' · ')}</span>
+            <span class="note"><span class="pay">{pay.coin} coin{#if pay.mat}{' · '}<Icon id={pay.mat} size={16} />{E.matName(pay.mat)}{/if}{pay.repeat ? ' (repeat: half the coin)' : ''}</span></span></span>
+            <span class="num"></span>
+          </button>
+        {/each}
+      </div>
+    </div>
   {:else}
     <div class="picker">
       <div class="pickhead"><h3>Choose {SLOT_LABEL[picker.slot]}</h3><button class="btn quiet" onclick={close}>Done</button></div>
@@ -253,16 +298,6 @@
     </div>
   {/if}
 
-  {#if !B && openBounties > 0}
-    <div class="bstrip quiet"><span><span class="bn">Bounties</span> <span class="ital">{openBounties} open for the {M.short}. Take one from its page: extra coin, and every new one counts toward the bounty charms.</span></span></div>
-  {/if}
-  {#if B}
-    <div class="bstrip">
-      <span><span class="bn">Bounty · {B.name}</span> <span class="ital">Win, and: {B.goals.map(g => E.goalText(g, mon)).join(' · ')}</span></span>
-      {#if breaks}<span class="bad">{breaks}: change a weapon or it won’t pay.</span>{/if}
-      <button class="btn quiet" onclick={() => { L.bounty = null; game.persist(); }}>Drop</button>
-    </div>
-  {/if}
   <div class="campfoot">
     {#if !E.isUnlocked(game.save, mon)}
       <span class="ital">{E.unlockHint(M.id)} to unlock this hunt. You can still read up and prepare.</span>
@@ -275,8 +310,26 @@
 </section>
 
 <style>
-  .bstrip { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; padding: 10px 12px; border: 1px solid var(--gold); border-radius: 6px; }
-  .bstrip .bn { color: var(--gold-hi); font-weight: 600; }
-  .bstrip.quiet { border-color: var(--line-2); font-size: var(--fs-sm); }
-  .bstrip .bad { color: var(--ember-soft); font-size: var(--fs-sm); }
+  /* the bounty notice: pinned paper, not a gear slot (Mekkman, Nov 2026: a bounty isn't loadout) */
+  .bnotice-wrap { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; padding-top: 12px; border-top: 1px dashed var(--line-2); }
+  .bnlabel { display: flex; justify-content: space-between; }
+  .bnotice { all: unset; box-sizing: border-box; cursor: pointer; position: relative; display: flex; flex-direction: column; gap: 3px; padding: 16px 16px 12px;
+    background: linear-gradient(180deg, rgba(236,223,200,.045), rgba(236,223,200,.015)), #241c14; border: 1px dashed #6b5a44; border-radius: 2px;
+    box-shadow: 0 3px 0 rgba(0,0,0,.35); transition: border-color .15s; }
+  .bnotice:hover, .bnotice:focus-visible { border-color: var(--gold); }
+  .bnotice:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .bnotice.open { border-color: rgba(233,185,73,.7); }
+  .bnotice.taken { border-style: solid; border-color: var(--gold); }
+  .bnotice.locked { cursor: default; }
+  .bnotice.locked .nm { color: var(--soft); }
+  .bnotice .pin { position: absolute; top: -6px; left: 50%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #f3cf7a, #a87a24 70%); box-shadow: 0 2px 2px rgba(0,0,0,.6); }
+  .bnotice .bnrow { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .bnotice .nm { font-weight: 600; font-size: var(--fs-lg); }
+  .bnotice.open .nm { color: var(--gold-hi); }
+  .bnotice .sub { font-size: var(--fs-sm); color: var(--soft); }
+  .bnotice .chg { font-size: var(--fs-sm); color: var(--gold-hi); }
+  .bnotice .bad { color: var(--ember-soft); font-size: var(--fs-sm); }
+  .pay { color: var(--gold-hi); font-size: var(--fs-sm); }
+  .tag.hard { color: var(--ember-soft); border-color: var(--ember-soft); }
 </style>

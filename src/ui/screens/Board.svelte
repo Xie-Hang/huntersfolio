@@ -42,8 +42,7 @@
       <span class="label">{E.TIERS[M.tier]}</span>
     </div>
     <div class="mongrid">
-      <section class="panel monside" aria-label="Bounties, parts and materials"><Bestiary mon={M.id} part="side" /></section>
-      <section class="panel monmain" aria-label="Bestiary entry"><Bestiary mon={M.id} part="main" /></section>
+      <section class="panel monmain" aria-label="Bestiary entry"><Bestiary mon={M.id} /></section>
       <div class="monload"><Loadout /></div>
     </div>
   </div>
