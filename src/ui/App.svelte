@@ -125,6 +125,8 @@
           {/each}
         </nav>
       {/if}
+      <!-- Hunter Rank (Nov 2026): a seal with your rank's letter -->
+      <span class="rankseal" title="Hunter Rank {E.hunterRank(game.save)}: {E.promotionFor(game.save) ? `pass the ${E.promotionFor(game.save)!.short} promotion hunt to rank up` : 'Low Rank cleared'}"><span class="rl">Rank</span><span class="rk">{E.hunterRank(game.save)}</span></span>
       <span class="purse">{game.save.coin} coin</span>
       {#if game.inHunt}
         <button class="btn quiet" onclick={() => game.abandon()}>Abandon hunt</button>
@@ -192,9 +194,9 @@
   </Modal>
   <Modal bind:open={endOpen} title="That's the demo">
     <div class="endcard">
-      <p class="lead">You've hunted every monster on Ashfall Ridge.</p>
+      <p class="lead">You passed the promotion hunt. You're a rank {E.hunterRank(game.save)} hunter.</p>
       <div class="stats"><span>Hunts <b>{game.save.hunts}</b></span><span>Parts broken <b>{totals.breaks}</b></span><span>Captures <b>{totals.captures}</b></span></div>
-      <p>The full game goes on beyond the ridge, with new regions, new monsters and the weapons forged from them.</p>
+      <p>The Mirewood waits beyond the ridge in the full game, with new regions, new monsters, the weapons forged from them, and the ranks above yours.</p>
       <p class="md">You can keep playing: there are still weapons to upgrade, charms to make and monsters to capture. Your progress carries over to the full game on this PC.</p>
       <div class="acts">
         {#if storeAvailable()}<button class="btn primary" onclick={() => openStore()}>Wishlist on Steam</button>{/if}

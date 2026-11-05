@@ -12,3 +12,4 @@ export * from './achievements';
 export * from './edition';
 export * from './behaviour';
 export * from './bounty';
+export * from './rank';

@@ -41,6 +41,10 @@
     {#if h.over === 'win'}
       <span class="kicker" style="color:var(--gold-hi)">{h.captured ? 'Captured' : 'Slain'}</span>
       <h2 style="margin:0;font-weight:600">{M.name} is {h.captured ? 'captured' : 'down'}</h2>
+      {#if M.promotion && (game.save.record[M.id]?.wins ?? 0) === 1}
+        <!-- the first win of a promotion hunt: the rank-up moment -->
+        <div class="promoted" role="status"><span class="seal" aria-hidden="true">{M.promotion}</span><span><b>Promoted!</b> You're now a rank {M.promotion} hunter.{M.promotion !== 'C' ? ' New hunts are open on the Hunt Board.' : ' Low Rank is yours.'}</span></div>
+      {/if}
       <span class="coin">+{r.coin} coin</span>
       <div>
         <span class="label">Materials</span>
@@ -91,6 +95,9 @@
 </section>
 
 <style>
+  .promoted { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--gold); border-radius: 3px; background: rgba(233,185,73,.08); color: var(--fg); }
+  .promoted b { color: var(--gold-hi); }
+  .promoted .seal { flex: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'IM Fell English SC', Georgia, serif; font-size: 24px; color: var(--ink); background: radial-gradient(circle at 35% 35%, #f3cf7a, #a87a24 75%); box-shadow: 0 2px 3px rgba(0,0,0,.5); }
   .nextline { display: flex; justify-content: space-between; align-items: baseline; gap: 6px 14px; flex-wrap: wrap; }
   .mvname.multi { font-size: var(--fs-lg); }
   .mvname .sep { color: var(--muted); }

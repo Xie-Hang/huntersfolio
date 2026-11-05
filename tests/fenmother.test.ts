@@ -42,3 +42,24 @@ describe('the Fenmother', () => {
     expect(run([['rimeshot', 2], ['boulder', 2]], 'cragmail', 1)).toBeLessThan(0.1);
   });
 });
+
+describe('Hunter Rank', () => {
+  const rec = (ids: string[]) => { const s = E.newSave(); for (const id of ids) s.record[id] = { hunts: 1, wins: 1, captures: 0, breaks: {} }; return s; };
+  it('starts at F and rises with each promotion: Cragwing E, Fenmother D, Sovereign C', () => {
+    expect(E.hunterRank(E.newSave())).toBe('F');
+    expect(E.hunterRank(rec(['cragwing']))).toBe('E');
+    expect(E.hunterRank(rec(['cragwing', 'fenmother']))).toBe('D');
+    expect(E.hunterRank(rec(['sovereign']))).toBe('C');
+  });
+  it('older saves earn the rank their records show; optional regions never skip a promotion', () => {
+    const old = rec(['gorehorn', 'galeshrike', 'cinderback', 'rimetail', 'bogjaw']);
+    expect(E.hunterRank(old)).toBe('E'); expect(E.isUnlocked(old, 'duskheron')).toBe(true);
+    expect(E.hunterRank(rec(['cragwing', 'feverjaw', 'rotcap']))).toBe('E');
+  });
+  it('names the next promotion hunt', () => {
+    expect(E.promotionFor(E.newSave())?.id).toBe('cragwing');
+    expect(E.promotionFor(rec(['cragwing']))?.id).toBe('fenmother');
+    expect(E.promotionFor(rec(['cragwing', 'fenmother']))?.id).toBe('sovereign');
+    expect(E.promotionFor(rec(['sovereign']))).toBeNull();
+  });
+});

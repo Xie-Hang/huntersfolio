@@ -5,6 +5,7 @@ import { ARMORS, CHARMS, ITEMS, MATERIALS } from './data/gear';
 import { MONSTERS } from './data/monsters';
 import { nextRandom } from './rng';
 import { settleBounty } from './bounty';
+import { rankAtLeast } from './rank';
 
 /* ---------- tuning constants ---------- */
 export const REWARD = { base: 100, perPart: 40, capture: 60 };
@@ -261,7 +262,9 @@ export function fixLoadout(s: Save) {
 export function isUnlocked(s: Save, id: string): boolean {
   const req = MONSTERS[id]?.requires;
   const reqs = req ? (Array.isArray(req) ? req : [req]) : [];
-  return reqs.every(r => (s.record[r]?.wins ?? 0) > 0) || (s.record[id]?.hunts ?? 0) > 0;
+  // a promotion hunt counts as passed once you hold its rank (older saves earn their rank from their records)
+  const met = (r: string) => (s.record[r]?.wins ?? 0) > 0 || (!!MONSTERS[r]?.promotion && rankAtLeast(s, MONSTERS[r].promotion!));
+  return reqs.every(met) || (s.record[id]?.hunts ?? 0) > 0;
 }
 
 /** How to unlock a locked monster, in words: "Beat the Gorehorn first" or "Beat every monster on Ashfall Ridge first". */
