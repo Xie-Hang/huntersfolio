@@ -63,7 +63,7 @@
 </script>
 
 <div class="forgegrid" class:wide={tab !== 'weapons'}>
-  <section class="panel" aria-label="Forge">
+  <section class="panel forgepanel" aria-label="Forge">
     <div class="ph"><h2>The Forge</h2><span class="label">{E.trackedLine(s)}</span></div>
     <div class="tabs" role="tablist">
       <button role="tab" aria-selected={tab === 'weapons'} onclick={() => setTab('weapons')}>Weapons</button>
@@ -123,7 +123,7 @@
     </div>
   </section>
 
-  <section class="panel" aria-label="Selected recipe" aria-live="polite" bind:this={detailEl}>
+  <section class="panel forgedetail" aria-label="Selected recipe" aria-live="polite" bind:this={detailEl}>
     {#if !sel}
       <p class="ital p0">Pick something from the list.</p>
     {:else}

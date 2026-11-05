@@ -43,7 +43,7 @@
 {/snippet}
 
 <div>
-  <section class="panel" aria-label="Shop">
+  <section class="panel shoppanel" aria-label="Shop">
     <div class="ph"><h2>The Shop</h2><span class="label">{E.trackedLine(s)}</span></div>
     <div class="tabs" role="tablist">
       <button role="tab" aria-selected={tab === 'buy'} onclick={() => setTab('buy')}>Buy</button>
