@@ -5,6 +5,7 @@ import '@fontsource/barlow/latin-400-italic.css';
 import '@fontsource/barlow/latin-600.css';
 import App from './ui/App.svelte';
 import './ui/app.css';
+import './ui/materials.css';
 import { installCrashHandlers } from './ui/crash';
 import { logError } from './ui/playlog';
 import { startPad } from './ui/pad.svelte';

@@ -19,6 +19,9 @@ class Game {
   newerSave = $state(false);
   hunt = $state<E.Hunt | null>(null);
   view = $state<View>('board');
+  /** the Hunt Board has two pages (Nov 2026 playtest: 23 monsters made one long list): the grid of every monster, and
+   *  one monster's page with its bestiary entry and your loadout. New players open on the Gorehorn's page. */
+  boardMon = $state(false);
   /** indices of selected dice */
   sel = $state<number[]>([]);
   /** snapshots taken before each action this turn */
@@ -52,6 +55,7 @@ class Game {
       }
     }
     if (checkAchievements(this.save).length) write(SAVE_KEY, $state.snapshot(this.save));
+    this.boardMon = this.save.hunts === 0;
   }
   persist() {
     write(SAVE_KEY, $state.snapshot(this.save));
@@ -64,6 +68,7 @@ class Game {
     this.undoStack = [];
     this.sel = [];
     this.view = 'board';
+    this.boardMon = true;
     this.persist();
   }
 
@@ -74,7 +79,17 @@ class Game {
     if (this.inHunt) return;
     E.fixLoadout(this.save);
     if (shopTab) this.shopTab = shopTab;
+    if (v === 'board') this.boardMon = false;
     this.view = v;
+  }
+  /** a monster's page on the Hunt Board: its entry and your loadout for it */
+  openMonster(id: string) {
+    if (this.inHunt || !E.MONSTERS[id]) return;
+    this.save.loadout.target = id;
+    E.fixLoadout(this.save);
+    this.persist();
+    this.view = 'board';
+    this.boardMon = true;
   }
   /** `scripted`: the tutorial's first hunt, opening on fixed dice */
   begin(scripted = false) {

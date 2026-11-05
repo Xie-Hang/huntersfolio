@@ -3,6 +3,7 @@
   import { game, type View } from './game.svelte';
   import Modal from './parts/Modal.svelte';
   import Coach from './parts/Coach.svelte';
+  import Intro from './parts/Intro.svelte';
   import { onHuntKey } from './keys';
   import { storeAvailable, openStore, feedbackInfo, openFeedback, feedbackButton } from './store';
   import * as PL from './playlog';
@@ -62,6 +63,10 @@
   // Music follows the game: town loop in town, hunt loop in a hunt, the danger layer on big telegraphs, a sting at the end.
   // On the desktop build autoplay is allowed, so start the music at launch instead of on the first click.
   $effect(() => { if ((window as unknown as { hf?: unknown }).hf) music.unlock(); });
+  // The opening card: new players always; in the browser, every launch (its Begin click is what turns the sound on).
+  // Automated runs (store captures, QA bots) skip it: navigator.webdriver is set only under automation.
+  const freshPlayer = settings.prefs.tips && game.save.hunts === 0 && !game.save.tips.includes('begin');
+  let introOpen = $state(!navigator.webdriver && (freshPlayer || !isDesktop()));
   $effect(() => { music.setVolume(settings.prefs.music); });
   $effect(() => { setSfxVolume(settings.prefs.sfx); });
   $effect(() => { setUiSize(settings.prefs.uiSize); });
@@ -103,7 +108,9 @@
 
 <svelte:window onpointerdown={() => music.unlock()} onkeydown={e => { music.unlock(); onHuntKey(e); }} onclickcapture={uiClick} />
 
-<div class="wrap" class:hunting={game.inHunt}>
+{#if introOpen}<Intro fresh={freshPlayer} onbegin={() => (introOpen = false)} onskip={() => { coach.skipAll(); introOpen = false; }} />{/if}
+
+<div class="wrap" class:hunting={game.inHunt} inert={introOpen}>
   <header class="top">
     <div>
       <h1 aria-label="Hunter's Folio"><span class="hn">Hunter’s</span> <span>Folio</span></h1>
@@ -226,5 +233,5 @@
   {/if}
 </div>
 
-<Coach />
+{#if !introOpen}<Coach />{/if}
 

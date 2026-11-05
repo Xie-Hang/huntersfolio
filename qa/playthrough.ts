@@ -97,8 +97,10 @@ async function forgeAll(p: Page) {
       const item = c && s.items[c] > 0 ? c : (s.items.salve ?? 0) > 0 ? 'salve' : null;
       s.loadout = { ...s.loadout, target, weapons: [first, second].filter(Boolean) as string[], item };
       await setJSON(p, SAVE, s); await p.reload(); await p.waitForTimeout(250);
-      await p.click(`.mrow[data-id="${target}"]`);
     }
+    // the Hunt Board opens on the grid: pick the monster to reach its page (new saves open on the Gorehorn's page)
+    const tgt = ((await getJSON(p, SAVE)) as E.Save | null)?.loadout.target ?? 'gorehorn';
+    if (await p.locator('.mcard').count()) await p.click(`.mcard[data-id="${tgt}"]`);
     await p.click('[data-coach="begin"]'); await p.waitForTimeout(150);
     const mid = (await getJSON(p, HUNT) as E.Hunt | null)?.mid ?? '?';
     const winsBefore = ((await getJSON(p, SAVE)) as E.Save).record[mid]?.wins ?? 0;

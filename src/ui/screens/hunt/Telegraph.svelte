@@ -29,6 +29,8 @@
   <div style="display:flex;gap:10px;flex-wrap:wrap">
     <button class="btn primary" data-coach="to-forge" onclick={() => game.go('forge')}>Go to the Forge</button>
     <button class="btn" data-coach="to-shop" onclick={() => game.go('shop', E.surplusValue(game.save) > 0 ? 'sell' : undefined)}>{E.surplusValue(game.save) > 0 ? 'Sell at the Shop' : 'Shop'}</button>
+    <!-- straight back to this monster's page, loadout ready (one click from hunting it again) -->
+    <button class="btn" onclick={() => game.openMonster(h.mid)}>Hunt the {M.short} again</button>
     <button class="btn" onclick={() => game.go('board')}>Hunt Board</button>
   </div>
 {/snippet}

@@ -1,4 +1,7 @@
 <script lang="ts">
+  // The Hunt Board, in two pages (Nov 2026 playtest: with 23 monsters the side list ran long). The first page is
+  // every monster as a small bestiary plate, grouped by region; a monster's page holds its entry and your loadout,
+  // with a way back. New players open straight on the Gorehorn's page (the guided first hunt starts there).
   import { storeAvailable, openStore } from '../store';
   import Elem from '../parts/Elem.svelte';
   import * as E from '../../engine';
@@ -9,9 +12,9 @@
   import Loadout from './board/Loadout.svelte';
 
   let filter = $state<'All' | E.Element>('All');
-  let bestiaryEl: HTMLElement;
   const known = Object.keys(E.MONSTERS).length;
   const total = known + E.UNKNOWN.reduce((n, u) => n + u.n, 0);
+  const M = $derived(E.MONSTERS[game.save.loadout.target]);
 
   const groups = $derived(
     [1, 2, 2.2, 2.5, 3, 3.2, 4]
@@ -22,24 +25,33 @@
       }))
       .filter(g => g.known.length || g.unknown.length)
   );
+  const done = (id: string) => { const bs = E.bountiesFor(id); return { n: bs.filter(b => game.save.bounties[b.id]).length, of: bs.length }; };
 
-  function pick(id: string) {
-    game.save.loadout.target = id;
-    game.persist();
-    if (window.innerWidth <= 900) bestiaryEl?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
-  }
+  // back to the grid with Escape (the pad's B already closes dialogs and clears selections)
   function onKey(e: KeyboardEvent) {
-    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
-    const rows = [...document.querySelectorAll<HTMLButtonElement>('.mrow[data-id]')];
-    const i = rows.indexOf(e.target as HTMLButtonElement); if (i < 0) return;
-    const n = rows[e.key === 'ArrowDown' ? Math.min(rows.length - 1, i + 1) : Math.max(0, i - 1)];
-    if (n && n !== e.target) { e.preventDefault(); n.focus(); pick(n.dataset.id!); }
+    if (e.key === 'Escape' && game.view === 'board' && game.boardMon && !document.querySelector('dialog[open]')) { e.preventDefault(); game.go('board'); }
   }
 </script>
 
-<div class="campgrid">
-  <section class="panel" aria-label="Monsters">
-    <div class="ph"><h2>Monsters</h2><span class="label">{known} of {total} sighted</span></div>
+<svelte:window onkeydown={onKey} />
+
+{#if game.boardMon && M}
+  <div class="monpage">
+    <div class="backbar">
+      <button class="btn quiet" data-sound onclick={() => game.go('board')}><span aria-hidden="true">←</span> All monsters</button>
+      <span class="label">{E.TIERS[M.tier]}</span>
+    </div>
+    <div class="mongrid">
+      <section class="panel" aria-label="Bestiary entry"><Bestiary mon={M.id} /></section>
+      <Loadout />
+    </div>
+  </div>
+{:else}
+  <section class="panel boardpanel" aria-label="Monsters">
+    <div class="ph">
+      <h2>Choose a monster</h2>
+      <span class="label">{known} of {total} sighted</span>
+    </div>
     <div class="filters" aria-label="Filter by element">
       {#each ['All', ...ELEMS] as f}
         <button aria-pressed={filter === f} onclick={() => (filter = f as typeof filter)}>
@@ -47,39 +59,40 @@
         </button>
       {/each}
     </div>
-    <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div class="mlist" onkeydown={onKey}>
-      {#each groups as g (g.t)}
-        <div class="group">{E.TIERS[g.t]}</div>
-        {#each g.known as M (M.id)}
-          {@const r = record(game.save, M.id)}
-          {@const open = E.isUnlocked(game.save, M.id)}
-          <button class="mrow" class:locked={!open} data-id={M.id} aria-current={M.id === game.save.loadout.target} onclick={() => pick(M.id)}>
-            <span class="thumb" aria-hidden="true"><Plate mon={M.id} /></span>
-            <span>
-              <span class="nm">{M.short}</span>
-              <span class="meta"><span><Elem e={M.elem} />{M.elem}</span><span>{M.elemOf ? 'Weakness changes' : `Weak: ${M.weak}`}</span>{#if open}<span class={r.wins ? '' : 'new'}>{r.wins ? `Hunted ×${r.wins}` : 'Not yet hunted'}</span>{#if E.BOUNTIES_ON && r.wins}{@const bs = E.bountiesFor(M.id)}<span class:gold={game.save.loadout.bounty && E.BOUNTIES[game.save.loadout.bounty]?.mon === M.id}>Bounties {bs.filter(b => game.save.bounties[b.id]).length}/{bs.length}</span>{/if}{:else}<span>Locked · {E.unlockHint(M.id)}</span>{/if}</span>
-            </span>
-          </button>
-        {/each}
-        {#each g.unknown as u}
-          <div class="mrow unknown" aria-disabled="true">
-            <span class="thumb" aria-hidden="true">?</span>
-            <span><span class="nm">Unknown</span><span class="meta">{#if u.elem}<span><Elem e={u.elem} />{u.elem}</span>{/if}<span>{u.hint}</span></span></span>
-          </div>
-        {/each}
-      {:else}
-        <p class="ital p0">No monsters of that element sighted yet.</p>
-      {/each}
-    </div>
+    {#each groups as g (g.t)}
+      <div class="region">
+        <h3 class="group">{E.TIERS[g.t]}</h3>
+        <div class="mgrid">
+          {#each g.known as N (N.id)}
+            {@const r = record(game.save, N.id)}
+            {@const open = E.isUnlocked(game.save, N.id)}
+            <button class="mcard" class:locked={!open} aria-current={N.id === game.save.loadout.target} data-id={N.id}
+              aria-label="{open ? N.short : `${N.short}, locked`}" onclick={() => open && game.openMonster(N.id)} aria-disabled={!open}>
+              <span class="mthumb" aria-hidden="true"><Plate mon={N.id} /></span>
+              <span class="nm">{N.short}</span>
+              <span class="meta"><span><Elem e={N.elem} />{N.elem}</span><span>{N.elemOf ? 'Weakness changes' : `Weak to ${N.weak}`}</span></span>
+              {#if open}
+                <span class="st" class:new={!r.wins}>{r.wins ? `Hunted ×${r.wins}` : 'Not yet hunted'}{#if E.BOUNTIES_ON && r.wins}{@const b = done(N.id)}{' '}· Bounties {b.n}/{b.of}{/if}</span>
+              {:else}
+                <span class="st">Locked · {E.unlockHint(N.id)}</span>
+              {/if}
+            </button>
+          {/each}
+          {#each g.unknown as u}
+            <div class="mcard unknown" aria-disabled="true">
+              <span class="mthumb q" aria-hidden="true">?</span>
+              <span class="nm">Unknown{u.n > 1 ? ` ×${u.n}` : ''}</span>
+              <span class="meta">{#if u.elem}<span><Elem e={u.elem} />{u.elem}</span>{/if}</span>
+              <span class="st">{u.hint}</span>
+            </div>
+          {/each}
+        </div>
+      </div>
+    {:else}
+      <p class="ital p0">No monsters of that element sighted yet.</p>
+    {/each}
     {#if E.EDITION === "demo" && storeAvailable() && game.save.endSeen}
       <div class="wishrow"><span class="md">The rest of the hunt is in the full game.</span><button class="btn quiet" onclick={() => openStore()}>Wishlist on Steam</button></div>
     {/if}
   </section>
-
-  <section class="panel" aria-label="Bestiary entry" bind:this={bestiaryEl}>
-    <Bestiary mon={game.save.loadout.target} />
-  </section>
-
-  <Loadout />
-</div>
+{/if}

@@ -91,8 +91,32 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .youbox > .panel + .panel{border-top:1px solid var(--line);border-radius:0}
 @media (max-width:1100px){.grid.hunt{grid-template-columns:minmax(0,1fr) minmax(0,320px)}.grid.hunt .center{grid-column:1;order:0}.grid.hunt .side{grid-column:1 / -1;order:2;position:static}}
 @media (max-width:720px){.grid.hunt{grid-template-columns:minmax(0,1fr)}.grid.hunt .side{order:3}}
-.campgrid{display:grid;grid-template-columns:minmax(0,270px) minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
-@media (max-width:1180px){.campgrid{grid-template-columns:minmax(0,260px) minmax(0,1fr)}.campgrid > .loadout{grid-column:1 / -1}}
+/* Hunt Board (Nov 2026): page 1 is a grid of monster plates by region; page 2 is one monster's entry beside the loadout */
+.monpage{display:flex;flex-direction:column;gap:12px}
+.backbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.mongrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:960px){.mongrid{grid-template-columns:minmax(0,1fr)}}
+.boardpanel{gap:16px}
+.boardpanel .region{display:flex;flex-direction:column;gap:10px}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.mcard{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:3px;min-width:0;padding:10px 12px 12px;border:1px solid var(--mat-plate-rule);border-radius:3px;
+  background:repeating-linear-gradient(135deg,rgba(236,223,200,.02) 0 1px,transparent 1px 7px),var(--panel);box-shadow:inset 0 0 0 3px var(--panel),inset 0 0 0 4px var(--mat-plate-inner);transition:border-color .15s}
+.mcard:hover{border-color:var(--gold)}
+.mcard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.mcard[aria-current="true"]{border-color:var(--gold)}
+.mcard[aria-current="true"] .nm{color:var(--gold-hi)}
+.mthumb{height:104px;margin-bottom:6px;border:1px solid var(--line);border-radius:2px;background:#1a1511;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.mthumb svg{width:100%;height:100%}
+.mcard .nm{font-family:var(--f-body);font-weight:600;font-size:var(--fs-lg);line-height:1.25}
+.mcard .meta{font-size:var(--fs-sm);color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+.mcard .st{font-size:var(--fs-sm);color:var(--soft)}
+.mcard .st.new{color:var(--gold-hi)}
+.mcard.locked,.mcard.unknown{cursor:default}
+.mcard.locked:hover,.mcard.unknown:hover{border-color:var(--mat-plate-rule)}
+.mcard.locked .mthumb svg{filter:grayscale(1) brightness(.28)}
+.mcard.locked .nm,.mcard.unknown .nm{color:var(--soft)}
+.mcard.locked .st{color:var(--muted)}
+.mthumb.q{font-family:var(--f-body);font-size:var(--fs-xl);color:var(--muted)}
 /* monster list */
 .mlist{display:flex;flex-direction:column;gap:6px}
 .filters{display:flex;gap:6px;flex-wrap:wrap}
@@ -468,20 +492,30 @@ details.rules ul{margin:10px 0 0;padding-left:20px;display:flex;flex-direction:c
 .pick .vs.good,.pick .vs.bad{font-size:var(--fs-sm)}
 
 /* Tutorial tips */
-.coach{position:fixed;box-sizing:border-box;z-index:50;background:var(--raise);border:1px solid var(--gold);border-radius:4px;padding:14px 16px 12px;box-shadow:0 10px 30px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:10px}
-.coach p{margin:0;font-size:var(--fs-md);line-height:1.45;color:var(--fg)}
+/* the tip is a parchment note pinned to the page: bone paper, ink text, the reverse of every panel (Nov 2026 playtest:
+   the gold tip blended into a UI that is gold everywhere). Guided steps dim everything but their target. */
+.coach{position:fixed;box-sizing:border-box;z-index:50;background:var(--bone);color:var(--ink);border:0;border-radius:3px;padding:14px 18px 12px;box-shadow:0 12px 34px rgba(0,0,0,.65);display:flex;flex-direction:column;gap:10px}
+.coach p{margin:0;font-size:var(--fs-md);line-height:1.45;color:#2a1f17}
+.coach .coach-head{font-family:var(--f-body);font-weight:600;font-size:var(--fs-sm);letter-spacing:.08em;color:#77420f}
 .coach-acts{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .coach-acts .btn{min-height:36px;padding:6px 14px}
-.coach-skip{background:none;border:0;padding:6px 0;font-family:var(--f-body);font-size:var(--fs-sm);color:var(--muted);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
-.coach-skip:hover{color:var(--soft)}
+.coach .btn.primary{background:var(--ink);color:var(--bone);border-color:var(--ink)}
+.coach .btn.primary:hover{background:#2e241c}
+.coach .btn.quiet{background:transparent;color:#2a1f17;border-color:#8c7a62}
+.coach-skip{background:none;border:0;padding:6px 0;font-family:var(--f-body);font-size:var(--fs-sm);color:#5e4e3c;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.coach-skip:hover{color:#2a1f17}
+.coach :focus-visible{outline-color:var(--ink)}
+/* the arrow: a paper tab pointing at the target */
+.coach-arrow{position:absolute;width:16px;height:16px;background:var(--bone);transform:rotate(45deg);pointer-events:none}
+.coach-arrow.up{top:-7px}.coach-arrow.down{bottom:-7px}.coach-arrow.left{left:-7px}.coach-arrow.right{right:-7px}
 .coach-ring{position:fixed;box-sizing:border-box;z-index:49;pointer-events:none;border:2px solid var(--gold);border-radius:6px;animation:coachpulse 1.6s ease-in-out infinite}
 @keyframes coachpulse{0%,100%{box-shadow:0 0 0 0 rgba(233,185,73,.45)}50%{box-shadow:0 0 0 6px rgba(233,185,73,0)}}
-.coach-ring.guide{border-width:3px;animation:coachglow 1.3s ease-in-out infinite}
+/* guided steps: the dim is the ring's outline, so the target itself stays lit and clickable */
+.coach-ring.guide{border-width:3px;border-color:var(--gold-hi);outline:200vmax solid rgba(8,6,4,.66);outline-offset:0;animation:coachglow 1.3s ease-in-out infinite}
 @keyframes coachglow{0%,100%{box-shadow:0 0 0 0 rgba(233,185,73,.6),0 0 18px 2px rgba(233,185,73,.35)}50%{box-shadow:0 0 0 8px rgba(233,185,73,0),0 0 28px 6px rgba(233,185,73,.55)}}
-.coach.guide{border-width:2px}
 .btn.rr{border-color:var(--gold);color:var(--gold-hi);background:var(--raise)}
 .tag.counter{color:var(--ink);background:var(--gold-hi);border-color:var(--gold-hi)}
-.coach-wait{font-family:var(--f-body);font-size:var(--fs-sm);color:var(--gold-hi)}
+.coach-wait{font-family:var(--f-body);font-size:var(--fs-sm);font-weight:600;color:#77420f}
 @media (prefers-reduced-motion: reduce){.coach-ring,.coach-ring.guide{animation:none}}
 
 /* keyboard hints: quiet, never louder than the label they sit on */
