@@ -54,7 +54,9 @@ export function startHunt(s: Save, seed: number, script?: Face[][]): Hunt {
   fixLoadout(s);
   const L = s.loadout, MD = MONSTERS[L.target], arm = armorInst(L.armor, lvOf(s.armors, L.armor));
   let item = L.item, carried = 0;
+  if (item && ITEMS[item]?.pouch) item = null;
   if (item && (s.items[item] ?? 0) > 0) { carried = Math.min(s.items[item], ITEMS[item].max); s.items[item] -= carried; } else item = null;
+  const snares = Math.min(s.items.snare ?? 0, ITEMS.snare.max); s.items.snare = (s.items.snare ?? 0) - snares;
   const parts = Object.fromEntries(MD.parts.map(p => [p.id, { hp: p.hp, max: p.hp, broken: false, exposed: 0 }]));
   const h: Hunt = {
     version: HUNT_VERSION,
@@ -64,7 +66,7 @@ export function startHunt(s: Save, seed: number, script?: Face[][]): Hunt {
     dice: [], guard: 0, chargePending: false, chargeReady: false, evade: false, whet: 0,
     target: MD.parts[0].id,
     mon: { hp: MD.hp, max: MD.hp, parts, enraged: false, daze: 0, dazeMax: DAZE_START, dazeLock: 0, seq: 0, charges: 0, usedWallow: false, usedRoot: false, exhausted: false, wallow: 0, air: false, airLeft: 0, under: false, molten: 0, plating: MD.plated ?? 0 },
-    intent: '', log: [], over: null, captured: false,
+    intent: '', log: [], over: null, captured: false, snares,
     stats: { dealt: 0, taken: 0, guarded: 0, broken: 0, rerollsUsed: 0 },
     reward: null, rng: seed | 0,
     ...(bountyFor(s, MD.id) ? { bounty: bountyFor(s, MD.id)! } : {}),
@@ -248,8 +250,9 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
   } else if (mv.daze && h.target === MD.head && reach && m.hp > 0 && m.dazeLock === 0) {
     m.daze = Math.min(m.dazeMax, m.daze + mv.daze);
     if (m.daze >= m.dazeMax) {
-      m.daze = 0; m.dazeMax += DAZE_STEP; m.dazeLock = DAZE_LOCK; h.intent = 'dazed';
-      log(h, 'Daze: the blow rattles its skull. It loses its action!', 'daze');
+      m.daze = 0; m.dazeMax += DAZE_STEP; m.dazeLock = DAZE_LOCK;
+      if (intentInfo(h).steady) { m.dazeQueued = true; log(h, `Daze: it reels, but the ${intentInfo(h).name} is already coming. It loses its next action instead.`, 'daze'); }
+      else { h.intent = 'dazed'; log(h, 'Daze: the blow rattles its skull. It loses its action!', 'daze'); }
       if (charmFx(h) === 'dazeWhet') { h.whet = Math.max(h.whet, 0.5); log(h, 'Dusk Charm: your next hit deals +50%.', 'gold'); }
       if (charmFx(h) === 'dazeHeal') { const heal = Math.min(DAZE_HEAL, h.pmax - h.php); if (heal) { h.php += heal; log(h, `Tusk Charm: +${heal} HP.`, 'gold'); } }
     }
@@ -279,9 +282,13 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
 
 const freeOnly = (h: Hunt, idx: number[]) => idx.filter(i => h.dice[i] && !h.dice[i].used);
 
+/** A blank fits no move, so it guards better than a shape (playtest: blanks felt like a wasted roll).
+ *  The Bristlehide Vest's perk raises that further. */
+export const BLANK_GUARD = 1.5, VEST_BLANK_GUARD = 2.5;
+export const guardOf = (h: Hunt, i: number) => Math.round(h.arm.guard * (h.dice[i]?.face === 'B' ? (h.arm.blankx2 ? VEST_BLANK_GUARD : BLANK_GUARD) : 1));
 export function guard(h: Hunt, idx: number[]): boolean {
   const sel = freeOnly(h, idx); if (!sel.length || h.over) return false;
-  for (const i of sel) { h.guard += h.arm.guard * (h.arm.blankx2 && h.dice[i].face === 'B' ? 2 : 1); h.dice[i].used = 'Guard'; }
+  for (const i of sel) { h.guard += guardOf(h, i); h.dice[i].used = 'Guard'; }
   return true;
 }
 export function charge(h: Hunt, idx: number[]): boolean {
@@ -303,12 +310,17 @@ export function swap(h: Hunt, idx: number[]): boolean {
   if (charmFx(h) === 'swapWhet') { h.whet = Math.max(h.whet, SWAP_WHET); log(h, 'Core Charm: your next hit deals +30%.', 'gold'); }
   return true;
 }
+/** Weak enough, a Snare carried, none set yet this turn. */
+export const captureReady = (h: Hunt) => canCapture(h) && !captureBlocked(h) && h.snares > 0 && !h.snareSet;
+/** Set a snare (2 dice, 1 Snare). It closes when you end your turn, after the monster's move: a hit of
+ *  CHARGE_BREAK or more tears it free (the snare is lost). Risk you can see and play around, not a roll. */
 export function capture(h: Hunt, idx: number[]): boolean {
-  const sel = freeOnly(h, idx); if (sel.length !== 2 || !canCapture(h) || h.over) return false;
+  const sel = freeOnly(h, idx); if (sel.length !== 2 || !canCapture(h) || h.over || h.snareSet) return false;
   if (captureBlocked(h)) { log(h, 'You can’t snare it while it’s in the air.'); return false; }
-  sel.forEach(i => (h.dice[i].used = 'Capture'));
-  h.captured = true; log(h, `The snare bites. ${def(h).name} thrashes, then lies still. Captured!`, 'gold');
-  finish(h, 'win');
+  if (h.snares < 1) { log(h, 'You have no Snare. Buy them in the Shop.'); return false; }
+  sel.forEach(i => (h.dice[i].used = 'Snare'));
+  h.snares--; h.snareSet = true;
+  log(h, `You set a snare around the ${def(h).short}. It holds unless its move hits you for ${CHARGE_BREAK} or more.`, 'gold');
   return true;
 }
 export function reroll(h: Hunt, idx: number[]): number[] {
@@ -358,6 +370,14 @@ export function endTurn(h: Hunt): TurnResult {
       if (h.chargePending && taken >= CHARGE_BREAK) { h.chargePending = false; log(h, 'The hit breaks your focus. Your charge is lost.', 'ember'); }
     }
   }
+  if (h.snareSet) {
+    h.snareSet = false;
+    if (h.php > 0 && taken < CHARGE_BREAK) {
+      h.captured = true; log(h, `The snare bites. ${MD.name} thrashes, then lies still. Captured!`, 'gold');
+      finish(h, 'win'); return { taken };
+    }
+    if (h.php > 0) log(h, `The hit knocks you back and the ${MD.short} tears free of the snare!`, 'ember');
+  }
   const line = MD.resolve(h, type, landed);
   if (line) log(h, line);
   if (m.wallow > 0) m.wallow--;
@@ -370,5 +390,6 @@ export function endTurn(h: Hunt): TurnResult {
   h.turn++; h.chargeReady = h.chargePending; h.chargePending = false; h.guard = 0; h.itemUsed = false; h.freeSwapUsed = false;
   rollAll(h);
   h.intent = MD.next(h, type);
+  if (m.dazeQueued) { m.dazeQueued = false; h.intent = 'dazed'; }
   return { taken };
 }

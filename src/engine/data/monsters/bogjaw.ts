@@ -39,11 +39,11 @@ export const bogjaw: MonsterDef = {
   intent(h, type): Intent {
     const m = h.mon, enr = m.enraged, sac = m.parts.sac.broken, warts = m.parts.warts.broken, jaw = m.parts.jaw.broken;
     switch (type) {
-      case 'lash': return { name: 'Tongue Lash', text: 'Its tongue uncoils, slick with mud.', dmg: enr ? 30 : 24, threat: 1 };
-      case 'slam': return { name: 'Body Slam', text: 'It heaves its bulk out of the mire to crush you.', dmg: warts ? (enr ? 36 : 28) : (enr ? 50 : 40), threat: 2 };
+      case 'lash': return { name: 'Tongue Lash', text: 'Its tongue uncoils, slick with mud.', dmg: enr ? 38 : 32, threat: 1 };
+      case 'slam': return { name: 'Body Slam', text: 'It heaves its bulk out of the mire to crush you.', dmg: warts ? (enr ? 48 : 38) : (enr ? 78 : 64), threat: 2 };
       case 'gape': return { name: 'Gape', text: 'It opens its jaws impossibly wide. The mire drains into its throat.', dmg: 0, threat: 0, note: sac ? 'A Snap is coming next turn' : 'Swallows you next turn. Daze the jaw to stop it' };
-      case 'swallow': return { name: 'Swallow', text: 'It lunges, jaws wide open, to swallow you whole!', dmg: jaw ? (enr ? 30 : 24) : (enr ? 36 : 30), threat: 3, note: 'Two of your dice get stuck inside until you cut free' };
-      case 'snap': return { name: 'Snap', text: 'It lunges and snaps its torn throat shut on empty air.', dmg: enr ? 36 : 30, threat: 2 };
+      case 'swallow': return { name: 'Swallow', text: 'It lunges, jaws wide open, to swallow you whole!', dmg: jaw ? (enr ? 34 : 28) : (enr ? 52 : 44), threat: 3, note: 'Two of your dice get stuck inside until you cut free' };
+      case 'snap': return { name: 'Snap', text: 'It lunges and snaps its torn throat shut on empty air.', dmg: enr ? 40 : 34, threat: 2 };
       case 'digest': return { name: 'Digest', text: 'You’re inside. The walls of its gut squeeze.', dmg: enr ? 24 : 18, threat: 1, note: `Cut your way out: ${Math.max(0, m.gutHp ?? 0)} left (Cut counts double, Blunt half)` };
       case 'dazed': return { name: 'Dazed', text: 'It sways, jaw hanging, eyes rolling.', dmg: 0, threat: 0, note: 'Its action is lost' };
     }

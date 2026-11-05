@@ -63,7 +63,7 @@ export const duskheron: MonsterDef = {
     const m = h.mon, enr = m.enraged, halfGuard = (m.screech ?? 0) > 0;
     if (type === 'rear') return { name: 'Rear Up', text: 'Both heads rise high, necks coiled. Two spears are coming.', dmg: 0, threat: 0, note: 'Twin Spear next turn. Daze a head to stop its half' };
     if (type === 'twin') {
-      const live = HEADS.filter(x => !reeling(h, x)), each = enr ? 40 : 34;
+      const live = HEADS.filter(x => !reeling(h, x)), each = enr ? 50 : 42;
       return { name: 'Twin Spear', text: live.length === 2 ? 'Both heads drive down at once!' : live.length ? 'The head still standing drives down!' : 'Both heads sway, dazed.', dmg: each * live.length, threat: band(each * live.length), halfGuard };
     }
     if (type === 'dazed') return { name: 'Dazed', text: 'Both heads sway, eyes unfocused.', dmg: 0, threat: 0, note: 'Its action is lost' };

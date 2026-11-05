@@ -9,7 +9,7 @@ function saveFor(s: Setup): Save {
   const save = E.newSave();
   save.weapons = Object.fromEntries(s.weapons.map(([id, lv]) => [id, { lv }]));
   save.armors = { [s.armor]: { lv: s.armorLv ?? 0 } };
-  save.items = { ...save.items, salve: 0 };
+  save.items = { ...save.items, salve: 0, snare: 2 };
   if (s.item) save.items[s.item] = s.items ?? 3;
   if (s.charm) save.charms = { [s.charm]: true };
   save.loadout = { weapons: s.weapons.map(w => w[0]), armor: s.armor, charm: s.charm ?? null, item: s.item ?? null, target: s.target };

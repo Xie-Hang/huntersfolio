@@ -51,7 +51,7 @@ export const stormroc: MonsterDef = {
       case 'takeoff': return { name: 'Taking off', text: 'It spreads its wings and rises into the storm.', dmg: 0, threat: 0, note: 'Airborne: Cut and Blunt deal half damage' };
       case 'dive': return { name: 'Stoop Dive', text: 'It folds its wings and falls on you like a thunderbolt!', dmg: tb ? 40 : enr ? 60 : 52, threat: 3, halfGuard: half, note: 'Then it lands for a turn' };
       case 'perched': return { name: 'Landed', text: 'It lands hard, spent, and shakes the rain from its wings.', dmg: 0, threat: 0, note: 'Grounded for a turn: full damage, and every weapon reaches the crown' };
-      case 'thunder': { const d = enr ? 78 : 70; return { name: 'Thunderhead', text: 'Its crown blazes white. Lightning is coming down!', dmg: rod ? Math.round(d / 2) : d, threat: 4, halfGuard: half, note: carries(h, 'Pierce') ? 'A Pierce hit on the crown snuffs it out' : undefined }; }
+      case 'thunder': { const d = enr ? 78 : 70; return { name: 'Thunderhead', text: 'Its crown blazes white. Lightning is coming down!', dmg: rod ? Math.round(d / 2) : d, threat: 4, halfGuard: half, steady: true, note: carries(h, 'Pierce') ? 'A Pierce hit on the crown snuffs it out' : undefined }; }
       case 'gutter': return { name: 'Storm snuffed', text: 'The light in its crown gutters and goes out.', dmg: 0, threat: 0, note: 'Its Thunderhead is lost' };
       case 'crashed': return { name: 'Brought down', text: 'It crashes into the rocks in a tangle of wings.', dmg: 0, threat: 0, note: 'Grounded for a turn. Its action is lost' };
       case 'dazed': return { name: 'Dazed', text: 'It reels, its crown flickering.', dmg: 0, threat: 0, note: 'Its action is lost' };

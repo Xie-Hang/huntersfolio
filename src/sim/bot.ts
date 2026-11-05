@@ -12,7 +12,7 @@ import * as E from '../engine';
 import { nextRandom } from '../engine/rng';
 
 export type Skill = 'skilled' | 'casual';
-export interface Policy { skill: Skill; capture: boolean; goal?: string[] }
+export interface Policy { skill: Skill; capture: boolean; goal?: string[]; noCharge?: boolean }
 
 const clone = (h: Hunt): Hunt => JSON.parse(JSON.stringify(h));
 const ICE_VALUE = 15;
@@ -99,7 +99,7 @@ function bestPlan(h: Hunt, p: Policy): Plan {
       .sort((x, y) => (h.dice[x].face === 'B' ? 0 : 1) - (h.dice[y].face === 'B' ? 0 : 1));
     for (let g = 0; g <= left.length; g++) for (const ch of [false, true]) {
       const cd = E.chargeDice(h);
-      if (ch && (p.skill === 'casual' || left.length - g < cd || inc >= E.CHARGE_BREAK)) continue;
+      if (ch && (p.skill === 'casual' || p.noCharge || left.length - g < cd || inc >= E.CHARGE_BREAK)) continue;
       if (p.skill === 'casual' && g !== (inc >= 40 ? left.length : 0)) continue;
       const plan = { moves, guard: left.slice(0, g), charge: ch ? left.slice(g, g + cd) : [] };
       const s = evaluate(h, plan, p);
@@ -153,7 +153,7 @@ function stateScore(h0: Hunt, c: Hunt): number {
 export function playTurn(h: Hunt, p: Policy) {
   chooseTarget(h, p);
   const free = E.freeDice(h);
-  if (p.capture && E.canCapture(h) && !E.captureBlocked(h) && free.length >= 2) { E.capture(h, free.slice(0, 2)); return; }
+  if (p.capture && E.captureReady(h) && free.length >= 2) { E.capture(h, free.slice(0, 2)); const rest = E.freeDice(h); if (rest.length) E.guard(h, rest); return; }
   // items
   if (h.item && E.itemUsable(h)) {
     const fx = E.ITEMS[h.item].effect, inc = E.incoming(h)?.net ?? 0;

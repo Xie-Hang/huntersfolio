@@ -75,7 +75,7 @@ export interface ArmorDef {
   craft: Cost;
 }
 
-export type ItemEffect = 'heal30' | 'smoke' | 'whet50' | 'whet100' | 'net' | 'blast' | 'thaw';
+export type ItemEffect = 'heal30' | 'smoke' | 'whet50' | 'whet100' | 'net' | 'blast' | 'thaw' | 'snare';
 export interface ItemDef {
   id: string;
   name: string;
@@ -85,6 +85,8 @@ export interface ItemDef {
   yields?: number;
   desc: string;
   effect: ItemEffect;
+  /** carried automatically, outside the item slot (Snares) */
+  pouch?: boolean;
 }
 
 export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet' | 'airPierce' | 'bigHeal' | 'sealHeal';
@@ -133,6 +135,8 @@ export interface Intent {
   note?: string;
   /** attack ignores half the player's guard */
   halfGuard?: boolean;
+  /** daze can't cancel it: a full daze meter makes the monster reel after this move instead */
+  steady?: boolean;
 }
 
 export type Tone = '' | 'gold' | 'ember' | 'daze';
@@ -152,6 +156,8 @@ export interface MonsterState {
   dazeMax: number;
   /** monster actions left before the daze meter can fill again */
   dazeLock: number;
+  /** a full daze meter during a steady move: it reels next turn instead */
+  dazeQueued?: boolean;
   /** behaviour bookkeeping shared by the T1 cycles */
   seq: number;
   charges: number;
@@ -253,6 +259,10 @@ export interface Hunt {
   log: LogEntry[];
   over: null | 'win' | 'lose';
   captured: boolean;
+  /** Snares carried this hunt (outside the item slot) */
+  snares: number;
+  /** a snare is set this turn: it holds unless the monster's move hits for CHARGE_BREAK or more */
+  snareSet?: boolean;
   stats: HuntStats;
   /** set once settleHunt has applied rewards to the save */
   reward: Reward | null;

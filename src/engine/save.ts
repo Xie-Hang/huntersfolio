@@ -16,7 +16,7 @@ export function newSave(): Save {
     mats: Object.fromEntries(Object.keys(MATERIALS).map(k => [k, 0])),
     weapons: { blade: { lv: 0 }, maul: { lv: 0 } },
     armors: { jerkin: { lv: 0 } },
-    items: { ...Object.fromEntries(Object.keys(ITEMS).map(k => [k, 0])), salve: 3 },
+    items: { ...Object.fromEntries(Object.keys(ITEMS).map(k => [k, 0])), salve: 3, snare: 2 },
     loadout: { weapons: ['blade', 'maul'], armor: 'jerkin', charm: null, item: 'salve', target: 'gorehorn' },
     pity: {},
     hunts: 0,

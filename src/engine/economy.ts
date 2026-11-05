@@ -243,6 +243,7 @@ export function settleHunt(s: Save, h: Hunt) {
   const MD = MONSTERS[h.mid];
   const lockedBefore = Object.keys(MONSTERS).filter(id => !isUnlocked(s, id));
   s.hunts++;
+  s.items.snare = (s.items.snare ?? 0) + (h.snares ?? 0); // unused snares come home, win or lose
   const rec = (s.record[h.mid] ??= { hunts: 0, wins: 0, captures: 0, breaks: {} });
   rec.hunts++;
   for (const [k, v] of Object.entries(h.mon.parts)) if (v.broken || (v.cracks ?? 0) > 0) rec.breaks[k] = (rec.breaks[k] ?? 0) + 1;

@@ -95,7 +95,7 @@ export const TIPS: Tip[] = [
       const h = hunt();
       return !!h && !unusedTurn(h) && freeDice(h) > 0 && !anyMoveReady(h) && h.guard === 0 && game.sel.length > 0;
     },
-    text: () => { const h = hunt()!, inc = E.incoming(h); return `Now click Guard. Each die blocks ${h.arm.guard} damage this turn${inc?.net ? `, so the ${inc.raw} becomes ${Math.max(0, inc.raw - h.arm.guard * game.sel.length)}` : ''}.`; },
+    text: () => { const h = hunt()!, inc = E.incoming(h); const g = game.sel.reduce((a, i) => a + E.guardOf(h, i), 0); return `Now click Guard. A blank blocks more than a shape: this one blocks ${g} damage this turn${inc?.net ? `, so the ${inc.raw} becomes ${Math.max(0, inc.raw - g)}` : ''}.`; },
     done: () => (hunt()?.guard ?? 0) > 0
   },
   {
@@ -133,7 +133,7 @@ export const TIPS: Tip[] = [
     when: () => { const h = hunt(); const inc = h && E.incoming(h); return !!h && (E.intentInfo(h).threat >= 3) && !!inc?.net && h.guard === 0; },
     text: () => {
       const h = hunt()!, inc = E.incoming(h)!, n = freeDice(h);
-      return `This one hurts: ${inc.raw} damage when you end your turn. Each die you Guard with blocks ${h.arm.guard}, so all ${n} would block ${n * h.arm.guard}. Guard, hit back, or split your dice: your call.`;
+      return `This one hurts: ${inc.raw} damage when you end your turn. Each die you Guard with blocks ${h.arm.guard}, a blank ${Math.round(h.arm.guard * (h.arm.blankx2 ? E.VEST_BLANK_GUARD : E.BLANK_GUARD))}, so all ${n} would block ${E.freeDice(h).reduce((t, i) => t + E.guardOf(h, i), 0)}. Guard, hit back, or split your dice: your call.`;
     },
     done: () => (hunt()?.guard ?? 0) > 0
   },
@@ -180,8 +180,8 @@ export const TIPS: Tip[] = [
   },
   {
     id: 'capture', at: ['capture'],
-    when: () => { const h = hunt(); return !!h && E.canCapture(h) && !E.captureBlocked(h); },
-    text: () => 'It\'s weak enough to capture. Select 2 dice and click Capture to end the hunt with double part materials, or keep fighting to slay it.'
+    when: () => { const h = hunt(); return !!h && E.captureReady(h); },
+    text: () => `It's weak enough to capture. Select 2 dice and click Capture to set a Snare. It closes when you end your turn, unless the monster's move hits you for ${E.CHARGE_BREAK} or more, so guard with what's left. A capture gives double part materials.`
   },
   // ---- back in town ----
   {

@@ -28,7 +28,7 @@
       <div class="plate"><Plate mon={h.mid} hunt={h} scene /></div>
       <Telegraph />
     </div>
-    {#if !h.over && E.canCapture(h)}<div class="stagetip capture">It's weak enough to capture. Select 2 dice and use Capture for double part materials.</div>{/if}
+    {#if !h.over && E.canCapture(h) && !h.snareSet}<div class="stagetip capture">{h.snares ? `It's weak enough to capture. Set a Snare (2 dice) and guard: it holds unless you take ${E.CHARGE_BREAK}+ this turn.` : 'It\'s weak enough to capture, but you have no Snare. Buy them in the Shop next time.'}</div>{/if}
     <div class="metarow">
       <div class="meters">
     {#if meter}

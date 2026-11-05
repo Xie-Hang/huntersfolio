@@ -12,6 +12,9 @@
   const inc = $derived(E.incoming(h));
   /** the hint names one of your moves: that move answers what the monster is doing */
   const isCounter = $derived(!!tip && [...E.currentWeapon(h).moves, ...E.otherWeapon(h).moves].some(m => tip!.includes(m.name)));
+  /** you're charging and this hit is big enough to break it */
+  const breaksCharge = $derived(!!h.chargePending && !!inc && inc.net >= E.CHARGE_BREAK);
+  const breaksSnare = $derived(!!h.snareSet && !!inc && inc.net >= E.CHARGE_BREAK);
   const multi = $derived(info.name.includes(' + '));
   const cls = $derived(h.over ? 'end' : info.threat >= 3 ? 'danger' : info.threat === 0 ? 'calm' : '');
 </script>
@@ -75,7 +78,7 @@
         <b>{inc.raw}</b> {M.elem}{#if inc.res} · resisted → <b>{inc.after}</b>{/if}{#if inc.evade} · smoke: <b>misses</b>{:else if h.guard} · − <b>{inc.g}</b> guard{inc.half ? ' (halved)' : ''}{/if}{#if !inc.evade && inc.net} · <span style="color:var(--muted)">guard dice to reduce{inc.half ? ' (half as well)' : ''}</span>{/if}
       </div>
     {/if}
-    {#if info.note}<div class="note">{info.note}</div>{/if}
+    {#if info.note || info.steady || breaksCharge || breaksSnare}<div class="note">{[info.note, info.steady && E.carries(h, 'Blunt') ? 'Daze can\'t cancel it' : null, breaksCharge ? `This hit breaks your charge (${E.CHARGE_BREAK}+)` : null, breaksSnare ? `This hit tears it free of your snare: guard it under ${E.CHARGE_BREAK}` : null].filter(Boolean).join(' · ')}</div>{/if}
     {#if tip}<div class="answer" class:counter={isCounter}><b>{isCounter ? 'Counter:' : 'Tip:'}</b> <Tagged text={tip} /></div>{/if}
   {/if}
 </section>

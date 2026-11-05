@@ -43,7 +43,7 @@ export const mistglass: MonsterDef = {
       case 'rake': return { name: 'Glass Rake', text: 'It rakes at you with claws like broken panes.', dmg: enr ? 32 : 26, threat: 2 };
       case 'mist': return { name: 'Freezing Mist', text: 'It breathes out a cloud of freezing mist.', dmg: enr ? 20 : 16, threat: 1, note: 'Freezes one of your dice next turn' };
       case 'split': return { name: 'Split', text: 'It shivers and splits into mirror images.', dmg: 0, threat: 0, note: `For ${splitTurns(h)} turns, only your first hit each turn lands` };
-      case 'pounce': return { name: 'Pounce', text: 'All the images leap at once. One of them is real!', dmg: enr ? 56 : 48, threat: 3 };
+      case 'pounce': return { name: 'Pounce', text: 'All the images leap at once. One of them is real!', dmg: enr ? 64 : 54, threat: 3, steady: true };
       case 'dazed': return { name: 'Dazed', text: 'Its facets flicker. The images waver.', dmg: 0, threat: 0, note: 'Its action is lost' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };

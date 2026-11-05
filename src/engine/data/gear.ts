@@ -4,7 +4,7 @@ const inEdition = <T extends { tier?: number }>(x: T) => (x.tier ?? 1) <= MAX_TI
 
 const armors: ArmorDef[] = [
   { id: 'jerkin', name: 'Leather Jerkin', hp: 180, guard: 8, rerolls: 3, resist: null, perk: 'Start each hunt with 3 rerolls instead of 2.', craft: { coin: 80 } },
-  { id: 'vest', name: 'Bristlehide Vest', hp: 200, guard: 8, rerolls: 2, resist: 'Stone', perk: 'Resists Stone (−30%). Blank dice guard for double.', blankx2: true, craft: { coin: 300, pelt: 2, hide: 3 } },
+  { id: 'vest', name: 'Bristlehide Vest', hp: 200, guard: 8, rerolls: 2, resist: 'Stone', perk: 'Resists Stone (−30%). Blank dice guard for 2.5× instead of 1.5×.', blankx2: true, craft: { coin: 300, pelt: 2, hide: 3 } },
   { id: 'coat', name: 'Galeweave Coat', hp: 170, guard: 7, rerolls: 2, resist: 'Gale', perk: 'Resists Gale (−30%). Breaking a part heals 25 and gives a reroll.', breakHeal: true, craft: { coin: 250, pinion: 2, plume: 3 } },
   { id: 'kilnplate', name: 'Kilnplate Mail', hp: 190, guard: 9, rerolls: 2, resist: 'Ember', perk: 'Resists Ember (−30%). Molten shells can’t burn you.', burnproof: true, craft: { coin: 300, ventgland: 2, digclaw: 1, cinderscale: 3 } },
   { id: 'rimehide', name: 'Rimehide Cloak', hp: 185, guard: 8, rerolls: 3, resist: 'Frost', perk: 'Resists Frost (−30%). Start each hunt with 3 rerolls instead of 2.', craft: { coin: 300, frostfang: 1, barbtail: 1, rimescale: 3 } }
@@ -21,6 +21,8 @@ export const ARMORS: Record<string, ArmorDef> = Object.fromEntries(armors.filter
 
 const items: ItemDef[] = [
   { id: 'salve', name: 'Bitterroot Salve', max: 3, price: 30, desc: 'Heal 30.', effect: 'heal30' },
+  // Playtest (Nov 2026): capture was free and safe. A snare costs coin, and it can be torn free.
+  { id: 'snare', name: 'Snare', max: 2, price: 40, desc: 'Needed to capture. You carry up to 2 on every hunt, outside your item slot. Each attempt uses one.', effect: 'snare', pouch: true },
   { id: 'smoke', name: 'Smoke Pouch', max: 2, price: 50, desc: "The monster's next attack misses.", effect: 'smoke' },
   { id: 'whet', name: 'Whetstone', max: 2, price: 40, desc: 'Your next hit deals +50%.', effect: 'whet50' },
   { id: 'net', name: 'Weighted Net', max: 2, price: 50, desc: 'Brings an airborne monster down. It loses its action.', effect: 'net' },

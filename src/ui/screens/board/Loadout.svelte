@@ -56,7 +56,7 @@
     };
     return ids.sort((a, b) => { const ka = key[p.sort](a), kb = key[p.sort](b); return ka < kb ? -1 : ka > kb ? 1 : 0; });
   });
-  const itemIds = $derived(Object.keys(E.ITEMS).filter(k => (game.save.items[k] ?? 0) > 0));
+  const itemIds = $derived(Object.keys(E.ITEMS).filter(k => !E.ITEMS[k].pouch && (game.save.items[k] ?? 0) > 0));
 </script>
 
 <svelte:window onkeydown={onKey} />

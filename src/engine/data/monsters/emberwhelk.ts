@@ -44,7 +44,7 @@ export const emberwhelk: MonsterDef = {
       case 'slime': return { name: 'Molten Slime', text: 'It surges forward on a wave of burning slime.', dmg: enr ? 20 : 16, threat: 2, note: `Then the slime burns you for ${SLIME_TURNS} turns` };
       case 'retreat': return { name: 'Shell Retreat', text: 'It pulls back into its shell, hissing.', dmg: 0, threat: 0, note: 'Your hits deal half until it comes out. It heals 30' };
       case 'rear': return { name: 'Rears Back', text: 'It rears up, shell tilted forward like a battering ram.', dmg: 0, threat: 0, note: 'Shell Lunge next turn' };
-      case 'lunge': return { name: 'Shell Lunge', text: 'It throws the whole molten shell at you!', dmg: enr ? 48 : 40, threat: 3 };
+      case 'lunge': return { name: 'Shell Lunge', text: 'It throws the whole molten shell at you!', dmg: enr ? 66 : 56, threat: 3 };
       case 'dazed': return { name: 'Dazed', text: 'It sways, its eye stalks drooping.', dmg: 0, threat: 0, note: 'Its action is lost' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };

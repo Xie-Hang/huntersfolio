@@ -13,6 +13,10 @@
   const other = $derived(E.otherWeapon(h));
   /** the monster's hint: moves it names are counters to what it's doing; naming the other weapon means swap */
   const tipText = $derived(E.tip(h));
+  const inc = $derived(E.incoming(h));
+  const selGuard = $derived(game.sel.filter(i => !h.dice[i]?.used).reduce((a, i) => a + E.guardOf(h, i), 0));
+  /** charging now would be broken by this turn's hit (playtest: nobody knew a hit can break a charge) */
+  const chargeRisk = $derived(!h.over && !h.chargePending && (inc?.net ?? 0) >= E.CHARGE_BREAK);
   const swapCounter = $derived(!!tipText && !h.over && tipText.includes(other.name) && other.moves.some(m => tipText.includes(m.name)) && !w.moves.some(m => tipText.includes(m.name)));
   const over = $derived(!!h.over);
   const n = $derived(game.sel.length);
@@ -31,7 +35,7 @@
   const cOk = $derived(!over && n === cd && !h.chargePending);
   const sOk = $derived(!over && (n === 1 || (n === 0 && E.freeSwap(h))));
   const capLive = $derived(!over && E.canCapture(h));
-  const capOk = $derived(capLive && n === 2 && !E.captureBlocked(h));
+  const capOk = $derived(capLive && n === 2 && E.captureReady(h));
   const capAt = $derived(Math.floor(h.mon.max * E.CAPTURE_AT));
   const iOk = $derived(!over && E.itemUsable(h));
   const freeFaces = $derived(h.dice.filter(d => !d.used).map(d => d.face as string));
@@ -65,23 +69,25 @@
 
   <div class="divider"><span class="label">Or spend selected dice</span><span class="label">{n} selected</span></div>
   <button class="move dash {gOk ? 'ready' : 'no'}" data-coach="guard" aria-disabled={!gOk} onclick={() => gOk && game.guard()}>
-    <span><span class="mn"><Key k="G" />Guard</span><span class="md">Blocks {h.arm.guard} per die{h.arm.blankx2 ? ' · Blanks block double' : ''}</span></span><span class="need">Any</span>
+    <span><span class="mn"><Key k="G" />Guard</span><span class="md">{selGuard ? `Blocks ${selGuard} with the selected dice` : `Blocks ${h.arm.guard} per die, ${Math.round(h.arm.guard * (h.arm.blankx2 ? E.VEST_BLANK_GUARD : E.BLANK_GUARD))} per blank`}</span></span><span class="need">Any</span>
   </button>
   <button class="move dash {cOk ? 'ready' : 'no'}" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
-    <span><span class="mn"><Key k="C" />Charge</span><span class="md">Your first hit next turn deals double</span></span><span class="need">{cd}</span>
+    <span><span class="mn"><Key k="C" />Charge</span><span class="md">{chargeRisk ? `The −${inc?.net} coming would break it: guard it under ${E.CHARGE_BREAK} first` : `Your first hit next turn deals double · a hit of ${E.CHARGE_BREAK}+ breaks it`}</span></span><span class="need">{cd}</span>
   </button>
   <button class="move dash {sOk ? 'ready' : 'no'}" data-coach="swap" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
     <span><span class="mn"><Key k="S" pad="RT" />Swap to {other.name}{#if swapCounter}<span class="tag counter">Counter</span>{/if}</span><span class="md">{other.type} · <Elem e={other.elem} />{other.elem ?? 'No element'}</span></span><span class="need">{E.freeSwap(h) ? 'Free' : '1'}</span>
   </button>
   <!-- Always shown, so players learn it exists before it's available. -->
-  <button data-coach="capture" class="move capture {capLive && !E.captureBlocked(h) ? 'live' : ''} {capOk ? 'ready' : 'no'}" aria-disabled={!capOk} onclick={() => capOk && game.capture()}>
+  <button data-coach="capture" class="move capture {capLive && E.captureReady(h) ? 'live' : ''} {capOk ? 'ready' : 'no'}" aria-disabled={!capOk} onclick={() => capOk && game.capture()}>
     <span>
       <span class="mn"><Key k="X" />Capture</span>
       <span class="md">
-        {#if !capLive}Unlocks at {capAt} HP or less. Ends the hunt with double part materials
+        {#if h.snareSet}Snare set: it closes when you end your turn, unless the hit you take is {E.CHARGE_BREAK} or more
+        {:else if !capLive}Unlocks at {capAt} HP or less. Uses a Snare · {h.snares ? `${h.snares} carried` : 'none carried'}
+        {:else if !h.snares}You have no Snare left. Buy them in the Shop
         {:else if E.captureBlocked(h)}{E.monsterOf(h).flier ? 'Bring it down first' : 'Drive it to the surface first'}
-        {:else if n !== 2}Select 2 dice. Ends the hunt with double part materials
-        {:else}Ends the hunt with double part materials{/if}
+        {:else if n !== 2}Select 2 dice. Holds unless its move hits you for {E.CHARGE_BREAK}+ · {h.snares} Snare{h.snares > 1 ? 's' : ''}
+        {:else}Holds unless its move hits you for {E.CHARGE_BREAK}+. Double part materials{/if}
       </span>
     </span>
     <span class="need">2</span>

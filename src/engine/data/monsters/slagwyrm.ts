@@ -49,7 +49,7 @@ export const slagwyrm: MonsterDef = {
       case 'spit': return { name: 'Magma Spit', text: 'It hawks a gob of molten rock.', dmg: enr ? 20 : 16, threat: 1, note: m.parts.jaw.broken ? undefined : `Then it burns you for ${SPIT_TURNS} turns` };
       case 'lash': return { name: 'Tail Lash', text: 'Its tail whips round, trailing slag.', dmg: enr ? 30 : 26, threat: 2 };
       case 'stoke': return { name: 'Stoke', text: 'It coils and glows brighter and brighter.', dmg: 0, threat: 0, note: 'Armour doubles, then Eruption. Shatter it to stop it' };
-      case 'eruption': return { name: 'Eruption', text: 'It bursts open in a fountain of fire!', dmg: enr ? 66 : 60, threat: 4, note: 'Shatter its armour to quench it' };
+      case 'eruption': return { name: 'Eruption', text: 'It bursts open in a fountain of fire!', dmg: enr ? 66 : 60, threat: 4, steady: true, note: 'Shatter its armour to quench it' };
       case 'quenched': return { name: 'Quenched', text: 'Its armour cracks and the fire inside it gutters.', dmg: 0, threat: 0, note: 'Its Eruption is lost' };
       case 'dazed': return { name: 'Dazed', text: 'It sways, slag dripping from its jaw.', dmg: 0, threat: 0, note: 'Its action is lost' };
     }
