@@ -1,6 +1,6 @@
 <script lang="ts">
   // The Cragwing, scree drake (the rank F → E promotion hunt, Nov 2026), in the woodcut style. Drawn facing left in a
-  // 1000 × 600 space and mirrored by CSS. A long-necked drake on two legs, wings of split slate, a digging horn on
+  // 1000 × 600 space and mirrored by CSS. A long-necked drake on four legs, wings of split slate, a digging horn on
   // its snout, slate plates on its back (as many as its plating layers). Winding up: head down, horn glinting.
   // Taking off: wings raised. In the air: it rises out of the frame, wings beating, its shadow shrinking. Diving:
   // pitched down. Burrowing: head into the scree; under it: sunk below the ground line, a scree mound marks it, and
@@ -26,7 +26,8 @@
   // the slate plates on its back: one per layer of plating
   const SLATES = ['M500 262 L540 230 L580 250 L560 274 Z', 'M570 254 L620 222 L664 246 L640 270 Z'];
   type Leg = { id: string; hip: [number, number]; foot: [number, number]; far: boolean };
-  const LEGS: Leg[] = [{ id: 'hf', hip: [690, 398], foot: [716, 518], far: true }, { id: 'hn', hip: [640, 404], foot: [620, 518], far: false }, { id: 'ff', hip: [500, 396], foot: [478, 518], far: false }];
+  // four legs, a pair at each end; the far ones drawn darker, behind
+  const LEGS: Leg[] = [{ id: 'hf', hip: [700, 396], foot: [730, 518], far: true }, { id: 'ff', hip: [520, 392], foot: [510, 518], far: true }, { id: 'hn', hip: [650, 404], foot: [630, 518], far: false }, { id: 'fn', hip: [480, 398], foot: [452, 518], far: false }];
   const bodyHatch = hatchLines(420, 800, 330, 420, 13, -30);
   const SCREE = Array.from({ length: 9 }, (_, i) => ({ x: 470 + i * 26 + ((i * 37) % 13), y: 520 - ((i * 53) % 22), s: 10 + ((i * 29) % 9) }));
   const uid = `cw${Math.random().toString(36).slice(2, 7)}`;

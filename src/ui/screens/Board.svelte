@@ -17,7 +17,7 @@
   const M = $derived(E.MONSTERS[game.save.loadout.target]);
 
   // grouped by Hunter Rank (Nov 2026): each rank's main region, its optional regions, and the promotion hunt that
-  // takes you to the next rank (shown first, on its own card)
+  // takes you to the next rank (shown last, on its own card)
   const SECTIONS: { rank: E.Rank; main: number[]; optional: number[]; promo: number }[] = [
     { rank: 'F', main: [1], optional: [], promo: 1.5 },
     { rank: 'E', main: [2], optional: [2.2, 2.5], promo: 2.4 },
@@ -73,23 +73,6 @@
     {#each sections as sec (sec.rank)}
       <div class="ranksec" class:current={sec.rank === myRank}>
         <h3 class="rankhead"><span class="rk" aria-hidden="true">{sec.rank}</span><span>Rank {sec.rank} · {E.RANK_REGION[sec.rank]}</span><span class="label rs">{rankState(sec.rank)}</span></h3>
-        {#if sec.promoMon}
-          {@const N = sec.promoMon}
-          {@const r = record(game.save, N.id)}
-          {@const open = E.isUnlocked(game.save, N.id)}
-          <button class="mcard promo" class:locked={!open} class:passed={r.wins > 0} aria-current={N.id === game.save.loadout.target} data-id={N.id}
-            aria-label="Promotion hunt: {N.short}{open ? '' : ', locked'}" onclick={() => open && game.openMonster(N.id)} aria-disabled={!open}>
-            <span class="mthumb" aria-hidden="true"><Plate mon={N.id} /></span>
-            <span class="ptext">
-              <span class="pk">Promotion hunt · to rank {N.promotion}</span>
-              <span class="nm">{N.short}</span>
-              <span class="meta"><span>{#if N.elemOf}By stance{:else}<Elem e={N.elem} />{N.elem}{/if}</span><span>{N.elemOf ? 'Weakness changes' : `Weak to ${N.weak}`}</span></span>
-              {#if r.wins}<span class="st">Passed · hunted ×{r.wins}</span>
-              {:else if open}<span class="st new">Ready: win it to become a rank {N.promotion} hunter</span>
-              {:else}<span class="st">Locked · {E.unlockHint(N.id)}</span>{/if}
-            </span>
-          </button>
-        {/if}
         {#each sec.groups as g (g.t)}
           <div class="region">
             <h4 class="group">{E.TIERS[g.t]}{#if sec.optional.includes(g.t)}<span class="opt"> · optional</span>{/if}</h4>
@@ -120,6 +103,24 @@
             </div>
           </div>
         {/each}
+        <!-- the promotion hunt closes the rank: beat the region above, then take it (Mekkman, Nov 2026: below, not on top) -->
+        {#if sec.promoMon}
+          {@const N = sec.promoMon}
+          {@const r = record(game.save, N.id)}
+          {@const open = E.isUnlocked(game.save, N.id)}
+          <button class="mcard promo" class:locked={!open} class:passed={r.wins > 0} aria-current={N.id === game.save.loadout.target} data-id={N.id}
+            aria-label="Promotion hunt: {N.short}{open ? '' : ', locked'}" onclick={() => open && game.openMonster(N.id)} aria-disabled={!open}>
+            <span class="mthumb" aria-hidden="true"><Plate mon={N.id} /></span>
+            <span class="ptext">
+              <span class="pk">Promotion hunt · to rank {N.promotion}</span>
+              <span class="nm">{N.short}</span>
+              <span class="meta"><span>{#if N.elemOf}By stance{:else}<Elem e={N.elem} />{N.elem}{/if}</span><span>{N.elemOf ? 'Weakness changes' : `Weak to ${N.weak}`}</span></span>
+              {#if r.wins}<span class="st">Passed · hunted ×{r.wins}</span>
+              {:else if open}<span class="st new">Ready: win it to become a rank {N.promotion} hunter</span>
+              {:else}<span class="st">Locked · {E.unlockHint(N.id)}</span>{/if}
+            </span>
+          </button>
+        {/if}
       </div>
     {:else}
       <p class="ital p0">No monsters of that element sighted yet.</p>
