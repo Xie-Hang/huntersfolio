@@ -22,7 +22,9 @@
     }
     return d;
   })();
-  const GILLS = [[296, 312, -40], [322, 300, -12], [344, 306, 16], [356, 328, 40]] as const;
+  // gill fronds rooted along the back of the neck (root = (x, y + 30)), fanning back toward the shell; drawn behind
+  // the neck so it covers their roots (Mekkman: they floated loose between the head and the shell)
+  const GILLS = [[312, 334, 38], [324, 354, 58], [332, 376, 74], [336, 398, 88], [337, 420, 102]] as const;
   const shellHatch = hatchLines(SX - SR, SX + SR + 20, SY - SR, SY + SR, 16, -36);
   const footHatch = hatchLines(140, 900, 488, 532, 16, -18);
   const uid = `ew${Math.random().toString(36).slice(2, 7)}`;
@@ -67,9 +69,8 @@
       </g>
       <!-- front: neck, gills, head and eye stalks. Shrinks back into the shell on Shell Retreat -->
       <g class="front">
-        <path d={NECK} fill={BONE} stroke={INK} stroke-width="10" stroke-linejoin="round" />
-        <g class="gills" style="transform-origin:320px 350px">
-          {#if gills.on}<circle cx="326" cy="320" r="62" fill="none" stroke={GOLD} stroke-width="22" opacity=".5" />{/if}
+        <g class="gills" style="transform-origin:330px 400px">
+          {#if gills.on}<circle cx="352" cy="392" r="66" fill="none" stroke={GOLD} stroke-width="22" opacity=".5" />{/if}
           {#each GILLS as [x, y, a], i}
             <g transform="rotate({a} {x} {y + 30})">
               <path d={gills.broke && i % 2 ? `M${x - 10} ${y + 30} L${x - 6} ${y} L${x + 2} ${y + 12} L${x + 10} ${y + 30} Z` : `M${x - 14} ${y + 30} C${x - 18} ${y - 4} ${x - 6} ${y - 30} ${x} ${y - 30} C${x + 6} ${y - 30} ${x + 18} ${y - 4} ${x + 14} ${y + 30} Z`}
@@ -78,6 +79,7 @@
             </g>
           {/each}
         </g>
+        <path d={NECK} fill={BONE} stroke={INK} stroke-width="10" stroke-linejoin="round" />
         <g class="head" style="transform-origin:250px 380px">
           <!-- eye stalks -->
           <g class="stalk a" style="transform-origin:196px 320px">
