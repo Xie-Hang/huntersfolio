@@ -44,6 +44,8 @@ def sovereign(stance='rest'):
     # Galeshrike wings (Gale): folded against the back at rest, spread in the Gale stance
     sp = 1 if stance == 'gale' else 0.4
     if stance != 'ember': out += wing(X(640), Y(300), sp, 1)
+    # in flight the second wing opens too, from behind the top of the body (never across its face)
+    if stance == 'gale': out += wing(X(470), Y(250), sp, -1)
     # the slime body: pale green-grey, translucent sheen
     out += f'<path d="{d}" fill="{SLIME}" {S}/>'
     hatch = ''.join(f'M{x} 400 L{x - 60} 560 ' for x in range(160, 900, 16))
@@ -53,7 +55,6 @@ def sovereign(stance='rest'):
         out += f'<path d="M{X(560)} {Y(300)} L{X(640)} {Y(420)}" stroke="{INK}" stroke-width="14" stroke-linecap="round" opacity=".3"/><path d="M{X(430)} {Y(430)} l70 -10" stroke="{INK}" stroke-width="18" stroke-linecap="round" opacity=".22"/>'
     out += '</g>'
     out += f'<path d="M{X(310)} {Y(290)} C{X(350)} {Y(230)} {X(440)} {Y(206)} {X(510)} {Y(208)}" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" opacity=".7"/>'
-    if stance == 'gale': out += wing(X(400), Y(300), sp, -1)
     # Cinderback vents along the top (Ember), and its digging claws at the base
     for i, x in enumerate((520, 600, 680)):
         vx, vy = X(x), Y(205 + abs(x - 560) * .5)
