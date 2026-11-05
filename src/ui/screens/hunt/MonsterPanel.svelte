@@ -30,7 +30,7 @@
     if ((m.shell ?? 0) > 0) out.push({ key: 'shell', label: 'In its shell', short: 'your hits ½', cls: 'stone', desc: 'Your hits deal half until it comes out on its next action. A good turn to guard, charge or reroll for something big.' });
     if ((m.slime ?? 0) > 0) out.push({ key: 'slime', label: 'Slime', short: `burning you · ${m.slime} turn${m.slime! > 1 ? 's' : ''}`, cls: 'hot', desc: 'The slime burns you a little at the end of each turn. It can\'t knock you out on its own. Breaking its foot stops the slime for good.' });
     if ((m.mirage ?? 0) > 0) out.push({ key: 'mir', label: 'Images', short: `only your 1st hit lands · ${m.mirage} turn${m.mirage! > 1 ? 's' : ''}`, cls: 'ice', desc: `Mirror images surround it: only your first hit each turn lands; later hits shatter an image. Make that first hit count (charge it). ${(m.hits ?? 0) > 0 ? 'You have already landed this turn\'s hit.' : ''}` });
-    if (E.canCapture(h)) out.push({ key: 'cap', label: 'Capturable', short: 'set a Snare', cls: 'gold', desc: `At ${Math.round(E.CAPTURE_AT * 100)}% HP or less it can be captured: set a Snare (2 dice). It closes when you end your turn unless its move hits you for ${E.CHARGE_BREAK} or more. Double part materials.` });
+    if (E.canCapture(h)) out.push({ key: 'cap', label: 'Capturable', short: h.snareSet ? 'snare set' : h.snares ? `set a Snare · ${h.snares} carried` : 'no Snare carried', cls: 'gold', desc: `At ${Math.round(E.CAPTURE_AT * 100)}% HP or less it can be captured: set a Snare (2 dice). It closes when you end your turn unless its move hits you for ${E.CHARGE_BREAK} or more. Double part materials.` });
     return out;
   });
   const TONE = { gold: 'var(--gold-hi)', ember: 'var(--ember-soft)', ice: '#b9d3f0', gale: '#8fc3c9', stone: '#c9b89c' } as const;
@@ -43,20 +43,9 @@
       <div class="bar" style="height:10px"><i style="width:{pct(m.hp, m.max)}%;background:var(--ember)"></i></div>
     </div>
     <div class="stagebody">
-      <div class="platewrap"><div class="plate"><Plate mon={h.mid} hunt={h} scene /></div>
-        {#if statuses.length}
-          <div class="conds" aria-label="Its condition">
-            {#each statuses as st (st.key)}
-              <button type="button" class="cond {st.cls}" aria-describedby="{uid}-{st.key}"><b>{st.label}</b><span class="sh">{st.short}</span><span class="i" aria-hidden="true">?</span>
-                <span class="stip" id="{uid}-{st.key}" role="tooltip">{st.desc}</span>
-              </button>
-            {/each}
-          </div>
-        {/if}
-      </div>
+      <div class="plate"><Plate mon={h.mid} hunt={h} scene /></div>
       <Telegraph />
     </div>
-    {#if !h.over && E.canCapture(h) && !h.snareSet}<div class="stagetip capture">{h.snares ? `It's weak enough to capture. Set a Snare (2 dice) and guard: it holds unless you take ${E.CHARGE_BREAK}+ this turn.` : 'It\'s weak enough to capture, but you have no Snare. Buy them in the Shop next time.'}</div>{/if}
     <div class="metarow">
       <div class="meters">
     {#if meter}
@@ -90,6 +79,15 @@
       </div>
     {/if}
       </div>
+      {#if statuses.length}
+        <div class="conds" aria-label="Its condition">
+          {#each statuses as st (st.key)}
+            <button type="button" class="cond {st.cls}" aria-describedby="{uid}-{st.key}"><b>{st.label}</b><span class="sh">{st.short}</span><span class="i" aria-hidden="true">?</span>
+            <span class="stip" id="{uid}-{st.key}" role="tooltip">{st.desc}</span>
+            </button>
+          {/each}
+        </div>
+      {/if}
     </div>
   </div>
   <div class="fx">
@@ -98,9 +96,8 @@
 </section>
 
 <style>
-  /* condition badges, on the monster's picture: solid, named, the effect always visible (Mekkman: vital, make it obvious) */
-  .platewrap { position: relative; min-width: 0; }
-  .conds { position: absolute; left: 8px; top: 8px; right: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: flex-start; pointer-events: none; }
+  /* condition badges under the picture (not over it: the art stays clear): solid, named, the effect always visible */
+  .conds { flex: 0 1 auto; display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; align-items: center; margin-left: auto; }
   .cond { all: unset; pointer-events: auto; position: relative; box-sizing: border-box; cursor: help; display: inline-flex; align-items: baseline; gap: 6px; padding: 4px 8px; border-radius: 3px; background: var(--c, var(--bone)); color: var(--ink); font-family: var(--f-body); font-size: var(--fs-sm); line-height: 1.2; box-shadow: 0 2px 0 rgba(0, 0, 0, .45), 0 0 0 1px rgba(0, 0, 0, .35); }
   .cond b { font-weight: 700; text-transform: uppercase; letter-spacing: .04em; font-size: 12px; }
   .cond .sh { font-weight: 500; }
@@ -108,7 +105,7 @@
   .cond:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 2px; }
   .cond.hot { --c: #e8773a; } .cond.ice { --c: #b9d3f0; } .cond.gale { --c: #8fc3c9; } .cond.mud { --c: #b49a74; } .cond.stone { --c: #c9b89c; } .cond.gold { --c: #e9b949; }
   .cond.hot b { color: #2a1206; }
-  .stip { position: absolute; left: 0; top: calc(100% + 8px); z-index: 40; width: 280px; padding: 10px 12px; border: 1px solid var(--gold); border-radius: 4px; background: var(--raise); color: var(--fg); font-size: var(--fs-sm); font-weight: 400; line-height: 1.45; text-align: left; text-transform: none; letter-spacing: 0; white-space: normal; box-shadow: 0 8px 24px rgba(0, 0, 0, .5); opacity: 0; visibility: hidden; transform: translateY(-4px); transition: opacity .12s, transform .12s, visibility .12s; pointer-events: none; }
+  .stip { position: absolute; right: 0; top: calc(100% + 8px); z-index: 40; width: 280px; padding: 10px 12px; border: 1px solid var(--gold); border-radius: 4px; background: var(--raise); color: var(--fg); font-size: var(--fs-sm); font-weight: 400; line-height: 1.45; text-align: left; text-transform: none; letter-spacing: 0; white-space: normal; box-shadow: 0 8px 24px rgba(0, 0, 0, .5); opacity: 0; visibility: hidden; transform: translateY(-4px); transition: opacity .12s, transform .12s, visibility .12s; pointer-events: none; }
   .cond:hover .stip, .cond:focus-visible .stip, .cond:focus .stip { opacity: 1; visibility: visible; transform: none; }
   @media (prefers-reduced-motion: reduce) { .stip { transition: none; } }
   .kind { margin-left: 10px; font-size: var(--fs-sm); font-weight: 400; }
