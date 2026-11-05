@@ -51,3 +51,19 @@ describe('the Cragwing', () => {
     expect(run([['blade', 0], ['maul', 0]], 'jerkin', 0)).toBeLessThan(0.15);
   });
 });
+
+describe('after a lost hunt', () => {
+  it('states facts about the monster against the gear you brought, never what to bring', () => {
+    const s = E.newSave();
+    for (const id of ['gorehorn', 'galeshrike', 'cinderback', 'rimetail']) s.record[id] = { hunts: 1, wins: 1, captures: 0, breaks: {} };
+    s.record.cragwing = { hunts: 3, wins: 0, captures: 0, breaks: {} };
+    s.loadout = { ...s.loadout, weapons: ['blade', 'maul'], target: 'cragwing' };
+    const h = E.startHunt(s, 1);
+    const f = E.lossFacts(h, s);
+    expect(f.length).toBe(3);
+    expect(f[0]).toContain('only Pierce');
+    expect(f.join(' ')).toContain('weak to Frost');
+    s.weapons = { ...s.weapons, rimeshot: { lv: 0 } }; s.loadout.weapons = ['rimeshot', 'maul'];
+    expect(E.lossFacts(E.startHunt(s, 1), s).join(' ')).not.toContain('only Pierce');
+  });
+});
