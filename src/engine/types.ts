@@ -86,13 +86,15 @@ export interface ArmorDef {
   swapOnce?: boolean;
   /** resists whatever element the monster attacks with (Sovereign Mantle) */
   adaptive?: boolean;
-  /** being infected lasts this many turns less (Rotcap, Blightcrown) */
+  /** being infected lasts this many turns less (Rotcap, Feverjaw) */
   infectLess?: number;
-  /** a Spark Discharge on you deals this share less (Arcmoth, Glarewing) */
+  /** a Spark Discharge on you deals this share less (Arcmoth, Archeron) */
   sparkLess?: number;
-  /** your dice can't be charged (Glarewing) */
+  /** your dice can't be charged (Archeron) */
   chargeProof?: boolean;
-  /** a latch lasts at most this many turns (Hollowfang, Gravefang) */
+  /** leeching slime can't drink from you (Bloodwhelk) */
+  leechProof?: boolean;
+  /** a latch lasts at most this many turns (Hollowfang) */
   latchMax?: number;
   craft: Cost;
 }
@@ -264,7 +266,7 @@ export interface MonsterState {
   pSpark?: number;
   latch?: number;
   charge?: number;
-  /** Gloamhollow bookkeeping: the Rotcap's bloom, the Gravefang's frenzy, HP drunk during the current latch */
+  /** Gloamhollow bookkeeping: the Rotcap's bloom, HP drunk during the current latch (frenzy: unused since the Gravefang went) */
   bloom?: number;
   frenzy?: number;
   drank?: number;

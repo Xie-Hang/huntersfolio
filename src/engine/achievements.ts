@@ -20,7 +20,8 @@ const tier1 = () => Object.values(MONSTERS).filter(M => M.tier === 1).map(M => M
 const tier2 = () => Object.values(MONSTERS).filter(M => M.tier === 2).map(M => M.id);
 const tier3 = () => Object.values(MONSTERS).filter(M => M.tier === 3).map(M => M.id);
 const changed = () => Object.values(MONSTERS).filter(M => M.tier === 2.5).map(M => M.id);
-const gloam = () => Object.values(MONSTERS).filter(M => M.tier === 2.2 || M.tier === 3.2).map(M => M.id);
+const gloam = () => Object.values(MONSTERS).filter(M => M.tier === 2.2).map(M => M.id);
+const mireChanged = () => Object.values(MONSTERS).filter(M => M.tier === 3.2).map(M => M.id);
 const STARTERS = ['blade', 'maul'];
 
 export const ACHIEVEMENTS: AchievementDef[] = [
@@ -59,7 +60,8 @@ if (EDITION === 'full') ACHIEVEMENTS.push(
   { id: 'CLEAN_BILL', name: 'Clean bill', desc: 'Beat the Rotcap without ever being infected.', hunt: h => h.mid === 'rotcap' && won(h) && !h.feats?.includes('infected') },
   { id: 'EARTHED', name: 'Earthed', desc: 'Beat the Arcmoth without a Spark ever going off through you.', hunt: h => h.mid === 'arcmoth' && won(h) && !h.feats?.includes('discharged') },
   { id: 'BLOODLESS', name: 'Bloodless', desc: 'Beat the Hollowfang without it ever latching on.', hunt: h => h.mid === 'hollowfang' && won(h) && !h.feats?.includes('latched') },
-  { id: 'GLOAMHOLLOW', name: 'The Gloamhollow', desc: 'Beat all six monsters of the Gloamhollow, deeper ones too.', save: s => gloam().length > 0 && gloam().every(id => (s.record[id]?.wins ?? 0) > 0) },
+  { id: 'GLOAMHOLLOW', name: 'The Gloamhollow', desc: 'Beat all three monsters of the Gloamhollow.', save: s => gloam().length > 0 && gloam().every(id => (s.record[id]?.wins ?? 0) > 0) },
+  { id: 'MIRE_CHANGED', name: 'The Mirewood, changed', desc: 'Beat all three changed Mirewood monsters.', save: s => mireChanged().length > 0 && mireChanged().every(id => (s.record[id]?.wins ?? 0) > 0) },
   { id: 'ALL_BOUNTIES', name: 'Every name on the board', desc: 'Complete every bounty.', save: s => Object.keys(BOUNTIES).length > 0 && Object.keys(BOUNTIES).every(id => s.bounties[id]) }
 );
 

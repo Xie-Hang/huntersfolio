@@ -6,9 +6,9 @@ const POSES = {
   rot_idle: ['rotcap', { intent: 'slam' }, '.plate svg.wc'],
   arc_idle: ['arcmoth', { intent: 'rake' }, '.plate svg.wc'],
   fang_idle: ['hollowfang', { intent: 'bite' }, '.plate svg.wc'],
-  blight_idle: ['blightcrown', { intent: 'slam' }, '.plate .variant'],
-  glare_idle: ['glarewing', { intent: 'rake' }, '.plate .variant'],
-  grave_idle: ['gravefang', { intent: 'bite' }, '.plate .variant']
+  fever_idle: ['feverjaw', { intent: 'lash' }, '.plate .variant'],
+  heron_idle: ['archeron', { intent: 'upper:peck|lower:peck' }, '.plate .variant'],
+  bwhelk_idle: ['bloodwhelk', { intent: 'spit' }, '.plate .variant']
 };
 (async () => {
   const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 3 });

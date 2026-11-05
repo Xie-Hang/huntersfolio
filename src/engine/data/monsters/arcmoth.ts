@@ -5,7 +5,6 @@
 // Pattern: Wing Rake → Taking off → (air) Wingbeat → Wingbeat → Static Dive → Settled (a free turn). The rake and the
 //   wingbeats each leave a pip: ground them while it's down (you can't swing at it in the air), or you go off.
 //   In the air only Pierce reaches it. A Pinning Shot or a Net brings it down.
-// The Glarewing (its deeper version) reuses this body: see glarewing.ts.
 // Parts: Wings (Pierce; grounded for good), Antennae (Cut; only every other wingbeat sparks you), Thorax (Blunt; the
 // daze part; your Discharge is weaker).
 import type { Hunt, Intent, MonsterDef } from '../../types';

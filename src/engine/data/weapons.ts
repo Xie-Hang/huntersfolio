@@ -107,26 +107,26 @@ list.push(
     list.push({ id: `sov${type.toLowerCase()}${el.toLowerCase()}`, tier: 4, name: `${ADJ[el]} ${nm}`, type, elem: el, kind, note: NOTE[el], moves: moves as Move[], mult: 2.1, from: BASE[el][type], cost: { coin: 1600, [PART[el]]: 3, sovgel: 4 } });
 }
 // Status weapons (Nov 2026, the Gloamhollow): no element; their hits fill a status meter instead. Two steps: the
-// Gloamhollow monster crafts step 1 (×1.4), its deeper version upgrades it (×1.7). Against an element weakness
+// Gloamhollow monster crafts step 1 (×1.4); the changed Mirewood monster with the same status upgrades it (×1.7). Against an element weakness
 // (×1.6/×1.9 ×1.5) they lose; against a monster you haven't learned, or the Sovereign's shifting stances, they don't care.
 {
   type Line = { st: 'Infect' | 'Spark' | 'Drain'; pow: [number, number]; ids: Record<DamageType, [string, string]>; names: Record<DamageType, [string, string]>; notes: Record<DamageType, [string, string]>; mats: Record<DamageType, [string, string]>; common: [string, string]; side: Record<DamageType, [string, string]> };
   const LINES: Line[] = [
     { st: 'Infect', pow: [20, 28],
-      ids: { Cut: ['rotblade', 'blightblade'], Blunt: ['rotmaul', 'blightmaul'], Pierce: ['rotbow', 'blightbow'] },
-      names: { Cut: ['Rotroot Cleaver', 'Blightcrown Cleaver'], Blunt: ['Sporeburst Maul', 'Blightcrown Maul'], Pierce: ['Sporeshot Bow', 'Blightcrown Bow'] },
-      notes: { Cut: ['Root legs twisted into a blade. The cut festers.', 'The crust on the edge flakes off into every wound.'], Blunt: ['A Rotcap jaw for a head. Each blow leaves a puff of spores.', 'A crusted cap bolted to the haft. It smokes when it lands.'], Pierce: ['The arrowheads are packed with cap flesh.', 'Crust-tipped arrows that crumble inside the hide.'] },
-      mats: { Cut: ['rootleg', 'blightroot'], Blunt: ['rotjaw', 'blightjaw'], Pierce: ['capflesh', 'crustcap'] }, side: { Cut: ['rotjaw', 'blightjaw'], Blunt: ['capflesh', 'crustcap'], Pierce: ['rootleg', 'blightroot'] }, common: ['rotspore', 'blightspore'] },
+      ids: { Cut: ['rotblade', 'feverblade'], Blunt: ['rotmaul', 'fevermaul'], Pierce: ['rotbow', 'feverbow'] },
+      names: { Cut: ['Rotroot Cleaver', 'Feverjaw Cleaver'], Blunt: ['Sporeburst Maul', 'Feverjaw Maul'], Pierce: ['Sporeshot Bow', 'Feverjaw Bow'] },
+      notes: { Cut: ['Root legs twisted into a blade. The cut festers.', 'A fever sac stitched along the spine. Every cut runs hot.'], Blunt: ['A Rotcap jaw for a head. Each blow leaves a puff of spores.', 'A Feverjaw molar for a head, still steaming.'], Pierce: ['The arrowheads are packed with cap flesh.', 'The arrowheads are fever warts. They burst inside the hide.'] },
+      mats: { Cut: ['rootleg', 'feversac'], Blunt: ['rotjaw', 'fevermolar'], Pierce: ['capflesh', 'feverwart'] }, side: { Cut: ['rotjaw', 'fevermolar'], Blunt: ['capflesh', 'feverwart'], Pierce: ['rootleg', 'feversac'] }, common: ['rotspore', 'feverskin'] },
     { st: 'Spark', pow: [70, 100],
-      ids: { Cut: ['arcblade', 'glareblade'], Blunt: ['arcmaul', 'glaremaul'], Pierce: ['arcbow', 'glarebow'] },
-      names: { Cut: ['Feeler Blade', 'Glarewing Blade'], Blunt: ['Arcmoth Maul', 'Glarewing Maul'], Pierce: ['Arcdust Bow', 'Glarewing Bow'] },
-      notes: { Cut: ['Two Arcmoth feelers wound round the edge. Your hair stands up when you draw it.', 'The edge glitters with dust that crackles in the dark.'], Blunt: ['A thorax plate for a head. It snaps with static on every swing.', 'It hums before it lands, and the air smells of storms.'], Pierce: ['The fletching is Arcmoth wing. The arrows spark in flight.', 'Glarewing scales on the string. Each shot leaves a white streak.'] },
-      mats: { Cut: ['arcfeeler', 'glarefeeler'], Blunt: ['arcthorax', 'glarethorax'], Pierce: ['arcwing', 'glarepinion'] }, side: { Cut: ['arcwing', 'glarepinion'], Blunt: ['arcfeeler', 'glarefeeler'], Pierce: ['arcthorax', 'glarethorax'] }, common: ['arcdust', 'glaredust'] },
+      ids: { Cut: ['arcblade', 'heronblade'], Blunt: ['arcmaul', 'heronmaul'], Pierce: ['arcbow', 'heronbow'] },
+      names: { Cut: ['Feeler Blade', 'Archeron Blade'], Blunt: ['Arcmoth Maul', 'Archeron Maul'], Pierce: ['Arcdust Bow', 'Archeron Bow'] },
+      notes: { Cut: ['Two Arcmoth feelers wound round the edge. Your hair stands up when you draw it.', 'An Archeron beak ground to an edge. Frost and sparks run along it.'], Blunt: ['A thorax plate for a head. It snaps with static on every swing.', 'A frozen crest for a head. It cracks like a storm when it lands.'], Pierce: ['The fletching is Arcmoth wing. The arrows spark in flight.', 'Fletched with Archeron pinions. Each shot leaves a white streak.'] },
+      mats: { Cut: ['arcfeeler', 'archbeak'], Blunt: ['arcthorax', 'archcrest'], Pierce: ['arcwing', 'archpinion'] }, side: { Cut: ['arcwing', 'archpinion'], Blunt: ['arcfeeler', 'archbeak'], Pierce: ['arcthorax', 'archcrest'] }, common: ['arcdust', 'archplume'] },
     { st: 'Drain', pow: [0.15, 0.15],
-      ids: { Cut: ['fangblade', 'graveblade'], Blunt: ['fangmaul', 'gravemaul'], Pierce: ['fangbow', 'gravebow'] },
-      names: { Cut: ['Bloodletter', 'Grave Bloodletter'], Blunt: ['Palefang Maul', 'Gravefang Maul'], Pierce: ['Palewing Bow', 'Gravefang Bow'] },
-      notes: { Cut: ['A blood sac stretched along the spine of the blade. It fills as you fight.', 'The grave sac on the spine is never quite empty.'], Blunt: ['A ring of Hollowfang fangs round the head. They grip on impact.', 'Grave fangs set in the head. It pulls back heavier than it went in.'], Pierce: ['Strung with wing membrane. The arrows are hollow.', 'Hollow arrows that come back to the string dark.'] },
-      mats: { Cut: ['bloodsac', 'gravesac'], Blunt: ['palefang', 'gravetooth'], Pierce: ['palewing', 'gravewing'] }, side: { Cut: ['palefang', 'gravetooth'], Blunt: ['palewing', 'gravewing'], Pierce: ['bloodsac', 'gravesac'] }, common: ['palehide', 'gravehide'] }
+      ids: { Cut: ['fangblade', 'whelkletter'], Blunt: ['fangmaul', 'whelkmaul'], Pierce: ['fangbow', 'whelkbow'] },
+      names: { Cut: ['Bloodletter', 'Bloodwhelk Letter'], Blunt: ['Palefang Maul', 'Bloodwhelk Maul'], Pierce: ['Palewing Bow', 'Bloodwhelk Bow'] },
+      notes: { Cut: ['A blood sac stretched along the spine of the blade. It fills as you fight.', 'A Bloodwhelk foot cured into a red edge. It drinks what it cuts.'], Blunt: ['A ring of Hollowfang fangs round the head. They grip on impact.', 'A chunk of dark whelk shell. It comes back heavier than it went in.'], Pierce: ['Strung with wing membrane. The arrows are hollow.', 'Strung with dried gill. The arrows come back to the string dark.'] },
+      mats: { Cut: ['bloodsac', 'bloodfoot'], Blunt: ['palefang', 'bloodshell'], Pierce: ['palewing', 'bloodgill'] }, side: { Cut: ['palefang', 'bloodshell'], Blunt: ['palewing', 'bloodgill'], Pierce: ['bloodsac', 'bloodfoot'] }, common: ['palehide', 'bloodscale'] }
   ];
   for (const L of LINES) for (const [type, kind, moves] of [['Cut', 'Longsword', BLADE], ['Blunt', 'Maul', MAUL], ['Pierce', 'Bow', BOW]] as const) {
     const [a, b] = L.ids[type];

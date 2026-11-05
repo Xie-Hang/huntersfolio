@@ -2,7 +2,6 @@
 // A pale, eyeless cave bat-leech the size of a dog. It latches on and drinks: what you lose, it heals. The answer is
 // a part, not an item: a 2-dice Cut move tears it off, and breaking its throat sac bursts what it drank.
 // Pattern: Bite → Latch On → Drinking (up to 3 turns, guard can't stop it) → Gorged (a free turn).
-// The Gravefang (its deeper version) reuses this body: see gravefang.ts.
 // Parts: Fangs (Blunt; the daze part; it can't latch), Throat Sac (Cut; bursts what it drank), Wings (Pierce; weaker bite).
 import type { Hunt, Intent, MonsterDef, Move, WeaponInst } from '../../types';
 import { latchPlayer } from '../../status';

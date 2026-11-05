@@ -338,7 +338,8 @@ ICONS.update({
     'CLEAN_BILL': lambda: plate_sz('rot_idle', -6, 100, 230, V, (60, 40, 790, 450)) + spores(66, 70),
     'EARTHED': lambda: plate_sz('arc_idle', 20, 100, 230, V, (60, 40, 790, 450)) + bolt(66, 70),
     'BLOODLESS': lambda: plate_sz('fang_idle', 20, 104, 230, V, (60, 40, 790, 450)) + drop(66, 70),
-    'GLOAMHOLLOW': lambda: ''.join(plate_sz(n, x, y, 78, V, (60, 40, 790, 450)) for n, x, y in [('rot_idle', 12, 60), ('arc_idle', 89, 60), ('fang_idle', 166, 60), ('blight_idle', 12, 132), ('glare_idle', 89, 132), ('grave_idle', 166, 132)]),
+    'GLOAMHOLLOW': lambda: ''.join(plate_sz(n, x, y, 112, V, (60, 40, 790, 450)) for n, x, y in [('rot_idle', 18, 50), ('arc_idle', 128, 50), ('fang_idle', 73, 136)]),
+    'MIRE_CHANGED': lambda: ''.join(plate_sz(n, x, y, 112, V, (60, 40, 790, 450)) for n, x, y in [('fever_idle', 18, 50), ('heron_idle', 128, 50), ('bwhelk_idle', 73, 136)]),
 })
 
 for aid, fn in ICONS.items():

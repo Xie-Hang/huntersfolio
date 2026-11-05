@@ -13,15 +13,15 @@ import { carries, carryingName } from '../../util';
 import { HEAD_DAZE_MAX } from '../../combat';
 
 export const HEADS = ['upper', 'lower'] as const;
-const REEL = 2, REAR_EVERY = 4;
+export const REEL = 2, REAR_EVERY = 4;
 type Act = 'peck' | 'thrust' | 'screech' | 'reel';
 const NAME: Record<string, string> = { upper: 'upper head', lower: 'lower head' };
 
-const parse = (type: string): Record<string, Act> | null => {
+export const parse = (type: string): Record<string, Act> | null => {
   if (!type.includes(':')) return null;
   return Object.fromEntries(type.split('|').map(p => p.split(':'))) as Record<string, Act>;
 };
-const reeling = (h: Hunt, head: string) => (h.mon.reel?.[head] ?? 0) > 0;
+export const reeling = (h: Hunt, head: string) => (h.mon.reel?.[head] ?? 0) > 0;
 
 function headAct(h: Hunt, head: string, act: Act) {
   const enr = h.mon.enraged, broke = h.mon.parts[head].broken, n = NAME[head];

@@ -3,8 +3,8 @@
   // Half bat, half leech: a ringed, tubular body hunched on clawed thumbs, leathery wings folded along its back, and a
   // blind head that ends in a round mouth ringed with fangs, a throat sac hanging beneath that swells as it drinks.
   // Latching: it lunges, mouth wide. Drinking: pulsing, the sac filling. Gorged or torn off: slumped. Dazed: stars.
-  // The Gravefang reuses this plate, recoloured (Variant.svelte): in the air it rises out of frame with its wings
-  // spread; a plunge drops it back. A broken sac is split and empty, broken fangs are stumps, broken wings are torn.
+  // A broken sac is split and empty, broken fangs are stumps, broken wings are torn. (The flight poses were for the
+  // Gravefang, a variant since replaced by the Bloodwhelk; kept in case a flier ever reuses this body.)
   import type { Hunt } from '../../../engine';
   import { oneShots, LUNGE, INK, BONE, BONE2, FAR, GOLD, EMBER, star, hatchLines } from './motion.svelte';
 

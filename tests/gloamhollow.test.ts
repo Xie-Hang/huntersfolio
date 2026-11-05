@@ -61,14 +61,19 @@ describe('statuses on you', () => {
     h.mon.pSpark = 2; h.intent = 'rake'; h.guard = 999; const hp = h.php; E.endTurn(h);
     expect(h.mon.pSpark).toBe(0); expect(hp - h.php).toBe(65);
   });
-  it('Glarewing: charged dice can only attack; guarding with one or leaving it sets it off', () => {
-    const h = hunt('glarewing', [['blade', 0], ['maul', 0]]);
-    h.mon.air = false; h.intent = 'rake'; h.mon.charge = 2; E.endTurn(h);
+  it('Archeron: a Static Cry charges your dice; a charged die can only attack (guarding or leaving it sets it off)', () => {
+    const h = hunt('archeron', [['blade', 0], ['maul', 0]]);
+    h.intent = 'upper:screech|lower:peck'; E.endTurn(h);
     const charged = h.dice.map((d, i) => (d.charged ? i : -1)).filter(i => i >= 0); expect(charged.length).toBe(2);
     const hp = h.php; E.guard(h, [charged[0]]); expect(hp - h.php).toBe(E.CHARGED_HIT);
-    h.intent = 'settle'; const hp2 = h.php; E.endTurn(h); expect(hp2 - h.php).toBe(E.CHARGED_HIT);
-    const p = hunt('glarewing', [['blade', 0], ['maul', 0]], 'glarecloak'); p.mon.charge = 2; p.intent = 'settle'; E.endTurn(p);
+    h.intent = 'upper:peck|lower:peck'; const hp2 = h.php; h.guard = 999; E.endTurn(h); expect(hp2 - h.php).toBe(E.CHARGED_HIT);
+    const p = hunt('archeron', [['blade', 0], ['maul', 0]], 'heroncloak'); p.intent = 'upper:screech|lower:peck'; E.endTurn(p);
     expect(p.dice.some(d => d.charged)).toBe(false);
+  });
+  it('Archeron: a landed Spear Thrust sparks you; a reeling head’s strike carries nothing', () => {
+    const h = hunt('archeron', [['blade', 0], ['maul', 0]]);
+    h.intent = 'upper:thrust|lower:thrust'; E.endTurn(h); expect(h.mon.pSpark).toBe(2);
+    h.mon.pSpark = 0; h.mon.reel = { upper: 2 }; h.intent = 'upper:thrust|lower:peck'; E.endTurn(h); expect(h.mon.pSpark ?? 0).toBe(0);
   });
   it('Hollowfang: a latch drinks past your guard and heals it; a 2-dice Cut move tears it off; the sac gives it back', () => {
     const h = hunt('hollowfang', [['blade', 0], ['maul', 0]]);
@@ -78,27 +83,35 @@ describe('statuses on you', () => {
     h.target = 'sac'; h.mon.parts.sac.hp = 1; dice(h, 'CTCC'); E.useMove(h, 1);
     expect(h.mon.latch).toBe(0); expect(h.intent).toBe('torn'); expect(h.mon.hp).toBeLessThan(300);
   });
-  it('Gravefang: each turn it drinks is a frenzy pip; at 3 it Exsanguinates; a broken sac ends it for good', () => {
-    const h = hunt('gravefang', [['bow', 0], ['blade', 0]]);
-    h.mon.frenzy = 3; h.mon.seq = 1; expect(E.monsterOf(h).next(h, 'bite')).toBe('exsang');
-    expect(E.monsterOf(h).reachable!(h, 'sac', E.WEAPONS.blade as E.WeaponInst)).toBe(false);
-    h.mon.parts.sac.broken = true; h.mon.seq = 1; expect(E.monsterOf(h).next(h, 'bite')).toBe('latch');
+  it('Feverjaw: being swallowed infects you, and the infection keeps going while you’re inside', () => {
+    const h = hunt('feverjaw', [['blade', 0], ['maul', 0]]);
+    h.intent = 'swallow'; E.endTurn(h); expect(h.mon.gut).toBe(2); expect(h.mon.pInf).toBeGreaterThan(0);
+    h.mon.pInf = 1; E.endTurn(h); expect(h.intent).toBe('digest'); E.endTurn(h); expect(h.mon.pInf).toBeGreaterThan(0);
+  });
+  it('Bloodwhelk: its slime drinks past your guard and heals it; broken gills stop it feeding', () => {
+    const h = hunt('bloodwhelk', [['bow', 0], ['maul', 0]]);
+    h.intent = 'slime'; E.endTurn(h); expect(h.mon.slime).toBe(3);
+    h.mon.hp = 300; h.mon.parts.gills.broken = false; h.intent = 'spit'; h.guard = 999; const hp = h.php; E.endTurn(h);
+    expect(hp - h.php).toBe(12); expect(h.mon.hp).toBe(300 + 12 + 18);
+    h.mon.hp = 300; h.mon.parts.gills.broken = true; h.intent = 'spit'; E.endTurn(h); expect(h.mon.hp).toBe(300);
+    const p = hunt('bloodwhelk', [['bow', 0], ['maul', 0]], 'bloodplate'); p.intent = 'slime'; E.endTurn(p); expect(p.mon.slime ?? 0).toBe(0);
   });
 });
 
 describe('the Gloamhollow', () => {
-  it('opens beside the Mirewood; its deeper versions need the Mirewood and their own monster', () => {
+  it('opens beside the Mirewood; the changed Mirewood needs the Mirewood and the Gloamhollow monster with its status', () => {
     const s = E.newSave();
     for (const id of ['gorehorn', 'galeshrike', 'cinderback', 'rimetail']) s.record[id] = { hunts: 1, wins: 1, captures: 0, breaks: {} };
-    expect(E.isUnlocked(s, 'rotcap')).toBe(true); expect(E.isUnlocked(s, 'blightcrown')).toBe(false);
-    expect(E.unlockHint('blightcrown')).toBe('Beat every monster in the Mirewood and the Rotcap first');
+    expect(E.isUnlocked(s, 'rotcap')).toBe(true); expect(E.isUnlocked(s, 'feverjaw')).toBe(false);
+    expect(E.unlockHint('feverjaw')).toBe('Beat every monster in the Mirewood and the Rotcap first');
+    expect(E.MONSTERS.feverjaw.inflicts).toBe(E.MONSTERS.rotcap.inflicts);
   });
   it('is optional: the Sovereign doesn’t need it', () => {
     expect(E.MONSTERS.sovereign.requires).not.toContain('rotcap');
   });
   it('a status pair is forgiving at the apex but doesn’t beat a planned elemental pair (simulated)', () => {
     const run = (w: [string, number][]) => matchup({ weapons: w, armor: 'slagplate', armorLv: 1, item: 'salve', items: 3, target: 'sovereign' }, { skill: 'casual', capture: false }, 80, 3).win;
-    const elem = run([['slaghammer', 1], ['monolithbow', 1]]), status = run([['blightmaul', 1], ['glarebow', 1]]);
+    const elem = run([['slaghammer', 1], ['monolithbow', 1]]), status = run([['fevermaul', 1], ['heronbow', 1]]);
     expect(status).toBeGreaterThan(0.45); expect(status).toBeLessThanOrEqual(elem + 0.05);
   });
 });

@@ -4,7 +4,6 @@
   // Idle: breathing, spores drifting off the cap. Bloom: the cap swells and its gills glow; Burst: swollen to bursting,
   // shaking. Puff: a spore cloud rolls out. Wilting or popped: the cap sags. Dazed: stars. A broken cap is torn and
   // slumped; a broken jaw hangs; broken root legs are hacked short.
-  // The Blightcrown reuses this plate, recoloured (Variant.svelte).
   import type { Hunt } from '../../../engine';
   import { oneShots, LUNGE, INK, BONE, BONE2, FAR, GOLD, EMBER, star, hatchLines } from './motion.svelte';
 

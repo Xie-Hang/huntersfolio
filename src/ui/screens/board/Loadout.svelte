@@ -77,8 +77,9 @@
 {#snippet armorNote(a: E.ArmorInst)}
   {#if a.burnproof && M.burrower}<span class="good">Immune to its molten shell</span>{' · '}{/if}
   {#if a.infectLess && M.inflicts === 'Infect'}<span class="good">Shorter infections</span>{' · '}{/if}
-  {#if (a.sparkLess || a.chargeProof) && M.inflicts === 'Spark'}<span class="good">{a.chargeProof && M.id === 'glarewing' ? 'Your dice can’t be charged' : 'Weaker Discharge'}</span>{' · '}{/if}
-  {#if a.latchMax && M.inflicts === 'Drain'}<span class="good">Shorter latches</span>{' · '}{/if}
+  {#if (a.sparkLess || a.chargeProof) && M.inflicts === 'Spark'}<span class="good">{a.chargeProof && M.id === 'archeron' ? 'Your dice can’t be charged' : 'Weaker Discharge'}</span>{' · '}{/if}
+  {#if a.latchMax && M.id === 'hollowfang'}<span class="good">Shorter latches</span>{' · '}{/if}
+  {#if a.leechProof && M.id === 'bloodwhelk'}<span class="good">The slime can’t drink from you</span>{' · '}{/if}
   {#if a.adaptive}<span class="good">Resists whatever element it attacks with −30%</span>
   {:else if !a.resist}<span class="neutral">No resistance</span>
   {:else if M.elemOf}<span class="neutral">Resists its {a.resist} stance's attacks</span>

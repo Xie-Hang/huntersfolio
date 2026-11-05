@@ -4,7 +4,6 @@
   // pale-yellow eyespots. Dust crackles off it. On the ground its wings lie spread; taking off they lift; in the air
   // it rises out of frame, wings beating, its shadow shrinking; diving it folds and drops; settled or brought down it
   // sprawls. A broken wing is torn ragged, broken antennae are stubs, a broken thorax is cracked.
-  // The Glarewing reuses this plate, recoloured (Variant.svelte).
   import type { Hunt } from '../../../engine';
   import { oneShots, LUNGE, INK, BONE, BONE2, FAR, GOLD, EMBER, star, hatchLines } from './motion.svelte';
 

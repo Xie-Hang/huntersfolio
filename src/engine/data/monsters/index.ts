@@ -19,9 +19,9 @@ import { sovereign } from './sovereign';
 import { rotcap } from './rotcap';
 import { arcmoth } from './arcmoth';
 import { hollowfang } from './hollowfang';
-import { blightcrown } from './blightcrown';
-import { glarewing } from './glarewing';
-import { gravefang } from './gravefang';
+import { feverjaw } from './feverjaw';
+import { archeron } from './archeron';
+import { bloodwhelk } from './bloodwhelk';
 import { MAX_TIER, EDITION } from '../../edition';
 
 /** Stormspire (Tier 3) ramp, Nov 2026 playtest: a skilled tester cleared it with +0 Mirewood weapons, so nothing
@@ -43,14 +43,15 @@ for (const [M, t] of [[monolith, TIER3_TUNE.monolith], [stormroc, TIER3_TUNE.sto
 }
 
 /** every monster that's built; MONSTERS is the ones in this edition (the demo stops at Ashfall Ridge) */
-// Tier 2.2 = the Gloamhollow (status monsters, Nov 2026), a side region beside the Mirewood; 3.2 its deeper versions
-// beside the Stormspire. Optional: the Sovereign still unlocks from the Stormspire four.
+// Tier 2.2 = the Gloamhollow (status monsters, Nov 2026), a side region beside the Mirewood. 3.2 = the Mirewood, changed:
+// three Mirewood monsters carrying those statuses, beside the Stormspire. Both optional: the Sovereign still unlocks
+// from the Stormspire four.
 // Tier 2.5 = the changed Ashfall Ridge (variants, Nov 2026): after the Mirewood, before the Stormspire in power.
-export const ALL_MONSTERS: Record<string, MonsterDef> = { gorehorn, galeshrike, cinderback, rimetail, bogjaw, duskheron, emberwhelk, mistglass, rotcap, arcmoth, hollowfang, squallhorn, rimeshrike, quakeback, ashtail, monolith, stormroc, slagwyrm, gorhydra, blightcrown, glarewing, gravefang, sovereign };
+export const ALL_MONSTERS: Record<string, MonsterDef> = { gorehorn, galeshrike, cinderback, rimetail, bogjaw, duskheron, emberwhelk, mistglass, rotcap, arcmoth, hollowfang, squallhorn, rimeshrike, quakeback, ashtail, monolith, stormroc, slagwyrm, gorhydra, feverjaw, archeron, bloodwhelk, sovereign };
 export const MONSTERS: Record<string, MonsterDef> = Object.fromEntries(Object.entries(ALL_MONSTERS).filter(([, M]) => M.tier <= MAX_TIER));
 const builtIn = (t: number) => Object.values(MONSTERS).filter(M => M.tier === t).length;
 
-export const TIERS: Record<number, string> = { 1: 'Tier 1 · Ashfall Ridge', 2: builtIn(2) ? 'Tier 2 · Mirewood' : 'Tier 2 · Uncharted', 2.2: 'The Gloamhollow', 2.5: 'Ashfall Ridge, changed', 3.2: 'The Gloamhollow, deeper', 3: builtIn(3) ? 'Tier 3 · Stormspire' : 'Tier 3 · Uncharted', 4: 'Apex' };
+export const TIERS: Record<number, string> = { 1: 'Tier 1 · Ashfall Ridge', 2: builtIn(2) ? 'Tier 2 · Mirewood' : 'Tier 2 · Uncharted', 2.2: 'The Gloamhollow', 2.5: 'Ashfall Ridge, changed', 3.2: 'The Mirewood, changed', 3: builtIn(3) ? 'Tier 3 · Stormspire' : 'Tier 3 · Uncharted', 4: 'Apex' };
 
 /** Planned roster slots that aren't in the game yet (shown as Unknown on the Hunt Board). */
 const later = EDITION === 'demo' ? 'in the full game' : 'in a coming update';

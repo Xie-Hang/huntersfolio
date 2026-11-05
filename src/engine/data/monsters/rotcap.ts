@@ -3,7 +3,6 @@
 // Pattern: Slam → Spore Puff (infects you 3 turns) → Bloom (the cap swells, 2 turns) → Spore Burst (a big hit that
 //   gets through half your guard and infects you 4 turns) → Wilting (a free turn).
 //   A 2-dice Pierce hit on the swollen cap pops it: the Burst never comes. Breaking the cap ends the Blooms.
-// The Blightcrown (its deeper version) reuses this body: see blightcrown.ts.
 // Parts: Cap (Pierce; no more Bloom), Jaw (Blunt; the daze part), Root Legs (Cut; weaker Slam).
 import type { Hunt, Intent, MonsterDef, Move, WeaponInst } from '../../types';
 import { infectPlayer } from '../../status';
