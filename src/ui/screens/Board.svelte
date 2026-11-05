@@ -14,7 +14,7 @@
   const total = known + E.UNKNOWN.reduce((n, u) => n + u.n, 0);
 
   const groups = $derived(
-    [1, 2, 3, 4]
+    [1, 2, 2.5, 3, 4]
       .map(t => ({
         t,
         known: Object.values(E.MONSTERS).filter(M => M.tier === t && (filter === 'All' || M.elem === filter)),

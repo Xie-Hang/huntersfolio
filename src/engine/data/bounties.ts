@@ -31,6 +31,8 @@ export interface BountyDef {
 // Hunter's Seals were removed (Nov 2026, Mekkman): the bounty charms unlock by bounties completed instead.
 export const REPEAT_PAY = 0.5;
 const easy = { coin: 120 }, hard = (mat: string) => ({ coin: 250, mat });
+// the changed Ashfall Ridge sits between Mirewood and Stormspire
+const easyV = { coin: 150 }, hardV = (mat: string) => ({ coin: 300, mat });
 // Stormspire pays more: its gear costs more
 const easy3 = { coin: 180 }, hard3 = (mat: string) => ({ coin: 360, mat });
 
@@ -61,6 +63,15 @@ const ALL: BountyDef[] = [
   { id: 'mist1', mon: 'mistglass', name: 'Clear sight', goals: [{ k: 'break', part: 'eyes' }, { k: 'noItem' }], reward: easy },
   { id: 'mist2', mon: 'mistglass', name: 'Through the mirror', goals: [{ k: 'without', type: 'Blunt' }], reward: easy },
   { id: 'mist3', mon: 'mistglass', name: 'Shatterpoint', hard: true, goals: [{ k: 'break', part: 'tail' }, { k: 'turns', n: 8 }], reward: hard('mirrorheart') },
+  // the changed Ashfall Ridge (two each: one ordinary, one hard)
+  { id: 'squall1', mon: 'squallhorn', name: 'Calm the storm', goals: [{ k: 'feat', f: 'windbreak', text: 'Daze it with 2 or more pips of wind gathered' }], reward: easyV },
+  { id: 'squall2', mon: 'squallhorn', name: 'Broken gale', hard: true, goals: [{ k: 'break', part: 'tusks' }, { k: 'turns', n: 12 }], reward: hardV('galeheart') },
+  { id: 'rshrike1', mon: 'rimeshrike', name: 'Clipped', goals: [{ k: 'break', part: 'wings' }, { k: 'noItem' }], reward: easyV },
+  { id: 'rshrike2', mon: 'rimeshrike', name: 'Through the hail', hard: true, goals: [{ k: 'break', part: 'crest' }, { k: 'taken', n: 120 }], reward: hardV('haileye') },
+  { id: 'quake1', mon: 'quakeback', name: 'Rooted', goals: [{ k: 'feat', f: 'rooted', text: 'Break its claws before it ever burrows' }], reward: easyV },
+  { id: 'quake2', mon: 'quakeback', name: 'Bedrock', hard: true, goals: [{ k: 'break', part: 'plate' }, { k: 'turns', n: 11 }], reward: hardV('quakeheart') },
+  { id: 'ash1', mon: 'ashtail', name: 'Cool hands', goals: [{ k: 'never', f: 'burned', text: 'Never get burned' }], reward: easyV },
+  { id: 'ash2', mon: 'ashtail', name: 'Banked fire', hard: true, goals: [{ k: 'break', part: 'mantle' }, { k: 'break', part: 'tail' }], reward: hardV('ashheart') },
   // Stormspire
   { id: 'mono1', mon: 'monolith', name: 'Crack it twice', goals: [{ k: 'cracks', part: 'plates', n: 2 }], reward: easy3 },
   { id: 'mono2', mon: 'monolith', name: 'Hold the mountain', goals: [{ k: 'feat', f: 'interrupt', text: 'Stop a Quake before it lands' }], reward: easy3 },

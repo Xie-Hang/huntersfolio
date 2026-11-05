@@ -19,7 +19,19 @@ export function gearSource(kind: 'w' | 'a', id: string): string {
 }
 /** Reinforcing (weapon rework, Nov 2026): coin plus the common material of the monster the gear comes from, so a
  *  favourite weapon sends you back to hunt its monster (it used to be Gorehorn hide for everything). */
-export const reinforceCost = (lv: number, kind: 'w' | 'a' = 'w', id = 'blade'): Cost => ({ coin: 80 * (lv + 1), [MONSTERS[gearSource(kind, id)].common]: 2 * (lv + 1) });
+export const reinforceCost = (lv: number, kind: 'w' | 'a' = 'w', id = 'blade'): Cost => {
+  const c: Cost = { coin: 80 * (lv + 1), [MONSTERS[gearSource(kind, id)].common]: 2 * (lv + 1) };
+  // the changed Ashfall Ridge (Nov 2026): Mirewood gear's last step, +2 → +3, also needs the common material of the
+  // variant with the same element. That +3 is what the Stormspire asks for, so the variants are where you prepare.
+  const d = kind === 'w' ? WEAPONS[id] : ARMORS[id];
+  const el = kind === 'w' ? (d as { elem?: Element | null }).elem : (d as { resist?: Element | null }).resist;
+  const v = el ? MONSTERS[VARIANT_OF_ELEM[el]] : undefined;
+  if (lv === 2 && (d?.tier ?? 1) === 2 && v) c[v.common] = (c[v.common] ?? 0) + VARIANT_PLUS3;
+  return c;
+};
+/** which changed-Ashfall monster each element's Mirewood gear needs for +3, and how many of its common material */
+export const VARIANT_OF_ELEM: Record<Element, string> = { Stone: 'quakeback', Gale: 'squallhorn', Ember: 'ashtail', Frost: 'rimeshrike' };
+export const VARIANT_PLUS3 = 2;
 export const MAX_REINFORCE = 3;
 
 /* ---------- stats ---------- */

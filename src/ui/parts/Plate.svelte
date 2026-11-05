@@ -14,6 +14,7 @@
   import Stormroc from './plates/Stormroc.svelte';
   import Slagwyrm from './plates/Slagwyrm.svelte';
   import Gorhydra from './plates/Gorhydra.svelte';
+  import Variant from './plates/Variant.svelte';
   import { ALL_MONSTERS } from '../../engine';
   import Scene from './Scene.svelte';
   /** scene: draw Ashfall Ridge behind it (the big plates; not the small Hunt Board thumbnails) */
@@ -22,7 +23,8 @@
 
 <div class="plate-stage">
 {#if scene}<Scene region={(ALL_MONSTERS[mon]?.tier ?? 1) === 3 ? 'spire' : (ALL_MONSTERS[mon]?.tier ?? 1) === 2 ? 'mire' : 'ridge'} />{/if}
-{#if mon === 'gorehorn'}<Gorehorn {hunt} />
+{#if ALL_MONSTERS[mon]?.variantOf}<Variant {mon} {hunt} />
+{:else if mon === 'gorehorn'}<Gorehorn {hunt} />
 {:else if mon === 'galeshrike'}<Galeshrike {hunt} />
 {:else if mon === 'cinderback'}<Cinderback {hunt} />
 {:else if mon === 'rimetail'}<Rimetail {hunt} />

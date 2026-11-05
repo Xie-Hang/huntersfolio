@@ -112,7 +112,32 @@
     hydraheart: gem(FROST, '#7fd4ff'),
     stumpcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="#4a3a30" ${S}/><path d="M18 26 l5 5 l-4 4 l7 4" fill="none" stroke="${EMBER}" stroke-width="3" stroke-linecap="round"/>`,
     duskcharm: `${charmTop}<path d="M38 22 L12 28 L38 34 Z" fill="${BONE2}" ${S}/><path d="M38 34 L14 38 L38 42 Z" fill="${BONE2}" ${S}/>`,
-    bogcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${STONEC}" ${S}/><circle cx="20" cy="25" r="3.5" fill="${MOSS}"/><circle cx="28" cy="31" r="3" fill="${MOSS}"/>`
+    bogcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${STONEC}" ${S}/><circle cx="20" cy="25" r="3.5" fill="${MOSS}"/><circle cx="28" cy="31" r="3" fill="${MOSS}"/>`,
+    /* the changed Ashfall Ridge: the originals' shapes in the variant's element */
+    squallhide: `<path d="M8 12 C16 8 32 8 40 12 L38 22 L42 30 L36 40 C28 43 20 43 12 40 L6 30 L10 22 Z" fill="${GALE}" ${S}/><path d="M12 20 q10 -4 20 0 M14 30 q10 -4 20 0" fill="none" stroke="${INK}" stroke-width="2.2" opacity=".55"/>`,
+    galetusk: fang(GALE),
+    squallmane: `<path d="M8 16 C16 12 32 12 40 16 L40 38 C32 42 16 42 8 38 Z" fill="${BONE}" ${S}/><path d="M8 16 L12 8 L16 14 L20 6 L24 13 L28 6 L32 14 L36 8 L40 16" fill="${GALE}" ${S}/>`,
+    squallsinew: `<path d="M8 10 C20 14 14 24 24 26 C34 28 28 38 40 40" fill="none" stroke="${INK}" stroke-width="10" stroke-linecap="round"/><path d="M8 10 C20 14 14 24 24 26 C34 28 28 38 40 40" fill="none" stroke="${GALE}" stroke-width="5" stroke-linecap="round"/>`,
+    galeheart: gem(GALE, GALE),
+    rimeplume: feather(FROST),
+    rimepinion: feather(FROST, true),
+    icetalon: claw(FROST),
+    rimecrest: `<path d="M8 40 L14 12 L20 30 L26 6 L31 30 L38 14 L40 40 Z" fill="${FROST}" ${S}/><path d="M6 40 H42" ${S} fill="none"/>`,
+    haileye: `<circle cx="24" cy="24" r="17" fill="${FROST}" ${S}/><path d="M12 24 C18 16 30 16 36 24 C30 32 18 32 12 24 Z" fill="${BONE}" ${S} stroke-width="2.4"/><circle cx="24" cy="24" r="4.5" fill="${INK}"/>`,
+    quakescale: scale(STONEC),
+    quakeplate: `<path d="M8 14 C14 8 34 8 40 14 L38 36 C30 42 18 42 10 36 Z" fill="${STONEC}" ${S}/><path d="M16 18 l6 6 l-3 6 l8 4 M30 16 l-4 8 l6 4" fill="none" stroke="${INK}" stroke-width="2.2"/>`,
+    quakeclaw: claw(STONEC),
+    backridge: `<path d="M6 40 L14 20 L20 30 L26 12 L32 28 L38 18 L42 40 Z" fill="${STONEC}" ${S}/>`,
+    quakeheart: gem(STONEC, GOLD),
+    ashscale: scale(EMBER),
+    emberbarb: `<path d="M8 40 C14 30 20 22 30 16" fill="none" stroke="${INK}" stroke-width="10" stroke-linecap="round"/><path d="M8 40 C14 30 20 22 30 16" fill="none" stroke="${EMBER}" stroke-width="5" stroke-linecap="round"/><path d="M28 18 L40 6 L34 22 Z" fill="${GOLDHI}" ${S} stroke-width="2.4"/>`,
+    ashmantle: `<path d="M10 34 L16 10 L30 6 L40 20 L34 40 L18 42 Z" fill="${EMBER}" ${S}/><path d="M16 10 L24 24 L34 40 M24 24 L40 20 M24 24 L10 34" fill="none" stroke="${GOLDHI}" stroke-width="2"/>`,
+    ashfang: fang('#e8a06a'),
+    ashheart: gem(EMBER, GOLDHI),
+    squallcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${GALE}" ${S}/><path d="M16 26 q8 -4 16 0 M17 32 q7 -3 14 0" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>`,
+    shroudcharm: `${charmTop}${feather(FROST).replace('M24 5', 'M24 11')}`,
+    quakecharm: `${charmTop}<path d="M12 22 L24 14 L36 22 L32 40 L16 40 Z" fill="${STONEC}" ${S}/><path d="M18 28 l4 4 l4 -4 l4 4" fill="none" stroke="${INK}" stroke-width="2.4"/>`,
+    ashcharm: `${charmTop}<path d="M24 12 L33 26 L24 44 L15 26 Z" fill="${EMBER}" ${S}/><path d="M24 16 V40 M19 26 H29" stroke="${GOLDHI}" stroke-width="2"/>`
   };
   const body = $derived(ICONS[id]);
 </script>

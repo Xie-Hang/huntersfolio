@@ -72,6 +72,12 @@ export interface ArmorDef {
   ward?: number;
   /** your dice can't be frozen */
   thaw?: boolean;
+  /** Blunt hits that build daze build 5 more (Squallhide Coat) */
+  dazeUp?: boolean;
+  /** tremors can't shake your dice loose (Quakestone Plate) */
+  steadyfoot?: boolean;
+  /** your first swap each hunt costs no die (Rimeplume Mantle) */
+  swapOnce?: boolean;
   craft: Cost;
 }
 
@@ -89,7 +95,7 @@ export interface ItemDef {
   pouch?: boolean;
 }
 
-export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet' | 'airPierce' | 'bigHeal' | 'sealHeal';
+export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet' | 'airPierce' | 'bigHeal' | 'sealHeal' | 'chargeDaze' | 'groundHit' | 'breakFree' | 'pierceStrip';
 export interface CharmDef {
   /** monster tier it comes from (default 1); gear above the edition's top tier isn't in that build */
   tier?: number;
@@ -197,6 +203,13 @@ export interface MonsterState {
   hits?: number;
   /** dice frozen solid on your next roll */
   frost?: number;
+  /** dice shaken loose by a tremor on your next roll (Quakeback) */
+  shake?: number;
+  /** Squallhorn: pips of gathered wind; Tailwind (its next charge ignores half your guard) */
+  wind?: number;
+  tailwind?: boolean;
+  /** Rimeshrike: its ground actions left with the Frost Shroud up (only Cut and Blunt reach it) */
+  shroud?: number;
   /** T3 Monolith Warden: monster actions left with the core exposed; phase 2 (Crumbling) */
   core?: number;
   crumble?: boolean;
@@ -281,9 +294,20 @@ export interface Hunt {
   bounty?: string;
   /** a quickswap armor's free swap was used this turn */
   freeSwapUsed?: boolean;
+  /** a swapOnce armor's free swap was used this hunt */
+  swapOnceUsed?: boolean;
 }
 
 export interface MonsterDef {
+  /** a variant of this monster (the changed Ashfall Ridge, Nov 2026): same body, new element and mechanic */
+  variantOf?: string;
+  /** plating that isn't ice: its name in the log and on the badge, and layers a hit clears (default: Cut 2, else 1) */
+  plateWord?: string;
+  plateBreak?(w: WeaponInst): number;
+  /** hot plating: a Firepot does nothing */
+  plateHot?: boolean;
+  /** extra condition badges on the monster panel */
+  badges?(h: Hunt): { key: string; label: string; short: string; cls: string; desc: string }[];
   /** names of its elemental attacks (Nov 2026: only these carry its element; the rest are physical, so resist
    *  armor answers the big elemental moves without making the whole fight trivial) */
   elemental?: string[];

@@ -23,7 +23,7 @@ function effFor(h: Hunt, w: Hunt['weps'][number], partId: string): number {
   const p = E.monsterOf(h).parts.find(x => x.id === partId)!;
   const exposed = h.mon.parts[partId].exposed > 0 ? E.EXPOSE_BREAK * E.EXPOSE_DMG : 1;
   // with ice up, what matters is how fast the weapon clears it (Cut breaks 2 layers a hit)
-  const ice = h.mon.plating > 0 ? E.iceBreak(w) / E.CUT_ICE_BREAK : 1;
+  const ice = h.mon.plating > 0 ? E.plateBreak(h, w) / E.CUT_ICE_BREAK : 1;
   return p.eff[w.type] * exposed * ice * (E.airborneHalf(h, w) ? 0.5 : 1);
 }
 
@@ -47,7 +47,7 @@ function chooseTarget(h: Hunt, p: Policy) {
     ? effFor(h, oth, goal) > effFor(h, cur, goal) + 0.3
     : effFor(h, cur, goal) === 0 && effFor(h, oth, goal) > 0;
   // ice up: both skill levels swap to the weapon that breaks more of it (the move captions say so)
-  const iceSwap = h.mon.plating >= 2 && E.iceBreak(oth) > E.iceBreak(cur);
+  const iceSwap = h.mon.plating >= 2 && E.plateBreak(h, oth) > E.plateBreak(h, cur);
   if ((shouldSwap || iceSwap) && E.freeDice(h).length) {
     const free = E.freeDice(h), blank = free.find(i => h.dice[i].face === 'B');
     E.swap(h, [blank ?? free[0]]);

@@ -17,6 +17,11 @@ armors.push({ id: 'wardenmail', tier: 3, name: 'Wardenstone Mail', hp: 240, guar
 armors.push({ id: 'stormcloak', tier: 3, name: 'Stormfeather Cloak', hp: 225, guard: 10, rerolls: 3, resist: 'Gale', perk: 'Resists Gale (−30%). Lightning (Thunderhead) deals half.', rod: true, craft: { coin: 900, rocplume: 5, rocpinion: 2 } });
 armors.push({ id: 'slagplate', tier: 3, name: 'Slagforged Plate', hp: 250, guard: 10, rerolls: 2, resist: 'Ember', perk: 'Resists Ember (−30%). Every hit you take is reduced by 6.', ward: 6, craft: { coin: 900, slagscale: 5, slagspine: 2 } });
 armors.push({ id: 'hydracoat', tier: 3, name: 'Hydrascale Coat', hp: 235, guard: 10, rerolls: 3, resist: 'Frost', perk: 'Resists Frost (−30%). Your dice can’t be frozen.', thaw: true, craft: { coin: 900, hydrascale: 5, hydrafang: 2 } });
+// the changed Ashfall Ridge (variants): between Mirewood and Stormspire
+armors.push({ id: 'squallcoat', tier: 2.5, name: 'Squallhide Coat', hp: 225, guard: 10, rerolls: 2, resist: 'Gale', perk: 'Resists Gale (−30%). Blunt hits that build daze build 5 more.', dazeUp: true, craft: { coin: 750, squallhide: 4, squallmane: 2 } });
+armors.push({ id: 'rimemantle', tier: 2.5, name: 'Rimeplume Mantle', hp: 210, guard: 10, rerolls: 3, resist: 'Frost', perk: 'Resists Frost (−30%). Your first weapon swap each hunt costs no die.', swapOnce: true, craft: { coin: 750, rimeplume: 4, rimepinion: 2 } });
+armors.push({ id: 'quakemail', tier: 2.5, name: 'Quakestone Plate', hp: 235, guard: 10, rerolls: 2, resist: 'Stone', perk: 'Resists Stone (−30%). Tremors can’t shake your dice loose.', steadyfoot: true, craft: { coin: 750, quakescale: 4, quakeclaw: 2 } });
+armors.push({ id: 'ashcoat', tier: 2.5, name: 'Ashscale Coat', hp: 220, guard: 10, rerolls: 2, resist: 'Ember', perk: 'Resists Ember (−30%). Hot scales and molten shells can’t burn you.', burnproof: true, craft: { coin: 750, ashscale: 4, ashfang: 2 } });
 export const ARMORS: Record<string, ArmorDef> = Object.fromEntries(armors.filter(inEdition).map(a => [a.id, a]));
 
 const items: ItemDef[] = [
@@ -53,6 +58,10 @@ charms.push({ id: 'corecharm', tier: 3, name: 'Core Charm', src: 'Monolith Warde
 charms.push({ id: 'crowncharm', tier: 3, name: 'Crown Charm', src: 'Stormcrown Roc', perk: 'Pierce hits on an airborne monster deal +20%.', effect: 'airPierce', craft: { coin: 200, stormcrown: 1, rocplume: 2 } });
 charms.push({ id: 'slagcharm', tier: 3, name: 'Slag Charm', src: 'Slagwyrm', perk: 'A Blunt hit of 40 or more heals you 10.', effect: 'bigHeal', craft: { coin: 200, slagspine: 1, slagscale: 2 } });
 charms.push({ id: 'stumpcharm', tier: 3, name: 'Stump Charm', src: 'Gorhydra', perk: 'Sealing a stump heals you 20.', effect: 'sealHeal', craft: { coin: 200, hydrafang: 1, hydrascale: 2 } });
+charms.push({ id: 'squallcharm', tier: 2.5, name: 'Squall Charm', src: 'Squallhorn', perk: 'Charging also adds 10 daze.', effect: 'chargeDaze', craft: { coin: 175, galetusk: 1, squallhide: 2 } });
+charms.push({ id: 'shroudcharm', tier: 2.5, name: 'Shroud Charm', src: 'Rimeshrike', perk: 'Hits on a flier while it’s on the ground deal +15%.', effect: 'groundHit', craft: { coin: 175, rimecrest: 1, rimeplume: 2 } });
+charms.push({ id: 'quakecharm', tier: 2.5, name: 'Quake Charm', src: 'Quakeback', perk: 'Breaking a part frees a frozen or shaken die.', effect: 'breakFree', craft: { coin: 175, backridge: 1, quakescale: 2 } });
+charms.push({ id: 'ashcharm', tier: 2.5, name: 'Ash Charm', src: 'Ashtail', perk: 'Pierce hits clear 1 more layer of ice or scales.', effect: 'pierceStrip', craft: { coin: 175, emberbarb: 1, ashscale: 2 } });
 export const CHARMS: Record<string, CharmDef> = Object.fromEntries(charms.filter(inEdition).map(c => [c.id, c]));
 
 const mats: MaterialDef[] = [
@@ -118,6 +127,28 @@ mats.push(
   { id: 'hydrahorn', tier: 3, base: 'Hydra Horn', src: 'Gorhydra', sell: 130, how: 'Break the Gorhydra’s right head (Cut best)' },
   { id: 'hydraheart', tier: 3, base: 'Hydraheart', src: 'Gorhydra', rare: true, sell: 650, how: 'Rare from the Gorhydra’s middle head' },
   { id: 'mirestone', tier: 2, base: 'Mirestone', src: 'Bogjaw', rare: true, sell: 450, how: 'Rare from Bogjaw stone warts' }
+);
+mats.push(
+  { id: 'squallhide', tier: 2.5, base: 'Squall Hide', src: 'Squallhorn', sell: 35, how: 'Every Squallhorn hunt' },
+  { id: 'galetusk', tier: 2.5, base: 'Gale Tusk', src: 'Squallhorn', sell: 110, how: 'Break the Squallhorn’s tusks (Blunt best)' },
+  { id: 'squallmane', tier: 2.5, base: 'Squall Mane', src: 'Squallhorn', sell: 110, how: 'Break the Squallhorn’s mane (Cut best)' },
+  { id: 'squallsinew', tier: 2.5, base: 'Squall Sinew', src: 'Squallhorn', sell: 110, how: 'Break the Squallhorn’s hind legs (Pierce best)' },
+  { id: 'galeheart', tier: 2.5, base: 'Galeheart', src: 'Squallhorn', rare: true, sell: 550, how: 'Rare from Squallhorn tusk breaks' },
+  { id: 'rimeplume', tier: 2.5, base: 'Rime Plume', src: 'Rimeshrike', sell: 35, how: 'Every Rimeshrike hunt' },
+  { id: 'rimepinion', tier: 2.5, base: 'Rime Pinion', src: 'Rimeshrike', sell: 110, how: 'Break the Rimeshrike’s wings (Pierce best)' },
+  { id: 'icetalon', tier: 2.5, base: 'Ice Talon', src: 'Rimeshrike', sell: 110, how: 'Break the Rimeshrike’s talons (Cut best)' },
+  { id: 'rimecrest', tier: 2.5, base: 'Rime Crest', src: 'Rimeshrike', sell: 110, how: 'Break the Rimeshrike’s crest (Blunt best, only on the ground)' },
+  { id: 'haileye', tier: 2.5, base: 'Hail Eye', src: 'Rimeshrike', rare: true, sell: 550, how: 'Rare from Rimeshrike crest breaks' },
+  { id: 'quakescale', tier: 2.5, base: 'Quake Scale', src: 'Quakeback', sell: 35, how: 'Every Quakeback hunt' },
+  { id: 'quakeplate', tier: 2.5, base: 'Quake Plate', src: 'Quakeback', sell: 110, how: 'Break the Quakeback’s head plate (Blunt best)' },
+  { id: 'quakeclaw', tier: 2.5, base: 'Quake Claw', src: 'Quakeback', sell: 110, how: 'Break the Quakeback’s claws (Cut best)' },
+  { id: 'backridge', tier: 2.5, base: 'Ridge Stone', src: 'Quakeback', sell: 110, how: 'Break the Quakeback’s back ridge (Pierce best)' },
+  { id: 'quakeheart', tier: 2.5, base: 'Quakeheart', src: 'Quakeback', rare: true, sell: 550, how: 'Rare from Quakeback head plate breaks' },
+  { id: 'ashscale', tier: 2.5, base: 'Ash Scale', src: 'Ashtail', sell: 35, how: 'Every Ashtail hunt' },
+  { id: 'emberbarb', tier: 2.5, base: 'Ember Barb', src: 'Ashtail', sell: 110, how: 'Sever the Ashtail’s tail (Cut best)' },
+  { id: 'ashmantle', tier: 2.5, base: 'Mantle Ember', src: 'Ashtail', sell: 110, how: 'Break the Ashtail’s ember mantle (Blunt best)' },
+  { id: 'ashfang', tier: 2.5, base: 'Ash Fang', src: 'Ashtail', sell: 110, how: 'Break the Ashtail’s jaw (Pierce best)' },
+  { id: 'ashheart', tier: 2.5, base: 'Ashheart', src: 'Ashtail', rare: true, sell: 550, how: 'Rare from Ashtail ember mantle breaks' }
 );
 export const MATERIALS: Record<string, MaterialDef> = Object.fromEntries(mats.filter(inEdition).map(m => [m.id, m]));
 

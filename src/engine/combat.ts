@@ -23,7 +23,14 @@ export const HEAD_DAZE_MAX = 50;
 export const HUNT_VERSION = 6;
 /** Ice plating: layers a Cut hit breaks; any other hit breaks 1 */
 export const CUT_ICE_BREAK = 2;
+/** Shroud Charm: hits on a grounded flier */
+export const GROUND_HIT = 1.15;
+/** Squallhide Coat: extra daze on every Blunt hit that builds it; Squall Charm: daze from charging */
+export const DAZE_UP = 5, CHARGE_DAZE = 10;
 export const iceBreak = (w: WeaponInst) => (w.type === 'Cut' ? CUT_ICE_BREAK : 1);
+/** layers of this monster's plating a hit with this weapon clears (ice by default; the Ashtail's cinder scales
+ *  differ), plus the Ash Charm's extra layer for Pierce */
+export const plateBreak = (h: Hunt, w: WeaponInst) => (MONSTERS[h.mid].plateBreak?.(w) ?? iceBreak(w)) + (w.type === 'Pierce' && charmFx(h) === 'pierceStrip' ? 1 : 0);
 
 const def = (h: Hunt) => MONSTERS[h.mid];
 export const monsterOf = def;
@@ -80,7 +87,7 @@ export function startHunt(s: Save, seed: number, script?: Face[][]): Hunt {
   return h;
 }
 
-export const SWALLOWED = 'Swallowed', FROZEN = 'Frozen';
+export const SWALLOWED = 'Swallowed', FROZEN = 'Frozen', SHAKEN = 'Shaken';
 /** damage it takes to cut your way out once swallowed; Cut counts double, slick armor halves it */
 export const GUT_ESCAPE = 60;
 /** how much each damage type counts toward cutting free: blades slice out, clubs barely dent the gut wall */
@@ -96,6 +103,10 @@ function rollAll(h: Hunt) {
   let f = h.arm.thaw ? 0 : h.mon.frost ?? 0;
   for (const d of h.dice) if (f > 0 && !d.used) { d.used = FROZEN; f--; }
   h.mon.frost = 0;
+  // shaken: a tremor knocked dice loose for this roll (Quakeback)
+  let k = h.arm.steadyfoot ? 0 : h.mon.shake ?? 0;
+  for (let i = 3; i >= 0; i--) if (k > 0 && !h.dice[i].used) { h.dice[i].used = SHAKEN; k--; }
+  h.mon.shake = 0;
 }
 
 /** Swallow lands: `n` of your dice are stuck until you deal the escape damage. */
@@ -125,14 +136,14 @@ export function itemBlockReason(h: Hunt): string | null {
   const fx = ITEMS[h.item].effect, next = h.intent;
   if (fx === 'net') return next === 'takeoff' ? 'Only works while it flies. It takes off after this turn: throw it next turn' : 'Only works while it flies, and it’s on the ground now';
   if (fx === 'blast') return next === 'burrow' ? 'Only works while it’s underground. It digs in after this turn: throw it next turn' : 'Only works while it’s underground';
-  if (fx === 'thaw') return 'Only works while it has ice plating';
+  if (fx === 'thaw') return def(h).plateHot ? 'Its scales are already burning: a Firepot does nothing' : 'Only works while it has ice plating';
   return null;
 }
 export function itemUsable(h: Hunt): boolean {
   if (!h.item || h.itemUsed || h.itemCharges < 1 || h.over) return false;
   if (ITEMS[h.item].effect === 'net') return h.mon.air;
   if (ITEMS[h.item].effect === 'blast') return h.mon.under;
-  if (ITEMS[h.item].effect === 'thaw') return h.mon.plating > 0;
+  if (ITEMS[h.item].effect === 'thaw') return h.mon.plating > 0 && !def(h).plateHot;
   return true;
 }
 
@@ -196,6 +207,21 @@ export interface HitResult { dmg: number; broke: boolean }
 /** remember a notable moment of this hunt (achievements read them when it ends) */
 function feat(h: Hunt, f: string) { (h.feats ??= []).includes(f) || h.feats.push(f); }
 
+/** Fill the shared daze meter (single-headed monsters); a full meter makes it reel. Returns a short note, or
+ *  null when the meter is recovering. */
+export function addDaze(h: Hunt, n: number): string | null {
+  const m = h.mon, MD = def(h);
+  if (MD.heads || m.dazeLock > 0 || m.hp <= 0 || h.over) return null;
+  m.daze = Math.min(m.dazeMax, m.daze + n);
+  if (m.daze < m.dazeMax) return `+${n} daze.`;
+  m.daze = 0; m.dazeMax += DAZE_STEP; m.dazeLock = DAZE_LOCK;
+  if (intentInfo(h).steady) { m.dazeQueued = true; log(h, `Daze: it reels, but the ${intentInfo(h).name} is already coming. It loses its next action instead.`, 'daze'); }
+  else { h.intent = 'dazed'; log(h, 'Daze: the blow rattles its skull. It loses its action!', 'daze'); }
+  if (charmFx(h) === 'dazeWhet') { h.whet = Math.max(h.whet, 0.5); log(h, 'Dusk Charm: your next hit deals +50%.', 'gold'); }
+  if (charmFx(h) === 'dazeHeal') { const heal = Math.min(DAZE_HEAL, h.pmax - h.php); if (heal) { h.php += heal; log(h, `Tusk Charm: +${heal} HP.`, 'gold'); } }
+  return 'it reels!';
+}
+
 /** Use weapon move i. `prefer` lists selected dice to spend first. */
 export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | null {
   if (h.over) return null;
@@ -208,11 +234,13 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
   const miss = MD.dodge?.(h, w);
   if (miss) { log(h, miss); return { dmg: 0, broke: false }; }
   if (m.plating > 0) {
-    // Ice plating: the hit is spent on the ice. Charge and whetstone bonuses are used up too.
-    const strip = Math.min(m.plating, iceBreak(w));
+    // Plating (ice, or the Ashtail's cinder scales): the hit is spent on it. Charge and whetstone bonuses are used up too.
+    const hot = !h.arm.burnproof ? MD.burn?.(h, w) ?? 0 : 0;
+    const strip = Math.min(m.plating, plateBreak(h, w)), word = MD.plateWord ?? 'ice';
     m.plating -= strip; h.chargeReady = false; h.whet = 0;
     if (strip >= 2 && m.plating === 0) feat(h, 'shatter');
-    log(h, `${mv.name} breaks ${strip} layer${strip > 1 ? 's' : ''} of ice. ${m.plating ? `${m.plating} left.` : 'The plating is gone!'}`, m.plating ? '' : 'gold');
+    log(h, `${mv.name} breaks ${strip} layer${strip > 1 ? 's' : ''} of ${word}. ${m.plating ? `${m.plating} left.` : 'The plating is gone!'}`, m.plating ? '' : 'gold');
+    if (hot > 0) { const b = Math.min(hot, h.php - 1); if (b > 0) { h.php -= b; h.stats.taken += b; feat(h, 'burned'); log(h, `The scales are white-hot: you're burned for ${b}.`, 'ember'); } }
     flowReroll(h, mv);
     return { dmg: 0, broke: false };
   }
@@ -224,6 +252,7 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
   const em = elemMult(w.elem, h.mid);
   if (em !== 1) { dmg = Math.round(dmg * em); notes.push(em > 1 ? 'weakness ×1.5' : 'resisted ×0.75'); }
   if (airborneHalf(h, w)) { dmg = Math.round(dmg / 2); notes.push('airborne ½'); }
+  if (MD.flier && !m.air && charmFx(h) === 'groundHit') { dmg = Math.round(dmg * GROUND_HIT); notes.push('Shroud Charm +15%'); }
   if (m.air && w.type === 'Pierce' && charmFx(h) === 'airPierce') { dmg = Math.round(dmg * AIR_PIERCE); notes.push('Crown Charm +20%'); }
   if (wasCapturable && charmFx(h) === 'finisher') { dmg = Math.round(dmg * FINISHER); notes.push('Finisher’s Charm +25%'); }
   const p = m.parts[h.target], pdef = MD.parts.find(x => x.id === h.target)!;
@@ -256,14 +285,16 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
       if (p.hp === 0) {
         p.broken = true; p.cracks = (p.cracks ?? 0) + 1; h.stats.broken++; broke = true; log(h, pdef.brk, 'ember');
         { const t = MD.onBreak?.(h, h.target, w); if (t) log(h, t, 'gold'); }
+        if (charmFx(h) === 'breakFree') { const d = h.dice.find(x => x.used === SHAKEN || x.used === FROZEN); if (d) { d.used = null; log(h, 'Quake Charm: a locked die comes free.', 'gold'); } }
         if (charmFx(h) === 'salvage') { const heal = Math.min(15, h.pmax - h.php); h.php += heal; h.rerolls++; log(h, `Salvager’s Charm: +${heal} HP, +1 reroll.`, 'gold'); }
         if (h.arm.breakHeal) { const heal = Math.min(25, h.pmax - h.php); h.php += heal; h.rerolls++; log(h, `${h.arm.name}: +${heal} HP, +1 reroll.`, 'gold'); }
       }
     } else if (dmg > 0) log(h, `${w.type} weapons can't break the ${pdef.name.toLowerCase()}. The hit still counts toward the kill.`);
   }
   flowReroll(h, mv);
-  if (mv.daze && MD.heads?.includes(h.target) && reach && m.hp > 0 && MD.dazeHead) {
-    const r = MD.dazeHead(h, h.target, mv.daze);
+  const dz = mv.daze ? mv.daze + (h.arm.dazeUp ? DAZE_UP : 0) : 0;
+  if (dz && MD.heads?.includes(h.target) && reach && m.hp > 0 && MD.dazeHead) {
+    const r = MD.dazeHead(h, h.target, dz);
     if (r.line) log(h, r.line, r.dazed ? 'daze' : '');
     if (r.dazed) {
       feat(h, 'daze'); feat(h, `reel:${h.target}`);
@@ -271,15 +302,8 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
       if (charmFx(h) === 'dazeWhet') { h.whet = Math.max(h.whet, 0.5); log(h, 'Dusk Charm: your next hit deals +50%.', 'gold'); }
       if (charmFx(h) === 'dazeHeal') { const heal = Math.min(DAZE_HEAL, h.pmax - h.php); if (heal) { h.php += heal; log(h, `Tusk Charm: +${heal} HP.`, 'gold'); } }
     }
-  } else if (mv.daze && h.target === MD.head && reach && m.hp > 0 && m.dazeLock === 0) {
-    m.daze = Math.min(m.dazeMax, m.daze + mv.daze);
-    if (m.daze >= m.dazeMax) {
-      m.daze = 0; m.dazeMax += DAZE_STEP; m.dazeLock = DAZE_LOCK;
-      if (intentInfo(h).steady) { m.dazeQueued = true; log(h, `Daze: it reels, but the ${intentInfo(h).name} is already coming. It loses its next action instead.`, 'daze'); }
-      else { h.intent = 'dazed'; log(h, 'Daze: the blow rattles its skull. It loses its action!', 'daze'); }
-      if (charmFx(h) === 'dazeWhet') { h.whet = Math.max(h.whet, 0.5); log(h, 'Dusk Charm: your next hit deals +50%.', 'gold'); }
-      if (charmFx(h) === 'dazeHeal') { const heal = Math.min(DAZE_HEAL, h.pmax - h.php); if (heal) { h.php += heal; log(h, `Tusk Charm: +${heal} HP.`, 'gold'); } }
-    }
+  } else if (dz && h.target === MD.head && reach && m.hp > 0 && m.dazeLock === 0) {
+    addDaze(h, dz);
   }
   if (mv.expose && reach && !p.broken && m.hp > 0) {
     if (!p.exposed) log(h, `Expose: the ${pdef.name.toLowerCase()} ${pdef.name.endsWith('s') ? 'are' : 'is'} exposed. Hits there deal +15% and count double toward the break for 2 turns.`, 'gold');
@@ -291,7 +315,7 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
   const burn = m.hp > 0 && !h.arm.burnproof ? MD.burn?.(h, w) ?? 0 : 0;
   if (burn > 0) {
     // a burn never knocks you out: losing to your own attack would feel unfair
-    const b = Math.min(burn, h.php - 1);
+    const b = Math.min(burn, h.php - 1); if (b > 0) feat(h, 'burned');
     if (b > 0) { h.php -= b; h.stats.taken += b; log(h, `The molten shell sears you for ${b}.`, 'ember'); }
   }
   if (h.intent === 'dazed' && before.intent !== 'dazed') feat(h, 'daze');
@@ -320,10 +344,11 @@ export function charge(h: Hunt, idx: number[]): boolean {
   sel.forEach(i => (h.dice[i].used = 'Charge')); h.chargePending = true;
   log(h, 'You plant your feet and build up power.');
   if (h.arm.braced) { h.guard += BRACE; log(h, `${h.arm.name}: +${BRACE} guard while you charge.`, 'gold'); }
+  if (charmFx(h) === 'chargeDaze') { const r = addDaze(h, CHARGE_DAZE); if (r) log(h, `Squall Charm: ${r}`, 'daze'); }
   return true;
 }
 /** a quickswap armor's free swap is still available this turn */
-export const freeSwap = (h: Hunt) => !!h.arm.quickswap && !h.freeSwapUsed;
+export const freeSwap = (h: Hunt) => (!!h.arm.quickswap && !h.freeSwapUsed) || (!!h.arm.swapOnce && !h.swapOnceUsed);
 export type DiceAction = 'guard' | 'charge' | 'swap' | 'capture';
 /** Dice an action takes when the player hasn't selected any (Mekkman, playtest): blanks first, since they fit no
  *  move; failing that, the dice left when they're exactly what the action needs (Guard: all of them, if no move can
@@ -342,7 +367,7 @@ export function autoDice(h: Hunt, action: DiceAction): number[] | null {
 }
 export function swap(h: Hunt, idx: number[]): boolean {
   const sel = freeOnly(h, idx); if (h.over) return false;
-  if (freeSwap(h) && sel.length === 0) h.freeSwapUsed = true;
+  if (freeSwap(h) && sel.length === 0) { if (h.arm.quickswap && !h.freeSwapUsed) h.freeSwapUsed = true; else h.swapOnceUsed = true; }
   else if (sel.length !== 1) return false;
   else h.dice[sel[0]].used = 'Swap';
   h.weapon = 1 - h.weapon;

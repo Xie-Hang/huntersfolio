@@ -145,7 +145,8 @@ class Game {
     const sounds: Sfx[] = [];
     if (h.mon.plating < ice0) {
       sounds.push(h.mon.plating === 0 ? 'iceGone' : 'iceBreak');
-      this.float('mon', h.mon.plating === 0 ? 'Ice shattered' : 'Ice cracked', 'ice');
+      const word = E.monsterOf(h).plateWord ? 'Scales' : 'Ice';
+      this.float('mon', h.mon.plating === 0 ? `${word} shattered` : `${word} cracked`, 'ice');
     } else {
       sounds.push(w.type === 'Cut' ? 'hitCut' : w.type === 'Blunt' ? 'hitBlunt' : 'hitPierce');
       if (r.dmg >= 50) sounds.push('bigHit');
