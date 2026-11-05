@@ -26,6 +26,8 @@ export const cinderback: MonsterDef = {
   burrower: true,
   kind: 'Magma burrower',
   elem: 'Ember',
+  // its elemental attacks: only these are reduced by armor that resists Ember; the rest are physical
+  elemental: ['Eruption'],
   weak: 'Stone',
   resist: 'Frost',
   hp: 400,

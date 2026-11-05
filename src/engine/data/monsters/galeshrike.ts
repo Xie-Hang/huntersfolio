@@ -22,6 +22,8 @@ export const galeshrike: MonsterDef = {
   flier: true,
   kind: 'Storm raptor',
   elem: 'Gale',
+  // its elemental attacks: only these are reduced by armor that resists Gale; the rest are physical
+  elemental: ['Plunging Dive'],
   weak: 'Frost',
   resist: 'Stone',
   hp: 380,

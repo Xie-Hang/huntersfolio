@@ -136,14 +136,25 @@ export function itemUsable(h: Hunt): boolean {
   return true;
 }
 
+/** The elemental part of an attack: what resist armor can reduce. Physical attacks carry none. */
+export function elemPart(h: Hunt, info = intentInfo(h)): number {
+  const e = info.elemDmg ?? (def(h).elemental?.includes(info.name) ? info.dmg : 0);
+  return Math.max(0, Math.min(info.dmg, e));
+}
+/** Damage of an attack after your armor's resistance: only the elemental part is reduced. */
+export function afterResist(h: Hunt, info = intentInfo(h)) {
+  const elem = elemPart(h, info), phys = info.dmg - elem, resisted = h.arm.resist === def(h).elem && elem > 0;
+  return { phys, elem, resisted, wearsResist: h.arm.resist === def(h).elem, after: phys + (resisted ? Math.round(elem * GUARD_RESIST) : elem) };
+}
 /** What the next monster action will do to you right now, given your guard. */
 export function incoming(h: Hunt) {
   if (h.over) return null;
   const info = intentInfo(h); if (!info.dmg) return null;
-  const res = h.arm.resist === def(h).elem, after = res ? Math.round(info.dmg * GUARD_RESIST) : info.dmg;
-  if (h.evade) return { raw: info.dmg, after, net: 0, res, g: 0, half: !!info.halfGuard && !h.arm.steady, evade: true };
+  const r = afterResist(h, info), res = r.resisted, after = r.after;
+  const parts = { phys: r.phys, elem: r.elem, wearsResist: r.wearsResist };
+  if (h.evade) return { raw: info.dmg, after, net: 0, res, g: 0, half: !!info.halfGuard && !h.arm.steady, evade: true, ...parts };
   const g = info.halfGuard && !h.arm.steady ? Math.floor(h.guard / 2) : h.guard;
-  return { raw: info.dmg, after, net: Math.max(0, after - g), res, g, half: !!info.halfGuard && !h.arm.steady, evade: false };
+  return { raw: info.dmg, after, net: Math.max(0, after - g), res, g, half: !!info.halfGuard && !h.arm.steady, evade: false, ...parts };
 }
 
 /** Indices of free dice that satisfy a recipe, preferring the ones in `prefer`. */
@@ -389,13 +400,13 @@ export function endTurn(h: Hunt): TurnResult {
   if (info.dmg > 0) {
     if (h.evade) { h.evade = false; log(h, `${info.name} tears through the smoke and misses you.`, 'gold'); }
     else {
-      const res = h.arm.resist === MD.elem;
-      const raw = res ? Math.round(info.dmg * GUARD_RESIST) : info.dmg;
+      const ar = afterResist(h, info), res = ar.resisted;
+      const raw = ar.after;
       const g = info.halfGuard && !h.arm.steady ? Math.floor(h.guard / 2) : h.guard;
       taken = Math.max(0, raw - g - (h.arm.ward ?? 0)); landed = true;
       const blocked = raw - taken;
       h.php = Math.max(0, h.php - taken); h.stats.taken += taken; h.stats.guarded += blocked;
-      log(h, `${info.name} hits you for ${taken}${blocked ? ` (${blocked} blocked${info.halfGuard && !h.arm.steady ? ', guard halved' : ''})` : ''}${res ? ` (${MD.elem} resisted)` : ''}.`, taken >= CHARGE_BREAK ? 'ember' : '');
+      log(h, `${info.name} hits you for ${taken}${blocked ? ` (${blocked} blocked${info.halfGuard && !h.arm.steady ? ', guard halved' : ''})` : ''}${res ? ` (${MD.elem} resisted)` : ar.elem === 0 && ar.wearsResist ? ' (physical: your armor\u2019s resist doesn\u2019t apply)' : ''}.`, taken >= CHARGE_BREAK ? 'ember' : '');
       if (h.chargePending && taken >= CHARGE_BREAK) { h.chargePending = false; log(h, 'The hit breaks your focus. Your charge is lost.', 'ember'); }
     }
   }

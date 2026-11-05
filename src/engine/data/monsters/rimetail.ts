@@ -18,6 +18,8 @@ export const rimetail: MonsterDef = {
   plated: RIME_LAYERS,
   kind: 'Ambush stalker',
   elem: 'Frost',
+  // its elemental attacks: only these are reduced by armor that resists Frost; the rest are physical
+  elemental: ['Tail Sweep'],
   weak: 'Ember',
   resist: 'Gale',
   hp: 320,

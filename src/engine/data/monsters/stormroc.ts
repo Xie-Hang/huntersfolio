@@ -24,6 +24,8 @@ export const stormroc: MonsterDef = {
   flier: true,
   kind: 'Sky tyrant',
   elem: 'Gale',
+  // its elemental attacks: only these are reduced by armor that resists Gale; the rest are physical
+  elemental: ['Thunderhead'],
   weak: 'Frost',
   resist: 'Stone',
   hp: 800,

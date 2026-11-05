@@ -76,7 +76,7 @@
 {#snippet armorNote(a: E.ArmorInst)}
   {#if a.burnproof && M.burrower}<span class="good">Immune to its molten shell</span>{' · '}{/if}
   {#if !a.resist}<span class="neutral">No resistance</span>
-  {:else if a.resist === M.elem}<span class="good">Resists its {M.elem} attacks</span>
+  {:else if a.resist === M.elem}<span class="good">Resists its {M.elem} attacks −30%{M.elemental?.length ? ` (${M.elemental.join(', ')}; not its physical ones)` : ''}</span>
   {:else}<span class="bad">{a.resist} resist does nothing here</span>{/if}
 {/snippet}
 

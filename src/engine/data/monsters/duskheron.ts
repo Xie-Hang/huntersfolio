@@ -40,6 +40,8 @@ export const duskheron: MonsterDef = {
   short: 'Duskheron',
   kind: 'Two-headed wader',
   elem: 'Gale',
+  // its elemental attacks: only these are reduced by armor that resists Gale; the rest are physical
+  elemental: ['Twin Spear'],
   weak: 'Frost',
   resist: 'Stone',
   hp: 520,

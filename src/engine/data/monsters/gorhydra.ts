@@ -46,6 +46,8 @@ export const gorhydra: MonsterDef = {
   short: 'Gorhydra',
   kind: 'Hydra',
   elem: 'Frost',
+  // its elemental attacks: only these are reduced by armor that resists Frost; the rest are physical
+  elemental: ['Frost Breath'],
   weak: 'Ember',
   resist: 'Gale',
   hp: 640,
@@ -75,7 +77,8 @@ export const gorhydra: MonsterDef = {
     const breath = HYDRA_HEADS.some(x => acts[x] === 'breath' && !reeling(h, x) && live(h).includes(x as never));
     const stumps = HYDRA_HEADS.filter(x => stumped(h, x));
     const note = [breath ? 'Frost Breath freezes one of your dice next turn' : '', stumps.length ? `${stumps.length === 1 ? 'A stump regrows' : 'Stumps regrow'} soon: seal with Cut or Ember` : ''].filter(Boolean).join('. ');
-    return { name: parts.map(p => p.name).join(' + ') || 'Thrashing', text: parts.map(p => p.text).join(' '), dmg, threat: band(dmg), note: note || undefined };
+    const elemDmg = parts.filter(p => p.name === 'Frost Breath').reduce((t, p) => t + p.dmg, 0);
+    return { name: parts.map(p => p.name).join(' + ') || 'Thrashing', text: parts.map(p => p.text).join(' '), dmg, elemDmg, threat: band(dmg), note: note || undefined };
   },
 
   next(h, prev) {

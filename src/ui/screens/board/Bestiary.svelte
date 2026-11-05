@@ -32,6 +32,7 @@
   </div>
   <dl class="facts">
     <dt>Habits</dt><dd>{M.habits}</dd>
+    {#if M.elemental?.length}<dt>{M.elem} attacks</dt><dd>{M.elemental.join(', ')}. Its other attacks are physical: armor that resists {M.elem} only cuts these.</dd>{/if}
     <dt>Reward</dt><dd><b>{E.REWARD.base} coin</b>, +{E.REWARD.perPart} per part broken, +{E.REWARD.capture} for a capture.</dd>
   </dl>
   {#if bounties.length && beaten}

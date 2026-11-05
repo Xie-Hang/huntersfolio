@@ -4,6 +4,7 @@
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
   import Tagged from '../../parts/Tagged.svelte';
+  import Elem from '../../parts/Elem.svelte';
 
   const h = $derived(game.hunt!);
   const M = $derived(E.MONSTERS[h.mid]);
@@ -77,7 +78,9 @@
     {#if !multi && !tip}<p class="say">{info.text}</p>{/if}
     {#if inc}
       <div class="calc">
-        <b>{inc.raw}</b> {M.elem}{#if inc.res} · resisted → <b>{inc.after}</b>{/if}{#if inc.evade} · smoke: <b>misses</b>{:else if h.guard} · − <b>{inc.g}</b> guard{inc.half ? ' (halved)' : ''}{/if}{#if !inc.evade && inc.net} · <span style="color:var(--muted)">guard dice to reduce{inc.half ? ' (half as well)' : ''}</span>{/if}
+        {#if inc.elem === 0}<b>{inc.raw}</b> physical{#if inc.wearsResist} · <span class="nores">your armor's {M.elem} resist doesn't apply</span>{/if}
+        {:else if inc.phys === 0}<Elem e={M.elem} /><b>{inc.raw}</b> {M.elem}{#if inc.res} · resisted by your armor → <b>{inc.after}</b>{/if}
+        {:else}<b>{inc.phys}</b> physical + <Elem e={M.elem} /><b>{inc.elem}</b> {M.elem}{#if inc.res} · {M.elem} part resisted → <b>{inc.after}</b>{/if}{/if}{#if inc.evade} · smoke: <b>misses</b>{:else if h.guard} · − <b>{inc.g}</b> guard{inc.half ? ' (halved)' : ''}{/if}{#if !inc.evade && inc.net} · <span style="color:var(--muted)">guard dice to reduce{inc.half ? ' (half as well)' : ''}</span>{/if}
       </div>
     {/if}
     {#if info.note || info.steady || breaksCharge || breaksSnare}<div class="note">{[info.note, info.steady && E.carries(h, 'Blunt') ? 'Daze can\'t cancel it' : null, breaksCharge ? `This hit breaks your charge (${E.CHARGE_BREAK}+)` : null, breaksSnare ? `This hit tears it free of your snare: guard it under ${E.CHARGE_BREAK}` : null].filter(Boolean).join(' · ')}</div>{/if}
@@ -94,6 +97,7 @@
   .big.safe { color: var(--gold-hi); }
   .calc { font-family: var(--f-body); font-size: var(--fs-sm); color: var(--soft); }
   .calc b { color: var(--fg); font-weight: 600; }
+  .calc .nores { color: var(--ember-soft); }
   .answer { padding: 6px 10px; border: 1px solid var(--line-2); border-radius: 3px; background: var(--raise); font-size: var(--fs-sm); line-height: 1.35; color: var(--fg); }
   .answer.counter { border-color: var(--gold); }
   .answer b { color: var(--gold-hi); font-weight: 600; }

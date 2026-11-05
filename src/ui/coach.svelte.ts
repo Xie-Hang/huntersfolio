@@ -149,6 +149,15 @@ export const TIPS: Tip[] = [
     },
     done: () => { const h = hunt(); return !!h && h.dice.some(d => d.used === 'Swap'); }
   },
+  // ---- resist armor only cuts elemental attacks (Nov 2026): say so the first time it matters, or it looks like a bug ----
+  {
+    id: 'physical', at: ['tele'],
+    when: () => { const h = hunt(); const inc = h && E.incoming(h); return !!h && !!inc && inc.wearsResist && inc.elem === 0 && inc.raw > 0; },
+    text: () => {
+      const h = hunt()!, M = E.MONSTERS[h.mid], i = E.intentInfo(h);
+      return `Your ${h.arm.name} resists ${M.elem} attacks only. ${i.name} is a physical attack, so it hits in full. It's the ${M.elemental?.join(' and ') ?? 'elemental attacks'} your armor cuts by 30%.`;
+    }
+  },
   // ---- moments the Gorehorn creates ----
   {
     id: 'broke', at: ['parts'],

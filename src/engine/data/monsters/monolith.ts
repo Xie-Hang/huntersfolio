@@ -24,6 +24,8 @@ export const monolith: MonsterDef = {
   short: 'Monolith Warden',
   kind: 'Phased colossus',
   elem: 'Stone',
+  // its elemental attacks: only these are reduced by armor that resists Stone; the rest are physical
+  elemental: ['Quake'],
   weak: 'Gale',
   resist: 'Ember',
   hp: 700,

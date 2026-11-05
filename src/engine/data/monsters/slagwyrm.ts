@@ -24,6 +24,8 @@ export const slagwyrm: MonsterDef = {
   short: 'Slagwyrm',
   kind: 'Armour reformer',
   elem: 'Ember',
+  // its elemental attacks: only these are reduced by armor that resists Ember; the rest are physical
+  elemental: ['Eruption'],
   weak: 'Stone',
   resist: 'Frost',
   hp: 680,

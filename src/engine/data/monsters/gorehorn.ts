@@ -9,6 +9,8 @@ export const gorehorn: MonsterDef = {
   short: 'Gorehorn',
   kind: 'Ridge boar',
   elem: 'Stone',
+  // its elemental attacks: only these are reduced by armor that resists Stone; the rest are physical
+  elemental: ['Trampling Charge', 'Stumbling Rush'],
   weak: 'Gale',
   resist: 'Ember',
   hp: 360,

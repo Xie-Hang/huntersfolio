@@ -127,3 +127,29 @@ describe('Items say why they can\'t be used yet', () => {
     expect(E.itemBlockReason(h)).toBeNull();
   });
 });
+
+describe('Resist armor only cuts elemental attacks', () => {
+  const at = (target: string, armor: string, intent: string) => {
+    const s = E.newSave(); for (const id of Object.keys(E.MONSTERS)) s.record[id] = { hunts: 1, wins: 1, captures: 0, breaks: {} };
+    s.armors = { ...s.armors, [armor]: { lv: 0 } }; s.loadout = { ...s.loadout, target, armor };
+    const h = E.startHunt(s, 2); h.intent = intent; return h;
+  };
+  it('a physical attack hits in full through resist armor, and says so', () => {
+    const h = at('mistglass', 'rimehide', 'rake');
+    const inc = E.incoming(h)!;
+    expect(inc).toMatchObject({ elem: 0, res: false, wearsResist: true });
+    expect(inc.after).toBe(inc.raw);
+  });
+  it('an elemental attack is cut by 30%', () => {
+    const h = at('mistglass', 'rimehide', 'mist');
+    const inc = E.incoming(h)!;
+    expect(inc.res).toBe(true);
+    expect(inc.after).toBe(Math.round(inc.raw * E.GUARD_RESIST));
+  });
+  it('the Gorhydra: only the Frost Breath heads are elemental', () => {
+    const h = at('gorhydra', 'glassmantle', 'left:breath|middle:bite|right:snap');
+    const inc = E.incoming(h)!;
+    expect(inc.elem).toBeGreaterThan(0); expect(inc.phys).toBeGreaterThan(0);
+    expect(inc.after).toBe(inc.phys + Math.round(inc.elem * E.GUARD_RESIST));
+  });
+});

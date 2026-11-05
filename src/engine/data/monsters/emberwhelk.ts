@@ -19,6 +19,8 @@ export const emberwhelk: MonsterDef = {
   short: 'Emberwhelk',
   kind: 'Regenerator',
   elem: 'Ember',
+  // its elemental attacks: only these are reduced by armor that resists Ember; the rest are physical
+  elemental: ['Spit Cinders', 'Molten Slime'],
   weak: 'Stone',
   resist: 'Frost',
   hp: 460,

@@ -19,6 +19,8 @@ export const mistglass: MonsterDef = {
   short: 'Mistglass',
   kind: 'Trickster',
   elem: 'Frost',
+  // its elemental attacks: only these are reduced by armor that resists Frost; the rest are physical
+  elemental: ['Freezing Mist'],
   weak: 'Ember',
   resist: 'Gale',
   hp: 580,

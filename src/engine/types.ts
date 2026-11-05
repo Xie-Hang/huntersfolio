@@ -139,6 +139,9 @@ export interface Intent {
   halfGuard?: boolean;
   /** daze can't cancel it: a full daze meter makes the monster reel after this move instead */
   steady?: boolean;
+  /** how much of `dmg` carries the monster's element (resist armor only reduces this part); default from
+   *  MonsterDef.elemental by move name, else 0 = a physical attack */
+  elemDmg?: number;
 }
 
 export type Tone = '' | 'gold' | 'ember' | 'daze';
@@ -281,6 +284,9 @@ export interface Hunt {
 }
 
 export interface MonsterDef {
+  /** names of its elemental attacks (Nov 2026: only these carry its element; the rest are physical, so resist
+   *  armor answers the big elemental moves without making the whole fight trivial) */
+  elemental?: string[];
   id: string;
   name: string;
   short: string;
