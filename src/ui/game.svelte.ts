@@ -133,7 +133,7 @@ class Game {
   move(i: number) {
     const h0 = this.hunt; if (!h0) return;
     // what the hit did, read by comparing before and after
-    const w = E.currentWeapon(h0), ice0 = h0.mon.plating, intent0 = h0.intent;
+    const w = E.currentWeapon(h0), ice0 = h0.mon.plating, intent0 = h0.intent, rr0 = h0.rerolls;
     const exposed0 = Object.values(h0.mon.parts).filter(p => p.exposed > 0).length;
     const r = this.act(h => E.useMove(h, i, this.sel), r => !!r);
     if (!r) return;
@@ -154,6 +154,7 @@ class Game {
     if (h.over === 'win' && !h.captured) sounds.push('bigHit');
     sfx(...sounds);
     if (r.broke || r.dmg >= 50) this.shake('mon');
+    if (h.rerolls > rr0) this.float('player', `+${h.rerolls - rr0} reroll`, 'heal');
   }
   guard() { if (this.act(h => E.guard(h, this.sel), ok => ok)) sfx('guard'); }
   charge() { if (this.act(h => E.charge(h, this.sel), ok => ok)) sfx('charge'); }

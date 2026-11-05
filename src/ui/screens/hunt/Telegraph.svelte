@@ -10,6 +10,8 @@
   const info = $derived(E.intentInfo(h));
   const tip = $derived(E.tip(h));
   const inc = $derived(E.incoming(h));
+  /** the hint names one of your moves: that move answers what the monster is doing */
+  const isCounter = $derived(!!tip && [...E.currentWeapon(h).moves, ...E.otherWeapon(h).moves].some(m => tip!.includes(m.name)));
   const multi = $derived(info.name.includes(' + '));
   const cls = $derived(h.over ? 'end' : info.threat >= 3 ? 'danger' : info.threat === 0 ? 'calm' : '');
 </script>
@@ -67,13 +69,14 @@
         {#if inc.net}<span class="big" aria-label="{inc.net} damage to you">−{inc.net}</span>{:else}<span class="big safe">{inc.evade ? 'Dodged' : 'Blocked'}</span>{/if}
       {/if}
     </div>
-    {#if !multi}<p class="say">{info.text}</p>{/if}
+    {#if !multi && !tip}<p class="say">{info.text}</p>{/if}
     {#if inc}
       <div class="calc">
         <b>{inc.raw}</b> {M.elem}{#if inc.res} · resisted → <b>{inc.after}</b>{/if}{#if inc.evade} · smoke: <b>misses</b>{:else if h.guard} · − <b>{inc.g}</b> guard{inc.half ? ' (halved)' : ''}{/if}{#if !inc.evade && inc.net} · <span style="color:var(--muted)">guard dice to reduce{inc.half ? ' (half as well)' : ''}</span>{/if}
       </div>
     {/if}
     {#if info.note}<div class="note">{info.note}</div>{/if}
+    {#if tip}<div class="answer" class:counter={isCounter}><b>{isCounter ? 'Counter:' : 'Tip:'}</b> <Tagged text={tip} /></div>{/if}
   {/if}
 </section>
 
@@ -86,5 +89,8 @@
   .big.safe { color: var(--gold-hi); }
   .calc { font-family: var(--f-body); font-size: var(--fs-sm); color: var(--soft); }
   .calc b { color: var(--fg); font-weight: 600; }
-  .note { font-family: var(--f-body); font-size: var(--fs-md); color: var(--gold-hi); }
+  .answer { padding: 6px 10px; border: 1px solid var(--line-2); border-radius: 3px; background: var(--raise); font-size: var(--fs-sm); line-height: 1.35; color: var(--fg); }
+  .answer.counter { border-color: var(--gold); }
+  .answer b { color: var(--gold-hi); font-weight: 600; }
+  .note { font-family: var(--f-body); font-size: var(--fs-sm); line-height: 1.35; color: var(--gold-hi); }
 </style>

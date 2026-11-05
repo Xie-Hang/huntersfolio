@@ -89,7 +89,7 @@ export const TREES: { type: DamageType; nodes: [string, number][] }[] = (['Cut',
 });
 
 export const SIGNATURES: Record<DamageType, { tag: 'flow' | 'daze' | 'expose'; name: string; text: string }> = {
-  Cut: { tag: 'flow', name: 'Flow', text: 'Light moves give you a reroll.' },
+  Cut: { tag: 'flow', name: 'Flow', text: 'Light moves add 1 to your rerolls left. The die itself is still spent.' },
   Blunt: { tag: 'daze', name: 'Daze', text: 'Hits to the head part fill a daze meter. Full meter: the monster loses its action, then recovers for a turn.' },
   Pierce: { tag: 'expose', name: 'Expose', text: 'Hits expose the part for 2 turns: every hit there, from either weapon, deals +15% and counts double toward breaking it.' }
 };

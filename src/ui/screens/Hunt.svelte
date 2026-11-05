@@ -9,14 +9,11 @@
   import DicePanel from './hunt/DicePanel.svelte';
   import GearPanel from './hunt/GearPanel.svelte';
   import Tagged from '../parts/Tagged.svelte';
-  import * as E from '../../engine';
   const h = $derived(game.hunt!);
-  const tip = $derived(E.tip(h));
 </script>
 
 <main class="grid hunt">
   <div class="side">
-  {#if tip && !h.over}<section class="panel hunttip" aria-label="Hunter's note"><span class="label">Hunter's note</span><p><Tagged text={tip} /></p></section>{/if}
   <section class="panel huntlog" aria-label="Hunt log">
     <div class="ph"><h2>Hunt log</h2><span class="label">Newest first</span></div>
     <ul class="log">

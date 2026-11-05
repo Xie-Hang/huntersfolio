@@ -88,6 +88,7 @@
   .metarow .chips:empty { display: none; }
   .metarow .ph { flex-wrap: nowrap; }
   .metarow .ph .label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .metarow .ph .mono { white-space: nowrap; flex: none; }
   .hdchip { margin-left: 8px; vertical-align: middle; font-weight: 400; }
   .metarow .meters:empty { display: none; }
   .metarow .chips { flex: 0 1 auto; }
