@@ -329,7 +329,8 @@ def drop(cx, cy):
 
 
 def bolt(cx, cy):
-    d = f'<path d="M{cx + 8} {cy - 32} L{cx - 16} {cy + 4} H{cx} L{cx - 8} {cy + 32} L{cx + 18} {cy - 6} H{cx + 3} Z" fill="#f0dd6e" stroke="{INK}" stroke-width="5" stroke-linejoin="round"/>'
+    # a fat, upright bolt: the slash crosses its middle, so the top and bottom have to carry the shape
+    d = f'<path d="M{cx + 6} {cy - 36} L{cx - 20} {cy + 6} H{cx - 2} L{cx - 10} {cy + 36} L{cx + 20} {cy - 8} H{cx + 2} L{cx + 12} {cy - 36} Z" fill="#f0dd6e" stroke="{INK}" stroke-width="4" stroke-linejoin="round"/>'
     return crossed(cx, cy, d)
 
 
