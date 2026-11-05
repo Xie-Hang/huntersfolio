@@ -24,13 +24,22 @@
   const groups = $derived.by(() => {
     const raw = tab === 'weapons'
       ? E.TREES.filter(t => ftype === 'All' || t.type === ftype).map(t => ({ group: t.type as string, sig: E.SIGNATURES[t.type], rows: t.nodes.map(([id, depth]) => ({ id, depth })) }))
-      : tab === 'armor'
-        ? [{ group: 'Armor', sig: null, rows: Object.keys(E.ARMORS).map(id => ({ id, depth: 0 })) }]
-        : [{ group: 'Charms', sig: null, rows: Object.keys(E.CHARMS).map(id => ({ id, depth: 0 })) }];
+      // armor and charms: grouped by the region they come from, shown as a grid of tiles (Mekkman, Nov 2026)
+      : byRegion(Object.values(tab === 'armor' ? E.ARMORS : E.CHARMS));
     return raw
       .map(g => ({ ...g, rows: g.rows.filter(r => !readyOnly || E.recipeState(s, kind, r.id).cls === 'ready') }))
       .filter(g => g.rows.length);
   });
+  function byRegion(defs: { id: string; tier?: number }[]) {
+    const out: { group: string; sig: null; rows: { id: string; depth: number }[] }[] = [];
+    for (const d of defs) {
+      const g = (d as { bounties?: number }).bounties ? 'Bounty board' : (E.TIERS[d.tier ?? 1] ?? 'Other').replace(/^Tier \d · /, '');
+      let grp = out.find(x => x.group === g); if (!grp) out.push(grp = { group: g, sig: null, rows: [] });
+      grp.rows.push({ id: d.id, depth: 0 });
+    }
+    // the bounty-board charms last: they come from the board, not a region
+    return out.sort((a, b) => +(a.group === 'Bounty board') - +(b.group === 'Bounty board'));
+  }
   const visible = $derived(groups.flatMap(g => g.rows.map(r => r.id)));
   const sel = $derived(visible.includes(chosen[tab] ?? '') ? chosen[tab] : visible[0] ?? null);
 
@@ -53,7 +62,7 @@
   function setTab(t: Tab) { tab = t; toast = ''; }
 </script>
 
-<div class="forgegrid">
+<div class="forgegrid" class:wide={tab !== 'weapons'}>
   <section class="panel" aria-label="Forge">
     <div class="ph"><h2>The Forge</h2><span class="label">{E.trackedLine(s)}</span></div>
     <div class="tabs" role="tablist">
@@ -74,19 +83,40 @@
     <div class="flist">
       {#each groups as g (g.group)}
         <div class="fgroup"><span>{g.group}</span>{#if g.sig}<span class="tag {g.sig.tag}" style="margin:0">{g.sig.name}</span>{/if}</div>
+        {#if kind !== 'w'}
+          <div class="ftiles">
+            {#each g.rows as r (r.id)}
+              {@const d = E.gearDef(kind, r.id)}
+              {@const st = E.recipeState(s, kind, r.id)}
+              {@const lv = lvHere(r.id)}
+              <button class="ftile" aria-current={sel === r.id} onclick={() => pick(r.id)}>
+                <span class="ft-nm">{#if kind === 'c'}<Icon id={r.id} size={20} />{/if}<span class="nm">{d.name}</span>{#if lv}<span class="lv">+{lv}</span>{/if}</span>
+                {#if kind === 'a'}
+                  {@const a = s.armors[r.id] ? E.ownedArmor(s, r.id) : E.ARMORS[r.id]}
+                  <span class="ft-stats"><span>{a.hp} HP</span><span>Guard {a.guard}</span>{#if E.ARMORS[r.id].resist}<span class="res"><Elem e={E.ARMORS[r.id].resist} />{E.ARMORS[r.id].resist}</span>{/if}</span>
+                {:else}
+                  <span class="ft-stats"><span>{E.CHARMS[r.id].bounties ? `${E.CHARMS[r.id].bounties} bounties` : E.CHARMS[r.id].src}</span></span>
+                {/if}
+                <span class="st {st.cls}"><i></i>{st.text}</span>
+                {#if s.tracked === `${kind}:${r.id}`}<span class="tracked-pin">● Tracked</span>{/if}
+              </button>
+            {/each}
+          </div>
+        {:else}
         {#each g.rows as r (r.id)}
           {@const d = E.gearDef(kind, r.id)}
           {@const st = E.recipeState(s, kind, r.id)}
           {@const lv = lvHere(r.id)}
           <button class="fnode d{r.depth}" aria-current={sel === r.id} onclick={() => pick(r.id)}>
             <span class="nmwrap">
-              {#if r.depth}<span class="ind">└</span>{/if}<span class="nm">{#if kind === 'c'}<Icon id={r.id} size={18} />{:else if kind === 'w'}<WeaponArt id={r.id} size={26} />{/if}{d.name}{#if lv}{' '}<span class="lv">+{lv}</span>{/if}</span>
+              {#if r.depth}<span class="ind">└</span>{/if}<span class="nm"><WeaponArt id={r.id} size={26} />{d.name}{#if lv}{' '}<span class="lv">+{lv}</span>{/if}</span>
               {#if s.tracked === `${kind}:${r.id}`}<span class="tracked-pin">● Tracked</span>{/if}
               <span class="st {st.cls}"><i></i>{st.text}</span>
             </span>
-            <span class="avg">{kind === 'w' ? E.avgDmg(E.movesAt(r.id, wLevel(r.id))) : kind === 'a' ? `${E.ARMORS[r.id].hp + 10 * lv} HP` : E.CHARMS[r.id].src}</span>
+            <span class="avg">{E.avgDmg(E.movesAt(r.id, wLevel(r.id)))}</span>
           </button>
         {/each}
+        {/if}
       {:else}
         <p class="ital" style="padding:12px;margin:0">Nothing is ready to make yet. Untick "Ready to make" to see everything.</p>
       {/each}
@@ -195,6 +225,22 @@
 </div>
 
 <style>
+  /* armor and charms are compared side by side, so the tile grid gets the wider share (three columns); the
+     weapon trees keep the even split */
+  @media (min-width: 1100px) { .forgegrid.wide { grid-template-columns: minmax(0, 1.75fr) minmax(340px, 1fr); } }
+  .ftiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; padding-top: 8px; }
+  .ftile { all: unset; box-sizing: border-box; cursor: pointer; display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 3px; min-width: 0; }
+  .ftile:hover { border-color: var(--line-2); background: var(--raise); }
+  .ftile:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .ftile[aria-current="true"] { border-color: var(--gold); background: var(--raise); }
+  .ft-nm { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .ft-nm .nm { font-family: var(--f-body); font-weight: 600; font-size: var(--fs-md); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .ftile[aria-current="true"] .nm { color: var(--gold-hi); }
+  .ft-nm .lv { flex: none; }
+  .ft-stats { display: flex; flex-wrap: wrap; gap: 2px 10px; font-size: var(--fs-sm); color: var(--soft); font-variant-numeric: tabular-nums; }
+  .ft-stats .res { display: inline-flex; align-items: center; gap: 4px; }
+  .ftile .st { white-space: normal; }
+  .ftile .tracked-pin { margin-left: 0; }
   .sellhint { margin: 8px 0 0; font-size: var(--fs-sm); color: var(--soft); }
   .sellhint b { color: var(--gold-hi); }
   .linkbtn { all: unset; cursor: pointer; color: var(--gold-hi); text-decoration: underline; text-underline-offset: 3px; }

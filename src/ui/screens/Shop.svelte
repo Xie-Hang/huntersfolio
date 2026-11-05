@@ -51,53 +51,70 @@
       <button role="tab" aria-selected={tab === 'sell'} onclick={() => setTab('sell')}>Sell</button>
     </div>
     <div class="toast" aria-live="polite">{toast}</div>
-    <div class="srows">
+    <!-- A grid of cards (Mekkman, Nov 2026: the one-column rows left most of a wide screen empty). Each card puts
+         its controls at the bottom, so cards in a row line up whatever the description length. -->
+    {#if tab === 'sell' && sellRows.length}
+      <div class="sellbar">
+        <span class="md">Surplus = what no recipe you can still make needs.</span>
+        <button class="btn quiet" data-sound disabled={!surplusCoin} onclick={() => run(sv => E.sellSurplus(sv))}>Sell surplus · {surplusCoin} coin</button>
+      </div>
+    {/if}
+    <div class="scards">
       {#if tab === 'buy'}
         {#each buyRows as it (it.id)}
           {@const max = Math.max(1, Math.floor(s.coin / it.price!))}
           {@const q = clamp(it.id, max)}
-          <div class="srow">
-            <span><span class="nm"><Icon id={it.id} />{it.name}</span><span class="md">{it.desc} Carry up to {it.max} per hunt · you have {s.items[it.id] ?? 0}.</span></span>
-            <span class="ctl">
-              <span class="price">{it.price} each</span>
-              {@render stepper(it.id, max)}
-              <button class="btn primary" data-sound disabled={s.coin < it.price! * q} onclick={() => run(sv => E.buyItem(sv, it.id, q), it.id)}>Buy {q} · {it.price! * q} coin</button>
-            </span>
-          </div>
+          <article class="scard">
+            <div class="sc-top"><Icon id={it.id} size={34} /><span class="sc-nm"><span class="nm">{it.name}</span><span class="have">You have {s.items[it.id] ?? 0} · carry up to {it.max}</span></span><span class="price">{it.price}<small>each</small></span></div>
+            <p class="md">{it.desc}</p>
+            <div class="sc-ctl">{@render stepper(it.id, max)}</div>
+            <button class="btn primary sc-go" data-sound disabled={s.coin < it.price! * q} onclick={() => run(sv => E.buyItem(sv, it.id, q), it.id)}>Buy {q} · {it.price! * q} coin</button>
+          </article>
         {/each}
       {:else if tab === 'craft'}
         {#each craftRows as it (it.id)}
-          <div class="srow">
-            <span><span class="nm"><Icon id={it.id} />{it.name}</span><span class="md">{it.desc} Makes {it.yields ?? 1} · you have {s.items[it.id] ?? 0}.</span><Costs cost={it.craft!} /></span>
-            <span class="ctl"><button class="btn primary" data-sound disabled={!E.canPay(s, it.craft!)} onclick={() => run(sv => E.craftItem(sv, it.id))}>Craft {it.yields ?? 1}</button></span>
-          </div>
+          <article class="scard">
+            <div class="sc-top"><Icon id={it.id} size={34} /><span class="sc-nm"><span class="nm">{it.name}</span><span class="have">You have {s.items[it.id] ?? 0} · makes {it.yields ?? 1}</span></span></div>
+            <p class="md">{it.desc}</p>
+            <Costs cost={it.craft!} />
+            <button class="btn primary sc-go" data-sound disabled={!E.canPay(s, it.craft!)} onclick={() => run(sv => E.craftItem(sv, it.id))}>Craft {it.yields ?? 1}</button>
+          </article>
         {/each}
-        <div class="srow"><span class="md">More item recipes arrive with each new monster.</span></div>
       {:else}
-        {#if sellRows.length}
-          <div class="sellbar">
-            <span class="md">Surplus = what no recipe you can still make needs.</span>
-            <button class="btn quiet" data-sound disabled={!surplusCoin} onclick={() => run(sv => E.sellSurplus(sv))}>Sell surplus · {surplusCoin} coin</button>
-          </div>
-        {/if}
         {#each sellRows as r (r.m.id)}
           {@const key = `s:${r.m.id}`}
           {@const q = clamp(key, r.have)}
-          <div class="srow">
-            <span>
-              <span class="nm"><Icon id={r.m.id} />{E.matName(r.m.id)}</span><span class="md">You have {r.have} · {r.m.sell} coin each</span>
-              {#if r.tn}<span class="warn">Tracked: {r.tn}</span>
-              {:else if r.uses.length}<span class="warn">Keep {r.keep} for {r.uses.slice(0, 2).join(', ')}{r.uses.length > 2 ? ` +${r.uses.length - 2} more` : ''}</span>{/if}
-            </span>
-            <span class="ctl">
-              {@render stepper(key, r.have)}
-              <button class="btn primary" data-sound onclick={() => run(sv => E.sellMat(sv, r.m.id, q), key)}>Sell {q} · {r.m.sell * q} coin</button>
-            </span>
-          </div>
-        {:else}
-          <div class="srow"><span class="md">No materials to sell. Hunt to bring some back.</span></div>
+          <article class="scard">
+            <div class="sc-top"><Icon id={r.m.id} size={34} /><span class="sc-nm"><span class="nm">{r.m.base}{#if r.m.rare}<span class="rare"> · rare</span>{/if}</span><span class="have">{r.m.src} · you have {r.have}</span></span><span class="price">{r.m.sell}<small>each</small></span></div>
+            {#if r.tn}<p class="warn">Tracked: {r.tn}</p>
+            {:else if r.uses.length}<p class="warn">Keep {r.keep} for {r.uses.slice(0, 2).join(', ')}{r.uses.length > 2 ? ` +${r.uses.length - 2} more` : ''}</p>
+            {:else}<p class="md">No recipe you can still make needs it.</p>{/if}
+            <div class="sc-ctl">{@render stepper(key, r.have)}</div>
+            <button class="btn primary sc-go" data-sound onclick={() => run(sv => E.sellMat(sv, r.m.id, q), key)}>Sell {q} · {r.m.sell * q} coin</button>
+          </article>
         {/each}
       {/if}
     </div>
+    {#if tab === 'craft'}<p class="md foot">More item recipes arrive with each new monster.</p>{/if}
+    {#if tab === 'sell' && !sellRows.length}<p class="md foot">No materials to sell. Hunt to bring some back.</p>{/if}
   </section>
 </div>
+
+<style>
+  .scards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .scard { display: grid; grid-template-rows: auto 1fr auto auto; gap: 10px; padding: 14px; border: 1px solid var(--line); border-radius: 3px; min-width: 0; }
+  .scard:hover { border-color: var(--line-2); }
+  .sc-top { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .sc-nm { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+  .sc-nm .nm { font-family: var(--f-body); font-weight: 600; font-size: var(--fs-md); }
+  .have { font-size: var(--fs-sm); color: var(--muted); font-variant-numeric: tabular-nums; }
+  .price { flex: none; text-align: right; color: var(--gold-hi); font-weight: 600; font-variant-numeric: tabular-nums; display: flex; flex-direction: column; line-height: 1.15; }
+  .price small { font-size: var(--fs-sm); color: var(--muted); font-weight: 400; }
+  .scard .md, .foot { margin: 0; font-size: var(--fs-sm); color: var(--soft); }
+  .scard .warn { margin: 0; font-size: var(--fs-sm); color: var(--gold-hi); }
+  .sc-ctl { display: flex; gap: 8px; align-items: center; }
+  .sc-go { width: 100%; text-align: center; font-variant-numeric: tabular-nums; }
+  .foot { margin-top: 12px; }
+  .rare { color: var(--gold-hi); font-weight: 400; font-size: var(--fs-sm); }
+  .sellbar { margin-bottom: 12px; border: 1px solid var(--line); border-radius: 3px; }
+</style>
