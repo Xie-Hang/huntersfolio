@@ -133,8 +133,12 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .slot:hover{border-color:var(--line-2);background:var(--raise)}
 .slot:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .slot .sl{font-size:var(--fs-sm);color:var(--muted)}
-.slot .nm{font-family:var(--f-body);font-weight:600;font-size:var(--fs-lg);display:block}
-.slot .sub2{font-size:var(--fs-sm);color:var(--soft);display:flex;gap:4px 10px;flex-wrap:wrap}
+.slot .nm{font-family:var(--f-body);font-weight:600;font-size:var(--fs-lg);display:flex;align-items:center;gap:8px;flex-wrap:wrap;line-height:1.2}
+/* the weapon picture sits centred on the name; the row under it gets room to breathe (Mekkman, playtest build) */
+.slot .nm .wart{margin-block:-4px}
+.slot .nm + .sub2{margin-top:6px}
+.slot .sub2{font-size:var(--fs-sm);color:var(--soft);display:flex;gap:4px 10px;flex-wrap:wrap;align-items:center}
+.slot .sub2 > span{display:inline-flex;align-items:center;gap:4px;min-height:24px}
 .slot .chg{font-size:var(--fs-sm);color:var(--gold-hi)}
 .slot.empty .nm{color:var(--muted)}
 @media (max-width:600px){.slot{grid-template-columns:minmax(0,1fr) auto}.slot .sl{grid-column:1 / -1}}

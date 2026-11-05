@@ -18,6 +18,7 @@
   const mon = $derived(L.target);
   const M = $derived(E.MONSTERS[mon]);
   const nWeapons = $derived(L.weapons.filter(Boolean).length);
+  const openBounties = $derived(E.BOUNTIES_ON ? E.bountiesFor(mon).filter(b => E.bountyOpen(game.save, b.id) && !game.save.bounties[b.id]).length : 0);
   const B = $derived(L.bounty && E.BOUNTIES[L.bounty]?.mon === mon && E.bountyOpen(game.save, L.bounty) ? E.BOUNTIES[L.bounty] : null);
   const breaks = $derived(B ? E.loadoutBreaks(game.save) : null);
 
@@ -243,6 +244,9 @@
     </div>
   {/if}
 
+  {#if !B && openBounties > 0}
+    <div class="bstrip quiet"><span><span class="bn">Bounties</span> <span class="ital">{openBounties} open for the {M.short}. Take one from its page to earn coin and Hunter’s Seals on this hunt.</span></span></div>
+  {/if}
   {#if B}
     <div class="bstrip">
       <span><span class="bn">Bounty · {B.name}</span> <span class="ital">Win, and: {B.goals.map(g => E.goalText(g, mon)).join(' · ')}</span></span>
@@ -264,5 +268,6 @@
 <style>
   .bstrip { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; padding: 10px 12px; border: 1px solid var(--gold); border-radius: 6px; }
   .bstrip .bn { color: var(--gold-hi); font-weight: 600; }
+  .bstrip.quiet { border-color: var(--line-2); font-size: var(--fs-sm); }
   .bstrip .bad { color: var(--ember-soft); font-size: var(--fs-sm); }
 </style>
