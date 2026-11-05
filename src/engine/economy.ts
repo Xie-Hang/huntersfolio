@@ -208,6 +208,13 @@ export function sellMat(s: Save, id: string, n: number): string | null {
   s.mats[id] -= k; s.coin += m.sell * k;
   return `Sold ${k} ${m.base} for ${m.sell * k} coin.`;
 }
+/** Coin your spare materials would sell for: what no recipe still needs (the Shop's Sell surplus). Playtest
+ *  (Nov 2026): three testers never found out that materials sell for coin. */
+export function surplusValue(s: Save): number {
+  let total = 0;
+  for (const [k, m] of Object.entries(MATERIALS)) { const spare = (s.mats[k] ?? 0) - Math.min(s.mats[k] ?? 0, reserveFor(s, k)); if (spare > 0 && m.sell > 0) total += spare * m.sell; }
+  return total;
+}
 export function sellSurplus(s: Save): string {
   let total = 0, n = 0;
   for (const [k, m] of Object.entries(MATERIALS)) {

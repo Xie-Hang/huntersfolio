@@ -68,9 +68,12 @@ class Game {
   }
 
   /* ---------- town ---------- */
-  go(v: View) {
+  /** the Shop tab to open on the next visit (the sell prompts send players straight to Sell) */
+  shopTab = $state<'buy' | 'craft' | 'sell'>('buy');
+  go(v: View, shopTab?: 'buy' | 'craft' | 'sell') {
     if (this.inHunt) return;
     E.fixLoadout(this.save);
+    if (shopTab) this.shopTab = shopTab;
     this.view = v;
   }
   /** `scripted`: the tutorial's first hunt, opening on fixed dice */

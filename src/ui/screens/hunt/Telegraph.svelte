@@ -27,7 +27,7 @@
   </div>
   <div style="display:flex;gap:10px;flex-wrap:wrap">
     <button class="btn primary" data-coach="to-forge" onclick={() => game.go('forge')}>Go to the Forge</button>
-    <button class="btn" onclick={() => game.go('shop')}>Shop</button>
+    <button class="btn" data-coach="to-shop" onclick={() => game.go('shop', E.surplusValue(game.save) > 0 ? 'sell' : undefined)}>{E.surplusValue(game.save) > 0 ? 'Sell at the Shop' : 'Shop'}</button>
     <button class="btn" onclick={() => game.go('board')}>Hunt Board</button>
   </div>
 {/snippet}
@@ -45,6 +45,7 @@
           {#each Object.entries(r.mats) as [k, v] (k)}<li class:rare={k === M.rare}><Icon id={k} size={18} />{E.matName(k)} ×{v}</li>{/each}
         </ul>
       </div>
+      {#if E.surplusValue(game.save) > 0}<p class="ital p0">Materials no recipe needs can be sold: yours are worth <b style="color:var(--gold-hi);font-style:normal">{E.surplusValue(game.save)} coin</b> at the Shop.</p>{/if}
       {#if h.mon.parts[M.rarePart].broken && !r.rare}
         <p class="ital p0">No {E.matName(M.rare)} this time. Pity counter: {game.save.pity[M.rare] ?? 0} / {E.RARE.pityGuarantee}.</p>
       {/if}

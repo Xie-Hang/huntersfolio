@@ -177,6 +177,13 @@ export const TIPS: Tip[] = [
   },
   // ---- back in town ----
   {
+    // playtest (Nov 2026): three testers never found out that materials sell for coin
+    id: 'sell', learn: true, at: ['to-shop', 'nav-shop'],
+    when: () => game.save.hunts > 0 && game.save.tips.includes('track') && game.view !== 'shop' && !(game.view === 'hunt' && game.hunt && !game.hunt.over) && E.surplusValue(game.save) >= 40,
+    text: () => `Short on coin? Materials no recipe needs sell at the Shop. Yours are worth ${E.surplusValue(game.save)} coin right now: open the Shop's Sell tab.`,
+    done: () => game.view === 'shop'
+  },
+  {
     id: 'bounties', learn: true, at: ['bounties'],
     when: () => game.view === 'board' && E.BOUNTIES_ON && game.save.tips.includes('track') && !game.save.loadout.bounty && E.bountiesFor(game.save.loadout.target).length > 0 && (game.save.record[game.save.loadout.target]?.wins ?? 0) > 0,
     text: () => 'New: bounties. Take one before you hunt this monster again. Meet its goals and win for extra coin. Completing bounties also unlocks three charms at the Forge.',

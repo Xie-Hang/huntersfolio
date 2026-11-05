@@ -6,7 +6,8 @@
   import Costs from '../parts/Costs.svelte';
 
   type Tab = 'buy' | 'craft' | 'sell';
-  let tab = $state<Tab>('buy');
+  let tab = $state<Tab>(game.shopTab);
+  game.shopTab = 'buy';
   let toast = $state('');
   let qty = $state<Record<string, number>>({});
   const s = $derived(game.save);

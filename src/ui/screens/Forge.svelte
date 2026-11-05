@@ -151,6 +151,9 @@
           <div>
             <div class="label rule">{r.action === 'reinforce' ? `To reinforce to +${lv + 1}` : r.action === 'upgrade' ? `To craft (from your ${E.WEAPONS[E.WEAPONS[sel].from!].name})` : r.locked ? (kind === 'c' ? `To craft (once you've completed ${E.CHARMS[sel].bounties} different bounties: ${E.bountiesDone(s)} so far)` : `To craft (once you own the ${E.WEAPONS[E.WEAPONS[sel].from!].name})`) : 'To craft'}</div>
             <Costs cost={r.cost} />
+            {#if (r.action || r.locked) && (r.cost.coin ?? 0) > s.coin && E.surplusValue(s) > 0}
+              <p class="sellhint">Short on coin? Your spare materials sell for <b>{E.surplusValue(s)} coin</b>. <button class="linkbtn" onclick={() => game.go('shop', 'sell')}>Sell them at the Shop</button></p>
+            {/if}
           </div>
         {/if}
         <div class="fd-acts">
@@ -189,3 +192,10 @@
     {/if}
   </section>
 </div>
+
+<style>
+  .sellhint { margin: 8px 0 0; font-size: var(--fs-sm); color: var(--soft); }
+  .sellhint b { color: var(--gold-hi); }
+  .linkbtn { all: unset; cursor: pointer; color: var(--gold-hi); text-decoration: underline; text-underline-offset: 3px; }
+  .linkbtn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+</style>
