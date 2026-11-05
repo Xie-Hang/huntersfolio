@@ -278,7 +278,15 @@ export function unlockHint(id: string): string {
   if (tiers.size === 1 && tiers.has(2)) return 'Beat every monster in the Mirewood first';
   const mire = Object.values(MONSTERS).filter(M => M.tier === 2).map(M => M.id), rest = reqs.filter(r => !mire.includes(r));
   if (mire.length && mire.every(r => reqs.includes(r)) && rest.length === 1) return `Beat every monster in the Mirewood and the ${MONSTERS[rest[0]].short} first`;
+  if (tiers.size === 1 && tiers.has(3) && reqs.length === Object.values(MONSTERS).filter(M => M.tier === 3).length) return 'Beat every monster on the Stormspire first';
   return `Beat ${reqs.map(r => MONSTERS[r].short).join(', ')} first`;
+}
+
+/** The unlock hint split for the Hunt Board: the condition a whole region shares, and what this monster adds to it
+ *  (the changed Mirewood: every Mirewood monster, plus one from the Gloamhollow). */
+export function unlockParts(id: string): { base: string; extra: string | null } {
+  const full = unlockHint(id), m = /^Beat every monster in the Mirewood and the (.+) first$/.exec(full);
+  return m ? { base: 'Beat every monster in the Mirewood first', extra: m[1] } : { base: full, extra: null };
 }
 
 /** Every monster in this build has been beaten at least once: the end of the content (in the demo, the end of the demo). */

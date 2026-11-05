@@ -114,6 +114,9 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .ranksec.current .rankhead .rs{color:var(--gold-hi)}
 .region h4.group{margin:0;font-weight:400}
 .group .opt{color:var(--muted)}
+.group .lockline{display:inline-flex;align-items:center;gap:6px;margin-left:12px;padding-left:12px;border-left:1px solid var(--line-2);font-size:var(--fs-sm);color:var(--soft)}
+.mcard .lk,.group .lk{flex:none;margin-right:5px;vertical-align:-1px;color:var(--muted)}
+.group .lockline .lk{margin-right:0}
 /* the promotion hunt: its own wide card, gold-edged, at the head of its rank */
 .mcard.promo{flex-direction:row;align-items:center;gap:16px;max-width:620px;border-color:var(--gold);padding:12px 16px 12px 12px}
 .mcard.promo .mthumb{width:220px;flex:none;margin:0}

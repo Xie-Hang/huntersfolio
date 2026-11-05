@@ -25,11 +25,17 @@
     { rank: 'D', main: [3], optional: [3.2], promo: 4 }
   ];
   const pass = (N: E.MonsterDef) => filter === 'All' || N.elem === filter || !!N.elemOf;
-  const groupOf = (t: number) => ({
-    t,
-    known: Object.values(E.MONSTERS).filter(N => N.tier === t && pass(N)),
-    unknown: E.UNKNOWN.filter(u => u.tier === t && (filter === 'All' || u.elem === filter || !u.elem))
-  });
+  // A region's unlock condition is said once, on the region's heading, when every locked card in it shares it
+  // (Nov 2026 playtest: the same long line on four cards was noise). The cards then just say Locked.
+  const groupOf = (t: number) => {
+    const known = Object.values(E.MONSTERS).filter(N => N.tier === t && pass(N));
+    const hints = known.filter(N => !E.isUnlocked(game.save, N.id)).map(N => E.unlockParts(N.id).base);
+    return {
+      t, known,
+      unknown: E.UNKNOWN.filter(u => u.tier === t && (filter === 'All' || u.elem === filter || !u.elem)),
+      lockHint: hints.length > 1 && hints.every(h => h === hints[0]) ? hints[0] : null
+    };
+  };
   const sections = $derived(SECTIONS.map(sec => ({
     ...sec,
     promoMon: Object.values(E.MONSTERS).find(N => N.tier === sec.promo && pass(N)) ?? null,
@@ -76,7 +82,7 @@
         <h3 class="rankhead"><RankMedal rank={sec.rank} size={44} dim={sec.rank !== myRank} /><span>Rank {sec.rank} · {E.RANK_REGION[sec.rank]}</span><span class="label rs">{rankState(sec.rank)}</span></h3>
         {#each sec.groups as g (g.t)}
           <div class="region">
-            <h4 class="group">{E.TIERS[g.t]}{#if sec.optional.includes(g.t)}<span class="opt"> · optional</span>{/if}</h4>
+            <h4 class="group">{E.TIERS[g.t]}{#if sec.optional.includes(g.t)}<span class="opt">&nbsp;· optional</span>{/if}{#if g.lockHint}<span class="lockline"><svg class="lk" viewBox="0 0 12 14" width="11" height="13" aria-hidden="true"><path d="M3 6V4.2a3 3 0 0 1 6 0V6" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="1.5" y="6" width="9" height="7" rx="1.2" fill="currentColor"/></svg>{g.lockHint}</span>{/if}</h4>
             <div class="mgrid">
               {#each g.known as N (N.id)}
                 {@const r = record(game.save, N.id)}
@@ -89,7 +95,7 @@
                   {#if open}
                     <span class="st" class:new={!r.wins}>{r.wins ? `Hunted ×${r.wins}` : 'Not yet hunted'}{#if E.BOUNTIES_ON && r.wins && E.bountiesFor(N.id).length}{@const b = done(N.id)}{' '}· Bounties {b.n}/{b.of}{/if}</span>
                   {:else}
-                    <span class="st">Locked · {E.unlockHint(N.id)}</span>
+                    <span class="st"><svg class="lk" viewBox="0 0 12 14" width="11" height="13" aria-hidden="true"><path d="M3 6V4.2a3 3 0 0 1 6 0V6" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="1.5" y="6" width="9" height="7" rx="1.2" fill="currentColor"/></svg>{#if g.lockHint}{@const x = E.unlockParts(N.id).extra}Locked{x ? ` · also the ${x}` : ''}{:else}Locked · {E.unlockHint(N.id)}{/if}</span>
                   {/if}
                 </button>
               {/each}
@@ -118,7 +124,7 @@
               <span class="meta"><span>{#if N.elemOf}By stance{:else}<Elem e={N.elem} />{N.elem}{/if}</span><span>{N.elemOf ? 'Weakness changes' : `Weak to ${N.weak}`}</span></span>
               {#if r.wins}<span class="st">Passed · hunted ×{r.wins}</span>
               {:else if open}<span class="st new">Ready: win it to become a rank {N.promotion} hunter</span>
-              {:else}<span class="st">Locked · {E.unlockHint(N.id)}</span>{/if}
+              {:else}<span class="st"><svg class="lk" viewBox="0 0 12 14" width="11" height="13" aria-hidden="true"><path d="M3 6V4.2a3 3 0 0 1 6 0V6" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="1.5" y="6" width="9" height="7" rx="1.2" fill="currentColor"/></svg>Locked · {E.unlockHint(N.id)}</span>{/if}
             </span>
           </button>
         {/if}
