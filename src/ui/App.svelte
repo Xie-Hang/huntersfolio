@@ -60,6 +60,8 @@
   $effect(() => { if (settingsOpen) { setToast = ''; logCount = PL.counts(); } });
 
   // Music follows the game: town loop in town, hunt loop in a hunt, the danger layer on big telegraphs, a sting at the end.
+  // On the desktop build autoplay is allowed, so start the music at launch instead of on the first click.
+  $effect(() => { if ((window as unknown as { hf?: unknown }).hf) music.unlock(); });
   $effect(() => { music.setVolume(settings.prefs.music); });
   $effect(() => { setSfxVolume(settings.prefs.sfx); });
   $effect(() => { setUiSize(settings.prefs.uiSize); });

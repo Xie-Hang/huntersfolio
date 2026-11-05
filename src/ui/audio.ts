@@ -24,6 +24,17 @@ type Name = 'town' | 'hunt' | 'danger' | 'victory' | 'defeat';
 /** Per-track level trims so the loops sit at the same loudness (placeholders: town measures ~4.5 dB hotter). */
 const TRIM: Record<Name, number> = { town: 0.6, hunt: 1, danger: 1, victory: 0.8, defeat: 0.8 };
 const FADE = 1.2, DANGER_FADE = 1.5;
+/** the very first track fades in fast: there's nothing to crossfade from (playtest: "a few seconds before the music") */
+const FIRST_FADE = 0.25;
+const ALL: Name[] = ['town', 'hunt', 'danger', 'victory', 'defeat'];
+/** The files are fetched as soon as the page loads (no audio context needed for that); decoding waits for the
+ *  context, then runs for every track at once so nothing decodes at the moment it's needed. */
+const raw = new Map<Name, Promise<ArrayBuffer | null>>();
+const fetchTrack = (n: Name) => {
+  if (!raw.has(n)) raw.set(n, fetch(`audio/music/${n}.ogg`).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null));
+  return raw.get(n)!;
+};
+if (typeof window !== 'undefined' && typeof fetch === 'function') for (const n of ALL) void fetchTrack(n);
 
 class Music {
   private ctx: AudioContext | null = null;
@@ -44,6 +55,8 @@ class Music {
     this.bus.gain.value = this.volume;
     this.bus.connect(this.ctx.destination);
     void this.setScene(this.wanted, true);
+    // decode the rest now, in the background, so the hunt music and stings are ready when they're needed
+    for (const n of ALL) void this.load(n);
   }
 
   setVolume(v: number) {
@@ -51,22 +64,30 @@ class Music {
     if (this.bus && this.ctx) this.bus.gain.setTargetAtTime(this.volume, this.ctx.currentTime, 0.05);
   }
 
-  private async load(name: Name): Promise<AudioBuffer | null> {
-    if (this.buffers.has(name)) return this.buffers.get(name)!;
-    let buf: AudioBuffer | null = null;
-    try {
-      const res = await fetch(`audio/music/${name}.ogg`);
-      if (res.ok && this.ctx) buf = await this.ctx.decodeAudioData(await res.arrayBuffer());
-    } catch { /* missing or undecodable: play nothing for this track */ }
-    this.buffers.set(name, buf);
-    return buf;
+  private decoding = new Map<Name, Promise<AudioBuffer | null>>();
+  private load(name: Name): Promise<AudioBuffer | null> {
+    if (!this.decoding.has(name)) {
+      this.decoding.set(name, (async () => {
+        let buf: AudioBuffer | null = null;
+        try {
+          const data = await fetchTrack(name);
+          // decodeAudioData detaches its input: give it a copy so a retry could still use the original
+          if (data && this.ctx) buf = await this.ctx.decodeAudioData(data.slice(0));
+        } catch { /* missing or undecodable: play nothing for this track */ }
+        this.buffers.set(name, buf);
+        return buf;
+      })());
+    }
+    return this.decoding.get(name)!;
   }
+  private started = false;
 
   private start(name: Name, buf: AudioBuffer, when: number, level: number, loop: boolean) {
     const ctx = this.ctx!, src = ctx.createBufferSource(), gain = ctx.createGain();
     src.buffer = buf; src.loop = loop;
     gain.gain.setValueAtTime(0, when);
-    gain.gain.linearRampToValueAtTime(level * TRIM[name], when + (loop ? FADE : 0.02));
+    const fade = !loop ? 0.02 : this.started ? FADE : FIRST_FADE;
+    gain.gain.linearRampToValueAtTime(level * TRIM[name], when + fade);
     src.connect(gain).connect(this.bus!);
     src.start(when);
     return { src, gain, name };
@@ -98,6 +119,7 @@ class Music {
       return [this.start(n, b, when, n === 'danger' ? (this.dangerOn ? 1 : 0) : 1, true)];
     });
     this.playing = { scene, nodes };
+    if (nodes.length) this.started = true;
   }
 
   /** Fade the danger layer in or out (hunt scene only). */

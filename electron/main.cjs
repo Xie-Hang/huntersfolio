@@ -106,7 +106,9 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,
       sandbox: true,
-      nodeIntegration: false
+      nodeIntegration: false,
+      // a desktop game starts its music at launch; the browser rule (sound only after a click) doesn't apply here
+      autoplayPolicy: 'no-user-gesture-required'
     }
   });
   win.once('ready-to-show', () => win.show());
