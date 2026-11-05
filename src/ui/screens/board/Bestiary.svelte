@@ -35,21 +35,22 @@
     <dt>Reward</dt><dd><b>{E.REWARD.base} coin</b>, +{E.REWARD.perPart} per part broken, +{E.REWARD.capture} for a capture.</dd>
   </dl>
   {#if bounties.length && beaten}
-    <div class="label rule" data-coach="bounties">Bounties · {bounties.filter(b => game.save.bounties[b.id]).length} of {bounties.length} done</div>
+    {@const nx = E.nextBountyCharm(game.save)}
+    <div class="label rule" data-coach="bounties">Bounties · {bounties.filter(b => game.save.bounties[b.id]).length} of {bounties.length} done here · {E.bountiesDone(game.save)} in all{#if nx}{' '}· next unlock: {nx.name} at {nx.need}{/if}</div>
     <ul class="bounties">
       {#each bounties as b (b.id)}
         {@const done = !!game.save.bounties[b.id]}
         {@const taken = game.save.loadout.bounty === b.id}
+        {@const pay = E.bountyPay(game.save, b.id)}
         <li class:done class:taken>
           <div class="bh">
             <span class="nm">{b.name}{#if b.hard}{' '}<span class="tag hard">Hard</span>{/if}</span>
-            {#if done}<span class="state">Done</span>
-            {:else if !beaten}<span class="state">Beat it once first</span>
+            {#if !beaten}<span class="state">Beat it once first</span>
             {:else if taken}<button class="btn quiet" onclick={() => take(null)}>Drop</button>
-            {:else}<button class="btn quiet" onclick={() => take(b.id)}>Take bounty</button>{/if}
+            {:else}<span class="acts">{#if done}<span class="state">Done</span>{/if}<button class="btn quiet" onclick={() => take(b.id)}>{done ? 'Repeat' : 'Take bounty'}</button></span>{/if}
           </div>
           <span class="goals">Win, and: {b.goals.map(g => E.goalText(g, mon)).join(' · ')}</span>
-          <span class="pay">{b.reward.coin} coin · {b.reward.seals} Hunter’s Seal{b.reward.seals > 1 ? 's' : ''}{#if b.reward.mat}{' · '}<Icon id={b.reward.mat} size={16} />{E.matName(b.reward.mat)}{/if}</span>
+          <span class="pay">{pay.coin} coin{#if pay.mat}{' · '}<Icon id={pay.mat} size={16} />{E.matName(pay.mat)}{/if}{#if pay.repeat}{' '}<span class="rep">(repeat: half the coin)</span>{:else}{' '}· counts toward the bounty charms{/if}</span>
         </li>
       {/each}
     </ul>
@@ -93,5 +94,7 @@
   .bounties .goals { color: var(--soft); }
   .bounties .pay { color: var(--gold-hi); font-size: var(--fs-sm); }
   .bounties .state { color: var(--soft); font-size: var(--fs-sm); }
+  .bounties .acts { display: inline-flex; align-items: center; gap: 10px; }
+  .bounties .rep { color: var(--soft); }
   .tag.hard { color: var(--ember-soft); border-color: var(--ember-soft); }
 </style>

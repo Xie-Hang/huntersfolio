@@ -1,3 +1,5 @@
+import { CHARMS } from './data/gear';
+import { REPEAT_PAY } from './data/bounties';
 // Bounty rules: what each condition means in a hunt, how it reads, and whether a finished hunt met it.
 import type { Hunt, Save } from './types';
 import { BOUNTIES, type Goal } from './data/bounties';
@@ -40,10 +42,23 @@ export function goalState(h: Hunt, g: Goal): 'met' | 'failed' | 'open' {
   }
 }
 
-/** Can this bounty be taken now? Its monster must be beaten once, and it must not be done already. */
+/** Can this bounty be taken now? Its monster must be beaten once. Done bounties can be repeated (for less). */
 export function bountyOpen(s: Save, id: string): boolean {
   const b = BOUNTIES[id];
-  return BOUNTIES_ON && !!b && !s.bounties[id] && (s.record[b.mon]?.wins ?? 0) > 0;
+  return BOUNTIES_ON && !!b && (s.record[b.mon]?.wins ?? 0) > 0;
+}
+/** different bounties completed (repeats don't count) */
+export const bountiesDone = (s: Save) => Object.keys(s.bounties).filter(id => BOUNTIES[id]).length;
+/** what this bounty pays now: the full reward the first time, REPEAT_PAY of the coin and no material after */
+export function bountyPay(s: Save, id: string): { coin: number; mat?: string; repeat: boolean } {
+  const b = BOUNTIES[id], repeat = !!s.bounties[id];
+  return repeat ? { coin: Math.round(b.reward.coin * REPEAT_PAY), repeat } : { coin: b.reward.coin, mat: b.reward.mat, repeat };
+}
+/** the next bounty charm still locked, and how many bounties it needs */
+export function nextBountyCharm(s: Save): { id: string; name: string; need: number } | null {
+  const n = bountiesDone(s);
+  const c = Object.values(CHARMS).filter(c => c.bounties && c.bounties > n).sort((a, b) => a.bounties! - b.bounties!)[0];
+  return c ? { id: c.id, name: c.name, need: c.bounties! } : null;
 }
 
 /** The loadout breaks one of the bounty's rules before you start (e.g. it brings a weapon type it bans). */
@@ -62,12 +77,14 @@ export function settleBounty(s: Save, h: Hunt) {
   const b = h.bounty ? BOUNTIES[h.bounty] : null;
   if (!b || !h.reward || h.reward.bounty) return;
   const missed = b.goals.find(g => goalState(h, g) !== 'met');
-  const met = h.over === 'win' && !missed && !s.bounties[b.id];
-  h.reward.bounty = { id: b.id, met, missed: met ? undefined : h.over === 'win' ? goalText(missed!, b.mon) : 'Win the hunt', coin: met ? b.reward.coin : 0, seals: met ? b.reward.seals : 0, mat: met ? b.reward.mat : undefined };
+  const met = h.over === 'win' && !missed;
+  const pay = bountyPay(s, b.id);
+  const before = Object.values(CHARMS).filter(c => c.bounties && c.bounties <= bountiesDone(s)).map(c => c.id);
+  h.reward.bounty = { id: b.id, met, missed: met ? undefined : h.over === 'win' ? goalText(missed!, b.mon) : 'Win the hunt', coin: met ? pay.coin : 0, mat: met ? pay.mat : undefined, repeat: pay.repeat };
   if (!met) return;
   s.bounties[b.id] = true;
-  s.coin += b.reward.coin;
-  s.mats.seal = (s.mats.seal ?? 0) + b.reward.seals;
-  if (b.reward.mat) s.mats[b.reward.mat] = (s.mats[b.reward.mat] ?? 0) + 1;
+  s.coin += pay.coin;
+  if (pay.mat) s.mats[pay.mat] = (s.mats[pay.mat] ?? 0) + 1;
+  h.reward.bounty.unlocked = Object.values(CHARMS).filter(c => c.bounties && c.bounties <= bountiesDone(s) && !before.includes(c.id)).map(c => c.name);
   if (s.loadout.bounty === b.id) s.loadout.bounty = null;
 }

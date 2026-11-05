@@ -7,7 +7,7 @@ import { ARMORS } from './data/gear';
 import { MONSTERS } from './data/monsters';
 import { BOUNTIES } from './data/bounties';
 
-export const SAVE_VERSION = 8;
+export const SAVE_VERSION = 9;
 
 export function newSave(): Save {
   return {
@@ -58,6 +58,12 @@ const MIGRATIONS: ((s: any) => any)[] = [
     const weapons = { ...(s.weapons || {}) };
     for (const id of Object.keys(weapons)) { let f = WEAPONS[id]?.from; while (f) { weapons[f] ??= { lv: 0 }; f = WEAPONS[f]?.from; } }
     return { ...s, weapons, version: 8 };
+  },
+  // v8 → v9: Hunter's Seals removed (5 Nov 2026); bounty charms unlock by bounties completed. Leftover seals are
+  // paid out as coin (40 each) so nobody loses what they earned. Charms already crafted stay.
+  s => {
+    const mats = { ...(s.mats || {}) }, seals = typeof mats.seal === 'number' ? mats.seal : 0; delete mats.seal;
+    return { ...s, mats, coin: (typeof s.coin === 'number' ? s.coin : 0) + 40 * seals, version: 9 };
   }
 ];
 

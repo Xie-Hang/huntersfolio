@@ -43,11 +43,11 @@ charms.push({ id: 'bogcharm', tier: 2, name: 'Bog Charm', src: 'Bogjaw', perk: '
 charms.push({ id: 'duskcharm', tier: 2, name: 'Dusk Charm', src: 'Duskheron', perk: 'When you daze a monster, your next hit deals +50%.', effect: 'dazeWhet', craft: { coin: 150, duskbeak: 1, duskplume: 2 } });
 charms.push({ id: 'whelkcharm', tier: 2, name: 'Whelk Charm', src: 'Emberwhelk', perk: 'Expose lasts 3 turns instead of 2.', effect: 'longExpose', craft: { coin: 150, whelkgill: 1, whelkscale: 2 } });
 charms.push({ id: 'glasscharm', tier: 2, name: 'Glass Charm', src: 'Mistglass', perk: 'Charged hits count double toward breaking parts.', effect: 'chargeBreak', craft: { coin: 150, glasstail: 1, glassdust: 2 } });
-// bounty charms: crafted from Hunter's Seals, which only bounties pay (full game)
+// bounty charms: unlocked by completing 3 / 6 / 10 different bounties, then crafted for coin (full game)
 charms.push(
-  { id: 'scoutcharm', tier: 2, name: 'Tracker’s Charm', src: 'Bounty board', perk: 'Start every hunt with 1 extra reroll.', effect: 'scout', craft: { coin: 100, seal: 3 } },
-  { id: 'salvagecharm', tier: 2, name: 'Salvager’s Charm', src: 'Bounty board', perk: 'Breaking a part heals 15 and gives a reroll.', effect: 'salvage', craft: { coin: 150, seal: 5 } },
-  { id: 'finishercharm', tier: 2, name: 'Finisher’s Charm', src: 'Bounty board', perk: 'Hits deal +25% once the monster can be captured.', effect: 'finisher', craft: { coin: 200, seal: 8 } }
+  { id: 'scoutcharm', tier: 2, name: 'Tracker’s Charm', src: 'Bounty board', perk: 'Start every hunt with 1 extra reroll.', effect: 'scout', craft: { coin: 100 }, bounties: 3 },
+  { id: 'salvagecharm', tier: 2, name: 'Salvager’s Charm', src: 'Bounty board', perk: 'Breaking a part heals 15 and gives a reroll.', effect: 'salvage', craft: { coin: 150 }, bounties: 6 },
+  { id: 'finishercharm', tier: 2, name: 'Finisher’s Charm', src: 'Bounty board', perk: 'Hits deal +25% once the monster can be captured.', effect: 'finisher', craft: { coin: 200 }, bounties: 10 }
 );
 charms.push({ id: 'corecharm', tier: 3, name: 'Core Charm', src: 'Monolith Warden', perk: 'After you swap weapons, your next hit deals +30%.', effect: 'swapWhet', craft: { coin: 200, coreshard: 1, wardenstone: 2 } });
 charms.push({ id: 'crowncharm', tier: 3, name: 'Crown Charm', src: 'Stormcrown Roc', perk: 'Pierce hits on an airborne monster deal +20%.', effect: 'airPierce', craft: { coin: 200, stormcrown: 1, rocplume: 2 } });
@@ -117,7 +117,6 @@ mats.push(
   { id: 'hydracrown', tier: 3, base: 'Hydra Crown', src: 'Gorhydra', sell: 130, how: 'Break the Gorhydra’s middle head (Cut best)' },
   { id: 'hydrahorn', tier: 3, base: 'Hydra Horn', src: 'Gorhydra', sell: 130, how: 'Break the Gorhydra’s right head (Cut best)' },
   { id: 'hydraheart', tier: 3, base: 'Hydraheart', src: 'Gorhydra', rare: true, sell: 650, how: 'Rare from the Gorhydra’s middle head' },
-  { id: 'seal', tier: 2, base: 'Hunter’s Seal', src: 'Bounty board', sell: 0, how: 'Paid by bounties; crafts the bounty charms' },
   { id: 'mirestone', tier: 2, base: 'Mirestone', src: 'Bogjaw', rare: true, sell: 450, how: 'Rare from Bogjaw stone warts' }
 );
 export const MATERIALS: Record<string, MaterialDef> = Object.fromEntries(mats.filter(inEdition).map(m => [m.id, m]));

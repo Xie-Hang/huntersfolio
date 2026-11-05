@@ -100,6 +100,8 @@ export interface CharmDef {
   perk: string;
   effect: CharmEffect;
   craft: Cost;
+  /** unlocked by completing this many different bounties (the bounty charms) */
+  bounties?: number;
 }
 
 export interface MaterialDef {
@@ -228,7 +230,7 @@ export interface Reward {
   /** monsters this hunt unlocked */
   unlocked?: string[];
   /** the bounty outcome (win or lose) */
-  bounty?: { id: string; met: boolean; missed?: string; coin: number; seals: number; mat?: string };
+  bounty?: { id: string; met: boolean; missed?: string; coin: number; mat?: string; repeat?: boolean; unlocked?: string[] };
 }
 
 export interface Hunt {

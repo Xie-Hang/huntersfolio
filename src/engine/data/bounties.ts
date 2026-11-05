@@ -1,7 +1,8 @@
 // The bounty board: hunts with a condition and a unique reward. A length lever that adds goals, not grind.
 // Three per monster (two ordinary, one hard). Take one at the Hunt Board before you set out; it pays only if
-// you WIN that hunt and meet every condition. Each pays coin and Hunter's Seals; a hard one also pays the
-// monster's rare material, guaranteed (an answer to unlucky rare drops). Seals craft the bounty charms.
+// you WIN that hunt and meet every condition. Each pays coin; a hard one also pays the monster's rare material,
+// guaranteed (an answer to unlucky rare drops). Completing different bounties unlocks the bounty charms. Done
+// bounties can be repeated for REPEAT_PAY of the coin and no material.
 // Tuned by simulation (5 Nov 2026) with end-of-Ashfall gear at +2 in the monster's counter element: skilled bot
 // hard bounties ~50–90%, casual bot ~15–75%. Bounties that ask for something done on purpose (get swallowed and
 // cut free, reel both heads) score low in the sim because the bot doesn't try; a player who does, gets them.
@@ -23,12 +24,15 @@ export type Goal =
 export interface BountyDef {
   id: string; mon: string; name: string; hard?: boolean;
   goals: Goal[];
-  reward: { coin: number; seals: number; mat?: string };
+  /** first completion; a repeat pays REPEAT_PAY of the coin and no material */
+  reward: { coin: number; mat?: string };
 }
 
-const easy = { coin: 120, seals: 1 }, hard = (mat: string) => ({ coin: 250, seals: 2, mat });
+// Hunter's Seals were removed (Nov 2026, Mekkman): the bounty charms unlock by bounties completed instead.
+export const REPEAT_PAY = 0.5;
+const easy = { coin: 120 }, hard = (mat: string) => ({ coin: 250, mat });
 // Stormspire pays more: its gear costs more
-const easy3 = { coin: 180, seals: 1 }, hard3 = (mat: string) => ({ coin: 360, seals: 2, mat });
+const easy3 = { coin: 180 }, hard3 = (mat: string) => ({ coin: 360, mat });
 
 const ALL: BountyDef[] = [
   // Ashfall Ridge

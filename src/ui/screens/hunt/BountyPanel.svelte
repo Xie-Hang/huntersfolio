@@ -9,6 +9,7 @@
   const MARK = { met: '✓', failed: '✗', open: '○' } as const;
   const states = $derived(B ? B.goals.map(g => E.goalState(h, g)) : []);
   const failed = $derived(states.includes('failed'));
+  const pay = $derived(B ? E.bountyPay(game.save, B.id) : null);
 </script>
 
 {#if B && !h.over}
@@ -19,7 +20,7 @@
       <li class="g open"><b aria-hidden="true">○</b>Win the hunt</li>
       {#each B.goals as g, i}{@const st = states[i]}<li class="g {st}"><b aria-hidden="true">{MARK[st]}</b>{E.goalText(g, h.mid)}<span class="sr">{st === 'met' ? ' (done)' : st === 'failed' ? ' (missed)' : ''}</span></li>{/each}
     </ul>
-    <span class="pay">{B.reward.coin} coin · {B.reward.seals} Hunter’s Seal{B.reward.seals > 1 ? 's' : ''}{#if B.reward.mat}{' · '}<Icon id={B.reward.mat} size={16} />{E.matName(B.reward.mat)}{/if}</span>
+    <span class="pay">{pay?.coin} coin{#if pay?.mat}{' · '}<Icon id={pay.mat} size={16} />{E.matName(pay.mat)}{/if}{pay?.repeat ? ' · repeat' : ' · counts toward the bounty charms'}</span>
   </section>
 {/if}
 

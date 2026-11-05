@@ -245,7 +245,7 @@
   {/if}
 
   {#if !B && openBounties > 0}
-    <div class="bstrip quiet"><span><span class="bn">Bounties</span> <span class="ital">{openBounties} open for the {M.short}. Take one from its page to earn coin and Hunter’s Seals on this hunt.</span></span></div>
+    <div class="bstrip quiet"><span><span class="bn">Bounties</span> <span class="ital">{openBounties} open for the {M.short}. Take one from its page: extra coin, and every new one counts toward the bounty charms.</span></span></div>
   {/if}
   {#if B}
     <div class="bstrip">

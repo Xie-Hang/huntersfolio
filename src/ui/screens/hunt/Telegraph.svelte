@@ -50,7 +50,7 @@
       {/if}
       {#if r.unlocked?.length}<p class="unlock p0">New hunts unlocked: {r.unlocked.map(id => E.MONSTERS[id].short).join(', ')}.</p>{/if}
       {#if r.bounty}{@const B = E.BOUNTIES[r.bounty.id]}
-        {#if r.bounty.met}<p class="unlock p0">Bounty complete: {B.name}. +{r.bounty.coin} coin, +{r.bounty.seals} Hunter’s Seal{r.bounty.seals > 1 ? 's' : ''}{r.bounty.mat ? `, ${E.matName(r.bounty.mat)}` : ''}.</p>
+        {#if r.bounty.met}<p class="unlock p0">Bounty {r.bounty.repeat ? 'repeated' : 'complete'}: {B.name}. +{r.bounty.coin} coin{r.bounty.mat ? `, ${E.matName(r.bounty.mat)}` : ''}.{#if !r.bounty.repeat}{' '}{E.bountiesDone(game.save)} done{/if}{#if r.bounty.unlocked?.length}{' '}Unlocked at the Forge: {r.bounty.unlocked.join(', ')}.{:else if !r.bounty.repeat && E.nextBountyCharm(game.save)}{@const nx = E.nextBountyCharm(game.save)!}{' '}({nx.name} at {nx.need}).{/if}</p>
         {:else}<p class="ital p0">Bounty not met ({B.name}): {(r.bounty.missed ?? "").toLowerCase()}. It stays on your board.</p>{/if}
       {/if}
       {#if r.returned && h.item}<p class="ital p0">{r.returned} unused {E.ITEMS[h.item].name} returned to your stash.</p>{/if}

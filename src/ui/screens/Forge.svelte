@@ -131,7 +131,7 @@
         {:else if kind === 'c'}
           {@const c = E.CHARMS[sel]}
           <p class="fd-perk">{c.perk}</p>
-          <span class="fd-sig">Made from {c.src} materials. Goes in the charm slot; one charm at a time.</span>
+          <span class="fd-sig">{c.bounties ? `A bounty-board charm: unlocked by completing ${c.bounties} different bounties, then crafted for coin.` : `Made from ${c.src} materials.`} Goes in the charm slot; one charm at a time.</span>
         {:else}
           {@const a = E.ownedArmor(s, sel)}
           {@const base = E.ARMORS[sel]}
@@ -149,7 +149,7 @@
         <!-- 4. Can I make it? Cost and action, close to the top -->
         {#if r.cost}
           <div>
-            <div class="label rule">{r.action === 'reinforce' ? `To reinforce to +${lv + 1}` : r.action === 'upgrade' ? `To craft (from your ${E.WEAPONS[E.WEAPONS[sel].from!].name})` : r.locked ? `To craft (once you own the ${E.WEAPONS[E.WEAPONS[sel].from!].name})` : 'To craft'}</div>
+            <div class="label rule">{r.action === 'reinforce' ? `To reinforce to +${lv + 1}` : r.action === 'upgrade' ? `To craft (from your ${E.WEAPONS[E.WEAPONS[sel].from!].name})` : r.locked ? (kind === 'c' ? `To craft (once you've completed ${E.CHARMS[sel].bounties} different bounties: ${E.bountiesDone(s)} so far)` : `To craft (once you own the ${E.WEAPONS[E.WEAPONS[sel].from!].name})`) : 'To craft'}</div>
             <Costs cost={r.cost} />
           </div>
         {/if}
@@ -161,7 +161,7 @@
           {:else if owned}
             <span class="pl">{kind === 'c' ? 'Owned. Equip it at the Hunt Board.' : 'Fully reinforced.'}</span>
           {/if}
-          {#if r.cost && (r.action || r.locked)}
+          {#if r.cost && (r.action || r.locked) && !(kind === 'c' && E.CHARMS[sel].bounties)}
             <button class="btn quiet" data-coach="track" aria-pressed={s.tracked === tk} onclick={track}>{s.tracked === tk ? 'Untrack' : 'Track'}</button>
           {/if}
           {#if r.action === 'upgrade'}

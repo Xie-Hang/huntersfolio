@@ -179,7 +179,7 @@ export const TIPS: Tip[] = [
   {
     id: 'bounties', learn: true, at: ['bounties'],
     when: () => game.view === 'board' && E.BOUNTIES_ON && game.save.tips.includes('track') && !game.save.loadout.bounty && E.bountiesFor(game.save.loadout.target).length > 0 && (game.save.record[game.save.loadout.target]?.wins ?? 0) > 0,
-    text: () => 'New: bounties. Take one before you hunt this monster again. Meet its goals and win for extra coin and Hunter\'s Seals.',
+    text: () => 'New: bounties. Take one before you hunt this monster again. Meet its goals and win for extra coin. Completing bounties also unlocks three charms at the Forge.',
     done: () => !!game.save.loadout.bounty
   },
   {
