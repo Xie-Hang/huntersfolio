@@ -134,7 +134,7 @@ function press(btn: number) {
   if (hunting) {
     if (btn === B.B) { if (game.sel.length) game.sel = []; return; }
     if (btn === B.X) return game.reroll();
-    if (btn === B.Y) return game.endTurn();
+    if (btn === B.Y) return game.requestEnd();
     if (btn === B.LB) return cyclePart(-1);
     if (btn === B.RB) return cyclePart(1);
     if (btn === B.LT) return game.undo();

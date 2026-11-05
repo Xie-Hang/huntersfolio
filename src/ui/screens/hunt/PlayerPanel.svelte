@@ -23,7 +23,8 @@
       </div>
       <span class="mono">{h.php} / {h.pmax}{#if net}{' '}<span style="color:var(--ember-soft)">→ {after}</span>{/if}</span>
     </div>
-    <div class="pstat">
+    <div class="statrow">
+      <div class="pstat">
       <span>{h.arm.name}{h.arm.lv ? ` +${h.arm.lv}` : ''}</span>
       {#if h.charm}<span title={E.CHARMS[h.charm].perk}>{E.CHARMS[h.charm].name}</span>{/if}
       <span>Guard this turn <b>−{h.guard}</b></span>
@@ -31,12 +32,13 @@
       {#if h.whet}<span class="gold">Sharpened: next hit +{Math.round(h.whet * 100)}%</span>{/if}
       {#if h.evade}<span class="gold">Hidden in smoke</span>{/if}
     </div>
-    {#if B}
+      {#if B}
       <div class="bounty" aria-label="Bounty goals">
         <span class="bn">Bounty · {B.name}</span>
         {#each B.goals as g}{@const st = E.goalState(h, g)}<span class="g {st}"><b aria-hidden="true">{MARK[st]}</b>{E.goalText(g, h.mid)}<span class="sr">{st === 'met' ? ' (done)' : st === 'failed' ? ' (missed)' : ''}</span></span>{/each}
       </div>
     {/if}
+    </div>
   </div>
   <div class="fx">
     {#each game.floats.filter(f => f.at === 'player') as f (f.id)}<span class="float {f.cls}">{f.text}</span>{/each}
@@ -44,6 +46,7 @@
 </section>
 
 <style>
+  .statrow { display: flex; flex-wrap: wrap; gap: 4px 18px; align-items: baseline; justify-content: space-between; }
   .youline { display: flex; align-items: center; gap: 14px; }
   .youline .hpbig { flex: 1; }
   .youline .mono { white-space: nowrap; }

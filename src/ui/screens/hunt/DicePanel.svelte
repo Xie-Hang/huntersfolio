@@ -5,6 +5,7 @@
   const h = $derived(game.hunt!);
   const over = $derived(!!h.over);
   const n = $derived(game.sel.length);
+  const spare = $derived(game.spareDice);
   const label = (f: string) => (f === 'C' ? 'Circle' : f === 'T' ? 'Triangle' : 'Blank');
 </script>
 
@@ -36,7 +37,9 @@
     {/each}
   </div>
   <div class="acts">
-  <button class="btn primary endbtn" data-sound data-coach="end" disabled={over} onclick={() => game.endTurn()}><Key k="Space" pad="Y" />End turn</button>
+  <button class="btn primary endbtn" class:armed={game.endArmed} data-sound data-coach="end" disabled={over} onclick={() => game.requestEnd()}>
+    <Key k="Space" pad="Y" />{#if game.endArmed}<span class="et">End turn anyway?<small>{spare} {spare === 1 ? 'die' : 'dice'} unspent · press again</small></span>{:else if spare}<span class="et">End turn<small>{spare} {spare === 1 ? 'die' : 'dice'} unspent</small></span>{:else}End turn{/if}
+  </button>
     <div class="grp">
       <button class="btn quiet" data-sound data-coach="reroll" disabled={!n || h.rerolls < 1 || over} onclick={() => game.reroll()}><Key k="R" pad="X" />Reroll · {h.rerolls} left</button>
       <button class="btn quiet" disabled={!game.undoStack.length || over} onclick={() => game.undo()}><Key k="U" pad="LT" />Undo</button>
@@ -48,7 +51,10 @@
 <style>
   .diceline { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: space-between; }
   .diceline .tray { flex: 0 1 auto; justify-content: flex-start; padding: 4px 0 0; gap: 12px; }
-  .endbtn { min-height: 52px; padding-inline: 22px; }
+  .endbtn { min-height: 52px; padding-inline: 22px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .endbtn .et { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.15; }
+  .endbtn small { font-size: var(--fs-sm); font-weight: 500; opacity: .85; }
+  .endbtn.armed, .endbtn.armed:hover:not(:disabled) { background: var(--ember); border-color: var(--ember); color: #1a1310; }
   .acts { flex: 1 0 230px; max-width: 300px; display: flex; flex-direction: column; gap: 8px; align-items: stretch; }
   .acts .grp { display: flex; gap: 8px; }
   .acts .grp .btn { flex: 1; white-space: nowrap; }

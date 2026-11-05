@@ -23,6 +23,8 @@ class Game {
   sel = $state<number[]>([]);
   /** snapshots taken before each action this turn */
   undoStack = $state.raw<E.Hunt[]>([]);
+  /** End turn was pressed once with dice still worth spending: the next press ends it */
+  endArmed = $state(false);
   rolling = $state<number[]>([]);
   floats = $state<Float[]>([]);
   shakes = $state({ mon: 0, player: 0 });
@@ -107,6 +109,7 @@ class Game {
     if (!happened(r)) return r;
     this.undoStack = [...this.undoStack, snap];
     this.sel = [];
+    this.endArmed = false;
     this.after();
     return r;
   }
@@ -178,11 +181,27 @@ class Game {
     this.hunt = this.undoStack[this.undoStack.length - 1];
     this.undoStack = this.undoStack.slice(0, -1);
     this.sel = [];
+    this.endArmed = false;
     this.persist();
+  }
+  /** Dice left that would still do something: a move fits them, or the monster is about to hit you (Guard). */
+  get spareDice(): number {
+    const h = this.hunt; if (!h || h.over) return 0;
+    const free = E.freeDice(h).length; if (!free) return 0;
+    const moveReady = E.currentWeapon(h).moves.some((_, i) => E.canUseMove(h, i));
+    return moveReady || (E.incoming(h)?.net ?? 0) > 0 ? free : 0;
+  }
+  /** End turn from a button or key. With dice still worth spending, the first press only warns.
+   *  (Playtest: players ended turns with dice unspent and didn't notice.) */
+  requestEnd() {
+    if (!this.hunt || this.hunt.over) return;
+    if (this.spareDice && !this.endArmed) { this.endArmed = true; sfx('dieTap'); return; }
+    this.endTurn();
   }
   endTurn() {
     const h = this.hunt;
     if (!h || h.over) return;
+    this.endArmed = false;
     PL.turnEnd(h);
     if (E.intentInfo(h).dmg > 0) { this.pulse.actIntent = h.intent; this.pulse.act++; }
     const { taken } = E.endTurn(h);

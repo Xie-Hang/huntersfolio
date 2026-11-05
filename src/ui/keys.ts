@@ -26,7 +26,7 @@ export function onHuntKey(e: KeyboardEvent) {
   else if (k === 'i') game.item();
   else if (k === 'r') game.reroll();
   else if (k === 'u') game.undo();
-  else if (k === ' ') game.endTurn();
+  else if (k === ' ') game.requestEnd();
   else if (k === 'escape') game.sel = [];
   else done = false;
   if (done) e.preventDefault(); // Space would also click the focused button
