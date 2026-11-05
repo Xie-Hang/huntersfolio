@@ -140,6 +140,8 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 @media (max-width:600px){.record{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .towngrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,320px);gap:18px;align-items:start}
 .forgegrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+/* the selected recipe stays in view while the long list scrolls (playtest: players had to scroll back up) */
+@media (min-width:901px){.forgegrid>section:last-child{position:sticky;top:16px;max-height:calc(100vh - 32px);overflow-y:auto}}
 @media (max-width:900px){.forgegrid{grid-template-columns:minmax(0,1fr)}}
 .readyto{display:flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap}
 .readyto input{accent-color:var(--gold);width:16px;height:16px}

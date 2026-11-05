@@ -163,7 +163,9 @@ class Game {
   }
   reroll() {
     const idx = this.act(h => E.reroll(h, this.sel), r => r.length > 0);
-    if (idx?.length) { this.roll(idx); sfx('reroll'); }
+    // A reroll can't be undone, and neither can anything before it: undoing would rewind the dice seed and let
+    // the player peek at what a reroll gives, then pick different dice (playtest: "you can cheese it").
+    if (idx?.length) { this.undoStack = []; this.roll(idx); sfx('reroll'); }
   }
   item() {
     const before = this.hunt?.php ?? 0;

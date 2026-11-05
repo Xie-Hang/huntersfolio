@@ -166,6 +166,10 @@ function readPads(): Gamepad[] {
 export function startPad() {
   if (typeof navigator === 'undefined' || !navigator.getGamepads) return;
   const held = new Map<number, number>(); // button → next repeat time
+  // Inputs already down when we first see a pad are ignored until they've been released once. Some PCs expose a
+  // device whose stick or button rests at full tilt (a wheel, a flight stick, a driver quirk); without this it
+  // would "press right" forever, creeping sliders up and dragging focus around under the mouse.
+  const trusted = new Map<string, Set<number>>(); // pad id → inputs seen released
   let raf = 0;
   const DIRS = [B.UP, B.DOWN, B.LEFT, B.RIGHT] as number[];
   function frame(t: number) {
@@ -174,10 +178,15 @@ export function startPad() {
     if (!pads.length) { held.clear(); return; }
     const down = new Set<number>();
     for (const p of pads) {
-      p.buttons.forEach((b, i) => { if (b.pressed || b.value > 0.6) down.add(i); });
+      const key = `${p.index}:${p.id}`;
+      let ok = trusted.get(key); if (!ok) trusted.set(key, ok = new Set());
+      const raw = new Set<number>();
+      p.buttons.forEach((b, i) => { if (b.pressed || b.value > 0.6) raw.add(i); });
       const [x = 0, y = 0] = p.axes;
-      if (y < -DEAD) down.add(B.UP); if (y > DEAD) down.add(B.DOWN);
-      if (x < -DEAD) down.add(B.LEFT); if (x > DEAD) down.add(B.RIGHT);
+      if (y < -DEAD) raw.add(B.UP); if (y > DEAD) raw.add(B.DOWN);
+      if (x < -DEAD) raw.add(B.LEFT); if (x > DEAD) raw.add(B.RIGHT);
+      for (let i = 0; i <= B.RIGHT; i++) if (!raw.has(i)) ok.add(i);
+      for (const i of raw) if (ok.has(i)) down.add(i);
     }
     for (const i of down) {
       const next = held.get(i);
@@ -188,7 +197,7 @@ export function startPad() {
         setMode('pad');
         if (wasPad && document.hasFocus()) { press(i); afterPress(); }
       }
-      else if (DIRS.includes(i) && t >= next) { held.set(i, t + REPEAT); if (document.hasFocus()) press(i); }
+      else if (DIRS.includes(i) && t >= next && input.mode === 'pad') { held.set(i, t + REPEAT); if (document.hasFocus()) press(i); }
     }
     for (const i of [...held.keys()]) if (!down.has(i)) held.delete(i);
     raf = requestAnimationFrame(frame);
