@@ -315,7 +315,7 @@ ICONS.update({
 # ---------- the Gloamhollow (full game, Nov 2026) ----------
 def crossed(cx, cy, body):
     # a ring with a slash (a "no" sign) round the motif, so the motif itself stays readable
-    return body + f'<circle cx="{cx}" cy="{cy}" r="42" fill="none" stroke="{INK}" stroke-width="13"/><circle cx="{cx}" cy="{cy}" r="42" fill="none" stroke="{EMBER}" stroke-width="6"/><path d="M{cx - 29} {cy - 29} L{cx + 29} {cy + 29}" stroke="{INK}" stroke-width="13" stroke-linecap="round"/><path d="M{cx - 29} {cy - 29} L{cx + 29} {cy + 29}" stroke="{EMBER}" stroke-width="6" stroke-linecap="round"/>'
+    return f'<circle cx="{cx}" cy="{cy}" r="42" fill="#231b15"/>' + body + f'<circle cx="{cx}" cy="{cy}" r="42" fill="none" stroke="{INK}" stroke-width="13"/><circle cx="{cx}" cy="{cy}" r="42" fill="none" stroke="{EMBER}" stroke-width="6"/><path d="M{cx - 29} {cy - 29} L{cx + 29} {cy + 29}" stroke="{INK}" stroke-width="13" stroke-linecap="round"/><path d="M{cx - 29} {cy - 29} L{cx + 29} {cy + 29}" stroke="{EMBER}" stroke-width="6" stroke-linecap="round"/>'
 
 
 def spores(cx, cy):
