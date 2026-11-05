@@ -15,13 +15,13 @@ const SHOTS = {
   gore: { hunt: hunt('gorehorn', { intent: 'windup', dice: 'CCTB', turn: 3, target: 'hide', script: { 4: 'CCTT' } }),
     steps: ['w3000', 'mark', 'e', 'w1100', '4', 'w300', 'g', 'w1400', 'mark', ' ', 'w3200', 'mark', '1', 'w250', '2', 'w250', '3', 'w250', '4', 'w600', 'g', 'w2000', 'mark', ' ', 'w3500'] },
   brk: { hunt: hunt('gorehorn', { intent: 'jab', dice: 'CCTB', turn: 6, target: 'hide', parts: { hide: 30 }, script: { 7: 'CCTB' } }),
-    steps: ['w1800', 'mark', '4', 'w600', 'r', 'w1600', 'mark', 'e', 'w3500', 'mark', ' ', 'w2500'] },
+    steps: ['w1800', 'mark', '4', 'w600', 'r', 'w1600', 'mark', 'e', 'w3500', 'g', 'w600', 'mark', ' ', 'w2500'] }, // guard the spare die: ending with dice unspent now asks to confirm
   gale: { hunt: hunt('galeshrike', { intent: 'takeoff', dice: 'CCTB', turn: 3, target: 'wings', php: 180, script: {} }),
     steps: ['w2500', ...huntSteps(5), 'w1500'] },
   cinder: { hunt: hunt('cinderback', { intent: 'burrow', dice: 'CCTB', turn: 3, target: 'plate', script: { 4: 'CCTT' } }),
     steps: ['w2000', 'mark', 'e', 'w1000', 'mark', ' ', 'w3800', 'mark', '4', 'w300', 's', 'w1300', 'mark', 'w', 'w3800', 'mark', ' ', 'w3000'] },
   rime: { hunt: hunt('rimetail', { intent: 'pounce', dice: 'CCTT', turn: 3, target: 'tail', mon: { plating: 2 }, script: { 4: 'CCTB' } }),
-    steps: ['w2200', 'mark', 'q', 'w2200', 'mark', 'e', 'w2200', 'mark', ' ', 'w3000'] },
+    steps: ['w2200', 'mark', 'q', 'w2200', 'mark', '2', 'w200', '3', 'w200', '4', 'w400', 'g', 'w1400', 'mark', ' ', 'w3000'] }, // guard the spare dice (see brk)
   forge: { forge: true, steps: ['w1200', 'click:.fnode:has-text("Tuskbreaker")', 'w1800', 'mark', 'click:[data-coach="forge-act"]', 'w3000'] },
   board: { board: true, steps: ['w800', 'mark', 'click:.mrow[data-id="gorehorn"]', 'w700', 'mark', 'click:.mrow[data-id="galeshrike"]', 'w700', 'mark', 'click:.mrow[data-id="cinderback"]', 'w700', 'mark', 'click:.mrow[data-id="rimetail"]', 'w1200'] }
 };
@@ -30,9 +30,14 @@ const SHOTS = {
   for (const [name, sh] of Object.entries(SHOTS)) {
     if (ONLY.length && !ONLY.includes(name)) continue;
     const ctx = await b.newContext({ viewport: { width: 3840, height: 2160 } }); const p = await ctx.newPage();
+    await ctx.addInitScript(() => document.addEventListener('DOMContentLoaded', () => { const s = document.createElement('style'); s.textContent = '.sub .build{display:none!important}'; document.head.appendChild(s); })); // no build version on collateral
     await p.addInitScript(K => { const st = window.setTimeout; window.__slow = 1; window.setTimeout = (f, d, ...a) => st(f, (d || 0) * window.__slow, ...a); const z = () => { document.documentElement.style.zoom = '2.4'; }; if (document.documentElement) z(); document.addEventListener('DOMContentLoaded', () => { z(); const k = document.createElement('div'); k.style.cssText = 'position:fixed;left:0;top:0;width:1px;height:1px;opacity:.01;background:#000;z-index:99999;pointer-events:none;animation:kf 0.1s linear infinite alternate'; const st2 = document.createElement('style'); st2.textContent = '@keyframes kf{to{opacity:.02}}'; document.head.append(st2); document.body.append(k); }); }, K);
-    await p.goto('http://localhost:4173/'); await p.waitForTimeout(300); await p.click('.coach-skip');
-    await p.click('[data-coach="nav-forge"]'); await p.click('[data-coach="track"]'); await p.click('[data-coach="track"]');
+    await p.goto('http://localhost:4173/'); await p.waitForTimeout(400); await p.click('[data-coach="begin"]').catch(() => {}); await p.waitForTimeout(300);
+    // a save past the tutorial (every tip seen), quiet settings (6 Nov 2026: the old menu path to get here is gone)
+    await p.evaluate(() => { const s = JSON.parse(localStorage.getItem('huntersfolio-save'));
+      s.tips = ['begin','g-next','g-hp','aim','move','g-blank','guard','end','g-pick','reroll','g-free','windup','charge','swap','open','mud','enraged','item','capture','forge','track','bounties','broke','sell']; s.loadout = { ...s.loadout, bounty: null };
+      localStorage.setItem('huntersfolio-save', JSON.stringify(s)); localStorage.removeItem('huntersfolio-hunt');
+      localStorage.setItem('huntersfolio-settings', JSON.stringify({ music: 0, sfx: 0, fullscreen: false, uiSize: 1, tips: false })); });
     await p.evaluate(() => { const s = JSON.parse(localStorage.getItem('huntersfolio-save')); s.record.gorehorn = { hunts: 3, wins: 2, captures: 1, breaks: {} }; s.record.galeshrike = { hunts: 1, wins: 1, captures: 0, breaks: {} }; s.mats = { ...s.mats, tusk: 3, hide: 2, sinew: 1 }; s.coin = 640; s.tracked = null; localStorage.setItem('huntersfolio-save', JSON.stringify(s)); });
     await p.reload(); await p.waitForTimeout(400);
     if (sh.hunt) {

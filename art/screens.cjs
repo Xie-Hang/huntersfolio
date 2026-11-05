@@ -4,6 +4,7 @@ const OUT = require('path').join(__dirname, 'screens') + '/'; require('fs').mkdi
 (async () => {
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1600, height: 900 }, deviceScaleFactor: 2.4 });
+  await p.addInitScript(() => document.addEventListener('DOMContentLoaded', () => { const s = document.createElement('style'); s.textContent = '.sub .build{display:none!important}'; document.head.appendChild(s); })); // no build version on collateral
   await p.goto('http://localhost:4173/'); await p.waitForTimeout(300);
   await p.click('[data-coach="begin"]'); await p.waitForTimeout(300); // writes a save to start from
   const setup = async (loadout, extra = {}) => {
@@ -29,7 +30,8 @@ const OUT = require('path').join(__dirname, 'screens') + '/'; require('fs').mkdi
   await setup({ target: 'gorehorn', weapons: ['blade', 'tusk'], armor: 'vest', item: 'salve' });
   await p.click('[data-coach="begin"]'); await p.waitForTimeout(600);
   await p.click('.part:has-text("Hide")');
-  for (let t = 0; t < 3; t++) { for (let k = 0; k < 3; k++) { const m = await p.$('.move.ready[data-coach="move"]'); if (m) await m.click(); } await ends(1); }
+  // play turns until the charge itself is telegraphed (the cycle moved since this was written: don't count turns)
+  for (let t = 0; t < 12 && !(await p.locator('h3.mvname', { hasText: 'Trampling Charge' }).count()); t++) { for (let k = 0; k < 3; k++) { const m = await p.$('.move.ready[data-coach="move"]'); if (m) await m.click(); } await ends(1); }
   { const m = await p.$('.move.ready[data-coach="move"]'); if (m) await m.click(); }
   await p.keyboard.press('1'); await p.keyboard.press('2'); await p.keyboard.press('3'); await p.keyboard.press('4');
   await p.keyboard.press('g'); await shot(1);

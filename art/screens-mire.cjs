@@ -6,6 +6,7 @@ const OUT = require('path').join(__dirname, 'screens') + '/'; require('fs').mkdi
 (async () => {
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1600, height: 900 }, deviceScaleFactor: 2.4 });
+  await p.addInitScript(() => document.addEventListener('DOMContentLoaded', () => { const s = document.createElement('style'); s.textContent = '.sub .build{display:none!important}'; document.head.appendChild(s); })); // no build version on collateral
   await p.goto('http://localhost:4173/'); await p.waitForTimeout(300);
   await p.click('[data-coach="begin"]'); await p.waitForTimeout(300); // writes a save to start from
   const T1 = { gorehorn: { tusks: 3, hide: 4, legs: 2 }, galeshrike: { wings: 2, talons: 1 }, cinderback: { plate: 2, claws: 1 }, rimetail: { tail: 2, mantle: 1 } };

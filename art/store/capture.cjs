@@ -1,22 +1,24 @@
-// Store screenshots at 1920×1080 (viewport 1477×831 at 1.3×): loads each played hunt (states.ts) into the build.
+// Store screenshots at 3840×2160 (the 1600×900 layout at 2.4×, matching art/screens.cjs): loads each played hunt
+// (states.ts) into the build. Usage: node capture.cjs <game.html> <out dir> [names to take, default all] [--menus]
 const { chromium } = require('playwright');
 // collateral (store art, achievement icons): never show the build version
 const COLLATERAL_CSS = '.sub .build{display:none!important}'; const fs = require('fs'); const path = require('path');
-const [FILE, OUT] = process.argv.slice(2); const DIR = __dirname;
+const [FILE, OUT, ...REST] = process.argv.slice(2); const DIR = __dirname; const ONLY = REST.filter(a => !a.startsWith('--')), MENUS = REST.includes('--menus') || !ONLY.length;
 const TIPS = ['begin','g-next','g-hp','aim','move','g-blank','guard','end','g-pick','reroll','g-free','windup','charge','swap','open','mud','enraged','item','capture','forge','track','bounties','broke','sell'];
 (async () => {
-  const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1477, height: 831 }, deviceScaleFactor: 1.3 });
+  const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1600, height: 900 }, deviceScaleFactor: 2.4 });
   const errs = []; p.on('pageerror', e => errs.push(e.message));
   await p.goto('file://' + path.resolve(FILE)); await p.waitForTimeout(500);
   const load = async (save, hunt) => { await p.evaluate(([save, hunt, TIPS]) => { save.tips = TIPS; save.hunts = 40;
     localStorage.setItem('huntersfolio-save', JSON.stringify(save)); if (hunt) localStorage.setItem('huntersfolio-hunt', JSON.stringify(hunt)); else localStorage.removeItem('huntersfolio-hunt');
     localStorage.setItem('huntersfolio-settings', JSON.stringify({ music: 0, sfx: 0, fullscreen: false, uiSize: 1, tips: false })); }, [save, hunt, TIPS]);
     await p.reload(); await p.addStyleTag({ content: COLLATERAL_CSS }); await p.waitForTimeout(1400); };
-  for (const f of fs.readdirSync(DIR).filter(f => f.endsWith('.json')).sort()) {
+  for (const f of fs.readdirSync(DIR).filter(f => f.endsWith('.json') && (!ONLY.length || ONLY.some(o => f.startsWith(o)))).sort()) {
     const { hunt, save } = JSON.parse(fs.readFileSync(path.join(DIR, f), 'utf8'));
     await load(save, hunt); await p.mouse.move(2, 2); await p.waitForTimeout(300);
     await p.screenshot({ path: path.join(OUT, f.replace('.json', '.png')) }); console.log(f);
   }
+  if (!MENUS) { console.log('errors', errs); await b.close(); return; }
   // the Hunt Board and the Forge, from a save part-way through the game
   const { save } = JSON.parse(fs.readFileSync(path.join(DIR, '2-galeshrike-air.json'), 'utf8'));
   for (const id of Object.keys(save.record)) if (['monolith','stormroc','slagwyrm','gorhydra','sovereign','feverjaw','archeron','bloodwhelk','squallhorn','rimeshrike','quakeback','ashtail'].includes(id)) delete save.record[id];

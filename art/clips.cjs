@@ -5,7 +5,8 @@
 //   MP4 (Steam description video, ≤12 s, 780 wide):
 //     ffmpeg -ss 2.4 -t 14.6 -i in.webm -an -vf "crop=982:720:40:128,setpts=PTS/1.25,fps=30,scale=780:-2,format=yuv420p" -c:v libx264 -crf 20 out.mp4
 //   GIF fallback (616 wide): same crop/speed, fps=15,scale=616:-1, then palettegen/paletteuse.
-// Speed-ups used: gorehorn 1.25 (14.6 s long), cinderback 1.4 (16.4 s), rimetail 1 (8.6 s); start each about 0.3 s before the printed "start" time.
+// Speed-ups used: gorehorn 1.25 (14.6 s long), cinderback 1.4 (16.4 s), rimetail 1 (9.4 s); start each about 0.3 s before the printed "start" time.
+// Crop for the current hunt layout (6 Nov 2026): crop=780:712:270:102 (no scale needed for the MP4).
 const { chromium } = require('playwright');
 const dice = s => [...s].map(f => ({ face: f, used: null }));
 const CLIPS = {
@@ -14,7 +15,7 @@ const CLIPS = {
   cinderback: { setup: { intent: 'burrow', dice: 'CCTB', script: { 3: 'CTTB', 4: 'CCTT' }, turn: 3, target: 'plate' },
     steps: ['wait1500', 'e', 'wait900', ' ', 'wait3600', '4', 'wait300', 's', 'wait1200', 'w', 'wait1000', 'q', 'wait500', 'e', 'wait3500', ' ', 'wait3500'] },
   rimetail: { setup: { intent: 'pounce', dice: 'CCTT', script: { 3: 'CCTB' }, turn: 3, target: 'tail', mon: { plating: 2 } },
-    steps: ['wait1800', 'q', 'wait1800', 'e', 'wait1800', ' ', 'wait3000'] }
+    steps: ['wait1800', 'q', 'wait1800', '2', 'wait200', '3', 'wait200', '4', 'wait400', 'g', 'wait1400', ' ', 'wait3000'] } // guard the spare dice: ending with dice unspent now asks to confirm
 };
 (async () => {
   const dir = process.argv[2]; const which = process.argv.slice(3);
@@ -22,10 +23,15 @@ const CLIPS = {
   for (const mon of which) {
     const c = CLIPS[mon];
     const ctx = await b.newContext({ viewport: { width: 1440, height: 900 }, recordVideo: { dir: `${dir}/st-${mon}`, size: { width: 1440, height: 900 } } });
+    await ctx.addInitScript(() => document.addEventListener('DOMContentLoaded', () => { const s = document.createElement('style'); s.textContent = '.sub .build{display:none!important}'; document.head.appendChild(s); })); // no build version on collateral
     const T0 = Date.now(); const p = await ctx.newPage(); const mark = n => console.log(mon, n, ((Date.now() - T0) / 1000).toFixed(2));
-    await p.goto('http://localhost:4173/'); await p.waitForTimeout(300); await p.click('.coach-skip');
-    await p.click('[data-coach="nav-forge"]'); await p.click('[data-coach="track"]');
-    await p.evaluate(() => { const s = JSON.parse(localStorage.getItem('huntersfolio-save')); s.record.gorehorn = { hunts: 1, wins: 1, captures: 0, breaks: {} }; localStorage.setItem('huntersfolio-save', JSON.stringify(s)); });
+    await p.goto('http://localhost:4173/'); await p.waitForTimeout(400); await p.click('[data-coach="begin"]').catch(() => {}); await p.waitForTimeout(300);
+    // a save past the tutorial (every tip seen), the Gorehorn beaten so the other three are open; quiet settings
+    await p.evaluate(() => { const s = JSON.parse(localStorage.getItem('huntersfolio-save'));
+      s.tips = ['begin','g-next','g-hp','aim','move','g-blank','guard','end','g-pick','reroll','g-free','windup','charge','swap','open','mud','enraged','item','capture','forge','track','bounties','broke','sell'];
+      s.record.gorehorn = { hunts: 1, wins: 1, captures: 0, breaks: {} }; s.loadout = { ...s.loadout, bounty: null };
+      localStorage.setItem('huntersfolio-save', JSON.stringify(s)); localStorage.removeItem('huntersfolio-hunt');
+      localStorage.setItem('huntersfolio-settings', JSON.stringify({ music: 0, sfx: 0, fullscreen: false, uiSize: 1, tips: false })); });
     await p.reload(); await p.waitForTimeout(300);
     await p.click(`.mrow[data-id="${mon}"]`); await p.click('[data-coach="begin"]'); await p.waitForTimeout(500);
     await p.evaluate(([su, d]) => {

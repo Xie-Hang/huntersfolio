@@ -7,8 +7,10 @@ import { join, resolve } from 'node:path';
 const [DIR, OUT] = process.argv.slice(2).map(p => resolve(p));
 const SEG = join(DIR, 'seg'); mkdirSync(SEG, { recursive: true });
 const BAR = 8 / 3;
+// Re-measured 6 Nov 2026 for the current hunt layout (plate top-left of the stage, telegraph beside it), each 16:9:
+//   plate = the monster art, tele = the telegraph panel, wide = the play area below the header, page = with the header.
 const C = {
-  plate: [307, 427, 787, 443], tele: [1128, 629, 1560, 878], wide: [240, 269, 3360, 1890], page: [240, 72, 3360, 1890]
+  plate: [872, 424, 768, 432], tele: [1636, 309, 1056, 594], wide: [288, 240, 3264, 1836], page: [288, 43, 3264, 1836]
 };
 // [kind, source, in, out, crop, zoomFrom, zoomTo]; card: ['card', name, seconds]
 const EDIT = [
