@@ -110,7 +110,7 @@
     <div class="top-right">
       {#if !game.inHunt}
         <nav class="nav" aria-label="Town">
-          {#each NAV as [v, label]}
+          {#each NAV.filter(([v]) => v === 'board' || game.save.hunts > 0) as [v, label]}
             <button aria-current={game.view === v ? 'page' : 'false'} data-coach="nav-{v}" onclick={() => game.go(v)}>{label}</button>
           {/each}
         </nav>

@@ -34,8 +34,8 @@
     <dt>Habits</dt><dd>{M.habits}</dd>
     <dt>Reward</dt><dd><b>{E.REWARD.base} coin</b>, +{E.REWARD.perPart} per part broken, +{E.REWARD.capture} for a capture.</dd>
   </dl>
-  {#if bounties.length}
-    <div class="label rule">Bounties · {bounties.filter(b => game.save.bounties[b.id]).length} of {bounties.length} done</div>
+  {#if bounties.length && beaten}
+    <div class="label rule" data-coach="bounties">Bounties · {bounties.filter(b => game.save.bounties[b.id]).length} of {bounties.length} done</div>
     <ul class="bounties">
       {#each bounties as b (b.id)}
         {@const done = !!game.save.bounties[b.id]}

@@ -11,12 +11,13 @@
 <section class="panel" aria-label="Your dice">
   <div class="ph"><span class="label">Your dice · turn {h.turn}</span><span class="label">{input.mode === 'pad' ? 'Select any dice (A), then pick a move, or reroll them' : 'Click any dice to select them, then pick a move, or reroll them'}</span></div>
   <div class="diceline">
-  <div class="tray">
+  <div class="tray" data-coach="dice">
     {#each h.dice as d, i}
       {@const sel = game.sel.includes(i)}
       <div class="diebox">
         <button
           class="die"
+          data-coach={d.face === 'B' && !d.used ? 'die-blank' : undefined}
           class:blank={d.face === 'B'}
           class:sel
           class:used={!!d.used}

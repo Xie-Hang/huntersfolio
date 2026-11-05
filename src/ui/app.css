@@ -462,7 +462,11 @@ details.rules ul{margin:10px 0 0;padding-left:20px;display:flex;flex-direction:c
 .coach-skip:hover{color:var(--soft)}
 .coach-ring{position:fixed;box-sizing:border-box;z-index:49;pointer-events:none;border:2px solid var(--gold);border-radius:6px;animation:coachpulse 1.6s ease-in-out infinite}
 @keyframes coachpulse{0%,100%{box-shadow:0 0 0 0 rgba(233,185,73,.45)}50%{box-shadow:0 0 0 6px rgba(233,185,73,0)}}
-@media (prefers-reduced-motion: reduce){.coach-ring{animation:none}}
+.coach-ring.guide{border-width:3px;animation:coachglow 1.3s ease-in-out infinite}
+@keyframes coachglow{0%,100%{box-shadow:0 0 0 0 rgba(233,185,73,.6),0 0 18px 2px rgba(233,185,73,.35)}50%{box-shadow:0 0 0 8px rgba(233,185,73,0),0 0 28px 6px rgba(233,185,73,.55)}}
+.coach.guide{border-width:2px}
+.coach-wait{font-family:var(--f-body);font-size:var(--fs-sm);color:var(--gold-hi)}
+@media (prefers-reduced-motion: reduce){.coach-ring,.coach-ring.guide{animation:none}}
 
 /* keyboard hints: quiet, never louder than the label they sit on */
 kbd{font-family:var(--f-body);font-size:var(--fs-sm);font-weight:400;line-height:1;padding:1px 5px;border:1px solid var(--line-2);border-bottom-width:2px;border-radius:3px;color:var(--soft);background:transparent}

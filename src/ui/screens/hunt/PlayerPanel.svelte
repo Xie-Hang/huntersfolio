@@ -13,7 +13,7 @@
   const MARK = { met: '✓', failed: '✗', open: '·' } as const;
 </script>
 
-<section class="panel" aria-label="Your state" use:shake={game.shakes.player}>
+<section class="panel" data-coach="you" aria-label="Your state" use:shake={game.shakes.player}>
   <div style="display:flex;flex-direction:column;gap:8px">
     <div class="youline">
       <h2 class="you">You</h2>

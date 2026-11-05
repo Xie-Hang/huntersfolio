@@ -34,8 +34,11 @@
     const clampX = (x: number) => Math.max(EDGE, Math.min(vw - cw - EDGE, x));
     const clampY = (y: number) => Math.max(EDGE, Math.min(vh - ch - EDGE, y));
     const cx = clampX(r.left + r.width / 2 - cw / 2), cy = clampY(r.top + r.height / 2 - ch / 2);
+    const side = coach.current?.side;
+    if (side === 'right' && r.right + GAP + cw <= vw - EDGE) pos = { x: r.right + GAP, y: clampY(r.bottom - ch) };
+    else if (side === 'left' && r.left - GAP - cw >= EDGE) pos = { x: r.left - GAP - cw, y: clampY(r.bottom - ch) };
     // tall targets (a column of parts): beside them, so the card doesn't cover the rest of the panel
-    if (r.height > 160 && r.right + GAP + cw <= vw - EDGE) pos = { x: r.right + GAP, y: cy };
+    else if (r.height > 160 && r.right + GAP + cw <= vw - EDGE) pos = { x: r.right + GAP, y: cy };
     else if (r.height > 160 && r.left - GAP - cw >= EDGE) pos = { x: r.left - GAP - cw, y: cy };
     else if (r.bottom + GAP + ch <= vh - EDGE) pos = { x: cx, y: r.bottom + GAP };
     else if (r.top - GAP - ch >= EDGE) pos = { x: cx, y: r.top - GAP - ch };
@@ -56,12 +59,14 @@
 
 {#if coach.current}
   {@const t = coach.current}
-  {#if ring}<div class="coach-ring" style="left:{ring.x}px;top:{ring.y}px;width:{ring.w}px;height:{ring.h}px" aria-hidden="true"></div>{/if}
-  <div class="coach" role="status" aria-live="polite" bind:clientHeight={cardH} style="left:{pos.x}px;top:{pos.y}px;width:min({W}px, calc(100vw - {EDGE * 2}px))">
+  {#if ring}<div class="coach-ring" class:guide={t.guide} style="left:{ring.x}px;top:{ring.y}px;width:{ring.w}px;height:{ring.h}px" aria-hidden="true"></div>{/if}
+  <div class="coach" class:guide={t.guide} role="status" aria-live="polite" bind:clientHeight={cardH} style="left:{pos.x}px;top:{pos.y}px;width:min({W}px, calc(100vw - {EDGE * 2}px))">
     <p>{padWords(t.text())}</p>
     <div class="coach-acts">
-      <button class="coach-skip" onclick={() => coach.skipAll()}>Skip tips</button>
-      <button class="btn quiet" onclick={() => coach.dismiss()}>Got it</button>
+      <button class="coach-skip" onclick={() => coach.skipAll()}>{t.guide ? 'Skip tutorial' : 'Skip tips'}</button>
+      {#if !t.guide}<button class="btn quiet" onclick={() => coach.dismiss()}>Got it</button>
+      {:else if t.info}<button class="btn primary" onclick={() => coach.dismiss()}>{t.next ?? 'Next'}</button>
+      {:else}<span class="coach-wait">{padWords('Do it to continue')}</span>{/if}
     </div>
   </div>
 {/if}
