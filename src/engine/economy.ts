@@ -9,7 +9,17 @@ import { settleBounty } from './bounty';
 /* ---------- tuning constants ---------- */
 export const REWARD = { base: 100, perPart: 40, capture: 60 };
 export const RARE = { chance: 0.08, captureChance: 0.12, pityStep: 0.03, pityGuarantee: 11 };
-export const reinforceCost = (lv: number): Cost => ({ coin: 80 * (lv + 1), hide: 2 * (lv + 1) });
+/** The monster a piece of gear is made from: the source of the first material in its recipe. Base gear (the
+ *  starter blade, maul, bow and jerkin; coin-only recipes) counts as Gorehorn gear. */
+export function gearSource(kind: 'w' | 'a', id: string): string {
+  const d = kind === 'w' ? WEAPONS[id] : ARMORS[id];
+  const c = (d as { cost?: Cost }).cost ?? (d as { craft?: Cost }).craft ?? {};
+  for (const k of Object.keys(c)) if (k !== 'coin') { const src = Object.values(MONSTERS).find(M => M.common === k || M.rare === k || M.parts.some(p => p.mat === k)); if (src) return src.id; }
+  return 'gorehorn';
+}
+/** Reinforcing (weapon rework, Nov 2026): coin plus the common material of the monster the gear comes from, so a
+ *  favourite weapon sends you back to hunt its monster (it used to be Gorehorn hide for everything). */
+export const reinforceCost = (lv: number, kind: 'w' | 'a' = 'w', id = 'blade'): Cost => ({ coin: 80 * (lv + 1), [MONSTERS[gearSource(kind, id)].common]: 2 * (lv + 1) });
 export const MAX_REINFORCE = 3;
 
 /* ---------- stats ---------- */
@@ -86,13 +96,13 @@ export interface Recipe { action: 'craft' | 'upgrade' | 'reinforce' | null; cost
 export function recipeOf(s: Save, kind: RecipeKind, id: string): Recipe {
   if (kind === 'w') {
     const d = WEAPONS[id];
-    if (s.weapons[id]) { const lv = s.weapons[id].lv; return lv < MAX_REINFORCE ? { action: 'reinforce', cost: reinforceCost(lv) } : { action: null, cost: null }; }
+    if (s.weapons[id]) { const lv = s.weapons[id].lv; return lv < MAX_REINFORCE ? { action: 'reinforce', cost: reinforceCost(lv, 'w', id) } : { action: null, cost: null }; }
     if (d.craft) return { action: 'craft', cost: d.craft };
     if (d.from && s.weapons[d.from]) return { action: 'upgrade', cost: d.cost! };
     return { action: null, cost: d.cost ?? null, locked: true };
   }
   if (kind === 'c') return s.charms[id] ? { action: null, cost: null } : { action: 'craft', cost: CHARMS[id].craft };
-  if (s.armors[id]) { const lv = s.armors[id].lv; return lv < MAX_REINFORCE ? { action: 'reinforce', cost: reinforceCost(lv) } : { action: null, cost: null }; }
+  if (s.armors[id]) { const lv = s.armors[id].lv; return lv < MAX_REINFORCE ? { action: 'reinforce', cost: reinforceCost(lv, 'a', id) } : { action: null, cost: null }; }
   return { action: 'craft', cost: ARMORS[id].craft };
 }
 
@@ -107,7 +117,7 @@ export function recipeState(s: Save, kind: RecipeKind, id: string): RecipeState 
   if (owned && !r.action) return { cls: 'owned', text: kind === 'c' ? 'Owned' : 'Owned · max' };
   const ready = !!r.cost && canPay(s, r.cost);
   if (owned) return ready ? { cls: 'ready', text: 'Owned · reinforce ready' } : { cls: 'owned', text: 'Owned' };
-  if (ready) return { cls: 'ready', text: r.action === 'upgrade' ? 'Upgrade ready' : 'Ready' };
+  if (ready) return { cls: 'ready', text: 'Ready' };
   const miss = missingCount(s, r.cost);
   return { cls: 'short', text: miss ? `Need ${miss} more` : 'Need coin' };
 }
@@ -122,10 +132,10 @@ export function forgeDo(s: Save, kind: RecipeKind, id: string): string | null {
     const d = WEAPONS[id];
     if (r.action === 'craft') { s.weapons[id] = { lv: 0 }; msg = `Crafted the ${d.name}.`; }
     if (r.action === 'upgrade') {
-      const from = d.from!, lv = s.weapons[from].lv;
-      delete s.weapons[from]; s.weapons[id] = { lv };
-      s.loadout.weapons = s.loadout.weapons.map(w => (w === from ? id : w));
-      msg = `The ${WEAPONS[from].name} is now the ${d.name}.`;
+      // Weapon rework (Nov 2026): crafting the next weapon in a line keeps the one before it (so every branch
+      // stays open) and starts the new one at +0. It only needs the previous weapon owned.
+      s.weapons[id] = { lv: 0 };
+      msg = `Crafted the ${d.name}. You keep your ${WEAPONS[d.from!].name}.`;
     }
     if (r.action === 'reinforce') { s.weapons[id].lv++; msg = `${d.name} reinforced to +${s.weapons[id].lv}.`; }
   } else if (kind === 'c') {

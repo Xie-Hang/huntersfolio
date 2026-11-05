@@ -148,14 +148,14 @@
         <!-- 4. Can I make it? Cost and action, close to the top -->
         {#if r.cost}
           <div>
-            <div class="label rule">{r.action === 'reinforce' ? `To reinforce to +${lv + 1}` : r.action === 'upgrade' ? 'To upgrade' : r.locked ? `To upgrade (once you own the ${E.WEAPONS[E.WEAPONS[sel].from!].name})` : 'To craft'}</div>
+            <div class="label rule">{r.action === 'reinforce' ? `To reinforce to +${lv + 1}` : r.action === 'upgrade' ? `To craft (from your ${E.WEAPONS[E.WEAPONS[sel].from!].name})` : r.locked ? `To craft (once you own the ${E.WEAPONS[E.WEAPONS[sel].from!].name})` : 'To craft'}</div>
             <Costs cost={r.cost} />
           </div>
         {/if}
         <div class="fd-acts">
           {#if r.action && r.cost}
             <button class="btn primary" data-sound data-coach="forge-act" disabled={!E.canPay(s, r.cost)} onclick={doIt}>
-              {r.action === 'craft' ? 'Craft' : r.action === 'upgrade' ? 'Upgrade' : `Reinforce to +${lv + 1}`}
+              {r.action === 'craft' || r.action === 'upgrade' ? 'Craft' : `Reinforce to +${lv + 1}`}
             </button>
           {:else if owned}
             <span class="pl">{kind === 'c' ? 'Owned. Equip it at the Hunt Board.' : 'Fully reinforced.'}</span>
@@ -166,7 +166,7 @@
           {#if r.action === 'upgrade'}
             {@const from = E.WEAPONS[sel].from!}
             {@const flv = E.lvOf(s.weapons, from)}
-            <span class="pl">Replaces your {E.WEAPONS[from].name}{flv ? `, keeps +${flv}` : ''}.</span>
+            <span class="pl">You keep your {E.WEAPONS[from].name}{flv ? ` (+${flv})` : ''}. The new weapon starts at +0.</span>
           {/if}
         </div>
         <div class="toast" aria-live="polite">{toast}</div>

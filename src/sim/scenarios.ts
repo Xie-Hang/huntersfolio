@@ -124,9 +124,9 @@ export function tier1Campaign(seed: number, policy: Policy, maxHunts = 80, tiers
  *  After a loss, farm the beaten monster that drops the most missing materials, then try again. Returns hunts
  *  to the first win of each monster and per tier. */
 export interface FullRun { hunts: number; turns: number; fails: number; firstWin: Record<string, number>; tierDone: Record<number, number>; done: boolean }
-/** forge rules to compare: 'now' (an upgrade replaces the old weapon and keeps its level; reinforcing costs Gorehorn
- *  hide), 'own' (crafting the next weapon keeps the old one and needs only to own it; the new one starts at +0;
- *  reinforcing costs the weapon's own monster's common material), 'max' (as 'own', but the old one must be at +3). */
+/** forge rules to compare: 'now' (the engine's rules; since the Nov 2026 weapon rework the same as 'own'), 'own'
+ *  (crafting the next weapon keeps the old one and needs only to own it; the new one starts at +0; reinforcing costs
+ *  the gear's own monster's common material), 'max' (as 'own', but the old one must be at +3; Mekkman's alternative). */
 export type ForgeRules = 'now' | 'own' | 'max';
 export function fullCampaign(seed: number, policy: Policy, maxHunts = 250, tiers: number[] = [1, 2, 3], opt: { reinforceTo?: number; rules?: ForgeRules } = {}): FullRun {
   const s = E.newSave();
@@ -137,7 +137,7 @@ export function fullCampaign(seed: number, policy: Policy, maxHunts = 250, tiers
   const beaten = (id: string) => (s.record[id]?.wins ?? 0) > 0;
   /** the monster a piece of gear is made from: the source of its first material (base gear: the Gorehorn) */
   const gearSrc = (kind: 'w' | 'a', id: string) => { const d = kind === 'w' ? E.WEAPONS[id] : E.ARMORS[id]; const c = (d as { cost?: Record<string, number> }).cost ?? (d as { craft?: Record<string, number> }).craft ?? {}; const m = Object.keys(c).find(k => k !== 'coin' && source[k]); return m ? source[m] : 'gorehorn'; };
-  const rcost = (kind: 'w' | 'a', id: string, lv: number): Record<string, number> => RULES === 'now' ? E.reinforceCost(lv) as Record<string, number> : { coin: 80 * (lv + 1), [E.MONSTERS[gearSrc(kind, id)].common]: 2 * (lv + 1) };
+  const rcost = (kind: 'w' | 'a', id: string, lv: number): Record<string, number> => RULES === 'now' ? E.reinforceCost(lv, kind, id) as Record<string, number> : { coin: 80 * (lv + 1), [E.MONSTERS[gearSrc(kind, id)].common]: 2 * (lv + 1) };
   const bag = (kind: 'w' | 'a') => (kind === 'w' ? s.weapons : s.armors);
   /** cost and readiness of the next forge action on this item under RULES */
   const recipe = (kind: 'w' | 'a', id: string): { act: 'craft' | 'upgrade' | 'reinforce' | null; cost: Record<string, number> } => {

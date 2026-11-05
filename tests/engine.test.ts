@@ -231,12 +231,22 @@ describe('hunt unlocks', () => {
 });
 
 describe('forge', () => {
-  it('an upgrade replaces its parent, keeps reinforcement and updates the loadout', () => {
+  it('crafting the next weapon keeps the one before it and starts at +0 (weapon rework)', () => {
     const s = starter(); s.coin = 1000; s.mats.tusk = 3; s.mats.hide = 2; s.weapons.maul.lv = 2;
     expect(E.forgeDo(s, 'w', 'tusk')).toMatch(/Tuskbreaker/);
-    expect(s.weapons.maul).toBeUndefined();
-    expect(s.weapons.tusk.lv).toBe(2);
-    expect(s.loadout.weapons).toContain('tusk');
+    expect(s.weapons.maul.lv).toBe(2);
+    expect(s.weapons.tusk.lv).toBe(0);
+  });
+  it('reinforcing costs the common material of the monster the gear comes from', () => {
+    expect(E.recipeOf({ ...starter(), weapons: { blade: { lv: 0 }, maul: { lv: 0 }, whelkedge: { lv: 1 } } } as never, 'w', 'whelkedge').cost).toEqual({ coin: 160, [E.MONSTERS.emberwhelk.common]: 4 });
+    expect(E.recipeOf(starter(), 'w', 'blade').cost).toEqual({ coin: 80, hide: 2 });
+  });
+  it('old saves get back the weapons an upgrade used to consume (save v8)', () => {
+    const old = { ...E.newSave(), version: 7, weapons: { blade: { lv: 1 }, crusher: { lv: 2 } } };
+    const s = E.loadSave(JSON.parse(JSON.stringify(old)));
+    expect(s.weapons.crusher.lv).toBe(2);
+    expect(s.weapons.tusk.lv).toBe(0);
+    expect(s.weapons.maul.lv).toBe(0);
   });
   it('sell surplus keeps what recipes still need', () => {
     const s = starter(); s.mats.tusk = 5;

@@ -81,7 +81,8 @@ describe('progression pacing (Gorehorn)', () => {
   const at = (k: string) => median(C.map(c => c.t[k]).filter((x): x is number => x != null));
   it('first upgrade (Tuskbreaker) around hunt 2–3', () => { expect(at('tusk')).toBeGreaterThanOrEqual(2); expect(at('tusk')).toBeLessThanOrEqual(3); });
   it('Gorehorn Crusher (needs the rare) around hunt 7–13', () => { expect(at('crusher')).toBeGreaterThanOrEqual(7); expect(at('crusher')).toBeLessThanOrEqual(13); });
-  it('everything at +3 around hunt 12–22', () => { expect(at('done')).toBeGreaterThanOrEqual(12); expect(at('done')).toBeLessThanOrEqual(22); });
+  // weapon rework (Nov 2026): a new weapon starts at +0, so maxing the Gorehorn set takes a few more hunts
+  it('everything at +3 around hunt 14–32', () => { expect(at('done')).toBeGreaterThanOrEqual(14); expect(at('done')).toBeLessThanOrEqual(32); });
 });
 
 describe('Expose (the bow sets up breaks)', () => {

@@ -7,7 +7,7 @@ import { ARMORS } from './data/gear';
 import { MONSTERS } from './data/monsters';
 import { BOUNTIES } from './data/bounties';
 
-export const SAVE_VERSION = 7;
+export const SAVE_VERSION = 8;
 
 export function newSave(): Save {
   return {
@@ -51,7 +51,14 @@ const MIGRATIONS: ((s: any) => any)[] = [
   // v5 → v6: achievements (4 Nov 2026). Start empty; the ones a save already qualifies for are awarded on load.
   s => ({ ...s, achievements: [], version: 6 }),
   // v6 → v7: the bounty board (5 Nov 2026). None done yet, none taken.
-  s => ({ ...s, bounties: {}, loadout: { ...(s.loadout || {}), bounty: null }, version: 7 })
+  s => ({ ...s, bounties: {}, loadout: { ...(s.loadout || {}), bounty: null }, version: 7 }),
+  // v7 → v8: weapon rework (5 Nov 2026). Crafting the next weapon no longer consumes the one before it, so give
+  // back every earlier weapon in the line of each weapon owned, at +0 (levels on owned weapons are kept).
+  s => {
+    const weapons = { ...(s.weapons || {}) };
+    for (const id of Object.keys(weapons)) { let f = WEAPONS[id]?.from; while (f) { weapons[f] ??= { lv: 0 }; f = WEAPONS[f]?.from; } }
+    return { ...s, weapons, version: 8 };
+  }
 ];
 
 /** Turn anything loaded from storage into a valid, current Save. Unknown or broken data gives a fresh save. */
