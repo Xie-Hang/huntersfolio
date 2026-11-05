@@ -81,3 +81,14 @@ describe('Weapon coverage', () => {
       expect(Object.values(E.WEAPONS).some(w => w.type === type && w.elem === el && (w.tier ?? 1) === t), `${type} ${el} tier ${t}`).toBe(true);
   });
 });
+
+describe('Weapon lines', () => {
+  it('every elemental line has five steps: common, rare (Ashfall), Mirewood, Stormspire, apex', () => {
+    const apex = Object.values(E.WEAPONS).filter(w => w.tier === 4);
+    for (const w of apex) {
+      const chain: number[] = []; let id: string | undefined = w.id;
+      while (id && E.WEAPONS[id]?.elem) { chain.unshift(E.WEAPONS[id].mult); id = E.WEAPONS[id].from; }
+      expect(chain, w.name).toEqual([1.1, 1.35, 1.6, 1.9, 2.1]);
+    }
+  });
+});

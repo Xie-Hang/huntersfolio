@@ -185,7 +185,7 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .fnode[aria-current="true"]{background:var(--raise);box-shadow:inset 3px 0 0 var(--gold)}
 .fnode .nm{font-family:var(--f-body);font-weight:600;font-size:var(--fs-md);display:inline-flex;align-items:center;gap:6px}
 .fnode .ind{color:var(--line-2);margin-right:6px}
-.fnode.d1 .nmwrap{padding-left:18px}.fnode.d2 .nmwrap{padding-left:36px}.fnode.d3 .nmwrap{padding-left:54px}.fnode.d4 .nmwrap{padding-left:72px}
+.fnode.d1 .nmwrap{padding-left:18px}.fnode.d2 .nmwrap{padding-left:36px}.fnode.d3 .nmwrap{padding-left:54px}.fnode.d4 .nmwrap{padding-left:72px}.fnode.d5 .nmwrap{padding-left:90px}
 .st{font-size:var(--fs-sm);white-space:nowrap;display:flex;align-items:center;gap:6px}
 .st i{width:8px;height:8px;border-radius:50%;display:inline-block}
 .st.owned{color:var(--gold-hi)} .st.owned i{background:var(--gold)}
