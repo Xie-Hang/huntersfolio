@@ -46,6 +46,8 @@
       <div class="plate"><Plate mon={h.mid} hunt={h} scene /></div>
       <Telegraph />
     </div>
+    <!-- meters and condition badges only matter mid-fight: gone on the result card (Mekkman, Nov 2026) -->
+    {#if !h.over}
     <div class="metarow">
       <div class="meters">
     {#if meter}
@@ -89,6 +91,7 @@
         </div>
       {/if}
     </div>
+    {/if}
   </div>
   <div class="fx">
     {#each game.floats.filter(f => f.at === 'mon') as f (f.id)}<span class="float {f.cls}">{f.text}</span>{/each}
