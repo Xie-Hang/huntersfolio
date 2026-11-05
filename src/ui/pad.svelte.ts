@@ -157,6 +157,12 @@ function afterPress() {
 }
 
 /** Start listening for pads. Safe to call once at startup; costs nothing until a pad connects. */
+/** Connected pads, or none where the page isn't allowed to read them (an embedded frame can block the
+ *  gamepad feature, and getGamepads then throws). Never let a missing controller break the game. */
+function readPads(): Gamepad[] {
+  try { return [...navigator.getGamepads()].filter((p): p is Gamepad => !!p && p.connected); } catch { return []; }
+}
+
 export function startPad() {
   if (typeof navigator === 'undefined' || !navigator.getGamepads) return;
   const held = new Map<number, number>(); // button → next repeat time
@@ -164,7 +170,7 @@ export function startPad() {
   const DIRS = [B.UP, B.DOWN, B.LEFT, B.RIGHT] as number[];
   function frame(t: number) {
     raf = 0;
-    const pads = [...navigator.getGamepads()].filter((p): p is Gamepad => !!p && p.connected);
+    const pads = readPads();
     if (!pads.length) { held.clear(); return; }
     const down = new Set<number>();
     for (const p of pads) {
@@ -193,5 +199,5 @@ export function startPad() {
   window.addEventListener('pointermove', () => setMode('mouse'), { passive: true });
   window.addEventListener('pointerdown', () => setMode('mouse'), { passive: true });
   window.addEventListener('keydown', e => { if (e.isTrusted) setMode('mouse'); });
-  if ([...navigator.getGamepads()].some(Boolean)) wake();
+  if (readPads().length) wake();
 }
