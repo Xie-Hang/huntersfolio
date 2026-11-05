@@ -16,15 +16,15 @@ function saveFor(s: Setup): Save {
   return save;
 }
 
-export interface MatchupStats { win: number; captured: number; turns: number; hpLeft: number; parts: number; partRate: Record<string, number> }
+export interface MatchupStats { win: number; captured: number; turns: number; hpLeft: number; parts: number; partRate: Record<string, number>; blocked: number }
 
 export function matchup(setup: Setup, policy: Policy, n: number, seed = 1): MatchupStats {
-  let win = 0, captured = 0, turns = 0, hpLeft = 0, parts = 0;
+  let win = 0, captured = 0, turns = 0, hpLeft = 0, parts = 0, guarded = 0, taken = 0;
   const partRate: Record<string, number> = {};
   for (let i = 0; i < n; i++) {
     const save = saveFor(setup);
     const h = playHunt(E.startHunt(save, seed + i * 7919), policy);
-    turns += h.turn;
+    turns += h.turn; guarded += h.stats.guarded; taken += h.stats.taken;
     if (h.over === 'win') {
       win++; if (h.captured) captured++;
       hpLeft += h.php / h.pmax;
@@ -32,7 +32,7 @@ export function matchup(setup: Setup, policy: Policy, n: number, seed = 1): Matc
     }
   }
   for (const k of Object.keys(partRate)) partRate[k] /= Math.max(1, win);
-  return { win: win / n, captured: captured / n, turns: turns / n, hpLeft: hpLeft / Math.max(1, win), parts: parts / Math.max(1, win), partRate };
+  return { win: win / n, captured: captured / n, turns: turns / n, hpLeft: hpLeft / Math.max(1, win), parts: parts / Math.max(1, win), partRate, blocked: guarded / Math.max(1, guarded + taken) };
 }
 
 /** A player who hunts the Gorehorn, crafts in a fixed priority order and restocks salves. Returns the hunt number each milestone was reached. */

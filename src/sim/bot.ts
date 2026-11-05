@@ -12,7 +12,7 @@ import * as E from '../engine';
 import { nextRandom } from '../engine/rng';
 
 export type Skill = 'skilled' | 'casual';
-export interface Policy { skill: Skill; capture: boolean; goal?: string[]; noCharge?: boolean }
+export interface Policy { skill: Skill; capture: boolean; goal?: string[]; noCharge?: boolean; noGuard?: boolean }
 
 const clone = (h: Hunt): Hunt => JSON.parse(JSON.stringify(h));
 const ICE_VALUE = 15;
@@ -97,10 +97,10 @@ function bestPlan(h: Hunt, p: Policy): Plan {
     const usedC = C, usedT = T; let rc = usedC, rt = usedT;
     const left = free.filter(i => { const f = h.dice[i].face; if (f === 'C' && rc > 0) { rc--; return false; } if (f === 'T' && rt > 0) { rt--; return false; } return true; })
       .sort((x, y) => (h.dice[x].face === 'B' ? 0 : 1) - (h.dice[y].face === 'B' ? 0 : 1));
-    for (let g = 0; g <= left.length; g++) for (const ch of [false, true]) {
+    for (let g = 0; g <= (p.noGuard ? 0 : left.length); g++) for (const ch of [false, true]) {
       const cd = E.chargeDice(h);
       if (ch && (p.skill === 'casual' || p.noCharge || left.length - g < cd || inc >= E.CHARGE_BREAK)) continue;
-      if (p.skill === 'casual' && g !== (inc >= 40 ? left.length : 0)) continue;
+      if (p.skill === 'casual' && !p.noGuard && g !== (inc >= 40 ? left.length : 0)) continue;
       const plan = { moves, guard: left.slice(0, g), charge: ch ? left.slice(g, g + cd) : [] };
       const s = evaluate(h, plan, p);
       if (s != null && (!best || s > best.score)) best = { ...plan, score: s };
