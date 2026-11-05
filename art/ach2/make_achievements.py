@@ -312,6 +312,34 @@ ICONS.update({
     'BARE_HANDED': lambda: plate_sz('sov_rest', -30, 92, 250, (888, 510)) + no_salve(188, 74),
 })
 
+# ---------- the Gloamhollow (full game, Nov 2026) ----------
+def crossed(cx, cy, body):
+    # a ring with a slash (a "no" sign) round the motif, so the motif itself stays readable
+    return body + f'<circle cx="{cx}" cy="{cy}" r="42" fill="none" stroke="{INK}" stroke-width="13"/><circle cx="{cx}" cy="{cy}" r="42" fill="none" stroke="{EMBER}" stroke-width="6"/><path d="M{cx - 29} {cy - 29} L{cx + 29} {cy + 29}" stroke="{INK}" stroke-width="13" stroke-linecap="round"/><path d="M{cx - 29} {cy - 29} L{cx + 29} {cy + 29}" stroke="{EMBER}" stroke-width="6" stroke-linecap="round"/>'
+
+
+def spores(cx, cy):
+    d = ''.join(f'<path d="M{cx + dx} {cy + dy - 12} l12 12 l-12 12 l-12 -12 z" fill="#9fc062" stroke="{INK}" stroke-width="4" stroke-linejoin="round"/>' for dx, dy in [(-12, -8), (14, -2), (0, 18)])
+    return crossed(cx, cy, d)
+
+
+def drop(cx, cy):
+    d = f'<path d="M{cx} {cy - 30} C{cx + 10} {cy - 14} {cx + 22} {cy - 2} {cx + 22} {cy + 10} A22 22 0 0 1 {cx - 22} {cy + 10} C{cx - 22} {cy - 2} {cx - 10} {cy - 14} {cx} {cy - 30} Z" fill="#c4565c" stroke="{INK}" stroke-width="5" stroke-linejoin="round"/>'
+    return crossed(cx, cy, d)
+
+
+def earthed(cx, cy):
+    return (f'<path d="M{cx + 8} {cy - 44} L{cx - 18} {cy + 2} H{cx} L{cx - 10} {cy + 36} L{cx + 22} {cy - 10} H{cx + 4} Z" fill="#f0dd6e" stroke="{INK}" stroke-width="5" stroke-linejoin="round"/>'
+            f'<path d="M{cx - 34} {cy + 40} H{cx + 34} M{cx - 22} {cy + 50} H{cx + 22} M{cx - 10} {cy + 60} H{cx + 10}" stroke="{INK}" stroke-width="7" stroke-linecap="round"/>')
+
+
+ICONS.update({
+    'CLEAN_BILL': lambda: plate_sz('rot_idle', -6, 100, 230, V, (60, 40, 790, 450)) + spores(66, 70),
+    'EARTHED': lambda: plate_sz('arc_idle', 20, 100, 230, V, (60, 40, 790, 450)) + earthed(66, 74),
+    'BLOODLESS': lambda: plate_sz('fang_idle', 20, 104, 230, V, (60, 40, 790, 450)) + drop(66, 70),
+    'GLOAMHOLLOW': lambda: ''.join(plate_sz(n, x, y, 78, V, (60, 40, 790, 450)) for n, x, y in [('rot_idle', 12, 60), ('arc_idle', 89, 60), ('fang_idle', 166, 60), ('blight_idle', 12, 132), ('glare_idle', 89, 132), ('grave_idle', 166, 132)]),
+})
+
 for aid, fn in ICONS.items():
     body = fn()
     (SVG / f'{aid}.svg').write_text(frame(body, True))
