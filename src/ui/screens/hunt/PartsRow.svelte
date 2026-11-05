@@ -14,7 +14,7 @@
 
 <section class="panel partspanel" aria-label="Parts">
     <div class="ph"><span class="label">Aim at a part · {input.mode === 'pad' ? 'LB / RB' : 'click one'}</span><span class="label aimhint">{#if tp}<b>{tp.name}:</b> {tn ? tn.hint : m.parts[tp.id].broken ? 'Broken. Hits here still damage it.' : tp.hint}{:else}{input.mode === 'pad' ? 'LB / RB or select a part to aim' : 'Click a part to aim at it'}{/if}</span></div>
-    <div class="parts row" data-coach="parts" style="--n:{M.parts.length}">
+    <div class="parts row" class:four={M.parts.length >= 4} data-coach="parts" style="--n:{M.parts.length}">
       {#each M.parts as p (p.id)}
         {@const st = m.parts[p.id]}
         {@const on = h.target === p.id}
@@ -47,6 +47,9 @@
   .pline .chip { flex: none; white-space: nowrap; padding-block: 1px; line-height: 1.35; }
   .pline:first-child { line-height: 1.2; }
   .pline .pbar { flex: 1 1 40px; min-width: 30px; }
+  /* four parts (the Wanderer Sovereign) still fit on one row */
+  .parts.row.four { flex-wrap: nowrap; }
+  .parts.row.four .part { flex: 1 1 0; }
   .aimhint { text-align: right; color: var(--soft); }
   .aimhint b { color: var(--gold-hi); font-weight: 600; }
 </style>

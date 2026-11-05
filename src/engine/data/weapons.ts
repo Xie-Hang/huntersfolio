@@ -75,6 +75,23 @@ list.push(
   { id: 'hydrabow', tier: 3, name: 'Three-Neck Bow', type: 'Pierce', elem: 'Frost', kind: 'Bow', note: 'Strung with neck sinew. It draws heavier than it looks.', moves: BOW, mult: 1.9, from: 'mirrorbow', cost: { coin: 1100, hydrahorn: 2, hydracrown: 1, hydrascale: 4 } },
   { id: 'gillbow', tier: 2, name: 'Gillfire Bow', type: 'Pierce', elem: 'Ember', kind: 'Bow', note: 'Strung with dried whelk gill. Its arrows smoulder.', moves: BOW, mult: 1.6, from: 'ventfire', cost: { coin: 700, whelkgill: 2, whelkshell: 1, whelkscale: 3 } }
 );
+// The apex weapons (Mekkman, 6 Nov 2026): blade, maul and bow in each of the four elements, ×2.1. Each is crafted
+// from the Stormspire weapon of the same type and element, plus the material of the Sovereign part that matches the
+// element (tusks Stone, wings Gale, vents Ember, tail Frost), so which stance you tear out decides what you farm.
+// There's no Gale maul line, so the Gale Sovereign Maul grows from the Gorehorn Crusher.
+{
+  const PART: Record<string, string> = { Stone: 'sovtusk', Gale: 'sovwing', Ember: 'sovvent', Frost: 'sovtail' };
+  const BASE: Record<string, Record<DamageType, string>> = {
+    Stone: { Cut: 'monolithblade', Blunt: 'monolithhammer', Pierce: 'monolithbow' },
+    Gale: { Cut: 'thunderblade', Blunt: 'crusher', Pierce: 'stormbow' },
+    Ember: { Cut: 'slagedge', Blunt: 'slaghammer', Pierce: 'slagbow' },
+    Frost: { Cut: 'hydrablade', Blunt: 'hydrahammer', Pierce: 'hydrabow' }
+  };
+  const ADJ: Record<string, string> = { Stone: 'Tusked', Gale: 'Winged', Ember: 'Molten', Frost: 'Rimed' };
+  const NOTE: Record<string, string> = { Stone: 'Set with a tusk torn from the Sovereign. It hits like a charge.', Gale: 'Feathered with a swallowed wing. It never seems to weigh anything.', Ember: 'A swallowed vent glows in it, breathing.', Frost: 'Bound with the Sovereign’s frozen tail. Frost creeps up your arm.' };
+  for (const el of ['Stone', 'Gale', 'Ember', 'Frost'] as const) for (const [type, kind, moves, nm] of [['Cut', el === 'Gale' ? 'Curved blade' : 'Greatsword', el === 'Gale' ? GALE : BLADE, 'Sovereign Blade'], ['Blunt', 'Maul', MAUL, 'Sovereign Maul'], ['Pierce', 'Bow', BOW, 'Sovereign Bow']] as const)
+    list.push({ id: `sov${type.toLowerCase()}${el.toLowerCase()}`, tier: 4, name: `${ADJ[el]} ${nm}`, type, elem: el, kind, note: NOTE[el], moves: moves as Move[], mult: 2.1, from: BASE[el][type], cost: { coin: 1600, [PART[el]]: 3, sovgel: 4 } });
+}
 export const WEAPONS: Record<string, WeaponDef> = Object.fromEntries(list.filter(w => (w.tier ?? 1) <= MAX_TIER).map(w => [w.id, w]));
 
 /** Forge trees: [weapon id, depth] in display order. Built from each weapon's `from`, so every weapon in this

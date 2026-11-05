@@ -137,6 +137,13 @@
     squallcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${GALE}" ${S}/><path d="M16 26 q8 -4 16 0 M17 32 q7 -3 14 0" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>`,
     shroudcharm: `${charmTop}${feather(FROST).replace('M24 5', 'M24 11')}`,
     quakecharm: `${charmTop}<path d="M12 22 L24 14 L36 22 L32 40 L16 40 Z" fill="${STONEC}" ${S}/><path d="M18 28 l4 4 l4 -4 l4 4" fill="none" stroke="${INK}" stroke-width="2.4"/>`,
+    sovgel: `<path d="M8 40 C6 28 14 12 24 10 C34 12 42 28 40 40 C34 44 14 44 8 40 Z" fill="#d9e3c8" ${S}/><path d="M16 22 C19 17 24 15 28 16" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`,
+    sovtusk: fang(GOLDHI).replace('fill="${GOLDHI}"', 'fill="${GOLDHI}"') + `<circle cx="34" cy="38" r="5" fill="#d9e3c8" ${S} stroke-width="2"/>`,
+    sovwing: feather(BONE, true) + `<circle cx="12" cy="40" r="5" fill="#d9e3c8" ${S} stroke-width="2"/>`,
+    sovvent: `<path d="M14 40 L18 12 H30 L34 40 Z" fill="${BONE2}" ${S}/><ellipse cx="24" cy="12" rx="6" ry="3" fill="${EMBER}" ${S} stroke-width="2.2"/><circle cx="36" cy="38" r="5" fill="#d9e3c8" ${S} stroke-width="2"/>`,
+    sovtail: `<path d="M8 40 C14 30 20 22 30 16" fill="none" stroke="${INK}" stroke-width="10" stroke-linecap="round"/><path d="M8 40 C14 30 20 22 30 16" fill="none" stroke="${BONE2}" stroke-width="5" stroke-linecap="round"/><path d="M28 18 L40 6 L34 22 Z" fill="${FROST}" ${S} stroke-width="2.4"/>`,
+    sovheart: gem('#d9e3c8', GOLDHI),
+    sovcharm: `${charmTop}<path d="M12 40 C10 30 16 18 24 16 C32 18 38 30 36 40 C30 43 18 43 12 40 Z" fill="#d9e3c8" ${S}/><path d="M18 24 L22 18 L26 24 L30 18" fill="none" stroke="${GOLDHI}" stroke-width="2.6" stroke-linecap="round"/>`,
     ashcharm: `${charmTop}<path d="M24 12 L33 26 L24 44 L15 26 Z" fill="${EMBER}" ${S}/><path d="M24 16 V40 M19 26 H29" stroke="${GOLDHI}" stroke-width="2"/>`
   };
   const body = $derived(ICONS[id]);

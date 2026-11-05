@@ -153,9 +153,12 @@ export function elemPart(h: Hunt, info = intentInfo(h)): number {
   return Math.max(0, Math.min(info.dmg, e));
 }
 /** Damage of an attack after your armor's resistance: only the elemental part is reduced. */
+/** the monster's element right now (the Wanderer Sovereign's changes with its stance) */
+export const monElem = (h: Hunt) => def(h).elemOf?.(h) ?? def(h).elem;
 export function afterResist(h: Hunt, info = intentInfo(h)) {
-  const elem = elemPart(h, info), phys = info.dmg - elem, resisted = h.arm.resist === def(h).elem && elem > 0;
-  return { phys, elem, resisted, wearsResist: h.arm.resist === def(h).elem, after: phys + (resisted ? Math.round(elem * GUARD_RESIST) : elem) };
+  const me = monElem(h), wears = h.arm.resist === me || !!h.arm.adaptive;
+  const elem = elemPart(h, info), phys = info.dmg - elem, resisted = wears && elem > 0;
+  return { phys, elem, resisted, wearsResist: wears, after: phys + (resisted ? Math.round(elem * GUARD_RESIST) : elem) };
 }
 /** What the next monster action will do to you right now, given your guard. */
 export function incoming(h: Hunt) {
@@ -249,7 +252,7 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
   const charged = h.chargeReady;
   if (h.chargeReady) { dmg *= 2; h.chargeReady = false; notes.push('charged ×2'); }
   if (h.whet) { dmg = Math.round(dmg * (1 + h.whet)); notes.push(`whetted +${Math.round(h.whet * 100)}%`); h.whet = 0; }
-  const em = elemMult(w.elem, h.mid);
+  const em = elemMult(w.elem, h.mid, h);
   if (em !== 1) { dmg = Math.round(dmg * em); notes.push(em > 1 ? 'weakness ×1.5' : 'resisted ×0.75'); }
   if (airborneHalf(h, w)) { dmg = Math.round(dmg / 2); notes.push('airborne ½'); }
   if (MD.flier && !m.air && charmFx(h) === 'groundHit') { dmg = Math.round(dmg * GROUND_HIT); notes.push('Shroud Charm +15%'); }
@@ -285,6 +288,7 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
       if (p.hp === 0) {
         p.broken = true; p.cracks = (p.cracks ?? 0) + 1; h.stats.broken++; broke = true; log(h, pdef.brk, 'ember');
         { const t = MD.onBreak?.(h, h.target, w); if (t) log(h, t, 'gold'); }
+        if (charmFx(h) === 'breakWhet') { h.whet = Math.max(h.whet, 0.5); log(h, 'Sovereign Charm: your next hit deals +50%.', 'gold'); }
         if (charmFx(h) === 'breakFree') { const d = h.dice.find(x => x.used === SHAKEN || x.used === FROZEN); if (d) { d.used = null; log(h, 'Quake Charm: a locked die comes free.', 'gold'); } }
         if (charmFx(h) === 'salvage') { const heal = Math.min(15, h.pmax - h.php); h.php += heal; h.rerolls++; log(h, `Salvager’s Charm: +${heal} HP, +1 reroll.`, 'gold'); }
         if (h.arm.breakHeal) { const heal = Math.min(25, h.pmax - h.php); h.php += heal; h.rerolls++; log(h, `${h.arm.name}: +${heal} HP, +1 reroll.`, 'gold'); }
@@ -431,7 +435,7 @@ export function endTurn(h: Hunt): TurnResult {
       taken = Math.max(0, raw - g - (h.arm.ward ?? 0)); landed = true;
       const blocked = raw - taken;
       h.php = Math.max(0, h.php - taken); h.stats.taken += taken; h.stats.guarded += blocked;
-      log(h, `${info.name} hits you for ${taken}${blocked ? ` (${blocked} blocked${info.halfGuard && !h.arm.steady ? ', guard halved' : ''})` : ''}${res ? ` (${MD.elem} resisted)` : ar.elem === 0 && ar.wearsResist ? ' (physical: your armor\u2019s resist doesn\u2019t apply)' : ''}.`, taken >= CHARGE_BREAK ? 'ember' : '');
+      log(h, `${info.name} hits you for ${taken}${blocked ? ` (${blocked} blocked${info.halfGuard && !h.arm.steady ? ', guard halved' : ''})` : ''}${res ? ` (${monElem(h)} resisted)` : ar.elem === 0 && ar.wearsResist ? ' (physical: your armor\u2019s resist doesn\u2019t apply)' : ''}.`, taken >= CHARGE_BREAK ? 'ember' : '');
       if (h.chargePending && taken >= CHARGE_BREAK) { h.chargePending = false; log(h, 'The hit breaks your focus. Your charge is lost.', 'ember'); }
     }
   }

@@ -25,14 +25,23 @@
     <div><b>{r.captures}</b><span>Captures</span></div>
     <div><b>{breaks}</b><span>Parts broken</span></div>
   </div>
+  {#if M.elemOf}
+  <div class="trio">
+    <div><span>Element</span><b>By stance</b></div>
+    <div><span>Weakness</span><b class="good">Changes</b></div>
+    <div><span>Resists</span><b class="bad">Changes</b></div>
+  </div>
+  {:else}
   <div class="trio">
     <div><span>Element</span><b><Elem e={M.elem} />{M.elem}</b></div>
     <div><span>Weakness</span><b class="good"><Elem e={M.weak} />{M.weak} ×1.5</b></div>
     <div><span>Resists</span><b class="bad"><Elem e={M.resist} />{M.resist} ×0.75</b></div>
   </div>
+  {/if}
   <dl class="facts">
     <dt>Habits</dt><dd>{M.habits}</dd>
-    {#if M.elemental?.length}<dt>{M.elem} attacks</dt><dd>{M.elemental.join(', ')}. Its other attacks are physical: armor that resists {M.elem} only cuts these.</dd>{/if}
+    {#if M.elemOf}<dt>Stances</dt><dd>Stone (weak to Gale), Gale (weak to Frost), Ember (weak to Stone), Frost (weak to Ember). Each stance's big attack is of that element: Sovereign Charge, Wing Dive, Caldera Eruption, Glacier Sweep.</dd>
+    {:else if M.elemental?.length}<dt>{M.elem} attacks</dt><dd>{M.elemental.join(', ')}. Its other attacks are physical: armor that resists {M.elem} only cuts these.</dd>{/if}
     <dt>Reward</dt><dd><b>{E.REWARD.base} coin</b>, +{E.REWARD.perPart} per part broken, +{E.REWARD.capture} for a capture.</dd>
   </dl>
   {#if bounties.length && beaten}

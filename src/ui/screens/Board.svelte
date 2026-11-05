@@ -58,7 +58,7 @@
             <span class="thumb" aria-hidden="true"><Plate mon={M.id} /></span>
             <span>
               <span class="nm">{M.short}</span>
-              <span class="meta"><span><Elem e={M.elem} />{M.elem}</span><span>Weak: {M.weak}</span>{#if open}<span class={r.wins ? '' : 'new'}>{r.wins ? `Hunted ×${r.wins}` : 'Not yet hunted'}</span>{#if E.BOUNTIES_ON && r.wins}{@const bs = E.bountiesFor(M.id)}<span class:gold={game.save.loadout.bounty && E.BOUNTIES[game.save.loadout.bounty]?.mon === M.id}>Bounties {bs.filter(b => game.save.bounties[b.id]).length}/{bs.length}</span>{/if}{:else}<span>Locked · {E.unlockHint(M.id)}</span>{/if}</span>
+              <span class="meta"><span><Elem e={M.elem} />{M.elem}</span><span>{M.elemOf ? 'Weakness changes' : `Weak: ${M.weak}`}</span>{#if open}<span class={r.wins ? '' : 'new'}>{r.wins ? `Hunted ×${r.wins}` : 'Not yet hunted'}</span>{#if E.BOUNTIES_ON && r.wins}{@const bs = E.bountiesFor(M.id)}<span class:gold={game.save.loadout.bounty && E.BOUNTIES[game.save.loadout.bounty]?.mon === M.id}>Bounties {bs.filter(b => game.save.bounties[b.id]).length}/{bs.length}</span>{/if}{:else}<span>Locked · {E.unlockHint(M.id)}</span>{/if}</span>
             </span>
           </button>
         {/each}

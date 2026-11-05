@@ -48,6 +48,8 @@ if (EDITION === 'full') ACHIEVEMENTS.push(
   { id: 'TWO_HEADS', name: 'Two heads down', desc: 'Set both of the Duskheron’s heads reeling in one hunt.', hunt: h => !!h.feats?.includes('reelboth') },
   { id: 'FIRST_BOUNTY', name: 'Bounty hunter', desc: 'Complete a bounty.', save: s => Object.keys(s.bounties).length > 0 },
   { id: 'RIDGE_CHANGED', name: 'The ridge, changed', desc: 'Beat all four changed Ashfall Ridge monsters.', save: s => changed().length > 0 && changed().every(id => (s.record[id]?.wins ?? 0) > 0) },
+  { id: 'SOVEREIGN', name: 'Sovereign', desc: 'Beat the Wanderer Sovereign.', save: s => !!MONSTERS.sovereign && (s.record.sovereign?.wins ?? 0) > 0 },
+  { id: 'BARE_HANDED', name: 'Bare-handed', desc: 'Beat the Wanderer Sovereign without using an item.', hunt: h => h.mid === 'sovereign' && h.over === 'win' && h.itemCharges === h.carried },
   { id: 'STORMSPIRE_CLEARED', name: 'Stormspire', desc: 'Beat every monster on the Stormspire.', save: s => tier3().length > 0 && tier3().every(id => (s.record[id]?.wins ?? 0) > 0) },
   { id: 'QUENCHED', name: 'Quenched', desc: 'Shatter the Slagwyrm’s armour while it stokes.', hunt: h => !!h.feats?.includes('shatterslag') },
   { id: 'SEARED_SHUT', name: 'Seared shut', desc: 'Seal all three of the Gorhydra’s stumps in one hunt.', hunt: h => !!h.feats?.includes('sealall') },

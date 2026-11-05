@@ -22,6 +22,8 @@ armors.push({ id: 'squallcoat', tier: 2.5, name: 'Squallhide Coat', hp: 225, gua
 armors.push({ id: 'rimemantle', tier: 2.5, name: 'Rimeplume Mantle', hp: 210, guard: 10, rerolls: 3, resist: 'Frost', perk: 'Resists Frost (−30%). Your first weapon swap each hunt costs no die.', swapOnce: true, craft: { coin: 750, rimeplume: 4, rimepinion: 2 } });
 armors.push({ id: 'quakemail', tier: 2.5, name: 'Quakestone Plate', hp: 235, guard: 10, rerolls: 2, resist: 'Stone', perk: 'Resists Stone (−30%). Tremors can’t shake your dice loose.', steadyfoot: true, craft: { coin: 750, quakescale: 4, quakeclaw: 2 } });
 armors.push({ id: 'ashcoat', tier: 2.5, name: 'Ashscale Coat', hp: 220, guard: 10, rerolls: 2, resist: 'Ember', perk: 'Resists Ember (−30%). Hot scales and molten shells can’t burn you.', burnproof: true, craft: { coin: 750, ashscale: 4, ashfang: 2 } });
+// the apex
+armors.push({ id: 'sovmantle', tier: 4, name: 'Sovereign Mantle', hp: 260, guard: 12, rerolls: 3, resist: null, perk: 'Resists whatever element the monster is attacking with (−30%).', adaptive: true, craft: { coin: 1400, sovgel: 6, sovheart: 1 } });
 export const ARMORS: Record<string, ArmorDef> = Object.fromEntries(armors.filter(inEdition).map(a => [a.id, a]));
 
 const items: ItemDef[] = [
@@ -62,6 +64,7 @@ charms.push({ id: 'squallcharm', tier: 2.5, name: 'Squall Charm', src: 'Squallho
 charms.push({ id: 'shroudcharm', tier: 2.5, name: 'Shroud Charm', src: 'Rimeshrike', perk: 'Hits on a flier while it’s on the ground deal +15%.', effect: 'groundHit', craft: { coin: 175, rimecrest: 1, rimeplume: 2 } });
 charms.push({ id: 'quakecharm', tier: 2.5, name: 'Quake Charm', src: 'Quakeback', perk: 'Breaking a part frees a frozen or shaken die.', effect: 'breakFree', craft: { coin: 175, backridge: 1, quakescale: 2 } });
 charms.push({ id: 'ashcharm', tier: 2.5, name: 'Ash Charm', src: 'Ashtail', perk: 'Pierce hits clear 1 more layer of ice or scales.', effect: 'pierceStrip', craft: { coin: 175, emberbarb: 1, ashscale: 2 } });
+charms.push({ id: 'sovcharm', tier: 4, name: 'Sovereign Charm', src: 'Wanderer Sovereign', perk: 'Breaking a part makes your next hit deal +50%.', effect: 'breakWhet', craft: { coin: 300, sovgel: 4 } });
 export const CHARMS: Record<string, CharmDef> = Object.fromEntries(charms.filter(inEdition).map(c => [c.id, c]));
 
 const mats: MaterialDef[] = [
@@ -149,6 +152,14 @@ mats.push(
   { id: 'ashmantle', tier: 2.5, base: 'Mantle Ember', src: 'Ashtail', sell: 110, how: 'Break the Ashtail’s ember mantle (Blunt best)' },
   { id: 'ashfang', tier: 2.5, base: 'Ash Fang', src: 'Ashtail', sell: 110, how: 'Break the Ashtail’s jaw (Pierce best)' },
   { id: 'ashheart', tier: 2.5, base: 'Ashheart', src: 'Ashtail', rare: true, sell: 550, how: 'Rare from Ashtail ember mantle breaks' }
+);
+mats.push(
+  { id: 'sovgel', tier: 4, base: 'Sovereign Gel', src: 'Wanderer Sovereign', sell: 60, how: 'Every Wanderer Sovereign hunt' },
+  { id: 'sovtusk', tier: 4, base: 'Swallowed Tusk', src: 'Wanderer Sovereign', sell: 180, how: 'Tear out the Sovereign’s tusks (Pierce best)' },
+  { id: 'sovwing', tier: 4, base: 'Swallowed Wing', src: 'Wanderer Sovereign', sell: 180, how: 'Tear out the Sovereign’s wings (Blunt best, on the ground)' },
+  { id: 'sovvent', tier: 4, base: 'Swallowed Vent', src: 'Wanderer Sovereign', sell: 180, how: 'Cut out the Sovereign’s vents (Cut best, on the surface)' },
+  { id: 'sovtail', tier: 4, base: 'Swallowed Tail', src: 'Wanderer Sovereign', sell: 180, how: 'Shatter the Sovereign’s tail (Blunt best)' },
+  { id: 'sovheart', tier: 4, base: 'Sovereign Heart', src: 'Wanderer Sovereign', rare: true, sell: 900, how: 'Rare from Sovereign tusk breaks' }
 );
 export const MATERIALS: Record<string, MaterialDef> = Object.fromEntries(mats.filter(inEdition).map(m => [m.id, m]));
 

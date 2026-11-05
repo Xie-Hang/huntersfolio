@@ -29,7 +29,7 @@
   const exposedNow = $derived(h.mon.parts[h.target]?.exposed > 0 && !h.mon.parts[h.target].broken);
   /** the number the move will roughly deal now: air halves it, an exposed target adds Expose's bonus */
   const shownDmg = (d: number) => { let x = halfAir ? Math.round(d / 2) : d; if (exposedNow) x = Math.round(x * E.EXPOSE_DMG); return x; };
-  const em = $derived(E.elemMult(w.elem, h.mid));
+  const em = $derived(E.elemMult(w.elem, h.mid, h));
   const elemColor = $derived(em > 1 ? 'var(--gale)' : em < 1 ? 'var(--ember-soft)' : 'var(--muted)');
 
   /** with nothing selected, the dice each action would take on its own (blanks first; see E.autoDice) */

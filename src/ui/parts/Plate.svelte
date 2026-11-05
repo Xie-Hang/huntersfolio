@@ -15,6 +15,7 @@
   import Slagwyrm from './plates/Slagwyrm.svelte';
   import Gorhydra from './plates/Gorhydra.svelte';
   import Variant from './plates/Variant.svelte';
+  import Sovereign from './plates/Sovereign.svelte';
   import { ALL_MONSTERS } from '../../engine';
   import Scene from './Scene.svelte';
   /** scene: draw Ashfall Ridge behind it (the big plates; not the small Hunt Board thumbnails) */
@@ -36,6 +37,7 @@
 {:else if mon === 'stormroc'}<Stormroc {hunt} />
 {:else if mon === 'slagwyrm'}<Slagwyrm {hunt} />
 {:else if mon === 'gorhydra'}<Gorhydra {hunt} />
+{:else if mon === 'sovereign'}<Sovereign {hunt} />
 {/if}
 </div>
 

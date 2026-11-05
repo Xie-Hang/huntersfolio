@@ -78,6 +78,8 @@ export interface ArmorDef {
   steadyfoot?: boolean;
   /** your first swap each hunt costs no die (Rimeplume Mantle) */
   swapOnce?: boolean;
+  /** resists whatever element the monster attacks with (Sovereign Mantle) */
+  adaptive?: boolean;
   craft: Cost;
 }
 
@@ -95,7 +97,7 @@ export interface ItemDef {
   pouch?: boolean;
 }
 
-export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet' | 'airPierce' | 'bigHeal' | 'sealHeal' | 'chargeDaze' | 'groundHit' | 'breakFree' | 'pierceStrip';
+export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet' | 'airPierce' | 'bigHeal' | 'sealHeal' | 'chargeDaze' | 'groundHit' | 'breakFree' | 'pierceStrip' | 'breakWhet';
 export interface CharmDef {
   /** monster tier it comes from (default 1); gear above the edition's top tier isn't in that build */
   tier?: number;
@@ -210,6 +212,10 @@ export interface MonsterState {
   tailwind?: boolean;
   /** Rimeshrike: its ground actions left with the Frost Shroud up (only Cut and Blunt reach it) */
   shroud?: number;
+  /** Wanderer Sovereign: its stance, the stance it shifts into next, and how far through the stance it is */
+  stance?: 'stone' | 'gale' | 'ember' | 'frost' | 'bare';
+  nextStance?: 'stone' | 'gale' | 'ember' | 'frost' | 'bare';
+  stanceStep?: number;
   /** T3 Monolith Warden: monster actions left with the core exposed; phase 2 (Crumbling) */
   core?: number;
   crumble?: boolean;
@@ -299,6 +305,8 @@ export interface Hunt {
 }
 
 export interface MonsterDef {
+  /** a shorter name for the hunt screen's header, when the full one doesn't fit beside its chips */
+  panelName?: string;
   /** a variant of this monster (the changed Ashfall Ridge, Nov 2026): same body, new element and mechanic */
   variantOf?: string;
   /** plating that isn't ice: its name in the log and on the badge, and layers a hit clears (default: Cut 2, else 1) */
@@ -306,6 +314,9 @@ export interface MonsterDef {
   plateBreak?(w: WeaponInst): number;
   /** hot plating: a Firepot does nothing */
   plateHot?: boolean;
+  /** its element right now, when it changes during the hunt (the Wanderer Sovereign's stances): its weakness and
+   *  resistance follow the element wheel (WEAK_OF / RESIST_OF) */
+  elemOf?(h: Hunt): Element;
   /** extra condition badges on the monster panel */
   badges?(h: Hunt): { key: string; label: string; short: string; cls: string; desc: string }[];
   /** names of its elemental attacks (Nov 2026: only these carry its element; the rest are physical, so resist

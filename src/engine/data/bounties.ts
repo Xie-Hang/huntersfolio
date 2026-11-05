@@ -72,6 +72,10 @@ const ALL: BountyDef[] = [
   { id: 'quake2', mon: 'quakeback', name: 'Bedrock', hard: true, goals: [{ k: 'break', part: 'plate' }, { k: 'turns', n: 11 }], reward: hardV('quakeheart') },
   { id: 'ash1', mon: 'ashtail', name: 'Cool hands', goals: [{ k: 'never', f: 'burned', text: 'Never get burned' }], reward: easyV },
   { id: 'ash2', mon: 'ashtail', name: 'Banked fire', hard: true, goals: [{ k: 'break', part: 'mantle' }, { k: 'break', part: 'tail' }], reward: hardV('ashheart') },
+  // the apex
+  { id: 'sov1', mon: 'sovereign', name: 'Tear it out', goals: [{ k: 'feat', f: 'unstance', text: 'Break a part while it’s in that part’s stance' }], reward: { coin: 260 } },
+  { id: 'sov2', mon: 'sovereign', name: 'Empty hands', goals: [{ k: 'noItem' }], reward: { coin: 260 } },
+  { id: 'sov3', mon: 'sovereign', name: 'Heart of the wanderer', hard: true, goals: [{ k: 'break', part: 'tusks' }, { k: 'break', part: 'tail' }, { k: 'turns', n: 22 }], reward: { coin: 520, mat: 'sovheart' } },
   // Stormspire
   { id: 'mono1', mon: 'monolith', name: 'Crack it twice', goals: [{ k: 'cracks', part: 'plates', n: 2 }], reward: easy3 },
   { id: 'mono2', mon: 'monolith', name: 'Hold the mountain', goals: [{ k: 'feat', f: 'interrupt', text: 'Stop a Quake before it lands' }], reward: easy3 },

@@ -51,9 +51,18 @@ export function armorInst(id: string, lv: number): ArmorInst {
 export const ownedWeapon = (s: Save, id: string) => weaponInst(id, lvOf(s.weapons, id));
 export const ownedArmor = (s: Save, id: string) => armorInst(id, lvOf(s.armors, id));
 
-export function elemMult(elem: Element | null, monsterId: string): number {
-  if (!elem) return 1;
+/** the element wheel, as the monsters use it: what each element is weak to and what it resists */
+export const WEAK_OF: Record<Element, Element> = { Stone: 'Gale', Gale: 'Frost', Ember: 'Stone', Frost: 'Ember' };
+export const RESIST_OF: Record<Element, Element> = { Stone: 'Ember', Gale: 'Stone', Ember: 'Frost', Frost: 'Gale' };
+/** a monster's element, weakness and resistance right now (they change with the Wanderer Sovereign's stance) */
+export function elemsNow(monsterId: string, h?: Hunt | null): { elem: Element; weak: Element; resist: Element } {
   const M = MONSTERS[monsterId];
+  if (h && M.elemOf) { const e = M.elemOf(h); return { elem: e, weak: WEAK_OF[e], resist: RESIST_OF[e] }; }
+  return { elem: M.elem, weak: M.weak, resist: M.resist };
+}
+export function elemMult(elem: Element | null, monsterId: string, h?: Hunt | null): number {
+  if (!elem) return 1;
+  const M = elemsNow(monsterId, h);
   return elem === M.weak ? 1.5 : elem === M.resist ? 0.75 : 1;
 }
 

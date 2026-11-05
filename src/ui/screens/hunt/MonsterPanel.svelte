@@ -17,6 +17,7 @@
   const meter = $derived(M.meter?.(h) ?? null);
   const uid = `st${Math.random().toString(36).slice(2, 7)}`;
   const isFlier = $derived(!!M.flier);
+  const el = $derived(E.elemsNow(h.mid, h));
   /** The monster's condition, each with what it does and how to answer it (playtest: players saw "Enraged" or
    *  "Ice plating" with no idea what it meant). Hover, or move a controller's focus onto it, to read. */
   const statuses = $derived.by(() => {
@@ -40,7 +41,7 @@
 <section class="panel stage" aria-label="The monster" use:shake={game.shakes.mon}>
   <div style="display:flex;flex-direction:column;gap:12px">
     <div class="hpline">
-      <div class="ph"><h2>{M.name} <span class="label kind"><Elem e={M.elem} />{M.elem}</span><span class="chip sm gale hdchip"><Elem e={M.weak} />Weak to {M.weak}</span><span class="chip sm hdchip"><Elem e={M.resist} />Resists {M.resist}</span></h2><span class="mono">{m.hp} / {m.max} HP</span></div>
+      <div class="ph"><h2>{M.panelName ?? M.name} <span class="label kind"><Elem e={el.elem} />{el.elem}</span><span class="chip sm gale hdchip"><Elem e={el.weak} />Weak to {el.weak}</span><span class="chip sm hdchip"><Elem e={el.resist} />Resists {el.resist}</span></h2><span class="mono">{m.hp} / {m.max} HP</span></div>
       <div class="bar" style="height:10px"><i style="width:{pct(m.hp, m.max)}%;background:var(--ember)"></i></div>
     </div>
     <div class="stagebody">
@@ -114,7 +115,7 @@
   @media (prefers-reduced-motion: reduce) { .stip { transition: none; } }
   .kind { margin-left: 10px; font-size: var(--fs-sm); font-weight: 400; }
   .metarow { display: flex; gap: 10px 18px; align-items: flex-end; flex-wrap: wrap; }
-  .metarow .meters { flex: 1 1 260px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px 16px; min-width: 0; }
+  .metarow .meters { flex: 1 1 260px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px 16px; min-width: 0; }
   .metarow .ph { flex-wrap: nowrap; }
   .metarow .ph .label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
   .metarow .ph .mono { white-space: nowrap; flex: none; }

@@ -66,7 +66,7 @@
 {#snippet weaponNotes(w: E.WeaponInst)}
   {@const m = E.elemMult(w.elem, mon)}
   {@const best = bestParts(mon, w.type)}
-  {#if m > 1}<span class="good">Hits weakness</span>{:else if m < 1}<span class="bad">Resisted</span>{/if}
+  {#if M.elemOf}{#if w.elem}<span class="neutral">Hits its {w.elem === 'Stone' ? 'Ember' : w.elem === 'Gale' ? 'Stone' : w.elem === 'Ember' ? 'Frost' : 'Gale'} stance's weakness</span>{/if}{:else if m > 1}<span class="good">Hits weakness</span>{:else if m < 1}<span class="bad">Resisted</span>{/if}
   {#if best.length}{m !== 1 ? ' · ' : ''}<span class="best">Breaks {best.join(', ')}</span>{/if}
   {#if M.flier}{' · '}{#if w.type === 'Pierce'}<span class="good">Reaches it in the air</span>{:else}<span class="bad">Can’t reach it in the air</span>{/if}{/if}
   {#if M.plated}{@const n = M.plateBreak?.(w) ?? (w.type === 'Cut' ? 2 : 1)}{@const word = M.plateWord ? 'scales' : 'ice'}{' · '}{#if n >= M.plated}<span class="good">Clears its {word} in one hit</span>{:else}<span class="bad">Takes {Math.ceil(M.plated / n)} hits to clear its {word}</span>{/if}{#if M.plateHot && w.type === 'Cut'}{' · '}<span class="bad">Hot scales burn your hand</span>{/if}{/if}
@@ -76,7 +76,9 @@
 
 {#snippet armorNote(a: E.ArmorInst)}
   {#if a.burnproof && M.burrower}<span class="good">Immune to its molten shell</span>{' · '}{/if}
-  {#if !a.resist}<span class="neutral">No resistance</span>
+  {#if a.adaptive}<span class="good">Resists whatever element it attacks with −30%</span>
+  {:else if !a.resist}<span class="neutral">No resistance</span>
+  {:else if M.elemOf}<span class="neutral">Resists its {a.resist} stance's attacks</span>
   {:else if a.resist === M.elem}<span class="good">Resists its {M.elem} attacks −30%{M.elemental?.length ? ` (${M.elemental.join(', ')}; not its physical ones)` : ''}</span>
   {:else}<span class="bad">{a.resist} resist does nothing here</span>{/if}
 {/snippet}

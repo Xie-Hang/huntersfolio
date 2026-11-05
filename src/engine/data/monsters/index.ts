@@ -15,6 +15,7 @@ import { squallhorn } from './squallhorn';
 import { rimeshrike } from './rimeshrike';
 import { quakeback } from './quakeback';
 import { ashtail } from './ashtail';
+import { sovereign } from './sovereign';
 import { MAX_TIER, EDITION } from '../../edition';
 
 /** Stormspire (Tier 3) ramp, Nov 2026 playtest: a skilled tester cleared it with +0 Mirewood weapons, so nothing
@@ -37,7 +38,7 @@ for (const [M, t] of [[monolith, TIER3_TUNE.monolith], [stormroc, TIER3_TUNE.sto
 
 /** every monster that's built; MONSTERS is the ones in this edition (the demo stops at Ashfall Ridge) */
 // Tier 2.5 = the changed Ashfall Ridge (variants, Nov 2026): after the Mirewood, before the Stormspire in power.
-export const ALL_MONSTERS: Record<string, MonsterDef> = { gorehorn, galeshrike, cinderback, rimetail, bogjaw, duskheron, emberwhelk, mistglass, squallhorn, rimeshrike, quakeback, ashtail, monolith, stormroc, slagwyrm, gorhydra };
+export const ALL_MONSTERS: Record<string, MonsterDef> = { gorehorn, galeshrike, cinderback, rimetail, bogjaw, duskheron, emberwhelk, mistglass, squallhorn, rimeshrike, quakeback, ashtail, monolith, stormroc, slagwyrm, gorhydra, sovereign };
 export const MONSTERS: Record<string, MonsterDef> = Object.fromEntries(Object.entries(ALL_MONSTERS).filter(([, M]) => M.tier <= MAX_TIER));
 const builtIn = (t: number) => Object.values(MONSTERS).filter(M => M.tier === t).length;
 
