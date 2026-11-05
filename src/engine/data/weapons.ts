@@ -39,6 +39,8 @@ const list: WeaponDef[] = [
   { id: 'ember', name: 'Emberhead Maul', type: 'Blunt', elem: 'Ember', kind: 'Maul', note: 'A slab of Cinderback plate, still warm, bolted to the head.', moves: MAUL, mult: 1.1, from: 'maul', cost: { coin: 300, slagplate: 2, cinderscale: 3 } },
   { id: 'boulder', name: 'Boulderhead Maul', type: 'Blunt', elem: 'Stone', kind: 'Maul', note: 'A river boulder bound to the haft with Gorehorn sinew.', moves: MAUL, mult: 1.1, from: 'maul', cost: { coin: 300, tusk: 2, sinew: 1, hide: 2 } },
   { id: 'rimehammer', name: 'Rimehammer', type: 'Blunt', elem: 'Frost', kind: 'Maul', note: 'A shard of Rimetail mantle that never thaws.', moves: MAUL, mult: 1.1, from: 'maul', cost: { coin: 300, mantleshard: 2, rimescale: 3 } },
+  // Gale maul line (6 Nov 2026, Mekkman: every element in every weapon type before the apex; it was the one gap)
+  { id: 'galemaul', name: 'Galebreaker Maul', type: 'Blunt', elem: 'Gale', kind: 'Maul', note: 'A Galeshrike crest bound to the head. The wind follows the swing.', moves: MAUL, mult: 1.1, from: 'maul', cost: { coin: 300, crest: 2, plume: 2 } },
   { id: 'kiln', name: 'Kilnheart Hammer', type: 'Blunt', elem: 'Ember', kind: 'Maul', note: 'A Kilnheart burns behind a grate in the head.', moves: MAUL, mult: 1.35, from: 'ember', cost: { coin: 500, kilnheart: 1, slagplate: 3 } },
   { id: 'bow', name: 'Ashwood Bow', type: 'Pierce', elem: null, kind: 'Bow', note: 'Finds the gaps in any hide.', moves: BOW, mult: 1, craft: { coin: 200, hide: 2 } },
   { id: 'sinewbow', name: 'Sinewstring Bow', type: 'Pierce', elem: null, kind: 'Bow', note: 'Strung with Gorehorn sinew. Draws harder.', moves: BOW, mult: 1.2, from: 'bow', cost: { coin: 300, sinew: 2, pelt: 1 } },
@@ -73,17 +75,18 @@ list.push(
   { id: 'hydrablade', tier: 3, name: 'Hydrafang Blade', type: 'Cut', elem: 'Frost', kind: 'Longsword', note: 'Three Gorhydra fangs set in a row. The edge is always cold.', moves: BLADE, mult: 1.9, from: 'mirrorblade', cost: { coin: 1100, hydrafang: 2, hydrahorn: 1, hydrascale: 4 } },
   { id: 'hydrahammer', tier: 3, name: 'Hydraheart Hammer', type: 'Blunt', elem: 'Frost', kind: 'Maul', note: 'A Hydraheart frozen into the head. It frosts the air when swung.', moves: MAUL, mult: 1.9, from: 'facethammer', cost: { coin: 1100, hydraheart: 1, hydracrown: 2, hydrascale: 4 } },
   { id: 'hydrabow', tier: 3, name: 'Three-Neck Bow', type: 'Pierce', elem: 'Frost', kind: 'Bow', note: 'Strung with neck sinew. It draws heavier than it looks.', moves: BOW, mult: 1.9, from: 'mirrorbow', cost: { coin: 1100, hydrahorn: 2, hydracrown: 1, hydrascale: 4 } },
+  { id: 'duskmaul', tier: 2, name: 'Duskcrest Maul', type: 'Blunt', elem: 'Gale', kind: 'Maul', note: 'Two Duskheron crests locked back to back. It whistles on the way down.', moves: MAUL, mult: 1.6, from: 'galemaul', cost: { coin: 700, duskcrest: 2, duskbeak: 1, duskplume: 3 } },
+  { id: 'stormmaul', tier: 3, name: 'Stormcrown Maul', type: 'Blunt', elem: 'Gale', kind: 'Maul', note: 'A shard of the Roc’s storm crown in the head. It cracks like thunder when it lands.', moves: MAUL, mult: 1.9, from: 'duskmaul', cost: { coin: 1100, stormcrown: 2, roctalon: 1, rocplume: 4 } },
   { id: 'gillbow', tier: 2, name: 'Gillfire Bow', type: 'Pierce', elem: 'Ember', kind: 'Bow', note: 'Strung with dried whelk gill. Its arrows smoulder.', moves: BOW, mult: 1.6, from: 'ventfire', cost: { coin: 700, whelkgill: 2, whelkshell: 1, whelkscale: 3 } }
 );
 // The apex weapons (Mekkman, 6 Nov 2026): blade, maul and bow in each of the four elements, ×2.1. Each is crafted
 // from the Stormspire weapon of the same type and element, plus the material of the Sovereign part that matches the
 // element (tusks Stone, wings Gale, vents Ember, tail Frost), so which stance you tear out decides what you farm.
-// There's no Gale maul line, so the Gale Sovereign Maul grows from the Gorehorn Crusher.
 {
   const PART: Record<string, string> = { Stone: 'sovtusk', Gale: 'sovwing', Ember: 'sovvent', Frost: 'sovtail' };
   const BASE: Record<string, Record<DamageType, string>> = {
     Stone: { Cut: 'monolithblade', Blunt: 'monolithhammer', Pierce: 'monolithbow' },
-    Gale: { Cut: 'thunderblade', Blunt: 'crusher', Pierce: 'stormbow' },
+    Gale: { Cut: 'thunderblade', Blunt: 'stormmaul', Pierce: 'stormbow' },
     Ember: { Cut: 'slagedge', Blunt: 'slaghammer', Pierce: 'slagbow' },
     Frost: { Cut: 'hydrablade', Blunt: 'hydrahammer', Pierce: 'hydrabow' }
   };

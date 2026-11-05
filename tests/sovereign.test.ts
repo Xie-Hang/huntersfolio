@@ -74,3 +74,10 @@ describe('Wanderer Sovereign', () => {
     expect(run([['hydrablade', 1], ['stormbow', 1]], 'skilled')).toBeGreaterThan(0.75);
   });
 });
+
+describe('Weapon coverage', () => {
+  it('every weapon type comes in every element at every tier (Ashfall Ridge to the apex)', () => {
+    for (const type of ['Cut', 'Blunt', 'Pierce'] as const) for (const el of ['Stone', 'Gale', 'Ember', 'Frost'] as const) for (const t of [1, 2, 3, 4])
+      expect(Object.values(E.WEAPONS).some(w => w.type === type && w.elem === el && (w.tier ?? 1) === t), `${type} ${el} tier ${t}`).toBe(true);
+  });
+});
