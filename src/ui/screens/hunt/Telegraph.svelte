@@ -57,7 +57,8 @@
     {:else}
       <span class="kicker">Hunt failed</span>
       <h2 style="margin:0;font-weight:600">{M.name} wins this one</h2>
-      <p class="ital p0">It had {h.mon.hp} HP left. No coin or materials.{h.item ? ` You lost ${r.lost} ${E.ITEMS[h.item].name} you carried.` : ''}{r.bounty ? ` The ${E.BOUNTIES[r.bounty.id].name} bounty stays on your board.` : ''}</p>
+      {#if Object.keys(r.mats).length}<div><span class="label">You kept what you broke off</span><ul style="margin-top:6px">{#each Object.entries(r.mats) as [k, v] (k)}<li><Icon id={k} size={18} />{E.matName(k)} ×{v}</li>{/each}</ul></div>{/if}
+      <p class="ital p0">It had {h.mon.hp} HP left. No coin.{Object.keys(r.mats).length ? '' : ' No materials: break a part and you keep its material even when a hunt fails.'}{h.item ? ` You lost ${r.lost} ${E.ITEMS[h.item].name} you carried.` : ''}{r.bounty ? ` The ${E.BOUNTIES[r.bounty.id].name} bounty stays on your board.` : ''}</p>
     {/if}
     {@render stats()}
   {:else}

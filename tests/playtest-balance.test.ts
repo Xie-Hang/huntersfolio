@@ -79,3 +79,17 @@ describe('Tier 2 hits harder than Tier 1', () => {
     for (const id of ['bogjaw', 'duskheron', 'emberwhelk', 'mistglass']) expect(top(id)).toBeGreaterThanOrEqual(54);
   });
 });
+
+describe('Failed hunts', () => {
+  it('keep one of each broken part\'s material, and nothing else', () => {
+    const s = E.newSave(); s.loadout = { ...s.loadout, target: 'gorehorn' };
+    const h = E.startHunt(s, 9);
+    h.mon.parts.hide.broken = true;
+    const before = { ...s.mats }, coin = s.coin;
+    E.abandon(h); E.settleHunt(s, h);
+    expect(s.mats.pelt).toBe((before.pelt ?? 0) + 1);
+    expect(s.mats.hide ?? 0).toBe(before.hide ?? 0);
+    expect(s.coin).toBe(coin);
+    expect(h.reward!.mats).toEqual({ pelt: 1 });
+  });
+});

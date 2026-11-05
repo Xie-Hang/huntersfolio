@@ -265,7 +265,13 @@ export function settleHunt(s: Save, h: Hunt) {
     if (h.item) s.items[h.item] = (s.items[h.item] ?? 0) + h.itemCharges;
     h.reward = { coin, mats, rare, returned: h.item ? h.itemCharges : 0, lost: 0, unlocked: lockedBefore.filter(id => isUnlocked(s, id)) };
   } else {
-    h.reward = { coin: 0, mats: {}, rare: false, returned: 0, lost: h.item ? h.carried : 0 };
+    // A failed hunt keeps the materials of the parts you broke (one each; no coin, no carve, no rare, and the
+    // items you carried are lost). Playtest/sim (Nov 2026): losses paid nothing, so an under-geared player at a new
+    // tier could lose their way into a hole they couldn't farm out of.
+    const mats: Record<string, number> = {};
+    for (const p of MD.parts) if (h.mon.parts[p.id].broken || (h.mon.parts[p.id].cracks ?? 0) > 0) mats[p.mat] = (mats[p.mat] ?? 0) + 1;
+    for (const [k, v] of Object.entries(mats)) s.mats[k] = (s.mats[k] ?? 0) + v;
+    h.reward = { coin: 0, mats, rare: false, returned: 0, lost: h.item ? h.carried : 0 };
   }
   settleBounty(s, h);
 }

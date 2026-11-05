@@ -193,7 +193,7 @@ export const TIPS: Tip[] = [
   {
     id: 'failed', at: ['tele'],
     when: () => game.view === 'hunt' && game.hunt?.over === 'lose',
-    text: () => 'Hunts can fail. You keep your weapons and armor; only the items you carried are lost. Guard against its big hits, and break the part that powers them.'
+    text: () => 'Hunts can fail. You keep your weapons, armor and the materials of any part you broke; you lose the coin and the items you carried. Guard against its big hits, and break the part that powers them.'
   },
   {
     id: 'forge', guide: true, learn: true, at: ['to-forge', 'nav-forge'],
