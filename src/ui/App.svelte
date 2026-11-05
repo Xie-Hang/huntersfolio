@@ -204,7 +204,7 @@
       <li>Select dice to <strong>Reroll</strong>, <strong>Guard</strong>, <strong>Charge</strong>, <strong>Swap</strong>, or <strong>Capture</strong> (when the monster is at 20% HP or less; doubles part materials).</li>
       <li><span class="tag flow" style="margin:0">Flow</span> Cut: light moves give a reroll. <span class="tag daze" style="margin:0">Daze</span> Blunt: hits to the head part fill a daze meter. <span class="tag expose" style="margin:0">Expose</span> Pierce: hits expose the part for 2 turns, so every hit there from either weapon deals +15% and counts double toward breaking it. Shoot first, then swap and cash in.</li>
       <li><strong>Bows</strong> attack from range: they ignore mud, hit fliers at full damage and are safe from molten shells. The Pinning Shot interrupts wind-ups and brings fliers down.</li>
-      <li><strong>Airborne</strong> monsters take half damage from Cut and Blunt, and their crest can't be reached. A Pinning Shot or a Weighted Net brings them down.</li>
+      <li><strong>Airborne</strong> monsters can only be hit with Pierce (bows). A Pinning Shot or a Weighted Net brings them down; when they land, every weapon reaches them again.</li>
       <li><strong>Underground</strong> monsters can only be hit by Blunt, at half damage. A Blunt move that uses 2 or more dice drives them up and cancels their attack. So does Blast Powder.</li>
       <li><strong>Ice plating</strong> breaks before a monster takes damage: a hit breaks layers of ice instead. A Cut hit breaks 2 layers, anything else 1. A Firepot melts all of it.</li>
       <li><strong>Molten</strong> monsters burn you a little each time you hit them with Cut or Blunt. Pierce attacks from range and is safe.</li>

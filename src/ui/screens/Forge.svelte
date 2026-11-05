@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Pip from '../parts/Pip.svelte';
   import Icon from '../parts/Icon.svelte';
   import WeaponArt from '../parts/WeaponArt.svelte';
   // List-detail: upgrade trees on the left, the selected recipe on the right.
@@ -182,7 +183,7 @@
             <div class="label rule">Moves and details</div>
             <ul class="fd-moves">
               {#each E.movesAt(sel, wLevel(sel)) as m}
-                <li><span class="need" aria-label="Needs {needLabel(m.need)}">{glyphs(m.need)}</span><span>{m.name}</span><span class="n">{m.dmg}</span></li>
+                <li><span class="need" aria-label="Needs {needLabel(m.need)}">{#each [...m.need] as c}<Pip {c} />{/each}</span><span>{m.name}</span><span class="n">{m.dmg}</span></li>
               {/each}
             </ul>
             <p class="fd-note">{d.kind}. {d.note}</p>

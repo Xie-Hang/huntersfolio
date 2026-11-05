@@ -100,7 +100,8 @@ function bestPlan(h: Hunt, p: Policy): Plan {
     for (let g = 0; g <= (p.noGuard ? 0 : left.length); g++) for (const ch of [false, true]) {
       const cd = E.chargeDice(h);
       if (ch && (p.skill === 'casual' || p.noCharge || left.length - g < cd || inc >= E.CHARGE_BREAK)) continue;
-      if (p.skill === 'casual' && !p.noGuard && g !== (inc >= 40 ? left.length : 0)) continue;
+      // a casual player guards everything against a big hit, or when its weapon can't reach the monster at all
+      if (p.skill === 'casual' && !p.noGuard && g !== (inc >= 40 || (!E.canHit(h, E.currentWeapon(h)) && inc > 0) ? left.length : 0)) continue;
       const plan = { moves, guard: left.slice(0, g), charge: ch ? left.slice(g, g + cd) : [] };
       const s = evaluate(h, plan, p);
       if (s != null && (!best || s > best.score)) best = { ...plan, score: s };

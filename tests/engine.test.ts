@@ -83,13 +83,13 @@ describe('Gorehorn', () => {
 });
 
 describe('Galeshrike', () => {
-  it('airborne: Cut deals half damage and cannot reach the crest; a net grounds it', () => {
+  it('airborne: only Pierce reaches it (melee can\'t hit at all); a net grounds it', () => {
     const s = starter(); s.loadout.target = 'galeshrike'; s.items.net = 2; s.loadout.item = 'net';
     const h = E.startHunt(s, 5);
     h.mon.air = true; h.intent = 'gust'; h.target = 'crest';
     h.dice = [{ face: 'C', used: null }, { face: 'B', used: null }, { face: 'B', used: null }, { face: 'B', used: null }];
-    const hit = E.useMove(h, 0)!; // Slash 12 → 6 airborne
-    expect(hit.dmg).toBe(6);
+    expect(E.useMove(h, 0)).toBeNull(); // the blade can't reach it
+    expect(E.cantHitReason(h, E.currentWeapon(h))).toMatch(/only Pierce/);
     expect(h.mon.parts.crest.hp).toBe(h.mon.parts.crest.max);
     expect(E.useItem(h)).toBe(true);
     expect(h.mon.air).toBe(false);

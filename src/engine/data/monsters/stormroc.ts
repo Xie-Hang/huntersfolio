@@ -1,5 +1,5 @@
 // The Stormcrown Roc — T3 Gale sky tyrant of the Stormspire. The Pierce check: the Galeshrike, grown up.
-// It flies (Cut and Blunt deal half in the air, the crown is out of melee reach) and lands after each Stoop Dive.
+// It flies (in the air only Pierce reaches it) and lands after each Stoop Dive.
 // A storm builds in its crown: one pip a turn, and at three it casts Thunderhead. A Pierce hit on the Crown drains
 // a pip, and one landed while Thunderhead is telegraphed snuffs it out.
 // Phase 2 at half HP: it never lands again (a net or Pinning Shot grounds it for one turn), so melee deals half
@@ -50,7 +50,7 @@ export const stormroc: MonsterDef = {
     switch (type) {
       case 'rake': return { name: m.air ? 'Swooping Rake' : 'Talon Rake', text: m.air ? 'It swoops low, talons first.' : 'It lunges with its talons.', dmg: tb ? 20 : enr ? 32 : 26, threat: 2, halfGuard: half };
       case 'buffet': return { name: 'Gale Buffet', text: 'It drives a wall of wind at you.', dmg: enr ? 22 : 18, threat: 1, halfGuard: half, note: 'Your guard is halved next turn' };
-      case 'takeoff': return { name: 'Taking off', text: 'It spreads its wings and rises into the storm.', dmg: 0, threat: 0, note: 'Still on the ground now. After your turn it\'s airborne: Cut and Blunt deal half damage' };
+      case 'takeoff': return { name: 'Taking off', text: 'It spreads its wings and rises into the storm.', dmg: 0, threat: 0, note: 'Still on the ground now. After your turn it\'s airborne: only bows reach it then' };
       case 'dive': return { name: 'Stoop Dive', text: 'It folds its wings and falls on you like a thunderbolt!', dmg: tb ? 40 : enr ? 60 : 52, threat: 3, halfGuard: half, note: 'Then it lands for a turn' };
       case 'perched': return { name: 'Landed', text: 'It lands hard, spent, and shakes the rain from its wings.', dmg: 0, threat: 0, note: 'Grounded for a turn: full damage, and every weapon reaches the crown' };
       case 'thunder': { const d = enr ? 78 : 70; return { name: 'Thunderhead', text: 'Its crown blazes white. Lightning is coming down!', dmg: rod ? Math.round(d / 2) : d, threat: 4, halfGuard: half, steady: true, note: carries(h, 'Pierce') ? 'A Pierce hit on the crown snuffs it out' : undefined }; }
@@ -121,8 +121,13 @@ export const stormroc: MonsterDef = {
     const m = h.mon;
     m.skyLock = true;
     if (!m.air) { m.air = true; m.airLeft = 0; }
-    return 'It climbs into the storm and won’t land again. Cut and Blunt deal half while it’s up; hit it when it swoops low.';
+    return 'It climbs into the storm and won’t land again. Only Pierce reaches it while it’s up; hit it with anything when it swoops low.';
   },
+
+  // In the air only Pierce reaches it (playtest, Nov 2026: a tester asked how a sword hits a bird in the sky;
+  // it used to be half damage). Down on the ground, or low after a swoop, every weapon works.
+  canHit(h, w) { return !h.mon.air || w.type === 'Pierce'; },
+  cantHitReason() { return 'It\u2019s in the air: only Pierce (a bow) reaches it. Swap to a bow, throw a Net, or guard until it comes down.'; },
 
   reachable(h, partId, w) {
     return !(partId === 'crown' && h.mon.air && w.type !== 'Pierce');
@@ -141,7 +146,7 @@ export const stormroc: MonsterDef = {
   tip(h, type) {
     const m = h.mon;
     if (type === 'thunder') return carries(h, 'Pierce') ? `Hit its crown with your ${carryingName(h, 'Pierce')} to snuff out the Thunderhead.` : 'A Thunderhead is coming. Guard with everything you have.';
-    if (m.air && !carries(h, 'Pierce')) return h.item === 'net' && h.itemCharges > 0 ? 'Throw the Weighted Net to bring it down.' : 'It’s airborne: Cut and Blunt deal half damage.';
+    if (m.air && !carries(h, 'Pierce')) return h.item === 'net' && h.itemCharges > 0 ? 'Throw the Weighted Net to bring it down.' : 'It’s airborne: only Pierce reaches it. Guard, and strike when it swoops low or lands.';
     if (m.air && (m.storm ?? 0) > 0) return `Arrows into its crown drain the storm. Aim at the crown with your ${carryingName(h, 'Pierce')}.`;
     if (type === 'perched') return 'It’s landed: every weapon reaches the crown this turn.';
     return null;

@@ -47,6 +47,6 @@ describe('Tier 3: the Stormcrown Roc', () => {
     const run = (w: [string, number][]) => matchup({ weapons: w, armor: 'glassmantle', armorLv: 2, item: 'salve', items: 3, target: 'stormroc' }, { skill: 'casual', capture: false }, 200, 17).win;
     const bow = run([['gillbow', 2], ['pearlhammer', 2]]), none = run([['pearlhammer', 2], ['whelkedge', 2]]);
     expect(bow).toBeGreaterThan(0.75);
-    expect(bow - none).toBeGreaterThan(0.3);
+    expect(bow - none).toBeGreaterThan(0.25); // the casual bot now guards when it can't reach the flier, so no-bow is softer
   });
 });

@@ -22,19 +22,16 @@
         {@const reach = E.canHit(h, w) && E.reachable(h, p.id, w)}
         {@const note = M.partNote?.(h, p.id) ?? null}
         <button class="part" class:on class:broken={st.broken} aria-pressed={on} disabled={!!h.over} onclick={() => game.target(p.id)}>
-          <span class="row">
-            <span class="nm">{p.name}</span>
-            <span style="display:flex;gap:8px;align-items:baseline">
-              {#if !st.broken}
-                {#if !reach}<span class="chip sm none">{m.under ? 'Underground' : 'Out of reach'}</span>
-                {:else}<span class="chip sm {effCls(e)}">{w.type}: {effName(e)}</span>{/if}
-                {#if st.exposed > 0}<span class="chip sm exposed">Exposed · {st.exposed}</span>{/if}
-              {/if}
-              {#if note}<span class="chip sm exposed">{note.chip}</span>{/if}
-              <span class="mono" style="color:{st.broken ? 'var(--ember-soft)' : 'var(--soft)'}">{st.broken ? (note ? '' : 'Broken') : `${st.hp} / ${st.max}`}</span>
-            </span>
+          <span class="pline"><span class="nm" title={p.name}>{p.name}</span><span class="mono" style="color:{st.broken ? 'var(--ember-soft)' : 'var(--soft)'}">{st.broken ? (note ? '' : 'Broken') : `${st.hp} / ${st.max}`}</span></span>
+          <span class="pline">
+            {#if !st.broken}
+              {#if !reach}<span class="chip sm none">{m.under ? 'Underground' : m.air ? 'In the air' : 'Out of reach'}</span>
+              {:else}<span class="chip sm {effCls(e)}">{w.type}: {effName(e)}</span>{/if}
+              {#if st.exposed > 0}<span class="chip sm exposed">Exposed · {st.exposed}</span>{/if}
+            {/if}
+            {#if note}<span class="chip sm exposed">{note.chip}</span>{/if}
+            {#if !st.broken}<span class="bar pbar"><i style="width:{pct(st.hp, st.max)}%;background:{on ? 'var(--gold)' : '#8c7a62'}"></i></span>{/if}
           </span>
-          {#if !st.broken}<span class="bar"><i style="width:{pct(st.hp, st.max)}%;background:{on ? 'var(--gold)' : '#8c7a62'}"></i></span>{/if}
           <span class="hint">{note ? note.hint : st.broken ? 'Hits here still damage it.' : p.hint}</span>
         </button>
       {/each}
@@ -42,6 +39,14 @@
 </section>
 
 <style>
+  /* line 1: name (shortens with … if long) and HP; line 2: the weapon's tag beside the HP bar. Nothing wraps, so
+     long names never push the tag and HP about (Mekkman) */
+  .pline { display: flex; gap: 8px; align-items: center; min-width: 0; }
+  .pline .nm { flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pline .mono { flex: none; white-space: nowrap; }
+  .pline .chip { flex: none; white-space: nowrap; padding-block: 1px; line-height: 1.35; }
+  .pline:first-child { line-height: 1.2; }
+  .pline .pbar { flex: 1 1 40px; min-width: 30px; }
   .aimhint { text-align: right; color: var(--soft); }
   .aimhint b { color: var(--gold-hi); font-weight: 600; }
 </style>

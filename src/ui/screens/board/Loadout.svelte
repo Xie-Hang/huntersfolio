@@ -68,7 +68,7 @@
   {@const best = bestParts(mon, w.type)}
   {#if m > 1}<span class="good">Hits weakness</span>{:else if m < 1}<span class="bad">Resisted</span>{/if}
   {#if best.length}{m !== 1 ? ' · ' : ''}<span class="best">Breaks {best.join(', ')}</span>{/if}
-  {#if M.flier}{' · '}{#if w.type === 'Pierce'}<span class="good">Full damage in the air</span>{:else}<span class="bad">Half damage in the air</span>{/if}{/if}
+  {#if M.flier}{' · '}{#if w.type === 'Pierce'}<span class="good">Reaches it in the air</span>{:else}<span class="bad">Can’t reach it in the air</span>{/if}{/if}
   {#if M.plated}{' · '}{#if w.type === 'Cut'}<span class="good">Clears its ice in one hit</span>{:else}<span class="bad">Takes two hits to clear its ice</span>{/if}{/if}
   {#if M.burrower}{' · '}{#if w.type === 'Blunt'}<span class="good">Reaches it underground</span>{:else}<span class="bad">Can’t reach it underground</span>{/if}{/if}
 {/snippet}

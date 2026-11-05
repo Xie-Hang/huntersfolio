@@ -4,7 +4,7 @@ import type { Intent, MonsterDef } from '../../types';
 import { carries, carryingName, dazeTag } from '../../util';
 
 export function airTurns(h: { mon: { enraged: boolean; parts: Record<string, { broken: boolean }> } }): number {
-  let n = h.mon.enraged ? 3 : 2;
+  let n = 2; // since Nov 2026 melee can't reach it in the air at all, so it no longer stays up longer when enraged
   if (h.mon.parts.wings?.broken) n--;
   return Math.max(1, n);
 }
@@ -33,7 +33,7 @@ export const galeshrike: MonsterDef = {
   common: 'plume',
   rarePart: 'crest',
   rare: 'tempesteye',
-  habits: 'Takes to the air every few turns. Airborne, it takes half damage from Cut and Blunt and its crest is out of reach. It circles before every dive, then sits stuck for a turn.',
+  habits: 'Takes to the air every few turns. In the air only Pierce (bows) can hit it. It circles before every dive, then sits stuck for a turn.',
   intro: 'A shriek splits the wind. The Galeshrike drops onto a ridge-top boulder.',
   enrageText: 'Its feathers bristle with static. The Galeshrike is enraged!',
   parts: [
@@ -46,7 +46,7 @@ export const galeshrike: MonsterDef = {
     const m = h.mon, enr = m.enraged, tb = m.parts.talons.broken;
     switch (type) {
       case 'rake': return { name: 'Talon Rake', text: tb ? 'It hops forward, slashing with its one good foot.' : 'It hops forward, talons spread wide.', dmg: tb ? 18 : 28, threat: 1 };
-      case 'takeoff': { const n = airTurns(h); return { name: 'Taking off', text: 'It spreads its wings and leaps into the wind.', dmg: 0, threat: 0, note: `Still on the ground now. After your turn it's airborne for ${n} turn${n > 1 ? 's' : ''}: Cut and Blunt deal half damage` }; }
+      case 'takeoff': { const n = airTurns(h); return { name: 'Taking off', text: 'It spreads its wings and leaps into the wind.', dmg: 0, threat: 0, note: `Still on the ground now. After your turn it's airborne for ${n} turn${n > 1 ? 's' : ''}: only bows reach it then` }; }
       case 'gust': return { name: enr ? 'Gale Storm' : 'Gust Buffet', text: enr ? 'It hammers the air with both wings, again and again.' : 'It beats its wings hard, driving a wall of wind at you.', dmg: enr ? 38 : 28, threat: enr ? 2 : 1, halfGuard: true, note: 'Ignores half your guard' };
       case 'circle': return { name: 'Circling high', text: 'It climbs into a wide circle overhead, watching you.', dmg: 0, threat: 0, note: 'Dives next turn' };
       case 'dive': return { name: 'Plunging Dive', text: 'It folds its wings and drops like a stone!', dmg: tb ? (enr ? 70 : 60) : (enr ? 95 : 80), threat: enr ? 4 : 3, note: 'Then it’s stuck for a turn' };
@@ -78,6 +78,11 @@ export const galeshrike: MonsterDef = {
     return null;
   },
 
+  // In the air only Pierce reaches it (playtest, Nov 2026: a tester asked how a sword hits a bird in the sky;
+  // it used to be half damage). Down on the ground, or low after a swoop, every weapon works.
+  canHit(h, w) { return !h.mon.air || w.type === 'Pierce'; },
+  cantHitReason() { return 'It\u2019s in the air: only Pierce (a bow) reaches it. Swap to a bow, throw a Net, or guard until it comes down.'; },
+
   reachable(h, partId, w) {
     return !(partId === 'crest' && h.mon.air && w.type !== 'Pierce');
   },
@@ -92,7 +97,7 @@ export const galeshrike: MonsterDef = {
     if (m.air && carries(h, 'Pierce')) return `Pinning Shot brings it down (${carryingName(h, 'Pierce')}).`;
     if (m.air && h.item === 'net' && h.itemCharges > 0) return 'Throw the Weighted Net to bring it down.';
     if ((type === 'stuck' || type === 'crashed') && carries(h, 'Blunt')) return `${dazeTag} It’s grounded. Hit the crest while you can.`;
-    if (m.air) return 'It’s airborne: Cut and Blunt deal half damage.';
+    if (m.air) return 'It’s airborne: only Pierce reaches it. Guard until it dives, then hit it while it’s stuck.';
     return null;
   },
 

@@ -92,7 +92,7 @@ export const emberwhelk: MonsterDef = {
   tip(h, type) {
     const m = h.mon;
     if (!m.parts.gills.broken) return carries(h, 'Pierce')
-      ? `It heals every turn while its gills are intact. Expose them with your ${carryingName(h, 'Pierce')} and break them fast.`
+      ? `It heals while its gills are intact. Expose them with your ${carryingName(h, 'Pierce')}, then break them.`
       : 'It heals every turn while its gills are intact. Break the gills first.';
     if (type === 'retreat') return 'It’s pulling into its shell: your hits deal half next turn. A good turn to guard or charge.';
     if (type === 'rear') return 'A Shell Lunge is coming. Guard, or daze it through the shell.';

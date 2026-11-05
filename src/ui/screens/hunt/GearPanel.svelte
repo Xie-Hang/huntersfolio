@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Pip from '../../parts/Pip.svelte';
   import WeaponArt from '../../parts/WeaponArt.svelte';
   import Key from '../../parts/Key.svelte';
   import Icon from '../../parts/Icon.svelte';
@@ -22,7 +23,7 @@
   const over = $derived(!!h.over);
   const n = $derived(game.sel.length);
   const sg = $derived(E.SIGNATURES[w.type]);
-  const halfAir = $derived(E.airborneHalf(h, w));
+  const halfAir = $derived(E.airborneHalf(h, w) && E.canHit(h, w)); // fliers (Nov 2026) block non-bows outright: the reason line says so instead
   const iceNow = $derived(h.mon.plating > 0);
   const iceLine = $derived.by(() => { const n = Math.min(h.mon.plating, E.iceBreak(w)); return n >= h.mon.plating ? `Breaks all the ice (${n} layer${n > 1 ? 's' : ''}). No damage` : `Breaks ${n} layer of ice. No damage`; });
   const exposedNow = $derived(h.mon.parts[h.target]?.exposed > 0 && !h.mon.parts[h.target].broken);
@@ -67,7 +68,7 @@
         <span class="mn"><Key k={MOVE_KEYS[i]} />{mv.name}{#if mv.flow}<span class="tag flow">Flow</span>{/if}{#if mv.daze}<span class="tag daze">Daze</span>{/if}{#if mv.expose}<span class="tag expose">Expose</span>{/if}{#if !over && tipText?.includes(mv.name)}<span class="tag counter">Counter</span>{/if}</span>
         <span class="md">{#if iceNow}{iceLine}{:else}{shownDmg(mv.dmg)} damage{halfAir ? ', halved in the air' : ''}{exposedNow ? ', exposed' : ''}{mv.part ? ` · ×${mv.part} toward breaks` : ''}{mv.daze ? ` · Daze +${mv.daze}` : ''}{mv.flow ? ' · +1 reroll' : ''}{/if}</span>
       </span>
-      <span class="need" aria-label="Needs {needLabel(mv.need)}{miss.length && !over ? `; missing ${miss.join(', ')}` : ''}">{#each marks as x}{#if x.have || over}{GLYPH[x.c]}{:else}<span class="miss">{HOLLOW[x.c]}</span>{/if}{/each}</span>
+      <span class="need" aria-label="Needs {needLabel(mv.need)}{miss.length && !over ? `; missing ${miss.join(', ')}` : ''}">{#each marks as x}{#if x.have || over}<Pip c={x.c} />{:else}<span class="miss"><Pip c={x.c} hollow /></span>{/if}{/each}</span>
     </button>
   {/each}
 

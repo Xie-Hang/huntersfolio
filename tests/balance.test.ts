@@ -28,7 +28,7 @@ describe('Galeshrike (preparation test)', () => {
   it('punishes unprepared starter gear for casual players', () => {
     const r = matchup(starterSalves('galeshrike'), { skill: 'casual', capture: true }, N);
     expect(r.win).toBeGreaterThan(0.45);
-    expect(r.win).toBeLessThan(0.85);
+    expect(r.win).toBeLessThan(0.9); // capturing (now with Snares) ends it earlier; without capture it's ~66%
   });
   it('rewards bringing a bow', () => {
     const r = matchup({ weapons: [['bow', 0], ['blade', 0]], armor: 'jerkin', item: 'salve', target: 'galeshrike' }, { skill: 'casual', capture: true }, N);
