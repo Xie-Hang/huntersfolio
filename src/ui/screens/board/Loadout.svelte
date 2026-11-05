@@ -1,4 +1,5 @@
 <script lang="ts">
+  import WeaponArt from '../../parts/WeaponArt.svelte';
   import Icon from '../../parts/Icon.svelte';
   // Four slots; tapping one swaps the slots for a picker list (sortable, filterable, with deltas).
   import Elem from '../../parts/Elem.svelte';
@@ -99,7 +100,7 @@
           <button class="slot" data-slot={slot} onclick={() => open(slot)}>
             <span class="sl">{SLOT_LABEL[slot]}</span>
             <span>
-              <span class="nm">{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}{' '}<span class="avg">{weaponVs(game.save, id, mon)} avg</span></span>
+              <span class="nm"><WeaponArt id={id} size={34} />{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}{' '}<span class="avg">{weaponVs(game.save, id, mon)} avg</span></span>
               <span class="sub2"><span><span class="tag {sg.tag}" style="margin:0 4px 0 0">{sg.name}</span>{w.type} · <Elem e={w.elem} />{w.elem ?? 'No element'}</span><span>{@render weaponNotes(w)}</span></span>
             </span>
             <span class="chg">Change</span>
@@ -172,7 +173,7 @@
             {@const v = weaponVs(game.save, id, mon)}
             <button class="prow" aria-current={id === cur} onclick={() => choose(id)}>
               <span>
-                <span class="nm">{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}{#if id === cur}<span class="badge">Equipped</span>{:else if id === other}<span class="badge">In {SLOT_LABEL[idx ? 'w0' : 'w1']}</span>{/if}</span>
+                <span class="nm"><WeaponArt id={id} size={28} />{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}{#if id === cur}<span class="badge">Equipped</span>{:else if id === other}<span class="badge">In {SLOT_LABEL[idx ? 'w0' : 'w1']}</span>{/if}</span>
                 <span class="ty">{w.type} · <Elem e={w.elem} />{w.elem ?? 'No element'} · {movesLine(w.moves)}</span>
                 <span class="note">{@render weaponNotes(w)}</span>
               </span>

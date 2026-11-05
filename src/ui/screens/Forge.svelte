@@ -1,5 +1,6 @@
 <script lang="ts">
   import Icon from '../parts/Icon.svelte';
+  import WeaponArt from '../parts/WeaponArt.svelte';
   // List-detail: upgrade trees on the left, the selected recipe on the right.
   import Elem from '../parts/Elem.svelte';
   import * as E from '../../engine';
@@ -78,7 +79,7 @@
           {@const lv = lvHere(r.id)}
           <button class="fnode d{r.depth}" aria-current={sel === r.id} onclick={() => pick(r.id)}>
             <span class="nmwrap">
-              {#if r.depth}<span class="ind">└</span>{/if}<span class="nm">{#if kind === 'c'}<Icon id={r.id} size={18} />{/if}{d.name}{#if lv}{' '}<span class="lv">+{lv}</span>{/if}</span>
+              {#if r.depth}<span class="ind">└</span>{/if}<span class="nm">{#if kind === 'c'}<Icon id={r.id} size={18} />{:else if kind === 'w'}<WeaponArt id={r.id} size={26} />{/if}{d.name}{#if lv}{' '}<span class="lv">+{lv}</span>{/if}</span>
               {#if s.tracked === `${kind}:${r.id}`}<span class="tracked-pin">● Tracked</span>{/if}
               <span class="st {st.cls}"><i></i>{st.text}</span>
             </span>
@@ -103,7 +104,7 @@
       {@const tk = `${kind}:${sel}`}
       <div class="fdetail">
         <!-- 1. What is it, and what state is it in -->
-        <div class="fd-head"><h2>{name}{#if lv}{' '}<span class="lv">+{lv}</span>{/if}</h2><span class="st {st.cls}"><i></i>{st.text}</span></div>
+        <div class="fd-head"><h2>{#if kind === 'w'}<WeaponArt id={sel} size={56} />{/if}{name}{#if lv}{' '}<span class="lv">+{lv}</span>{/if}</h2><span class="st {st.cls}"><i></i>{st.text}</span></div>
 
         {#if kind === 'w'}
           {@const d = E.WEAPONS[sel]}

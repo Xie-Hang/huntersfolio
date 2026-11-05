@@ -1,4 +1,5 @@
 <script lang="ts">
+  import WeaponArt from '../../parts/WeaponArt.svelte';
   import Key from '../../parts/Key.svelte';
   import Icon from '../../parts/Icon.svelte';
   // Current weapon's moves, then the dice actions (guard, charge, swap, capture) and the item.
@@ -46,7 +47,7 @@
 <section class="panel" aria-label="Your gear">
   <div class="wname">
     <div class="ph" style="gap:8px">
-      <h2 style="margin:0;font-weight:600;font-size:var(--fs-lg)">{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}</h2>
+      <h2 style="margin:0;font-weight:600;font-size:var(--fs-lg);display:flex;align-items:center;gap:8px"><WeaponArt id={w.id} size={34} />{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}</h2>
       <span class="avg">{E.avgVs(w, h.mid)} avg</span>
     </div>
     <span class="elem" style="color:{elemColor}">{w.type} · <Elem e={w.elem} />{w.elem ?? 'No element'}{em > 1 ? ' · hits weakness' : em < 1 ? ' · resisted' : ''}{halfAir ? ' · half damage in the air' : ''}</span>
@@ -75,7 +76,7 @@
     <span><span class="mn"><Key k="C" />Charge</span><span class="md">{chargeRisk ? `The −${inc?.net} coming would break it: guard it under ${E.CHARGE_BREAK} first` : `Your first hit next turn deals double · a hit of ${E.CHARGE_BREAK}+ breaks it`}</span></span><span class="need">{cd}</span>
   </button>
   <button class="move dash {sOk ? 'ready' : 'no'}" data-coach="swap" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
-    <span><span class="mn"><Key k="S" pad="RT" />Swap to {other.name}{#if swapCounter}<span class="tag counter">Counter</span>{/if}</span><span class="md">{other.type} · <Elem e={other.elem} />{other.elem ?? 'No element'}</span></span><span class="need">{E.freeSwap(h) ? 'Free' : '1'}</span>
+    <span><span class="mn"><Key k="S" pad="RT" /><WeaponArt id={other.id} size={22} />Swap to {other.name}{#if swapCounter}<span class="tag counter">Counter</span>{/if}</span><span class="md">{other.type} · <Elem e={other.elem} />{other.elem ?? 'No element'}</span></span><span class="need">{E.freeSwap(h) ? 'Free' : '1'}</span>
   </button>
   <!-- Always shown, so players learn it exists before it's available. -->
   <button data-coach="capture" class="move capture {capLive && E.captureReady(h) ? 'live' : ''} {capOk ? 'ready' : 'no'}" aria-disabled={!capOk} onclick={() => capOk && game.capture()}>

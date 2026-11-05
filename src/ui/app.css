@@ -179,7 +179,7 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .fnode:hover{background:var(--raise)}
 .fnode:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
 .fnode[aria-current="true"]{background:var(--raise);box-shadow:inset 3px 0 0 var(--gold)}
-.fnode .nm{font-family:var(--f-body);font-weight:600;font-size:var(--fs-md)}
+.fnode .nm{font-family:var(--f-body);font-weight:600;font-size:var(--fs-md);display:inline-flex;align-items:center;gap:6px}
 .fnode .ind{color:var(--line-2);margin-right:6px}
 .fnode.d1 .nmwrap{padding-left:18px}.fnode.d2 .nmwrap{padding-left:36px}.fnode.d3 .nmwrap{padding-left:54px}.fnode.d4 .nmwrap{padding-left:72px}
 .st{font-size:var(--fs-sm);white-space:nowrap;display:flex;align-items:center;gap:6px}
@@ -191,7 +191,7 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .tracked-pin{font-size:var(--fs-sm);color:var(--gold-hi);margin-left:6px}
 .fdetail{display:flex;flex-direction:column;gap:12px}
 .fd-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
-.fd-head h2{margin:0;font-family:var(--f-body);font-weight:600;font-size:var(--fs-lg)}
+.fd-head h2{margin:0;font-family:var(--f-body);font-weight:600;font-size:var(--fs-lg);display:flex;align-items:center;gap:12px}
 .mtable{width:100%;border-collapse:collapse;font-size:var(--fs-sm)}
 .mtable td{padding:6px 0;border-bottom:1px solid var(--line)}
 .mtable td:last-child{text-align:right}
