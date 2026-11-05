@@ -8,12 +8,14 @@
   import PlayerPanel from './hunt/PlayerPanel.svelte';
   import DicePanel from './hunt/DicePanel.svelte';
   import GearPanel from './hunt/GearPanel.svelte';
+  import BountyPanel from './hunt/BountyPanel.svelte';
   import Tagged from '../parts/Tagged.svelte';
   const h = $derived(game.hunt!);
 </script>
 
 <main class="grid hunt">
   <div class="side">
+  <BountyPanel />
   <section class="panel huntlog" aria-label="Hunt log">
     <div class="ph"><h2>Hunt log</h2><span class="label">Newest first</span></div>
     <ul class="log">
