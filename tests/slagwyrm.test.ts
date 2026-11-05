@@ -38,8 +38,8 @@ describe('Tier 3: the Slagwyrm', () => {
   });
   it('is a Blunt check (simulated, casual)', () => {
     const run = (w: [string, number][]) => matchup({ weapons: w, armor: 'glassmantle', armorLv: 2, item: 'salve', items: 3, target: 'slagwyrm' }, { skill: 'casual', capture: false }, 200, 17).win;
-    const blunt = run([['pearlhammer', 2], ['twilightbow', 2]]), none = run([['duskblade', 2], ['twilightbow', 2]]);
-    expect(blunt).toBeGreaterThan(0.75);
+    const blunt = run([['miremaul', 2], ['wartbow', 2]]), none = run([['bogcleaver', 2], ['wartbow', 2]]); // Stone: its weakness
+    expect(blunt).toBeGreaterThan(0.8);
     expect(blunt - none).toBeGreaterThan(0.2);
   });
 });

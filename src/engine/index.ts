@@ -6,7 +6,7 @@ export * from './save';
 export { randomSeed } from './rng';
 export { WEAPONS, TREES, SIGNATURES } from './data/weapons';
 export { ARMORS, ITEMS, MATERIALS, CHARMS, matName } from './data/gear';
-export { MONSTERS, ALL_MONSTERS, TIERS, UNKNOWN } from './data/monsters';
+export { MONSTERS, ALL_MONSTERS, TIERS, UNKNOWN, TIER3_TUNE } from './data/monsters';
 export * from './util';
 export * from './achievements';
 export * from './edition';

@@ -33,7 +33,7 @@ describe('Tier 3: the Monolith Warden', () => {
     expect(h.intent).toBe('reform');
     E.endTurn(h);
     expect(h.mon.parts.plates.broken).toBe(false);
-    expect(h.mon.parts.plates.hp).toBe(Math.ceil(90 * 0.6));
+    expect(h.mon.parts.plates.hp).toBe(Math.ceil(E.MONSTERS.monolith.parts.find(p => p.id === 'plates')!.hp * 0.6));
   });
   it('a broken-then-reformed plate still pays its material', () => {
     const s = ready(), h = E.startHunt(s, 3);
@@ -56,7 +56,7 @@ describe('Tier 3: the Monolith Warden', () => {
   });
   it('is a check for a plate-cracker plus a core weapon (simulated, casual)', () => {
     const run = (w: [string, number][]) => matchup({ weapons: w, armor: 'glassmantle', armorLv: 2, item: 'salve', items: 3, target: 'monolith' }, { skill: 'casual', capture: false }, 200, 17).win;
-    const both = run([['facethammer', 2], ['mirrorbow', 2]]), noCore = run([['facethammer', 2], ['mirrorblade', 2]]);
+    const both = run([['facethammer', 2], ['twilightbow', 2]]), noCore = run([['facethammer', 2], ['duskblade', 2]]); // Gale bow: its weakness
     expect(both).toBeGreaterThan(0.8);
     expect(both - noCore).toBeGreaterThan(0.2);
   });

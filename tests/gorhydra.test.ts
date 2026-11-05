@@ -17,7 +17,7 @@ describe('Tier 3: the Gorhydra', () => {
     h.intent = 'left:bite|middle:crush|right:breath';
     const i = E.intentInfo(h);
     expect(i.name).toBe('Bite + Crush + Frost Breath');
-    expect(i.dmg).toBe(10 + 18 + 8);
+    expect(i.dmg).toBe(Math.round((10 + 18 + 8) * E.TIER3_TUNE.gorhydra.dmg));
   });
   it('a broken head regrows in 2 turns at half HP unless the stump is sealed', () => {
     const h = E.startHunt(ready(), 3);
@@ -25,7 +25,7 @@ describe('Tier 3: the Gorhydra', () => {
     E.useMove(h, 0);
     expect(h.mon.parts.left.broken).toBe(true); expect(h.mon.stump?.left).toBe(2); expect(h.mon.sealed?.left).toBeFalsy();
     h.intent = 'left:bite|middle:snap|right:bite'; E.endTurn(h); E.endTurn(h);
-    expect(h.mon.parts.left.broken).toBe(false); expect(h.mon.parts.left.hp).toBe(65);
+    expect(h.mon.parts.left.broken).toBe(false); expect(h.mon.parts.left.hp).toBe(Math.ceil(E.MONSTERS.gorhydra.parts[0].hp / 2));
   });
   it('a later Cut hit on the stump seals it for good; an Ember hit does too', () => {
     const h = E.startHunt(ready(), 4);
@@ -45,10 +45,11 @@ describe('Tier 3: the Gorhydra', () => {
     expect(h.intent).toBe('slam');
     expect(E.monsterOf(h).hitMod!(h, 'left', E.currentWeapon(h))!.mult).toBe(1.25);
   });
-  it('is a Cut check (simulated, casual)', () => {
+  // since the Stormspire ramp (Nov 2026) the right type isn't enough at Tier 3: its weakness, Ember, is what wins
+  it('is an Ember check (simulated, casual)', () => {
     const run = (w: [string, number][]) => matchup({ weapons: w, armor: 'bogcoat', armorLv: 2, item: 'salve', items: 3, target: 'gorhydra' }, { skill: 'casual', capture: false }, 200, 17).win;
-    const cut = run([['bogcleaver', 2], ['miremaul', 2]]), none = run([['miremaul', 2], ['wartbow', 2]]);
-    expect(cut).toBeGreaterThan(0.7);
-    expect(cut - none).toBeGreaterThan(0.25);
+    const ember = run([['whelkedge', 2], ['pearlhammer', 2]]), none = run([['bogcleaver', 2], ['miremaul', 2]]);
+    expect(ember).toBeGreaterThan(0.8);
+    expect(ember - none).toBeGreaterThan(0.3);
   });
 });

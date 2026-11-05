@@ -88,6 +88,17 @@
 
 <section class="panel loadout" aria-label="Loadout" bind:this={root}>
   <div class="ph"><h2>Loadout</h2><span class="label">For the {M.short}</span></div>
+  <!-- Stormspire hits harder (Nov 2026 ramp): say what preparing means, against the gear you have on now -->
+  {#if !picker && M.tier >= 3}
+    {@const needType = M.flier ? 'Pierce' : M.burrower ? 'Blunt' : null}
+    {@const weakOk = L.weapons.some(id => id && E.WEAPONS[id].elem === M.weak && (!needType || E.WEAPONS[id].type === needType) && E.lvOf(game.save.weapons, id) >= 2)}
+    {@const armOk = E.ARMORS[L.armor]?.resist === M.elem}
+    <div class="prep" class:ready={weakOk && armOk}>
+      <span class="pt">{weakOk && armOk ? 'Prepared' : 'Stormspire hits harder. Prepare:'}</span>
+      <span class={weakOk ? 'good' : 'bad'}>{weakOk ? '✓' : '✗'} a {M.weak} {needType === 'Pierce' ? 'bow' : needType === 'Blunt' ? 'Blunt weapon' : 'weapon'} at +2 or better</span>
+      <span class={armOk ? 'good' : 'bad'}>{armOk ? '✓' : '✗'} armor that resists {M.elem}</span>
+    </div>
+  {/if}
 
   {#if !picker}
     <div class="slots">
@@ -266,6 +277,10 @@
 </section>
 
 <style>
+  .prep { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; padding: 8px 12px; border: 1px solid var(--ember-soft); border-radius: 6px; font-size: var(--fs-sm); }
+  .prep.ready { border-color: var(--line-2); }
+  .prep .pt { font-weight: 600; color: var(--fg); }
+  .prep .good { color: var(--life); } .prep .bad { color: var(--ember-soft); }
   .bstrip { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; padding: 10px 12px; border: 1px solid var(--gold); border-radius: 6px; }
   .bstrip .bn { color: var(--gold-hi); font-weight: 600; }
   .bstrip.quiet { border-color: var(--line-2); font-size: var(--fs-sm); }

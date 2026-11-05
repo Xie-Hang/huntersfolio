@@ -13,6 +13,24 @@ import { slagwyrm } from './slagwyrm';
 import { gorhydra } from './gorhydra';
 import { MAX_TIER, EDITION } from '../../edition';
 
+/** Stormspire (Tier 3) ramp, Nov 2026 playtest: a skilled tester cleared it with +0 Mirewood weapons, so nothing
+ *  asked him to farm or reinforce. Each monster gets its own HP (body and parts) and damage multiplier, tuned in the
+ *  sim (scratch/t3prep.ts) so an average player who walks in with fresh Mirewood gear mostly loses, one who brings
+ *  Mirewood gear of its weakness at +3 with resist armor wins ~95%, and Stormspire gear wins 90%+. A flat multiplier
+ *  didn't work: it walled the Monolith while the Slagwyrm and Gorhydra stayed easy. */
+export const TIER3_TUNE: Record<string, { hp: number; dmg: number }> = {
+  monolith: { hp: 1.1, dmg: 1.1 }, stormroc: { hp: 1.2, dmg: 1.25 }, slagwyrm: { hp: 1.2, dmg: 1.2 }, gorhydra: { hp: 1.25, dmg: 1.25 },
+};
+for (const [M, t] of [[monolith, TIER3_TUNE.monolith], [stormroc, TIER3_TUNE.stormroc], [slagwyrm, TIER3_TUNE.slagwyrm], [gorhydra, TIER3_TUNE.gorhydra]] as const) {
+  M.hp = Math.round(M.hp * t.hp);
+  for (const p of M.parts) p.hp = Math.round(p.hp * t.hp);
+  const raw = M.intent;
+  M.intent = function (h, type) {
+    const r = raw.call(this, h, type);
+    return r.dmg ? { ...r, dmg: Math.round(r.dmg * t.dmg), ...(r.elemDmg ? { elemDmg: Math.round(r.elemDmg * t.dmg) } : {}) } : r;
+  };
+}
+
 /** every monster that's built; MONSTERS is the ones in this edition (the demo stops at Ashfall Ridge) */
 export const ALL_MONSTERS: Record<string, MonsterDef> = { gorehorn, galeshrike, cinderback, rimetail, bogjaw, duskheron, emberwhelk, mistglass, monolith, stormroc, slagwyrm, gorhydra };
 export const MONSTERS: Record<string, MonsterDef> = Object.fromEntries(Object.entries(ALL_MONSTERS).filter(([, M]) => M.tier <= MAX_TIER));

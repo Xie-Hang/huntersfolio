@@ -41,11 +41,11 @@ describe('Tier 3: the Stormcrown Roc', () => {
   it('the Stormfeather Cloak halves Thunderhead', () => {
     const s = ready(); s.armors = { stormcloak: { lv: 0 } } as never; s.loadout.armor = 'stormcloak';
     const h = E.startHunt(s, 5); h.intent = 'thunder';
-    expect(E.intentInfo(h).dmg).toBe(35);
+    expect(E.intentInfo(h).dmg).toBe(Math.round(35 * E.TIER3_TUNE.stormroc.dmg));
   });
   it('is a Pierce check (simulated, casual)', () => {
     const run = (w: [string, number][]) => matchup({ weapons: w, armor: 'glassmantle', armorLv: 2, item: 'salve', items: 3, target: 'stormroc' }, { skill: 'casual', capture: false }, 200, 17).win;
-    const bow = run([['gillbow', 2], ['pearlhammer', 2]]), none = run([['pearlhammer', 2], ['whelkedge', 2]]);
+    const bow = run([['mirrorbow', 2], ['mirrorblade', 2]]), none = run([['mirrorblade', 2], ['facethammer', 2]]); // Frost: its weakness
     expect(bow).toBeGreaterThan(0.75);
     expect(bow - none).toBeGreaterThan(0.25); // the casual bot now guards when it can't reach the flier, so no-bow is softer
   });
