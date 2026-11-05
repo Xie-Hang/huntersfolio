@@ -43,9 +43,8 @@ def sovereign(stance='rest'):
         out += f'<path d="M{bx - 14} {by + 6} L{bx + 22} {by - 30} L{bx + 14} {by + 18} Z" fill="{FROST}" {S} stroke-width="6"/>'
     # Galeshrike wings (Gale): folded against the back at rest, spread in the Gale stance
     sp = 1 if stance == 'gale' else 0.4
-    if stance != 'ember': out += wing(X(640), Y(300), sp, 1)
-    # in flight the second wing opens too, from behind the top of the body (never across its face)
-    if stance == 'gale': out += wing(X(470), Y(250), sp, -1)
+    # in flight the far wing opens too, from behind the top of the body (never across its face)
+    if stance == 'gale': out += wing(X(560), Y(240), sp, -1)
     # the slime body: pale green-grey, translucent sheen
     out += f'<path d="{d}" fill="{SLIME}" {S}/>'
     hatch = ''.join(f'M{x} 400 L{x - 60} 560 ' for x in range(160, 900, 16))
@@ -55,9 +54,11 @@ def sovereign(stance='rest'):
         out += f'<path d="M{X(560)} {Y(300)} L{X(640)} {Y(420)}" stroke="{INK}" stroke-width="14" stroke-linecap="round" opacity=".3"/><path d="M{X(430)} {Y(430)} l70 -10" stroke="{INK}" stroke-width="18" stroke-linecap="round" opacity=".22"/>'
     out += '</g>'
     out += f'<path d="M{X(310)} {Y(290)} C{X(350)} {Y(230)} {X(440)} {Y(206)} {X(510)} {Y(208)}" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" opacity=".7"/>'
-    # Cinderback vents along the top (Ember), and its digging claws at the base
-    for i, x in enumerate((520, 600, 680)):
-        vx, vy = X(x), Y(205 + abs(x - 560) * .5)
+    # the near Galeshrike wing lies over the body at the back (Mekkman's sketch, 6 Nov)
+    if stance != 'ember': out += wing(X(620), Y(270), sp, 1)
+    # Cinderback vents along the top, moved forward to leave the back to the wing (Ember), and its digging claws at the base
+    for i, x in enumerate((360, 425, 490)):
+        vx, vy = X(x), Y({360: 232, 425: 205, 490: 192}[x])
         hot = stance == 'ember'
         out += f'<path d="M{vx - 18} {vy + 6} L{vx - 10} {vy - 34} H{vx + 10} L{vx + 18} {vy + 6} Z" fill="{STONE if stance == "stone" else BONE2}" {S} stroke-width="6"/><ellipse cx="{vx}" cy="{vy - 34}" rx="9" ry="4" fill="{EMBER}"/>'
         if hot: out += f'<path d="M{vx} {vy - 44} q-12 -22 0 -44 q12 -22 0 -44" fill="none" stroke="{EMBER}" stroke-width="6" stroke-linecap="round" opacity=".85"/>'
