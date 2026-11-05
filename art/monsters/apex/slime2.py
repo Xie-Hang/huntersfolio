@@ -46,7 +46,7 @@ def sovereign(stance='rest'):
     # in flight the far wing opens too, from behind the top of the body (never across its face)
     if stance == 'gale': out += wing(X(560), Y(240), sp, -1)
     # folded (at rest, Stone, Frost): the far wing peeks out behind the near one, higher up
-    elif stance != 'ember': out += wing(X(560), Y(215), sp, 1)
+    else: out += wing(X(560), Y(215), sp, 1)
     # the slime body: pale green-grey, translucent sheen
     out += f'<path d="{d}" fill="{SLIME}" {S}/>'
     hatch = ''.join(f'M{x} 400 L{x - 60} 560 ' for x in range(160, 900, 16))
@@ -57,7 +57,7 @@ def sovereign(stance='rest'):
     out += '</g>'
     out += f'<path d="M{X(310)} {Y(290)} C{X(350)} {Y(230)} {X(440)} {Y(206)} {X(510)} {Y(208)}" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" opacity=".7"/>'
     # the near Galeshrike wing lies over the body at the back (Mekkman's sketch, 6 Nov)
-    if stance != 'ember': out += wing(X(620), Y(270), sp, 1)
+    out += wing(X(620), Y(270), sp, 1)
     # Cinderback vents along the top, moved forward to leave the back to the wing (Ember), and its digging claws at the base
     for i, x in enumerate((360, 425, 490)):
         vx, vy = X(x), Y({360: 232, 425: 205, 490: 192}[x])
@@ -71,13 +71,15 @@ def sovereign(stance='rest'):
     lw = 1.25 if stance == 'stone' else 1
     for k, (x, y) in enumerate(((X(215), Y(440)), (X(260), Y(470)))):
         out += f'<path d="M{x + 30} {y} C{x - 40 * lw} {y + 10} {x - 80 * lw} {y - 50 * lw} {x - 60 * lw} {y - 110 * lw} C{x - 40 * lw} {y - 60 * lw} {x - 10} {y - 30} {x + 34} {y - 30} Z" fill="{GOLD}" {S} stroke-width="7"/>'
+    CRUST = ((540, 300, 90), (650, 340, 100), (760, 410, 80), (470, 380, 80))
     if stance == 'stone':
-        for x, y, w in ((330, 300, 90), (450, 240, 110), (720, 330, 90)):
+        for x, y, w in CRUST:
             out += f'<path d="M{X(x)} {Y(y)} l{w * .3:.0f} -{w * .32:.0f} l{w * .55:.0f} {w * .06:.0f} l{w * .18:.0f} {w * .4:.0f} l-{w * .5:.0f} {w * .18:.0f} Z" fill="{STONE}" {S} stroke-width="6"/>'
     if stance == 'frost':
-        for x, h in ((300, 60), (380, 80), (450, 70), (720, 70), (780, 56)):
-            y = Y(300 if x in (300, 780) else 230)
-            out += f'<path d="M{X(x) - 22} {y + 20} L{X(x)} {y - h} L{X(x) + 22} {y + 20} Z" fill="{FROST}" {S} stroke-width="6"/>'
+        for x, y, w in CRUST:
+            for dx, h in ((-w * .3, w * .5), (0, w * .8), (w * .3, w * .55)):
+                bx, by = X(x) + dx, Y(y)
+                out += f'<path d="M{bx - 16:.0f} {by + 14:.0f} L{bx:.0f} {by - h:.0f} L{bx + 16:.0f} {by + 14:.0f} Z" fill="{FROST}" {S} stroke-width="6"/>'
     # eyes: small, many, unsettling
     for ex, ey, r in ((330, 330, 18), (385, 312, 22), (300, 375, 12)):
         out += f'<ellipse cx="{X(ex)}" cy="{Y(ey)}" rx="{r}" ry="{r * 1.3:.0f}" fill="{INK}"/><circle cx="{X(ex) - r * .3}" cy="{Y(ey) - r * .4}" r="{r * .3:.0f}" fill="{EMBER}"/>'
