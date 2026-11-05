@@ -30,9 +30,9 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .top h1 .hn{font-family:'IM Fell English SC',Georgia,serif;font-size:.62em;letter-spacing:.06em;color:var(--fg)}
 .sub{font-family:var(--f-body);font-size:var(--fs-sm);color:var(--muted)}
 .top-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.rankseal{display:inline-flex;align-items:center;gap:8px;padding:4px 4px 4px 12px;border:1px solid var(--line-2);border-radius:999px;cursor:default}
-.rankseal .rk{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'IM Fell English SC',Georgia,serif;font-size:21px;line-height:1;color:var(--ink);background:radial-gradient(circle at 35% 35%,#f3cf7a,#a87a24 75%);box-shadow:0 2px 3px rgba(0,0,0,.5)}
-.rankseal .rl{font-size:var(--fs-sm);color:var(--soft)}
+.rankseal{display:inline-flex;align-items:center;gap:8px;cursor:default;padding-right:4px}
+.rankseal .rl{display:flex;flex-direction:column;line-height:1.15;font-size:var(--fs-sm);color:var(--muted)}
+.rankseal .rl span:last-child{color:var(--gold-hi);font-weight:600}
 .purse{font-family:var(--f-body);font-variant-numeric:tabular-nums;font-size:var(--fs-sm);color:var(--gold-hi);padding:8px 12px;border:1px solid var(--line-2);border-radius:3px}
 .nav{display:flex;gap:6px;flex-wrap:wrap}
 .iconbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;background:transparent;border:1px solid var(--line-2);border-radius:3px;color:var(--soft);cursor:pointer}
@@ -109,9 +109,7 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .boardpanel .region{display:flex;flex-direction:column;gap:10px}
 .ranksec{display:flex;flex-direction:column;gap:12px;padding-top:6px}
 .ranksec + .ranksec{border-top:3px double var(--mat-plate-rule);padding-top:18px}
-.rankhead{margin:0;display:flex;align-items:center;gap:12px;font-family:var(--f-body);font-weight:600;font-size:var(--fs-lg);color:var(--fg)}
-.rankhead .rk{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'IM Fell English SC',Georgia,serif;font-size:22px;font-weight:400;color:var(--ink);background:radial-gradient(circle at 35% 35%,#f3cf7a,#a87a24 75%);box-shadow:0 2px 3px rgba(0,0,0,.5)}
-.ranksec:not(.current) .rankhead .rk{filter:grayscale(.7) brightness(.75)}
+.rankhead{margin:0;min-height:48px;display:flex;align-items:center;gap:12px;font-family:var(--f-body);font-weight:600;font-size:var(--fs-lg);color:var(--fg)}
 .rankhead .rs{margin-left:auto}
 .ranksec.current .rankhead .rs{color:var(--gold-hi)}
 .region h4.group{margin:0;font-weight:400}

@@ -2,6 +2,7 @@
   import * as E from '../engine';
   import { game, type View } from './game.svelte';
   import Modal from './parts/Modal.svelte';
+  import RankMedal from './parts/RankMedal.svelte';
   import Coach from './parts/Coach.svelte';
   import Intro from './parts/Intro.svelte';
   import { onHuntKey } from './keys';
@@ -126,7 +127,7 @@
         </nav>
       {/if}
       <!-- Hunter Rank (Nov 2026): a seal with your rank's letter -->
-      <span class="rankseal" title="Hunter Rank {E.hunterRank(game.save)}: {E.promotionFor(game.save) ? `pass the ${E.promotionFor(game.save)!.short} promotion hunt to rank up` : 'Low Rank cleared'}"><span class="rl">Rank</span><span class="rk">{E.hunterRank(game.save)}</span></span>
+      <span class="rankseal" title="Hunter Rank {E.hunterRank(game.save)}: {E.promotionFor(game.save) ? `pass the ${E.promotionFor(game.save)!.short} promotion hunt to rank up` : 'Low Rank cleared'}"><RankMedal rank={E.hunterRank(game.save)} size={44} /><span class="rl"><span>Hunter</span><span>Rank {E.hunterRank(game.save)}</span></span></span>
       <span class="purse">{game.save.coin} coin</span>
       {#if game.inHunt}
         <button class="btn quiet" onclick={() => game.abandon()}>Abandon hunt</button>
