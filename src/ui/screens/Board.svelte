@@ -17,7 +17,7 @@
   const M = $derived(E.MONSTERS[game.save.loadout.target]);
 
   const groups = $derived(
-    [1, 2, 2.2, 2.5, 3, 3.2, 4]
+    [1, 1.5, 2, 2.2, 2.5, 3, 3.2, 4]
       .map(t => ({
         t,
         known: Object.values(E.MONSTERS).filter(M => M.tier === t && (filter === 'All' || M.elem === filter)),

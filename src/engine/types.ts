@@ -115,7 +115,7 @@ export interface ItemDef {
   pouch?: boolean;
 }
 
-export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet' | 'airPierce' | 'bigHeal' | 'sealHeal' | 'chargeDaze' | 'groundHit' | 'breakFree' | 'pierceStrip' | 'breakWhet' | 'infectBuild' | 'sparkBuild' | 'drainUp' | 'infectLong' | 'sparkBig' | 'drainTol';
+export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet' | 'airPierce' | 'bigHeal' | 'sealHeal' | 'chargeDaze' | 'groundHit' | 'breakFree' | 'pierceStrip' | 'breakWhet' | 'landWhet' | 'infectBuild' | 'sparkBuild' | 'drainUp' | 'infectLong' | 'sparkBig' | 'drainTol';
 export interface CharmDef {
   /** monster tier it comes from (default 1); gear above the edition's top tier isn't in that build */
   tier?: number;

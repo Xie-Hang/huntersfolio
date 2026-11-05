@@ -4,17 +4,20 @@ import { matchup } from '../src/sim/scenarios';
 
 const ready = () => {
   const s = E.newSave();
-  for (const id of ['gorehorn', 'galeshrike', 'cinderback', 'rimetail']) s.record[id] = { hunts: 1, wins: 1, captures: 0, breaks: {} };
+  for (const id of ['gorehorn', 'galeshrike', 'cinderback', 'rimetail', 'cragwing']) s.record[id] = { hunts: 1, wins: 1, captures: 0, breaks: {} };
   s.weapons = { ridgecleaver: { lv: 2 }, boulder: { lv: 2 } };
   s.loadout = { ...s.loadout, weapons: ['ridgecleaver', 'boulder'], target: 'bogjaw' };
   return s;
 };
 
 describe('Tier 2: the Bogjaw', () => {
-  it('opens only once every Ashfall Ridge monster is beaten', () => {
+  it('opens with the Cragwing promotion, which opens once every Ashfall Ridge monster is beaten', () => {
     const s = E.newSave();
     expect(E.isUnlocked(s, 'bogjaw')).toBe(false);
-    expect(E.unlockHint('bogjaw')).toBe('Beat every monster on Ashfall Ridge first');
+    expect(E.unlockHint('bogjaw')).toBe('Pass the Cragwing promotion hunt first');
+    expect(E.unlockHint('cragwing')).toBe('Beat every monster on Ashfall Ridge first');
+    for (const id of ['gorehorn', 'galeshrike', 'cinderback', 'rimetail']) s.record[id] = { hunts: 1, wins: 1, captures: 0, breaks: {} };
+    expect(E.isUnlocked(s, 'cragwing')).toBe(true); expect(E.isUnlocked(s, 'bogjaw')).toBe(false);
     expect(E.isUnlocked(ready(), 'bogjaw')).toBe(true);
   });
   it('Swallow locks two dice; cutting free releases them', () => {

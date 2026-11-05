@@ -8,7 +8,8 @@ import type { Hunt, Intent, MonsterDef, Move, WeaponInst } from '../../types';
 import { infectPlayer } from '../../status';
 
 export const BLOOM_TURNS = 2, ROT_BLOOM_HEAL = 25;
-const RIDGE = ['gorehorn', 'galeshrike', 'cinderback', 'rimetail'];
+// rank E (Nov 2026): opens with the Cragwing promotion
+const RIDGE = ['cragwing'];
 
 /** a Pierce hit of 2+ dice on the swollen cap pops it (shared with nothing: the Blightcrown's cap is crusted) */
 export function popCap(h: Hunt, mv: Move, w: WeaponInst): string | null {

@@ -7,7 +7,8 @@ import type { Hunt, Intent, MonsterDef, Move, WeaponInst } from '../../types';
 import { latchPlayer } from '../../status';
 
 export const LATCH_TURNS = 3;
-const RIDGE = ['gorehorn', 'galeshrike', 'cinderback', 'rimetail'];
+// rank E (Nov 2026): opens with the Cragwing promotion
+const RIDGE = ['cragwing'];
 
 /** a Cut move of 2+ dice tears a latched monster off: it loses its action */
 export function tearOff(h: Hunt, mv: Move, w: WeaponInst): string | null {

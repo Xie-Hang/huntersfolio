@@ -46,7 +46,7 @@ export const duskheron: MonsterDef = {
   resist: 'Stone',
   hp: 520,
   tier: 2,
-  requires: ['gorehorn', 'galeshrike', 'cinderback', 'rimetail'],
+  requires: ['cragwing'], // rank E: the Cragwing promotion opens the Mirewood (Nov 2026)
   head: 'upper',
   heads: [...HEADS],
   common: 'duskplume',

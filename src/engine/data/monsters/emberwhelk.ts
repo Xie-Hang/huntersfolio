@@ -25,7 +25,7 @@ export const emberwhelk: MonsterDef = {
   resist: 'Frost',
   hp: 460,
   tier: 2,
-  requires: ['gorehorn', 'galeshrike', 'cinderback', 'rimetail'],
+  requires: ['cragwing'], // rank E: the Cragwing promotion opens the Mirewood (Nov 2026)
   head: 'shell',
   common: 'whelkscale',
   rarePart: 'shell',

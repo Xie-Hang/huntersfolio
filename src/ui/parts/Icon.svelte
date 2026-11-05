@@ -115,6 +115,13 @@
     duskcharm: `${charmTop}<path d="M38 22 L12 28 L38 34 Z" fill="${BONE2}" ${S}/><path d="M38 34 L14 38 L38 42 Z" fill="${BONE2}" ${S}/>`,
     bogcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${STONEC}" ${S}/><circle cx="20" cy="25" r="3.5" fill="${MOSS}"/><circle cx="28" cy="31" r="3" fill="${MOSS}"/>`,
     /* the changed Ashfall Ridge: the originals' shapes in the variant's element */
+    /* the Cragwing (rank F → E promotion, Nov 2026): slate grey, gale blue accent */
+    cragslate: `<path d="M8 30 L18 8 L38 14 L42 32 L26 42 Z" fill="${STONEC}" ${S}/><path d="M18 8 L24 26 L42 32 M24 26 L26 42" fill="none" stroke="${INK}" stroke-width="2" opacity=".55"/>`,
+    cragpinion: feather(STONEC, true),
+    craghorn: fang(GOLDHI),
+    cragslab: `<path d="M6 16 L24 8 L42 16 L38 38 L24 42 L10 38 Z" fill="${STONEC}" ${S}/><path d="M12 20 L24 15 L36 20 M14 30 L24 26 L34 30" fill="none" stroke="${GALE}" stroke-width="2.6" stroke-linecap="round"/>`,
+    cragheart: gem(GALE, STONEC),
+    cragcharm: `${charmTop}<path d="M10 40 L20 16 L38 22 L40 38 Z" fill="${STONEC}" ${S}/><path d="M14 30 q8 -6 16 -2 M16 36 q8 -4 18 -2" fill="none" stroke="${GALE}" stroke-width="2.6" stroke-linecap="round"/>`,
     squallhide: `<path d="M8 12 C16 8 32 8 40 12 L38 22 L42 30 L36 40 C28 43 20 43 12 40 L6 30 L10 22 Z" fill="${GALE}" ${S}/><path d="M12 20 q10 -4 20 0 M14 30 q10 -4 20 0" fill="none" stroke="${INK}" stroke-width="2.2" opacity=".55"/>`,
     galetusk: fang(GALE),
     squallmane: `<path d="M8 16 C16 12 32 12 40 16 L40 38 C32 42 16 42 8 38 Z" fill="${BONE}" ${S}/><path d="M8 16 L12 8 L16 14 L20 6 L24 13 L28 6 L32 14 L36 8 L40 16" fill="${GALE}" ${S}/>`,

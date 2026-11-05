@@ -15,7 +15,8 @@ import { groundFlier } from './galeshrike';
 export const MOTH_AIR = 2;
 /** a Discharge on you: weaker once the thorax that stores the charge is broken */
 export const mothHit = (h: Hunt, base: number) => Math.round(base * (h.mon.parts.thorax.broken ? 0.65 : 1));
-const RIDGE = ['gorehorn', 'galeshrike', 'cinderback', 'rimetail'];
+// rank E (Nov 2026): opens with the Cragwing promotion
+const RIDGE = ['cragwing'];
 
 export const arcmoth: MonsterDef = {
   id: 'arcmoth',

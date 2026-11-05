@@ -164,6 +164,8 @@ export const captureBlocked = (h: Hunt) => canCapture(h) && def(h).canCapture?.(
 export const canHit = (h: Hunt, w: WeaponInst) => def(h).canHit?.(h, w) ?? true;
 export const cantHitReason = (h: Hunt, w: WeaponInst) => (canHit(h, w) ? null : def(h).cantHitReason?.(h, w) ?? 'It can’t be hit right now.');
 export const reachable = (h: Hunt, partId: string, w: WeaponInst) => def(h).reachable?.(h, partId, w) ?? true;
+/** Crag Charm: bringing a monster down from the air or up out of the ground whets your next hit */
+function landWhet(h: Hunt) { h.whet = Math.max(h.whet, 0.5); log(h, 'Crag Charm: your next hit deals +50%.', 'gold'); }
 export const airborneHalf = (h: Hunt, w: WeaponInst) => h.mon.air && w.type !== 'Pierce';
 export const freeDice = (h: Hunt) => h.dice.map((d, i) => (d.used ? -1 : i)).filter(i => i >= 0);
 
@@ -373,6 +375,7 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
   if (before.threat >= 3 && h.intent !== before.intent) feat(h, 'interrupt');
   if (before.air && !m.air) feat(h, 'grounded');
   if (before.under && !m.under) feat(h, 'unearthed');
+  if (((before.air && !m.air) || (before.under && !m.under)) && charmFx(h) === 'landWhet') landWhet(h);
   checkEnrage(h);
   if (m.hp > 0 && !wasCapturable && canCapture(h)) log(h, `${MD.short} is weak enough to capture!`, 'gold');
   if (m.hp <= 0) finish(h, 'win');
@@ -464,9 +467,9 @@ export function useItem(h: Hunt): boolean {
     case 'smoke': h.evade = true; log(h, 'You throw down smoke. Its next attack will miss.'); break;
     case 'whet50': h.whet = 0.5; log(h, 'You sharpen your edge. Next hit +50%.'); break;
     case 'whet100': h.whet = 1; log(h, 'You grind your edge on the tusk. Next hit +100%.'); break;
-    case 'net': groundFlier(h); log(h, 'The net wraps its wings. It crashes to the ground!', 'gold'); break;
+    case 'net': groundFlier(h); log(h, 'The net wraps its wings. It crashes to the ground!', 'gold'); if (charmFx(h) === 'landWhet') landWhet(h); break;
     case 'thaw': h.mon.plating = 0; log(h, 'The firepot bursts against its back. The ice plating melts away!', 'gold'); break;
-    case 'blast': unearth(h); log(h, 'The powder goes off in its tunnel. It bursts up, stunned!', 'gold'); break;
+    case 'blast': unearth(h); log(h, 'The powder goes off in its tunnel. It bursts up, stunned!', 'gold'); if (charmFx(h) === 'landWhet') landWhet(h); break;
     case 'cureInfect': h.mon.pInf = 0; h.mon.pInfDmg = 0; log(h, `${it.name}: the infection is gone.`, 'gold'); break;
     case 'cureSpark': h.mon.pSpark = 0; for (const d of h.dice) d.charged = false; log(h, `${it.name}: the spark drains out of you.`, 'gold'); break;
   }

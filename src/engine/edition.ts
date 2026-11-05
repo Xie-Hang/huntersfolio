@@ -5,4 +5,4 @@ declare const __HF_EDITION__: string | undefined;
 export type Edition = 'demo' | 'full';
 export const EDITION: Edition = typeof __HF_EDITION__ !== 'undefined' && __HF_EDITION__ === 'demo' ? 'demo' : 'full';
 /** the highest monster tier in this edition */
-export const MAX_TIER = EDITION === 'demo' ? 1 : 4;
+export const MAX_TIER = EDITION === 'demo' ? 1.5 : 4; // the demo ends with the Cragwing promotion (Nov 2026)

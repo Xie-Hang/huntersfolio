@@ -6,6 +6,7 @@
   import Galeshrike from './plates/Galeshrike.svelte';
   import Cinderback from './plates/Cinderback.svelte';
   import Rimetail from './plates/Rimetail.svelte';
+  import Cragwing from './plates/Cragwing.svelte';
   import Bogjaw from './plates/Bogjaw.svelte';
   import Duskheron from './plates/Duskheron.svelte';
   import Emberwhelk from './plates/Emberwhelk.svelte';
@@ -32,6 +33,7 @@
 {:else if mon === 'galeshrike'}<Galeshrike {hunt} />
 {:else if mon === 'cinderback'}<Cinderback {hunt} />
 {:else if mon === 'rimetail'}<Rimetail {hunt} />
+{:else if mon === 'cragwing'}<Cragwing {hunt} />
 {:else if mon === 'bogjaw'}<Bogjaw {hunt} />
 {:else if mon === 'duskheron'}<Duskheron {hunt} />
 {:else if mon === 'emberwhelk'}<Emberwhelk {hunt} />

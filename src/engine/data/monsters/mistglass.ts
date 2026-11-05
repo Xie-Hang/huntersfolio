@@ -25,7 +25,7 @@ export const mistglass: MonsterDef = {
   resist: 'Gale',
   hp: 580,
   tier: 2,
-  requires: ['gorehorn', 'galeshrike', 'cinderback', 'rimetail'],
+  requires: ['cragwing'], // rank E: the Cragwing promotion opens the Mirewood (Nov 2026)
   head: 'facets',
   common: 'glassdust',
   rarePart: 'eyes',

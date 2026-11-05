@@ -77,7 +77,7 @@ async function forgeAll(p: Page) {
   p.on('pageerror', e => note(`page error: ${e.message}`));
   p.on('console', m => { if (m.type() === 'error') note(`console error: ${m.text()}`); });
   await p.goto(URL); await p.waitForTimeout(500);
-  const t1 = ['gorehorn', 'galeshrike', 'cinderback', 'rimetail'];
+  const t1 = ['gorehorn', 'galeshrike', 'cinderback', 'rimetail', 'cragwing']; // the Cragwing promotion ends the demo (Nov 2026)
   const COUNTER: Record<string, string> = { galeshrike: 'net', cinderback: 'blast', rimetail: 'firepot' };
   let streak = 0, endSeenAt = 0; const allTimes: number[] = [], mem: number[] = [];
   for (let n = 1; n <= 45; n++) {

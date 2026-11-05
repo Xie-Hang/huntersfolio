@@ -24,7 +24,7 @@ export const bogjaw: MonsterDef = {
   resist: 'Ember',
   hp: 500,
   tier: 2,
-  requires: ['gorehorn', 'galeshrike', 'cinderback', 'rimetail'],
+  requires: ['cragwing'], // rank E: the Cragwing promotion opens the Mirewood (Nov 2026)
   head: 'jaw',
   common: 'bogskin',
   rarePart: 'warts',

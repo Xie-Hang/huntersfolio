@@ -101,7 +101,7 @@ describe('statuses on you', () => {
 describe('the Gloamhollow', () => {
   it('opens beside the Mirewood; the changed Mirewood needs the Mirewood and the Gloamhollow monster with its status', () => {
     const s = E.newSave();
-    for (const id of ['gorehorn', 'galeshrike', 'cinderback', 'rimetail']) s.record[id] = { hunts: 1, wins: 1, captures: 0, breaks: {} };
+    for (const id of ['gorehorn', 'galeshrike', 'cinderback', 'rimetail', 'cragwing']) s.record[id] = { hunts: 1, wins: 1, captures: 0, breaks: {} };
     expect(E.isUnlocked(s, 'rotcap')).toBe(true); expect(E.isUnlocked(s, 'feverjaw')).toBe(false);
     expect(E.unlockHint('feverjaw')).toBe('Beat every monster in the Mirewood and the Rotcap first');
     expect(E.MONSTERS.feverjaw.inflicts).toBe(E.MONSTERS.rotcap.inflicts);
