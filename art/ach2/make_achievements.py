@@ -328,14 +328,14 @@ def drop(cx, cy):
     return crossed(cx, cy, d)
 
 
-def earthed(cx, cy):
-    return (f'<path d="M{cx + 8} {cy - 44} L{cx - 18} {cy + 2} H{cx} L{cx - 10} {cy + 36} L{cx + 22} {cy - 10} H{cx + 4} Z" fill="#f0dd6e" stroke="{INK}" stroke-width="5" stroke-linejoin="round"/>'
-            f'<path d="M{cx - 34} {cy + 40} H{cx + 34} M{cx - 22} {cy + 50} H{cx + 22} M{cx - 10} {cy + 60} H{cx + 10}" stroke="{INK}" stroke-width="7" stroke-linecap="round"/>')
+def bolt(cx, cy):
+    d = f'<path d="M{cx + 8} {cy - 32} L{cx - 16} {cy + 4} H{cx} L{cx - 8} {cy + 32} L{cx + 18} {cy - 6} H{cx + 3} Z" fill="#f0dd6e" stroke="{INK}" stroke-width="5" stroke-linejoin="round"/>'
+    return crossed(cx, cy, d)
 
 
 ICONS.update({
     'CLEAN_BILL': lambda: plate_sz('rot_idle', -6, 100, 230, V, (60, 40, 790, 450)) + spores(66, 70),
-    'EARTHED': lambda: plate_sz('arc_idle', 20, 100, 230, V, (60, 40, 790, 450)) + earthed(66, 74),
+    'EARTHED': lambda: plate_sz('arc_idle', 20, 100, 230, V, (60, 40, 790, 450)) + bolt(66, 70),
     'BLOODLESS': lambda: plate_sz('fang_idle', 20, 104, 230, V, (60, 40, 790, 450)) + drop(66, 70),
     'GLOAMHOLLOW': lambda: ''.join(plate_sz(n, x, y, 78, V, (60, 40, 790, 450)) for n, x, y in [('rot_idle', 12, 60), ('arc_idle', 89, 60), ('fang_idle', 166, 60), ('blight_idle', 12, 132), ('glare_idle', 89, 132), ('grave_idle', 166, 132)]),
 })
