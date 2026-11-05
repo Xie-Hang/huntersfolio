@@ -302,6 +302,8 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
   const em = elemMult(w.elem, h.mid, h);
   if (em !== 1) { dmg = Math.round(dmg * em); notes.push(em > 1 ? 'weakness ×1.5' : 'resisted ×0.75'); }
   if (airborneHalf(h, w)) { dmg = Math.round(dmg / 2); notes.push('airborne ½'); }
+  // Fen Charm: the first hit each turn (stored as the turn it landed on)
+  if (charmFx(h) === 'firstHit' && m.fenHit !== h.turn) { m.fenHit = h.turn; dmg = Math.round(dmg * 1.15); notes.push('Fen Charm +15%'); }
   if (MD.flier && !m.air && charmFx(h) === 'groundHit') { dmg = Math.round(dmg * GROUND_HIT); notes.push('Shroud Charm +15%'); }
   if (m.air && w.type === 'Pierce' && charmFx(h) === 'airPierce') { dmg = Math.round(dmg * AIR_PIERCE); notes.push('Crown Charm +20%'); }
   if (wasCapturable && charmFx(h) === 'finisher') { dmg = Math.round(dmg * FINISHER); notes.push('Finisher’s Charm +25%'); }

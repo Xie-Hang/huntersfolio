@@ -30,7 +30,7 @@ export const monolith: MonsterDef = {
   resist: 'Ember',
   hp: 700,
   tier: 3,
-  requires: ['bogjaw', 'duskheron', 'emberwhelk', 'mistglass'],
+  requires: ['fenmother'], // rank D: the Fenmother promotion opens the Stormspire (Nov 2026)
   head: 'plates',
   common: 'wardenstone',
   rarePart: 'core',

@@ -269,7 +269,7 @@ export function unlockHint(id: string): string {
   const req = MONSTERS[id]?.requires; if (!req) return '';
   const reqs = (Array.isArray(req) ? req : [req]).filter(r => MONSTERS[r]);
   // a promotion hunt (Nov 2026: rank F → E is the Cragwing) opens the next rank's regions
-  if (reqs.length === 1) return MONSTERS[reqs[0]].tier === 1.5 ? `Pass the ${MONSTERS[reqs[0]].short} promotion hunt first` : `Beat the ${MONSTERS[reqs[0]].short} first`;
+  if (reqs.length === 1) return MONSTERS[reqs[0]].promotion ? `Pass the ${MONSTERS[reqs[0]].short} promotion hunt first` : `Beat the ${MONSTERS[reqs[0]].short} first`;
   const tiers = new Set(reqs.map(r => MONSTERS[r].tier));
   if (tiers.size === 1 && tiers.has(1)) return 'Beat every monster on Ashfall Ridge first';
   if (tiers.size === 1 && tiers.has(2)) return 'Beat every monster in the Mirewood first';

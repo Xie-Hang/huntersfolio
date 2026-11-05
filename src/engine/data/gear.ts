@@ -10,6 +10,7 @@ const armors: ArmorDef[] = [
   { id: 'rimehide', name: 'Rimehide Cloak', hp: 185, guard: 8, rerolls: 3, resist: 'Frost', perk: 'Resists Frost (−30%). Start each hunt with 3 rerolls instead of 2.', craft: { coin: 300, frostfang: 1, barbtail: 1, rimescale: 3 } }
 ];
 armors.push({ id: 'cragmail', tier: 1.5, name: 'Cragslate Mail', hp: 200, guard: 9, rerolls: 2, resist: 'Gale', perk: 'Resists Gale (−30%). Your first weapon swap each hunt costs no die.', swapOnce: true, craft: { coin: 450, cragslate: 4, cragpinion: 2 } });
+armors.push({ id: 'fencoat', tier: 2.4, name: 'Fenhide Coat', hp: 225, guard: 10, rerolls: 2, resist: 'Ember', perk: 'Resists Ember (−30%). When swallowed, you cut free twice as fast.', slick: true, craft: { coin: 700, fenhide: 4, fensac: 2 } });
 armors.push({ id: 'bogcoat', tier: 2, name: 'Bogskin Coat', hp: 220, guard: 9, rerolls: 2, resist: 'Stone', perk: 'Resists Stone (−30%). When swallowed, you cut free twice as fast.', slick: true, craft: { coin: 600, bogskin: 4, throatsac: 2 } });
 armors.push({ id: 'duskcoat', tier: 2, name: 'Duskweave Coat', hp: 200, guard: 9, rerolls: 3, resist: 'Gale', perk: 'Resists Gale (−30%). Nothing can halve your guard.', steady: true, craft: { coin: 600, duskplume: 4, duskcrest: 2 } });
 armors.push({ id: 'whelkplate', tier: 2, name: 'Whelkshell Plate', hp: 210, guard: 10, rerolls: 2, resist: 'Ember', perk: 'Resists Ember (−30%). Heal 6 at the end of every monster turn.', mend: true, craft: { coin: 600, whelkscale: 4, whelkshell: 2 } });
@@ -59,6 +60,7 @@ const charms: CharmDef[] = [
   { id: 'rimecharm', name: 'Rime Charm', src: 'Rimetail', perk: 'Light Cut moves deal 4 more damage.', effect: 'lightCut', craft: { coin: 150, barbtail: 1, rimescale: 2 } }
 ];
 charms.push({ id: 'cragcharm', tier: 1.5, name: 'Crag Charm', src: 'Cragwing', perk: 'When you bring a monster down from the air or up out of the ground, your next hit deals +50%.', effect: 'landWhet', craft: { coin: 175, craghorn: 1, cragslate: 2 } });
+charms.push({ id: 'fencharm', tier: 2.4, name: 'Fen Charm', src: 'Fenmother', perk: 'Your first hit each turn deals +15%.', effect: 'firstHit', craft: { coin: 200, fengill: 1, fenhide: 2 } });
 charms.push({ id: 'bogcharm', tier: 2, name: 'Bog Charm', src: 'Bogjaw', perk: 'When you cut your way out of a monster, you heal 20.', effect: 'escapeHeal', craft: { coin: 150, bogmolar: 1, bogskin: 2 } });
 charms.push({ id: 'duskcharm', tier: 2, name: 'Dusk Charm', src: 'Duskheron', perk: 'When you daze a monster, your next hit deals +50%.', effect: 'dazeWhet', craft: { coin: 150, duskbeak: 1, duskplume: 2 } });
 charms.push({ id: 'whelkcharm', tier: 2, name: 'Whelk Charm', src: 'Emberwhelk', perk: 'Expose lasts 3 turns instead of 2.', effect: 'longExpose', craft: { coin: 150, whelkgill: 1, whelkscale: 2 } });
@@ -158,6 +160,13 @@ mats.push(
   { id: 'craghorn', tier: 1.5, base: 'Digging Horn', src: 'Cragwing', sell: 90, how: 'Break the Cragwing’s digging horn (Blunt best)' },
   { id: 'cragslab', tier: 1.5, base: 'Back Slab', src: 'Cragwing', sell: 90, how: 'Break the Cragwing’s slate back (Cut best)' },
   { id: 'cragheart', tier: 1.5, base: 'Cragheart', src: 'Cragwing', rare: true, sell: 450, how: 'Rare from Cragwing horn breaks' }
+);
+mats.push(
+  { id: 'fenhide', tier: 2.4, base: 'Fen Hide', src: 'Fenmother', sell: 35, how: 'Every Fenmother hunt' },
+  { id: 'fensac', tier: 2.4, base: 'Fen Sac', src: 'Fenmother', sell: 110, how: 'Break the Fenmother’s throat sac (Cut best)' },
+  { id: 'fengill', tier: 2.4, base: 'Fen Gill', src: 'Fenmother', sell: 110, how: 'Break the Fenmother’s gills (Pierce best)' },
+  { id: 'fenskull', tier: 2.4, base: 'Fen Skull', src: 'Fenmother', sell: 110, how: 'Break the Fenmother’s head (Blunt best)' },
+  { id: 'fenpearl', tier: 2.4, base: 'Fenpearl', src: 'Fenmother', rare: true, sell: 500, how: 'Rare from Fenmother head breaks' }
 );
 mats.push(
   { id: 'squallhide', tier: 2.5, base: 'Squall Hide', src: 'Squallhorn', sell: 35, how: 'Every Squallhorn hunt' },

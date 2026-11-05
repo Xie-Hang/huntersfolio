@@ -4,6 +4,7 @@ import { galeshrike } from './galeshrike';
 import { cinderback } from './cinderback';
 import { rimetail } from './rimetail';
 import { cragwing } from './cragwing';
+import { fenmother } from './fenmother';
 import { bogjaw } from './bogjaw';
 import { duskheron } from './duskheron';
 import { emberwhelk } from './emberwhelk';
@@ -48,12 +49,13 @@ for (const [M, t] of [[monolith, TIER3_TUNE.monolith], [stormroc, TIER3_TUNE.sto
 // three Mirewood monsters carrying those statuses, beside the Stormspire. Both optional: the Sovereign still unlocks
 // from the Stormspire four.
 // Tier 2.5 = the changed Ashfall Ridge (variants, Nov 2026): after the Mirewood, before the Stormspire in power.
+// Tier 2.4 = the rank E → D promotion (the Fenmother): it opens the Stormspire.
 // Tier 1.5 = the rank F → E promotion hunt (the Cragwing, Nov 2026): it opens the Mirewood and ends the demo.
-export const ALL_MONSTERS: Record<string, MonsterDef> = { gorehorn, galeshrike, cinderback, rimetail, cragwing, bogjaw, duskheron, emberwhelk, mistglass, rotcap, arcmoth, hollowfang, squallhorn, rimeshrike, quakeback, ashtail, monolith, stormroc, slagwyrm, gorhydra, feverjaw, archeron, bloodwhelk, sovereign };
+export const ALL_MONSTERS: Record<string, MonsterDef> = { gorehorn, galeshrike, cinderback, rimetail, cragwing, bogjaw, duskheron, emberwhelk, mistglass, fenmother, rotcap, arcmoth, hollowfang, squallhorn, rimeshrike, quakeback, ashtail, monolith, stormroc, slagwyrm, gorhydra, feverjaw, archeron, bloodwhelk, sovereign };
 export const MONSTERS: Record<string, MonsterDef> = Object.fromEntries(Object.entries(ALL_MONSTERS).filter(([, M]) => M.tier <= MAX_TIER));
 const builtIn = (t: number) => Object.values(MONSTERS).filter(M => M.tier === t).length;
 
-export const TIERS: Record<number, string> = { 1: 'Tier 1 · Ashfall Ridge', 1.5: 'Promotion hunt · rank F to E', 2: builtIn(2) ? 'Tier 2 · Mirewood' : 'Tier 2 · Uncharted', 2.2: 'The Gloamhollow', 2.5: 'Ashfall Ridge, changed', 3.2: 'The Mirewood, changed', 3: builtIn(3) ? 'Tier 3 · Stormspire' : 'Tier 3 · Uncharted', 4: 'Apex' };
+export const TIERS: Record<number, string> = { 1: 'Tier 1 · Ashfall Ridge', 1.5: 'Promotion hunt · rank F to E', 2.4: 'Promotion hunt · rank E to D', 2: builtIn(2) ? 'Tier 2 · Mirewood' : 'Tier 2 · Uncharted', 2.2: 'The Gloamhollow', 2.5: 'Ashfall Ridge, changed', 3.2: 'The Mirewood, changed', 3: builtIn(3) ? 'Tier 3 · Stormspire' : 'Tier 3 · Uncharted', 4: 'Apex' };
 
 /** Planned roster slots that aren't in the game yet (shown as Unknown on the Hunt Board). */
 const later = EDITION === 'demo' ? 'in the full game' : 'in a coming update';

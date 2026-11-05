@@ -60,6 +60,7 @@ export const sovereign: MonsterDef = {
   burrower: true,
   hp: 1170,
   tier: 4,
+  promotion: 'C', // the D → C promotion: finishing Low Rank (Nov 2026)
   requires: ['monolith', 'stormroc', 'slagwyrm', 'gorhydra'],
   head: 'tusks',
   common: 'sovgel',

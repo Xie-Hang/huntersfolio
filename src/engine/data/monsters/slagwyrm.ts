@@ -30,7 +30,7 @@ export const slagwyrm: MonsterDef = {
   resist: 'Frost',
   hp: 680,
   tier: 3,
-  requires: ['bogjaw', 'duskheron', 'emberwhelk', 'mistglass'],
+  requires: ['fenmother'], // rank D: the Fenmother promotion opens the Stormspire (Nov 2026)
   head: 'spine',
   common: 'slagscale',
   rarePart: 'spine',

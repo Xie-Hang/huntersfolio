@@ -34,6 +34,7 @@ export const cragwing: MonsterDef = {
   resist: 'Stone',
   hp: 590,
   tier: 1.5,
+  promotion: 'E',
   requires: ['gorehorn', 'galeshrike', 'cinderback', 'rimetail'],
   head: 'horn',
   common: 'cragslate',

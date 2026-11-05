@@ -5,7 +5,7 @@ import { matchup } from '../src/sim/scenarios';
 const MIRE = ['bogjaw', 'duskheron', 'emberwhelk', 'mistglass'];
 const ready = (weapons: string[] = ['facethammer', 'mirrorbow']) => {
   const s = E.newSave();
-  for (const id of ['gorehorn', 'galeshrike', 'cinderback', 'rimetail', ...MIRE]) s.record[id] = { hunts: 1, wins: 1, captures: 0, breaks: {} };
+  for (const id of ['gorehorn', 'galeshrike', 'cinderback', 'rimetail', 'cragwing', ...MIRE, 'fenmother']) s.record[id] = { hunts: 1, wins: 1, captures: 0, breaks: {} };
   s.weapons = Object.fromEntries(weapons.map(id => [id, { lv: 2 }]));
   s.loadout = { ...s.loadout, weapons, target: 'monolith' };
   return s;
@@ -13,10 +13,10 @@ const ready = (weapons: string[] = ['facethammer', 'mirrorbow']) => {
 const dice = (h: E.Hunt, f: string) => { h.dice = [...f].map(face => ({ face, used: null })) as never; };
 
 describe('Tier 3: the Monolith Warden', () => {
-  it('opens once every Mirewood monster is beaten', () => {
+  it('opens with the Fenmother promotion (after the Mirewood)', () => {
     const s = E.newSave();
     expect(E.isUnlocked(s, 'monolith')).toBe(false);
-    expect(E.unlockHint('monolith')).toBe('Beat every monster in the Mirewood first');
+    expect(E.unlockHint('monolith')).toBe('Pass the Fenmother promotion hunt first');
     expect(E.isUnlocked(ready(), 'monolith')).toBe(true);
   });
   it('plated: every hit deals ×0.4; breaking the plates exposes the core to Pierce ×2, then it reforms', () => {

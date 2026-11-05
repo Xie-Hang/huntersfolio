@@ -7,6 +7,7 @@
   import Cinderback from './plates/Cinderback.svelte';
   import Rimetail from './plates/Rimetail.svelte';
   import Cragwing from './plates/Cragwing.svelte';
+  import Fenmother from './plates/Fenmother.svelte';
   import Bogjaw from './plates/Bogjaw.svelte';
   import Duskheron from './plates/Duskheron.svelte';
   import Emberwhelk from './plates/Emberwhelk.svelte';
@@ -27,13 +28,14 @@
 </script>
 
 <div class="plate-stage">
-{#if scene}<Scene region={(ALL_MONSTERS[mon]?.tier ?? 1) === 2.2 ? 'hollow' : (ALL_MONSTERS[mon]?.tier ?? 1) === 3.2 ? 'mire' : (ALL_MONSTERS[mon]?.tier ?? 1) === 4 ? 'caldera' : (ALL_MONSTERS[mon]?.tier ?? 1) === 3 ? 'spire' : (ALL_MONSTERS[mon]?.tier ?? 1) === 2 ? 'mire' : 'ridge'} />{/if}
+{#if scene}<Scene region={(ALL_MONSTERS[mon]?.tier ?? 1) === 2.2 ? 'hollow' : (ALL_MONSTERS[mon]?.tier ?? 1) === 3.2 ? 'mire' : (ALL_MONSTERS[mon]?.tier ?? 1) === 4 ? 'caldera' : (ALL_MONSTERS[mon]?.tier ?? 1) === 3 ? 'spire' : [2, 2.4].includes(ALL_MONSTERS[mon]?.tier ?? 1) ? 'mire' : 'ridge'} />{/if}
 {#if ALL_MONSTERS[mon]?.variantOf}<Variant {mon} {hunt} />
 {:else if mon === 'gorehorn'}<Gorehorn {hunt} />
 {:else if mon === 'galeshrike'}<Galeshrike {hunt} />
 {:else if mon === 'cinderback'}<Cinderback {hunt} />
 {:else if mon === 'rimetail'}<Rimetail {hunt} />
 {:else if mon === 'cragwing'}<Cragwing {hunt} />
+{:else if mon === 'fenmother'}<Fenmother {hunt} />
 {:else if mon === 'bogjaw'}<Bogjaw {hunt} />
 {:else if mon === 'duskheron'}<Duskheron {hunt} />
 {:else if mon === 'emberwhelk'}<Emberwhelk {hunt} />

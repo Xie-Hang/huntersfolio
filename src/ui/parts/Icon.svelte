@@ -115,6 +115,13 @@
     duskcharm: `${charmTop}<path d="M38 22 L12 28 L38 34 Z" fill="${BONE2}" ${S}/><path d="M38 34 L14 38 L38 42 Z" fill="${BONE2}" ${S}/>`,
     bogcharm: `${charmTop}<circle cx="24" cy="28" r="13" fill="${STONEC}" ${S}/><circle cx="20" cy="25" r="3.5" fill="${MOSS}"/><circle cx="28" cy="31" r="3" fill="${MOSS}"/>`,
     /* the changed Ashfall Ridge: the originals' shapes in the variant's element */
+    /* the Fenmother (rank E → D promotion, Nov 2026): hot-spring red-brown, steam white */
+    fenhide: `<path d="M8 12 C16 8 32 8 40 12 L38 24 L42 32 L34 40 C26 43 18 43 12 40 L6 30 L10 22 Z" fill="${MUD}" ${S}/><circle cx="17" cy="20" r="3" fill="${EMBER}" ${S} stroke-width="2"/><circle cx="30" cy="28" r="4" fill="${EMBER}" ${S} stroke-width="2"/>`,
+    fensac: `<path d="M24 6 C38 10 42 26 34 38 C30 43 18 43 14 38 C6 26 10 10 24 6 Z" fill="${EMBER}" ${S}/><path d="M18 16 C22 22 26 22 30 16" fill="none" stroke="${INK}" stroke-width="2" opacity=".5"/>`,
+    fengill: `<path d="M8 38 C10 22 18 10 30 8 L36 14 L30 18 L38 22 L32 26 L40 30 L32 34 L36 40 Z" fill="${BONE2}" ${S}/><path d="M14 34 C18 26 24 20 30 16" fill="none" stroke="${EMBER}" stroke-width="2.4"/>`,
+    fenskull: `<path d="M8 26 C8 14 16 8 26 8 C36 8 42 16 42 26 C42 34 36 40 26 40 L14 40 C10 38 8 32 8 26 Z" fill="${BONE}" ${S}/><circle cx="20" cy="22" r="4" fill="${INK}"/><path d="M14 34 H36" ${S} fill="none"/>`,
+    fenpearl: gem(EMBER, GOLDHI),
+    fencharm: `${charmTop}<circle cx="24" cy="29" r="13" fill="${EMBER}" ${S}/><path d="M17 24 q3 -5 7 0 q3 5 7 0" fill="none" stroke="${BONE}" stroke-width="2.4" stroke-linecap="round"/>`,
     /* the Cragwing (rank F → E promotion, Nov 2026): slate grey, gale blue accent */
     cragslate: `<path d="M8 30 L18 8 L38 14 L42 32 L26 42 Z" fill="${STONEC}" ${S}/><path d="M18 8 L24 26 L42 32 M24 26 L26 42" fill="none" stroke="${INK}" stroke-width="2" opacity=".55"/>`,
     cragpinion: feather(STONEC, true),

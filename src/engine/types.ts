@@ -115,7 +115,7 @@ export interface ItemDef {
   pouch?: boolean;
 }
 
-export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet' | 'airPierce' | 'bigHeal' | 'sealHeal' | 'chargeDaze' | 'groundHit' | 'breakFree' | 'pierceStrip' | 'breakWhet' | 'landWhet' | 'infectBuild' | 'sparkBuild' | 'drainUp' | 'infectLong' | 'sparkBig' | 'drainTol';
+export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet' | 'airPierce' | 'bigHeal' | 'sealHeal' | 'chargeDaze' | 'groundHit' | 'breakFree' | 'pierceStrip' | 'breakWhet' | 'landWhet' | 'firstHit' | 'infectBuild' | 'sparkBuild' | 'drainUp' | 'infectLong' | 'sparkBig' | 'drainTol';
 export interface CharmDef {
   /** monster tier it comes from (default 1); gear above the edition's top tier isn't in that build */
   tier?: number;
@@ -209,6 +209,8 @@ export interface MonsterState {
   /** T2 weighted behaviour: the last few actions (for the fairness rules) and the turn of its last big chain */
   recent?: string[];
   lastChain?: number;
+  /** the Fenmother: the turn it last raised its steam */
+  lastSplit?: number;
   /** swallowed (grapplers): how many of your dice are stuck inside, and the damage left to cut free */
   gut?: number;
   gutHp?: number;
@@ -222,6 +224,8 @@ export interface MonsterState {
   slime?: number;
   /** mirage: turns left on its images (only the first hit each turn lands), and your hits so far this turn */
   mirage?: number;
+  /** Fen Charm: the turn the first hit landed on */
+  fenHit?: number;
   hits?: number;
   /** dice frozen solid on your next roll */
   frost?: number;
@@ -345,6 +349,8 @@ export interface MonsterDef {
   panelName?: string;
   /** a variant of this monster (the changed Ashfall Ridge, Nov 2026): same body, new element and mechanic */
   variantOf?: string;
+  /** a promotion hunt (Nov 2026, the rank ladder): winning it makes you this Hunter Rank */
+  promotion?: 'E' | 'D' | 'C';
   /** plating that isn't ice: its name in the log and on the badge, and layers a hit clears (default: Cut 2, else 1) */
   plateWord?: string;
   plateBreak?(w: WeaponInst): number;

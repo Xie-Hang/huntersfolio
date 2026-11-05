@@ -30,7 +30,7 @@ export const stormroc: MonsterDef = {
   resist: 'Stone',
   hp: 800,
   tier: 3,
-  requires: ['bogjaw', 'duskheron', 'emberwhelk', 'mistglass'],
+  requires: ['fenmother'], // rank D: the Fenmother promotion opens the Stormspire (Nov 2026)
   head: 'crown',
   common: 'rocplume',
   rarePart: 'crown',
