@@ -88,7 +88,7 @@ export const galeshrike: MonsterDef = {
   // In the air only Pierce reaches it (playtest, Nov 2026: a tester asked how a sword hits a bird in the sky;
   // it used to be half damage). Down on the ground, or low after a swoop, every weapon works.
   canHit(h, w) { return !h.mon.air || w.type === 'Pierce'; },
-  cantHitReason() { return 'It\u2019s in the air: only Pierce (a bow) reaches it. Swap to a bow, throw a Net, or guard until it comes down.'; },
+  cantHitReason() { return 'It\u2019s in the air: only Pierce (a bow) reaches it. Swap to a bow, throw a Net, or block until it comes down.'; },
 
   reachable(h, partId, w) {
     return !(partId === 'crest' && h.mon.air && w.type !== 'Pierce');
@@ -104,7 +104,7 @@ export const galeshrike: MonsterDef = {
     if (m.air && carries(h, 'Pierce')) return `Pinning Shot brings it down (${carryingName(h, 'Pierce')}).`;
     if (m.air && h.item === 'net' && h.itemCharges > 0) return 'Throw the Weighted Net to bring it down.';
     if ((type === 'stuck' || type === 'crashed') && carries(h, 'Blunt')) return `${dazeTag} It’s grounded. Hit the crest while you can.`;
-    if (m.air) return 'It’s airborne: only Pierce reaches it. Guard until it dives, then hit it while it’s stuck.';
+    if (m.air) return 'It’s airborne: only Pierce reaches it. Block until it dives, then hit it while it’s stuck.';
     return null;
   },
 

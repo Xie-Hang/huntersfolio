@@ -47,7 +47,7 @@ export const hollowfang: MonsterDef = {
   common: 'palehide',
   rarePart: 'fangs',
   rare: 'bloodpearl',
-  habits: 'A pale, eyeless thing, half bat and half leech. It latches on and drinks, and heals what it takes. Guard can’t stop a latch drinking. A blade move of 2 or more dice tears it off; with its fangs broken it can’t latch at all.',
+  habits: 'A pale, eyeless thing, half bat and half leech. It latches on and drinks, and heals what it takes. Block can’t stop a latch drinking. A blade move of 2 or more dice tears it off; with its fangs broken it can’t latch at all.',
   intro: 'Something drops from the cave roof without a sound and unfolds on the rock in front of you.',
   enrageText: 'It hisses, mouth wide. The Hollowfang is enraged!',
   parts: [
@@ -100,7 +100,7 @@ export const hollowfang: MonsterDef = {
 
   badges(h) {
     const l = h.mon.latch ?? 0;
-    return l > 0 ? [{ key: 'latch', label: 'Latched on', short: `${l} turn${l > 1 ? 's' : ''}`, cls: 'ember', desc: 'It’s clamped on and drinking: guard can’t stop it, and it heals what it drinks. A 2-dice Cut move tears it off.' }] : [];
+    return l > 0 ? [{ key: 'latch', label: 'Latched on', short: `${l} turn${l > 1 ? 's' : ''}`, cls: 'ember', desc: 'It’s clamped on and drinking: block can’t stop it, and it heals what it drinks. A 2-dice Cut move tears it off.' }] : [];
   },
 
   // no tip: the Drinking telegraph says how to tear it off

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Pip from '../../parts/Pip.svelte';
+  import CostDie from '../../parts/CostDie.svelte';
   import WeaponArt from '../../parts/WeaponArt.svelte';
   import Key from '../../parts/Key.svelte';
   import Icon from '../../parts/Icon.svelte';
@@ -8,7 +8,7 @@
   import Elem from '../../parts/Elem.svelte';
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
-  import { needLabel, needMarks, GLYPH, HOLLOW, elemLabel, markOf } from '../../fmt';
+  import { needLabel, needMarks, elemLabel, markOf } from '../../fmt';
   import { shows } from '../../reveal';
   import { detail, full as fullText } from '../../detail.svelte';
   const full = $derived(shows(game.hunt, 'all'));
@@ -52,6 +52,9 @@
   const iOk = $derived(!over && E.itemUsable(h));
   const freeFaces = $derived(h.dice.filter(d => !d.used).map(d => d.face as string));
   /** the strongest move you can use now (the tutorial points at it) */
+  /** gold: the dice you've selected are exactly what this move would use (Nov 2026: grey = can't make it with the
+   *  dice left, plain = can, gold = your picked dice make it) */
+  const picks = (need: string) => { if (!n) return false; const p = E.pickDice(h, need, game.sel); return !!p && game.sel.every(i => p.includes(i)); };
   const bestReady = $derived(w.moves.reduce((b, mv, i) => (E.canUseMove(h, i) && (b < 0 || mv.dmg > w.moves[b].dmg) ? i : b), -1));
 </script>
 
@@ -72,33 +75,32 @@
     </div>
   </div>
   {#if full && fullText()}<p class="sigline"><span class="tag {sg.tag}" style="margin:0 6px 0 0">{sg.name}</span>{sg.text}</p>{/if}
-  {#if !over && E.cantHitReason(h, w)}<p class="cant">{E.cantHitReason(h, w)} {full ? 'Swap, Guard or Charge instead.' : 'Swap or Guard instead.'}</p>{/if}
+  {#if !over && E.cantHitReason(h, w)}<p class="cant">{E.cantHitReason(h, w)} {full ? 'Swap, Block or Charge instead.' : 'Swap or Block instead.'}</p>{/if}
 
   {#each w.moves as mv, i}
     {@const ok = E.canUseMove(h, i)}
     {@const marks = needMarks(mv.need, freeFaces)}
     {@const miss = marks.filter(x => !x.have).map(x => (x.c === 'C' ? 'circle' : 'triangle'))}
-    <button class="move {ok ? 'ready' : 'no'}" data-coach={i === bestReady ? 'move' : undefined} aria-disabled={!ok} onclick={() => ok && game.move(i)}>
+    <button class="move {ok ? 'ready' : 'no'}" class:pick={ok && picks(mv.need)} data-coach={i === bestReady ? 'move' : undefined} aria-disabled={!ok} onclick={() => ok && game.move(i)}>
       <span>
         <span class="mn"><Key k={MOVE_KEYS[i]} />{mv.name}{#if full}{#if mv.flow}<span class="tag flow" use:detail={E.SIGNATURES.Cut.text}>Flow</span>{/if}{#if mv.daze}<span class="tag daze" use:detail={E.SIGNATURES.Blunt.text}>Daze</span>{/if}{#if mv.expose}<span class="tag expose" use:detail={E.SIGNATURES.Pierce.text}>Expose</span>{/if}{/if}{#if !over && tipText?.includes(mv.name)}<span class="tag counter">Counter</span>{/if}</span>
         <span class="md">{#if iceNow}{iceLine}{:else}{shownDmg(mv.dmg)} damage{halfAir ? ', halved in the air' : ''}{exposedNow ? ', exposed' : ''}{full && mv.part ? ` · ×${mv.part} toward breaks` : ''}{full && mv.daze ? ` · Daze +${mv.daze}` : ''}{full && mv.flow ? ' · +1 reroll' : ''}{/if}</span>
       </span>
-      <span class="need" aria-label="Needs {needLabel(mv.need)}{miss.length && !over ? `; missing ${miss.join(', ')}` : ''}">{#each marks as x}{#if x.have || over}<Pip c={x.c} />{:else}<span class="miss"><Pip c={x.c} hollow /></span>{/if}{/each}</span>
+      <span class="need dice" aria-label="Needs {needLabel(mv.need)}{miss.length && !over ? `; missing ${miss.join(', ')}` : ''}">{#each mv.need as c}<CostDie {c} />{/each}</span>
     </button>
   {/each}
 
-  <div class="divider"><span class="label">Or spend dice</span><span class="label">{n} selected</span></div>
-  <button class="move dash {gOk ? 'ready' : 'no'}" data-coach="guard" aria-disabled={!gOk} onclick={() => gOk && game.guard()}>
-    <span><span class="mn"><Key k="G" />Guard</span><span class="md">{selGuard ? `Blocks ${selGuard} with the selected dice` : auto.guard?.length ? `${usesLine(auto.guard)}: blocks ${auto.guard.reduce((a, i) => a + E.guardOf(h, i), 0)}` : `${h.arm.guard} a die · ${Math.round(h.arm.guard * (h.arm.blankx2 ? E.VEST_BLANK_GUARD : E.BLANK_GUARD))} a blank`}</span></span><span class="need">Any</span>
+  <button class="move dash {gOk ? 'ready' : 'no'}" class:pick={gOk && n > 0} data-coach="guard" aria-disabled={!gOk} onclick={() => gOk && game.guard()}>
+    <span><span class="mn"><Key k="G" />Block</span><span class="md">{selGuard ? `Blocks ${selGuard} with the selected dice` : auto.guard?.length ? `${usesLine(auto.guard)}: blocks ${auto.guard.reduce((a, i) => a + E.guardOf(h, i), 0)}` : `${h.arm.guard} a die · ${Math.round(h.arm.guard * (h.arm.blankx2 ? E.VEST_BLANK_GUARD : E.BLANK_GUARD))} a blank`}</span></span><span class="need dice"><CostDie c="any" /></span>
   </button>
   {#if full}
   <button class="move dash {cOk ? 'ready' : 'no'}" data-coach="charge" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
-    <span><span class="mn"><Key k="C" />Charge</span><span class="md">{chargeRisk ? `The −${inc?.net} coming would break it: guard it under ${E.CHARGE_BREAK} first` : `Next hit ×2 · breaks at ${E.CHARGE_BREAK}+`}{!chargeRisk && auto.charge ? ` · ${usesLine(auto.charge)}` : ''}</span></span><span class="need">{cd}</span>
+    <span><span class="mn"><Key k="C" />Charge</span><span class="md">{chargeRisk ? `The −${inc?.net} coming would break it: block it under ${E.CHARGE_BREAK} first` : `Next hit ×2 · breaks at ${E.CHARGE_BREAK}+`}{!chargeRisk && auto.charge ? ` · ${usesLine(auto.charge)}` : ''}</span></span><span class="need dice"><CostDie c="any" /><span class="x">×{cd}</span></span>
   </button>
   {/if}
   {#if shows(h, 'swap')}
   <button class="move dash {sOk ? 'ready' : 'no'}" data-coach="swap" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
-    <span><span class="mn"><Key k="S" pad="RT" /><WeaponArt id={other.id} size={22} />Swap to {other.name}{#if swapCounter}<span class="tag counter">Counter</span>{/if}</span><span class="md">{other.type} · <Elem e={markOf(other)} />{elemLabel(other)}{auto.swap?.length ? ` · ${usesLine(auto.swap)}` : ''}</span></span><span class="need">{E.freeSwap(h) ? 'Free' : '1'}</span>
+    <span><span class="mn"><Key k="S" pad="RT" /><WeaponArt id={other.id} size={22} />Swap to {other.name}{#if swapCounter}<span class="tag counter">Counter</span>{/if}</span><span class="md">{other.type} · <Elem e={markOf(other)} />{elemLabel(other)}{auto.swap?.length ? ` · ${usesLine(auto.swap)}` : ''}</span></span><span class="need dice">{#if E.freeSwap(h)}Free{:else}<CostDie c="any" />{/if}</span>
   </button>
   {/if}
   <!-- With everything on it's always shown, so players learn it exists before it's available. In the second and third
@@ -117,7 +119,7 @@
         {:else}Holds unless its move hits you for {E.CHARGE_BREAK}+. Double part materials{/if}
       </span>
     </span>
-    <span class="need">2</span>
+    <span class="need dice"><CostDie c="any" /><span class="x">×2</span></span>
   </button>
   {/if}
 
@@ -136,6 +138,8 @@
 
 <style>
   .why { color: var(--ember-soft); }
+  .need.dice { display: inline-flex; align-items: center; gap: 5px; }
+  .need .x { font-size: var(--fs-sm); color: var(--soft); }
   .elemrow { display: flex; gap: 6px 12px; align-items: center; flex-wrap: wrap; }
   .smeter { flex: 1 1 110px; display: flex; gap: 6px; align-items: center; font-size: var(--fs-sm); min-width: 0; }
   .smeter .bar { flex: 1; height: 6px; }

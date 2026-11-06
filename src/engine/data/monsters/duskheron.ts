@@ -28,7 +28,7 @@ function headAct(h: Hunt, head: string, act: Act) {
   switch (act) {
     case 'peck': return { name: 'Peck', text: `The ${n} jabs down.`, dmg: broke ? 10 : enr ? 18 : 14 };
     case 'thrust': return { name: 'Spear Thrust', text: `The ${n} draws back its neck to spear you.`, dmg: broke ? 18 : enr ? 32 : 26 };
-    case 'screech': return { name: 'Screech', text: `The ${n} screeches. Your guard will be halved next turn.`, dmg: 0 };
+    case 'screech': return { name: 'Screech', text: `The ${n} screeches. Your block will be halved next turn.`, dmg: 0 };
     case 'reel': return { name: 'Reeling', text: `The ${n} reels, dazed.`, dmg: 0 };
   }
 }
@@ -75,7 +75,7 @@ export const duskheron: MonsterDef = {
     const dmg = parts.reduce((t, p) => t + p.dmg, 0);
     const names = parts.map(p => p.name).join(' + ');
     const screech = HEADS.some(x => acts[x] === 'screech' && !reeling(h, x));
-    return { name: names, text: parts.map(p => p.text).join(' '), dmg, threat: band(dmg), halfGuard, note: screech ? 'Your guard is halved next turn' : undefined };
+    return { name: names, text: parts.map(p => p.text).join(' '), dmg, threat: band(dmg), halfGuard, note: screech ? 'Your block is halved next turn' : undefined };
   },
 
   next(h, prev) {
@@ -115,7 +115,7 @@ export const duskheron: MonsterDef = {
   },
 
   tip(h, type) {
-    if (type === 'rear') return carries(h, 'Blunt') ? `Daze a head with your ${carryingName(h, 'Blunt')} and only one spear comes down.` : 'A Twin Spear is coming. Guard everything you can.';
+    if (type === 'rear') return carries(h, 'Blunt') ? `Daze a head with your ${carryingName(h, 'Blunt')} and only one spear comes down.` : 'A Twin Spear is coming. Block everything you can.';
     if (!h.mon.parts.wings.broken && carries(h, 'Pierce')) return `Break the wings with your ${carryingName(h, 'Pierce')} to stop the Twin Spear.`;
     if (carries(h, 'Blunt')) return 'Each head has its own daze meter. A dazed head misses this turn and the next.';
     return null;

@@ -107,7 +107,7 @@ export const cinderback: MonsterDef = {
     if (m.under) {
       if (carries(h, 'Blunt')) return `${dazeTag} Smash or Skullcrack drives it up and cancels the eruption (${carryingName(h, 'Blunt')}).`;
       if (h.item && h.itemCharges > 0 && h.item === 'blast') return 'Throw the Blast Powder to force it up.';
-      return 'Only Blunt reaches it underground. Guard for the eruption.';
+      return 'Only Blunt reaches it underground. Block for the eruption.';
     }
     if (m.molten > 0) return `Molten shell: Cut and Blunt hits burn you ${moltenBurn(m.enraged)}.${carries(h, 'Pierce') ? ` Pierce is safe (${carryingName(h, 'Pierce')}).` : ''}`;
     if (type === 'burrow' && carries(h, 'Blunt')) return `It’s about to dig in. Keep your ${carryingName(h, 'Blunt')} ready.`;

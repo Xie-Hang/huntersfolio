@@ -15,7 +15,7 @@
     <h1 id="intro-title" class="intro-logo" aria-label="Hunter's Folio"><span class="hn">Hunter’s</span> <span>Folio</span></h1>
     {#if fresh}
       <p class="lead">Hunt monsters with four dice.</p>
-      <p>Every monster shows you what it will do next and how hard it will hit. Read it, then spend your dice to attack, guard or reroll. Break its parts, carry home the pieces, and forge the gear the next hunt needs.</p>
+      <p>Every monster shows you what it will do next and how hard it will hit. Read it, then spend your dice to attack, block or reroll. Break its parts, carry home the pieces, and forge the gear the next hunt needs.</p>
       <p>Your first hunt is a guided one, against the Gorehorn. Each step lights up the thing to use; the rest of the screen dims until you've done it. It takes a few minutes.</p>
       <div class="intro-acts">
         <button class="btn primary" bind:this={btn} onclick={begin}>Begin the first hunt</button>

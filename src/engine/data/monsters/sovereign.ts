@@ -163,7 +163,7 @@ export const sovereign: MonsterDef = {
   },
 
   canHit(h, w) { return h.mon.air ? w.type === 'Pierce' : h.mon.under ? w.type === 'Blunt' : true; },
-  cantHitReason(h) { return h.mon.air ? 'It’s in the air: only Pierce (a bow) reaches it. Swap, throw a Net, or guard until it dives.' : 'Underground: only Blunt reaches it.'; },
+  cantHitReason(h) { return h.mon.air ? 'It’s in the air: only Pierce (a bow) reaches it. Swap, throw a Net, or block until it dives.' : 'Underground: only Blunt reaches it.'; },
   reachable(h, partId, w) {
     if (partId === 'wings' && h.mon.air) return w.type === 'Pierce';
     return true;

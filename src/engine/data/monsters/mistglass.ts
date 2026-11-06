@@ -88,7 +88,7 @@ export const mistglass: MonsterDef = {
     const m = h.mon;
     if ((m.mirage ?? 0) > 0) return h.chargeReady
       ? 'Your charge is ready. Make it your first hit this turn: only the first one lands.'
-      : 'Only your first hit each turn lands. Charge this turn and strike once, hard, the next. Guard with the rest.';
+      : 'Only your first hit each turn lands. Charge this turn and strike once, hard, the next. Block with the rest.';
     if (type === 'split') return carries(h, 'Cut') ? `Images are coming. Break its tail shards with your ${carryingName(h, 'Cut')} and they fade sooner.` : 'Images are coming: from next turn, only your first hit each turn lands.';
     if (type === 'mist' && carries(h, 'Pierce')) return `Break its eyes with your ${carryingName(h, 'Pierce')} to stop the Freezing Mist.`;
     return null;

@@ -448,7 +448,7 @@ export const BLANK_GUARD = 1.5, VEST_BLANK_GUARD = 2.5;
 export const guardOf = (h: Hunt, i: number) => Math.round(h.arm.guard * (h.dice[i]?.face === 'B' ? (h.arm.blankx2 ? VEST_BLANK_GUARD : BLANK_GUARD) : 1));
 export function guard(h: Hunt, idx: number[]): boolean {
   const sel = freeOnly(h, idx); if (!sel.length || h.over) return false;
-  for (const i of sel) { h.guard += guardOf(h, i); h.dice[i].used = 'Guard'; }
+  for (const i of sel) { h.guard += guardOf(h, i); h.dice[i].used = 'Block'; }
   // a charged die (Glarewing) can only attack: guarding with it sets it off
   const zap = sel.filter(i => h.dice[i].charged).length;
   if (zap) {
@@ -462,7 +462,7 @@ export function charge(h: Hunt, idx: number[]): boolean {
   const sel = freeOnly(h, idx); if (sel.length !== chargeDice(h) || h.chargePending || h.over) return false;
   sel.forEach(i => (h.dice[i].used = 'Charge')); h.chargePending = true;
   log(h, 'You plant your feet and build up power.');
-  if (h.arm.braced) { h.guard += BRACE; log(h, `${h.arm.name}: +${BRACE} guard while you charge.`, 'gold'); }
+  if (h.arm.braced) { h.guard += BRACE; log(h, `${h.arm.name}: +${BRACE} block while you charge.`, 'gold'); }
   if (charmFx(h) === 'chargeDaze') { const r = addDaze(h, CHARGE_DAZE); if (r) log(h, `Squall Charm: ${r}`, 'daze'); }
   return true;
 }
@@ -579,7 +579,7 @@ export function endTurn(h: Hunt): TurnResult {
       taken = Math.max(0, raw - g - (h.arm.ward ?? 0)); landed = true;
       const blocked = raw - taken;
       h.php = Math.max(0, h.php - taken); h.stats.taken += taken; h.stats.guarded += blocked;
-      log(h, `${info.name} hits you for ${taken}${blocked ? ` (${blocked} blocked${info.halfGuard && !h.arm.steady ? ', guard halved' : ''})` : ''}${res ? ` (${monElem(h)} resisted)` : ar.elem === 0 && ar.wearsResist ? ' (physical: your armor\u2019s resist doesn\u2019t apply)' : ''}.`, taken >= CHARGE_BREAK ? 'ember' : '');
+      log(h, `${info.name} hits you for ${taken}${blocked ? ` (${blocked} blocked${info.halfGuard && !h.arm.steady ? ', block halved' : ''})` : ''}${res ? ` (${monElem(h)} resisted)` : ar.elem === 0 && ar.wearsResist ? ' (physical: your armor\u2019s resist doesn\u2019t apply)' : ''}.`, taken >= CHARGE_BREAK ? 'ember' : '');
       if (h.chargePending && taken >= CHARGE_BREAK) { h.chargePending = false; log(h, 'The hit breaks your focus. Your charge is lost.', 'ember'); }
     }
   }

@@ -51,7 +51,7 @@ export const squallhorn: MonsterDef = {
         const dmg = Math.round(base * (tb ? 0.75 : 1));
         return { name: 'Cyclone Charge', text: 'It lets go of the storm and comes at you inside it!', dmg, threat: enr ? 4 : 3, halfGuard: !!m.tailwind, note: m.tailwind ? 'Tailwind: ignores half your guard' : undefined };
       }
-      case 'tailwind': return { name: 'Tailwind', text: 'It turns its mane into the wind and lets it fill.', dmg: 0, threat: 0, note: 'Its next charge ignores half your guard' };
+      case 'tailwind': return { name: 'Tailwind', text: 'It turns its mane into the wind and lets it fill.', dmg: 0, threat: 0, note: 'Its next charge ignores half your block' };
       case 'winded': return { name: 'Winded', text: 'The storm drops away. It stands blowing, sides heaving.', dmg: 0, threat: 0, note: 'A free turn to attack' };
       case 'pinned': return { name: 'Pinned', text: 'An arrow through the foreleg breaks its stance. Some of the wind slips away.', dmg: 0, threat: 0, note: 'A pip of wind lost' };
       case 'dazed': return { name: 'Dazed', text: 'It reels, and the gathered wind tears loose around it.', dmg: 0, threat: 0, note: 'Its action is lost. The wind is gone' };
@@ -102,7 +102,7 @@ export const squallhorn: MonsterDef = {
   },
 
   badges(h) {
-    return h.mon.tailwind ? [{ key: 'tail', label: 'Tailwind', short: 'next charge ignores ½ guard', cls: 'gale', desc: 'The wind is at its back: its next Cyclone Charge ignores half your guard. Breaking the mane ends it.' }] : [];
+    return h.mon.tailwind ? [{ key: 'tail', label: 'Tailwind', short: 'next charge ignores ½ block', cls: 'gale', desc: 'The wind is at its back: its next Cyclone Charge ignores half your block. Breaking the mane ends it.' }] : [];
   },
 
   tip(h, type) {

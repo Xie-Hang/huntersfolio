@@ -36,7 +36,7 @@ export const arcmoth: MonsterDef = {
   common: 'arcdust',
   rarePart: 'thorax',
   rare: 'sparkgland',
-  habits: 'A moth as wide as a wagon, its dust crackling. Each wingbeat leaves a Spark pip on you; at 3 the charge goes off through you and guard can’t stop it. Any Blunt move grounds a pip. In the air only bows reach it.',
+  habits: 'A moth as wide as a wagon, its dust crackling. Each wingbeat leaves a Spark pip on you; at 3 the charge goes off through you and block can’t stop it. Any Blunt move grounds a pip. In the air only bows reach it.',
   intro: 'Pale dust drifts down in the dark and snaps against your armour. Wings unfold above you.',
   enrageText: 'Its dust glows white. The Arcmoth is enraged!',
   parts: [
@@ -90,7 +90,7 @@ export const arcmoth: MonsterDef = {
   },
 
   canHit(h, w) { return !h.mon.air || w.type === 'Pierce'; },
-  cantHitReason() { return 'It’s in the air: only Pierce (a bow) reaches it. Swap to a bow, throw a Net, or guard until it dives.'; },
+  cantHitReason() { return 'It’s in the air: only Pierce (a bow) reaches it. Swap to a bow, throw a Net, or block until it dives.'; },
   onPin(h) { if (h.mon.air) { groundFlier(h); return 'Pin: the arrow pins a wing. It comes fluttering down!'; } return null; },
 
   tip(h) {

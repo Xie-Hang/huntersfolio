@@ -3,7 +3,7 @@
   import { input } from '../../pad.svelte';
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
-  import { effCls, effName, pct } from '../../fmt';
+  import { effCls, effWord, pct } from '../../fmt';
   const h = $derived(game.hunt!);
   const M = $derived(E.MONSTERS[h.mid]);
   const m = $derived(h.mon);
@@ -26,7 +26,7 @@
           <span class="pline">
             {#if !st.broken}
               {#if !reach}<span class="chip sm none">{m.under ? 'Underground' : m.air ? 'In the air' : 'Out of reach'}</span>
-              {:else}<span class="chip sm {effCls(e)}">{w.type}: {effName(e)}</span>{/if}
+              {:else}<span class="chip sm {effCls(e)}">{effWord(e)}</span>{/if}
               {#if st.exposed > 0}<span class="chip sm exposed">Exposed · {st.exposed}</span>{/if}
             {/if}
             {#if note}<span class="chip sm exposed">{note.chip}</span>{/if}

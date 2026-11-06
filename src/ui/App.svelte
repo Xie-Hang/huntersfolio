@@ -58,8 +58,10 @@
   const NAV: [View, string][] = [['board', 'Hunt Board'], ['forge', 'Forge'], ['shop', 'Shop']];
   const sub = $derived.by(() => {
     const v = game.view, h = game.hunt;
-    const label = v === 'hunt' && h ? E.MONSTERS[h.mid].short : NAV.find(n => n[0] === v)?.[1] ?? '';
-    return `${label}${v === 'hunt' && h ? ` · Turn ${h.turn}` : ` · Hunts ${game.save.hunts}`}${game.newerSave ? ' · Not saving' : ''}`;
+    // in a hunt, where you are: the monster and the turn are in the health bar (Nov 2026)
+    if (v === 'hunt' && h) return `${(E.TIERS[E.MONSTERS[h.mid].tier] ?? E.MONSTERS[h.mid].short).replace(/^Tier [\d.]+ · /, '')}${game.newerSave ? ' · Not saving' : ''}`;
+    const label = NAV.find(n => n[0] === v)?.[1] ?? '';
+    return `${label} · Hunts ${game.save.hunts}${game.newerSave ? ' · Not saving' : ''}`;
   });
 
   $effect(() => { if (settingsOpen) { setToast = ''; logCount = PL.counts(); } });
@@ -236,13 +238,13 @@
       <details name="help"><summary>A turn</summary><ul class="helplist">
         <li>You roll 4 dice: circles, triangles and blanks.</li>
         <li>The panel by the monster shows its next move and how much it will hurt.</li>
-        <li>Spend dice on moves, <strong>Guard</strong> with the rest (a blank guards best), then end the turn.</li>
+        <li>Spend dice on moves, <strong>Block</strong> with the rest (a blank blocks best), then end the turn.</li>
         <li><strong>Reroll</strong> the dice you select; rerolls are counted for the whole hunt.</li>
         <li><strong>Charge</strong>: spend 2 dice, and your first hit next turn deals double.</li>
         <li><strong>Capture</strong> at 20% HP or less: a Snare closes at the end of your turn. Double part materials.</li>
       </ul></details>
       <details name="help"><summary>Parts and breaks</summary><ul class="helplist">
-        <li>Aim at a part above your HP. Its chip says how well your weapon type breaks it.</li>
+        <li>Aim at a part under the monster. Its chip says how fast the weapon in your hand breaks it; every hit still hurts the monster.</li>
         <li>A broken part weakens the monster and drops its material.</li>
         <li>Rare materials get likelier with every miss, and drop for sure on the 12th break of their part.</li>
       </ul></details>
@@ -259,12 +261,12 @@
         <li><strong>Molten:</strong> Cut and Blunt hits burn you a little. Pierce is safe.</li>
       </ul></details>
       <details name="help"><summary>Gear</summary><ul class="helplist">
-        <li>Armor sets your HP and guard. Resist armor cuts one element's attacks by 30%.</li>
+        <li>Armor sets your HP and Block. Resist armor cuts one element's attacks by 30%.</li>
         <li>Charms give one small perk each. Items are a free action once a turn.</li>
-        <li>Each reinforcement (+1 to +3) adds 5% damage, or 10 HP and 1 guard to armor. Upgrades keep it.</li>
+        <li>Each reinforcement (+1 to +3) adds 5% damage, or 10 HP and 1 block to armor. Upgrades keep it.</li>
       </ul></details>
       <details name="help"><summary>Controls</summary><ul class="helplist">
-        <li><strong>Keys:</strong> <kbd>1</kbd>–<kbd>4</kbd> dice · <kbd>Q</kbd> <kbd>W</kbd> <kbd>E</kbd> moves · <kbd>G</kbd> guard · <kbd>C</kbd> charge · <kbd>S</kbd> swap · <kbd>X</kbd> capture · <kbd>I</kbd> item · <kbd>R</kbd> reroll · <kbd>Space</kbd> end turn · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · <kbd>Esc</kbd> clear.</li>
+        <li><strong>Keys:</strong> <kbd>1</kbd>–<kbd>4</kbd> dice · <kbd>Q</kbd> <kbd>W</kbd> <kbd>E</kbd> moves · <kbd>G</kbd> block · <kbd>C</kbd> charge · <kbd>S</kbd> swap · <kbd>X</kbd> capture · <kbd>I</kbd> item · <kbd>R</kbd> reroll · <kbd>Space</kbd> end turn · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · <kbd>Esc</kbd> clear.</li>
         <li><strong>Controller:</strong> d-pad moves, <kbd>A</kbd> selects, <kbd>B</kbd> back. In a hunt: <kbd>Y</kbd> end turn · <kbd>X</kbd> reroll · <kbd>LB</kbd> <kbd>RB</kbd> aim · <kbd>LT</kbd> undo · <kbd>RT</kbd> swap. Elsewhere <kbd>LB</kbd> <kbd>RB</kbd> switch screens. <kbd>Menu</kbd> settings, <kbd>View</kbd> this help.</li>
       </ul></details>
     </div>

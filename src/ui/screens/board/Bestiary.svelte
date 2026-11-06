@@ -6,12 +6,12 @@
   import Elem from '../../parts/Elem.svelte';
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
-  import { DAMAGE_TYPES, effName, record } from '../../fmt';
+  import { DAMAGE_TYPES, effShort, TYPE_NOUN, record } from '../../fmt';
   import Plate from '../../parts/Plate.svelte';
   import { detail, full } from '../../detail.svelte';
   // on the monster's own page its name after every material is noise (Nov 2026 text audit)
   const mname = (id: string) => (full() ? E.matName(id) : E.MATERIALS[id]?.base ?? E.matName(id));
-  const BREAKS = 'Best, Half, None: how much of that damage type counts toward breaking the part. A broken part drops its material.';
+  const BREAKS = 'Fast, Slow, No: how fast each weapon breaks the part. Every hit still hurts the monster. A broken part drops its material.';
 
   let { mon }: { mon: string } = $props();
   const M = $derived(E.MONSTERS[mon]);
@@ -50,12 +50,12 @@
   {#if tab === 'parts'}
     <div class="etable-wrap" role="tabpanel" id="mp-parts" aria-labelledby="mt-parts">
       <table class="etable">
-        <thead><tr><th>Part</th>{#each DAMAGE_TYPES as t}<th><span use:detail={BREAKS}>{t}</span></th>{/each}<th>Drops</th></tr></thead>
+        <thead><tr><th>Part</th>{#each DAMAGE_TYPES as t}<th><span use:detail={BREAKS}>{TYPE_NOUN[t]}</span></th>{/each}<th>Drops</th></tr></thead>
         <tbody>
           {#each M.parts as p (p.id)}
             <tr>
               <td style="color:var(--fg)">{p.name}</td>
-              {#each DAMAGE_TYPES as t}{@const e = p.eff[t]}<td class={e >= 1 ? 'b' : e > 0 ? 'h' : 'n'}>{effName(e)}</td>{/each}
+              {#each DAMAGE_TYPES as t}{@const e = p.eff[t]}<td class={e >= 1 ? 'b' : e > 0 ? 'h' : 'n'}>{effShort(e)}</td>{/each}
               <td class="drops">
                 <span><Icon id={p.mat} size={16} />{mname(p.mat)}{#if have(p.mat) || full()} <b class:zero={!have(p.mat)}>×{have(p.mat)}</b>{/if}</span>
                 {#if p.id === M.rarePart}<span class="rare"><Icon id={M.rare} size={16} />{mname(M.rare)}{#if have(M.rare) || full()} <b class:zero={!have(M.rare)}>×{have(M.rare)}</b>{/if}</span>{/if}

@@ -39,7 +39,10 @@ body:has(.wrap.hunting){background-image:var(--mat-doodle-hunt)}
 .gearpanel .move{background:var(--raise);border-color:var(--line-2);box-shadow:0 2px 0 rgba(0,0,0,.4)}
 .gearpanel .move.ready{border-color:var(--line-2);background:var(--raise)}
 .gearpanel .move.ready:hover{border-color:var(--gold);box-shadow:0 2px 0 rgba(0,0,0,.4),0 0 0 3px rgba(233,185,73,.14)}
-.gearpanel .move.no{background:rgba(32,26,21,.6);box-shadow:none;border-color:var(--line)}
+.gearpanel .move.no{background:rgba(32,26,21,.6);box-shadow:none;border-color:var(--line);opacity:.45}
+.gearpanel .move.no .cd{filter:grayscale(1)}
+/* the dice you've selected make this move (Nov 2026) */
+.gearpanel .move.pick{border-color:var(--gold);box-shadow:0 2px 0 rgba(0,0,0,.4),0 0 0 3px rgba(233,185,73,.2)}
 .gearpanel .move.capture.ready{border-color:var(--gold)}
 
 /* the item: a stitched leather pocket */

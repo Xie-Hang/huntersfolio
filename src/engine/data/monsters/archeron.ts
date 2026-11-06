@@ -33,7 +33,7 @@ export const archeron: MonsterDef = {
   common: 'archplume',
   rarePart: 'wings',
   rare: 'stormquill',
-  habits: 'A Duskheron from the frozen pools, both heads crackling. A spear that lands leaves Spark on you; at 3 it goes off, and guard can’t stop it. Its cry charges your dice: a charged die can only attack. Daze a head and its strike carries nothing.',
+  habits: 'A Duskheron from the frozen pools, both heads crackling. A spear that lands leaves Spark on you; at 3 it goes off, and block can’t stop it. Its cry charges your dice: a charged die can only attack. Daze a head and its strike carries nothing.',
   intro: 'Ice creaks in the reeds. Two heads rise, and the air between them snaps with static.',
   enrageText: 'Sparks run up both necks. The Archeron is enraged!',
   parts: [
@@ -49,7 +49,7 @@ export const archeron: MonsterDef = {
     if (!acts) return out;
     const cry = live(h, acts, 'screech') > 0 && !h.arm.chargeProof, thrusts = live(h, acts, 'thrust');
     const notes = [thrusts ? `${thrusts} Spark pip${thrusts > 1 ? 's' : ''} on you if it lands` : '', cry ? `Charges ${CRY_DICE} of your dice next turn` : ''].filter(Boolean);
-    return { ...out, name: out.name.replace(/Screech/g, 'Static Cry'), text: out.text.replace(/screeches\. Your guard will be halved next turn\./g, 'gives a crackling cry.'), halfGuard: false, note: notes.join('. ') || undefined };
+    return { ...out, name: out.name.replace(/Screech/g, 'Static Cry'), text: out.text.replace(/screeches\. Your block will be halved next turn\./g, 'gives a crackling cry.'), halfGuard: false, note: notes.join('. ') || undefined };
   },
 
   next(h, prev) {
@@ -79,7 +79,7 @@ export const archeron: MonsterDef = {
   },
 
   tip(h, type) {
-    if (h.dice.some(d => d.charged && !d.used)) return 'Charged dice can only attack: guarding with one or leaving it sets it off.';
+    if (h.dice.some(d => d.charged && !d.used)) return 'Charged dice can only attack: blocking with one or leaving it sets it off.';
     if ((h.mon.pSpark ?? 0) >= 2 && carries(h, 'Blunt')) return `Two pips on you. Daze the thrusting head with your ${carryingName(h, 'Blunt')}, or any Blunt move grounds a pip.`;
     return duskheron.tip!.call(this, h, type);
   }

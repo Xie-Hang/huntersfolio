@@ -54,7 +54,7 @@ export const cragwing: MonsterDef = {
     switch (type) {
       case 'brace': return { name: 'Slate Brace', text: 'It hunkers down behind its slate, wings held wide, and butts at you.', dmg: 20, threat: 1, note: 'Hits on its Horn and Back deal half this turn. Its Wings are exposed' };
       case 'lash': return { name: 'Tail Lash', text: 'It swings round, its tail scattering loose slate.', dmg: enr ? 34 : 28, threat: 1 };
-      case 'windup': return { name: 'Winding up', text: 'It drops its horned head and scrapes the scree, gathering itself.', dmg: 0, threat: 0, note: 'Shale Charge next turn: guard for it' };
+      case 'windup': return { name: 'Winding up', text: 'It drops its horned head and scrapes the scree, gathering itself.', dmg: 0, threat: 0, note: 'Shale Charge next turn: block for it' };
       case 'charge': return { name: 'Shale Charge', text: 'It hurls itself down the slope, horn first!', dmg: enr ? 84 : 70, threat: enr ? 4 : 3 };
       case 'takeoff': { const n = airTurns(h); return { name: 'Taking off', text: 'It spreads its stone wings and climbs into the ridge wind.', dmg: 0, threat: 0, note: `Still on the ground now. After your turn it's airborne for ${n} turn${n > 1 ? 's' : ''}: only bows reach it then` }; }
       case 'gust': return { name: 'Gust Buffet', text: 'It hangs in the wind and beats a gale down at you.', dmg: enr ? 38 : 30, threat: 1, halfGuard: true, note: 'Ignores half your guard. Dives next turn' };
@@ -103,7 +103,7 @@ export const cragwing: MonsterDef = {
 
   // In the air only Pierce reaches it; under the scree only Blunt (for half damage)
   canHit(h, w) { return h.mon.air ? w.type === 'Pierce' : h.mon.under ? w.type === 'Blunt' : true; },
-  cantHitReason(h) { return h.mon.air ? 'It’s in the air: only Pierce (a bow) reaches it. Swap to a bow, throw a Net, or guard for the dive.' : 'Under the scree: only Blunt reaches it.'; },
+  cantHitReason(h) { return h.mon.air ? 'It’s in the air: only Pierce (a bow) reaches it. Swap to a bow, throw a Net, or block for the dive.' : 'Under the scree: only Blunt reaches it.'; },
   hitMod(h, partId) {
     if (h.mon.under) return { mult: 0.5, note: 'through the scree ½' };
     if (h.intent === 'brace' && (partId === 'horn' || partId === 'back')) return { mult: 0.5, note: 'braced ½' };
@@ -127,15 +127,15 @@ export const cragwing: MonsterDef = {
     if (m.air) {
       if (carries(h, 'Pierce')) return `Only your ${carryingName(h, 'Pierce')} reaches it up there. Pinning Shot brings it down.`;
       if (h.item === 'net' && h.itemCharges > 0) return 'Throw the Weighted Net to bring it down.';
-      return 'It’s airborne: only Pierce reaches it. Guard for the dive.';
+      return 'It’s airborne: only Pierce reaches it. Block for the dive.';
     }
     if (m.under) {
       if (carries(h, 'Blunt')) return `${dazeTag} A Blunt move of 2+ dice drives it up and cancels the Rockburst (${carryingName(h, 'Blunt')}).`;
       if (h.item === 'blast' && h.itemCharges > 0) return 'Throw the Blast Powder to force it up.';
-      return 'Only Blunt reaches it under the scree. Guard for the Rockburst.';
+      return 'Only Blunt reaches it under the scree. Block for the Rockburst.';
     }
     if (m.plating > 0) return carries(h, 'Cut') ? `Slate plating: your ${carryingName(h, 'Cut')} clears it in one hit.` : 'Slate plating: each hit breaks one layer before it does damage.';
-    if (type === 'windup') return 'A Shale Charge is coming. Guard with your spare dice.';
+    if (type === 'windup') return 'A Shale Charge is coming. Block with your spare dice.';
     if (type === 'takeoff' && !carries(h, 'Pierce')) return 'It’s about to fly, and only bows reach it in the air.';
     if (type === 'burrow' && !carries(h, 'Blunt')) return 'It’s about to burrow, and only mauls reach it under the scree.';
     return null;

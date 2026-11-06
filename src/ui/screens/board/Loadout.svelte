@@ -124,7 +124,7 @@
         {@const a = E.ownedArmor(game.save, L.armor)}
         <button class="slot" data-slot="armor" onclick={() => open('armor')}>
           <span class="sl">Armor</span>
-          <span><span class="nm">{a.name}{#if a.lv}{' '}<span class="lv">+{a.lv}</span>{/if}</span><span class="sub2"><span>{a.hp} HP · guard {a.guard} · {a.rerolls} rerolls</span><span>{@render armorNote(a)}</span></span></span>
+          <span><span class="nm">{a.name}{#if a.lv}{' '}<span class="lv">+{a.lv}</span>{/if}</span><span class="sub2"><span>{a.hp} HP · block {a.guard} · {a.rerolls} rerolls</span><span>{@render armorNote(a)}</span></span></span>
           <span class="chg">Change</span>
         </button>
       {/if}
@@ -240,7 +240,7 @@
       {:else if picker.slot === 'armor'}
         {@const cur = E.ownedArmor(game.save, L.armor)}
         {@const ids = Object.keys(game.save.armors)}
-        <div class="plisthead"><span>{ids.length} armor</span><span>HP</span><span>Guard</span></div>
+        <div class="plisthead"><span>{ids.length} armor</span><span>HP</span><span>Block</span></div>
         <div class="plist">
           {#each ids as id (id)}
             {@const a = E.ownedArmor(game.save, id)}

@@ -108,7 +108,7 @@
                 <span class="ft-nm">{#if kind === 'c'}<Icon id={r.id} size={20} />{/if}<span class="nm">{d.name}</span>{#if lv}<span class="lv">+{lv}</span>{/if}</span>
                 {#if kind === 'a'}
                   {@const a = s.armors[r.id] ? E.ownedArmor(s, r.id) : E.ARMORS[r.id]}
-                  <span class="ft-stats"><span>{a.hp} HP</span><span>Guard {a.guard}</span>{#if E.ARMORS[r.id].resist}<span class="res"><Elem e={E.ARMORS[r.id].resist} />{E.ARMORS[r.id].resist}</span>{/if}</span>
+                  <span class="ft-stats"><span>{a.hp} HP</span><span>Block {a.guard}</span>{#if E.ARMORS[r.id].resist}<span class="res"><Elem e={E.ARMORS[r.id].resist} />{E.ARMORS[r.id].resist}</span>{/if}</span>
                 {:else}
                   <span class="ft-stats"><span>{E.CHARMS[r.id].bounties ? `${E.CHARMS[r.id].bounties} bounties` : E.CHARMS[r.id].src}</span></span>
                 {/if}
@@ -184,10 +184,10 @@
           {@const base = E.ARMORS[sel]}
           <div class="fd-stat">
             <span class="big">{owned ? a.hp : base.hp}</span><span class="unit">HP</span>
-            {#if owned && lv < E.MAX_REINFORCE}<span class="delta up">▲ {a.hp + 10} HP, guard {a.guard + 1} at +{lv + 1}</span>{/if}
+            {#if owned && lv < E.MAX_REINFORCE}<span class="delta up">▲ {a.hp + 10} HP, block {a.guard + 1} at +{lv + 1}</span>{/if}
           </div>
           <div class="fd-type">
-            <span>Guard {owned ? a.guard : base.guard} per die</span><span class="sep">·</span><span>{base.rerolls} rerolls</span><span class="sep">·</span>
+            <span>Block {owned ? a.guard : base.guard} per die</span><span class="sep">·</span><span>{base.rerolls} rerolls</span><span class="sep">·</span>
             <span>{#if base.resist}<Elem e={base.resist} />Resists {base.resist}{:else}No resistance{/if}</span>
           </div>
           <p class="fd-sig">{base.perk}</p>

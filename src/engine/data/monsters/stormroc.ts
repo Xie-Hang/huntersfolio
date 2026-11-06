@@ -49,7 +49,7 @@ export const stormroc: MonsterDef = {
     const rod = !!h.arm.rod;
     switch (type) {
       case 'rake': return { name: m.air ? 'Swooping Rake' : 'Talon Rake', text: m.air ? 'It swoops low, talons first.' : 'It lunges with its talons.', dmg: tb ? 20 : enr ? 32 : 26, threat: 2, halfGuard: half };
-      case 'buffet': return { name: 'Gale Buffet', text: 'It drives a wall of wind at you.', dmg: enr ? 22 : 18, threat: 1, halfGuard: half, note: 'Your guard is halved next turn' };
+      case 'buffet': return { name: 'Gale Buffet', text: 'It drives a wall of wind at you.', dmg: enr ? 22 : 18, threat: 1, halfGuard: half, note: 'Your block is halved next turn' };
       case 'takeoff': return { name: 'Taking off', text: 'It spreads its wings and rises into the storm.', dmg: 0, threat: 0, note: 'Still on the ground now. After your turn it\'s airborne: only bows reach it then' };
       case 'dive': return { name: 'Stoop Dive', text: 'It folds its wings and falls on you like a thunderbolt!', dmg: tb ? 40 : enr ? 60 : 52, threat: 3, halfGuard: half, note: 'Then it lands for a turn' };
       case 'perched': return { name: 'Landed', text: 'It lands hard, spent, and shakes the rain from its wings.', dmg: 0, threat: 0, note: 'Grounded for a turn: full damage, and every weapon reaches the crown' };
@@ -127,7 +127,7 @@ export const stormroc: MonsterDef = {
   // In the air only Pierce reaches it (playtest, Nov 2026: a tester asked how a sword hits a bird in the sky;
   // it used to be half damage). Down on the ground, or low after a swoop, every weapon works.
   canHit(h, w) { return !h.mon.air || w.type === 'Pierce'; },
-  cantHitReason() { return 'It\u2019s in the air: only Pierce (a bow) reaches it. Swap to a bow, throw a Net, or guard until it comes down.'; },
+  cantHitReason() { return 'It\u2019s in the air: only Pierce (a bow) reaches it. Swap to a bow, throw a Net, or block until it comes down.'; },
 
   reachable(h, partId, w) {
     return !(partId === 'crown' && h.mon.air && w.type !== 'Pierce');
@@ -145,8 +145,8 @@ export const stormroc: MonsterDef = {
 
   tip(h, type) {
     const m = h.mon;
-    if (type === 'thunder') return carries(h, 'Pierce') ? `Hit its crown with your ${carryingName(h, 'Pierce')} to snuff out the Thunderhead.` : 'A Thunderhead is coming. Guard with everything you have.';
-    if (m.air && !carries(h, 'Pierce')) return h.item === 'net' && h.itemCharges > 0 ? 'Throw the Weighted Net to bring it down.' : 'It’s airborne: only Pierce reaches it. Guard, and strike when it swoops low or lands.';
+    if (type === 'thunder') return carries(h, 'Pierce') ? `Hit its crown with your ${carryingName(h, 'Pierce')} to snuff out the Thunderhead.` : 'A Thunderhead is coming. Block with everything you have.';
+    if (m.air && !carries(h, 'Pierce')) return h.item === 'net' && h.itemCharges > 0 ? 'Throw the Weighted Net to bring it down.' : 'It’s airborne: only Pierce reaches it. Block, and strike when it swoops low or lands.';
     if (m.air && (m.storm ?? 0) > 0) return `Arrows into its crown drain the storm. Aim at the crown with your ${carryingName(h, 'Pierce')}.`;
     if (type === 'perched') return 'It’s landed: every weapon reaches the crown this turn.';
     return null;

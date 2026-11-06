@@ -113,7 +113,7 @@ export const monolith: MonsterDef = {
   },
 
   tip(h, type) {
-    if (type === 'rumble') return carries(h, 'Blunt') ? `A Quake is coming. Daze it through the plates with your ${carryingName(h, 'Blunt')} to stop it.` : 'A Quake is coming. Guard everything you can.';
+    if (type === 'rumble') return carries(h, 'Blunt') ? `A Quake is coming. Daze it through the plates with your ${carryingName(h, 'Blunt')} to stop it.` : 'A Quake is coming. Block everything you can.';
     if (coreOut(h)) return carries(h, 'Pierce') ? `The core is open. Aim at it and hit it with your ${carryingName(h, 'Pierce')}: double damage.` : 'The core is open, but only Pierce reaches it.';
     if (!carries(h, 'Blunt')) return carries(h, 'Cut') ? `Its plates turn aside 60% of every hit. Your ${carryingName(h, 'Cut')} cracks them slowly; a hammer does it twice as fast.` : 'Its plates turn aside 60% of every hit, and a bow can’t crack them. Bring a hammer or a blade.';
     return h.target === 'plates' ? null : `Aim at the plates with your ${carryingName(h, 'Blunt')} to crack them open.`;

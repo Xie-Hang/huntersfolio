@@ -4,7 +4,7 @@
   import Elem from '../../parts/Elem.svelte';
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
-  import { effCls, effName, pct } from '../../fmt';
+  import { pct } from '../../fmt';
   import { shake } from '../../fx';
   import Plate from '../../parts/Plate.svelte';
   import Telegraph from './Telegraph.svelte';
@@ -26,12 +26,12 @@
     if (m.enraged) out.push({ key: 'enr', label: 'Enraged', short: 'hits harder', cls: 'hot', desc: 'Below half HP it fights harder for the rest of the hunt: its attacks hit harder and some of its moves change. Read its next move every turn.' });
     if (mud) out.push({ key: 'mud', label: 'Mud-caked', short: `hide takes ½ · ${m.wallow} turn${m.wallow > 1 ? 's' : ''}`, cls: 'mud', desc: 'Mud halves damage to its hide until it dries. Aim at another part meanwhile, or use Pierce, which ignores the mud.' });
     if (h.intent === 'trapped') out.push({ key: 'trap', label: 'Trapped', short: `held · ${m.trapped ?? 1} turn${(m.trapped ?? 1) > 1 ? 's' : ''}`, cls: 'gold', desc: 'Caught in your trap: it loses its actions while it’s held. A snare set now can’t be torn free.' });
-    if (m.air) out.push({ key: 'air', label: 'Airborne', short: 'only bows reach it', cls: 'gale', desc: `In the air, only Pierce (a bow) can hit it${isFlier ? '. Pinning Shot or a Weighted Net brings it down' : ''}. Otherwise guard until it comes down: when it lands, every weapon reaches it. It can't be captured in the air.` });
-    if (m.under) out.push({ key: 'under', label: 'Underground', short: 'only Blunt reaches it', cls: 'mud', desc: 'Only Blunt reaches it below ground. A heavy Blunt hit drives it up, dazed, and cancels what it was digging toward. Otherwise, guard for what comes up.' });
+    if (m.air) out.push({ key: 'air', label: 'Airborne', short: 'only bows reach it', cls: 'gale', desc: `In the air, only Pierce (a bow) can hit it${isFlier ? '. Pinning Shot or a Weighted Net brings it down' : ''}. Otherwise block until it comes down: when it lands, every weapon reaches it. It can't be captured in the air.` });
+    if (m.under) out.push({ key: 'under', label: 'Underground', short: 'only Blunt reaches it', cls: 'mud', desc: 'Only Blunt reaches it below ground. A heavy Blunt hit drives it up, dazed, and cancels what it was digging toward. Otherwise, block for what comes up.' });
     // every plated monster gets the badge but the Ashtail, whose burning scales have their own (Nov 2026 bug hunt: the Cragwing's slate had none)
     if (m.plating > 0 && !M.plateHot) { const pw = M.plateWord ?? 'ice'; out.push({ key: 'ice', label: `${pw[0].toUpperCase() + pw.slice(1)} ×${m.plating}`, short: `hits break ${pw}, not HP`, cls: 'ice', desc: `Each hit breaks a layer of ${pw} instead of dealing damage (a Cut hit breaks two), and uses up a charge or whetstone bonus. Clear the ${pw} first. A Firepot ${pw === 'ice' ? 'melts' : 'cracks'} it all.` }); }
-    if (m.molten > 0) out.push({ key: 'molt', label: 'Molten', short: `melee burns you ${m.enraged ? 8 : 5} · ${m.molten} turn${m.molten > 1 ? 's' : ''}`, cls: 'hot', desc: `Its shell is molten: every Cut or Blunt hit burns you ${m.enraged ? 8 : 5}. Pierce is safe, or guard and wait it out.` });
-    if ((m.shell ?? 0) > 0) out.push({ key: 'shell', label: 'In its shell', short: 'your hits ½', cls: 'stone', desc: 'Your hits deal half until it comes out on its next action. A good turn to guard, charge or reroll for something big.' });
+    if (m.molten > 0) out.push({ key: 'molt', label: 'Molten', short: `melee burns you ${m.enraged ? 8 : 5} · ${m.molten} turn${m.molten > 1 ? 's' : ''}`, cls: 'hot', desc: `Its shell is molten: every Cut or Blunt hit burns you ${m.enraged ? 8 : 5}. Pierce is safe, or block and wait it out.` });
+    if ((m.shell ?? 0) > 0) out.push({ key: 'shell', label: 'In its shell', short: 'your hits ½', cls: 'stone', desc: 'Your hits deal half until it comes out on its next action. A good turn to block, charge or reroll for something big.' });
     if ((m.slime ?? 0) > 0 && M.inflicts !== 'Drain') out.push({ key: 'slime', label: 'Slime', short: `burning you · ${m.slime} turn${m.slime! > 1 ? 's' : ''}`, cls: 'hot', desc: 'The slime burns you a little at the end of each turn. It can\'t knock you out on its own. Breaking its foot stops the slime for good.' });
     if ((m.mirage ?? 0) > 0 && M.id !== 'fenmother') out.push({ key: 'mir', label: 'Images', short: `only your 1st hit lands · ${m.mirage} turn${m.mirage! > 1 ? 's' : ''}`, cls: 'ice', desc: `Mirror images surround it: only your first hit each turn lands; later hits shatter an image. Make that first hit count (charge it). ${(m.hits ?? 0) > 0 ? 'You have already landed this turn\'s hit.' : ''}` });
     if ((m.infected ?? 0) > 0) out.push({ key: 'inf', label: 'Infected', short: `−${m.infectDmg} · ${m.infected} turn${m.infected! > 1 ? 's' : ''}`, cls: 'inf', desc: 'Your Infect weapon filled its meter: it takes this much at the end of each turn until the infection runs out.' });
@@ -44,10 +44,7 @@
 
 <section class="panel stage" class:over={h.over === 'win'} aria-label="The monster" use:shake={game.shakes.mon}>
   <div style="display:flex;flex-direction:column;gap:12px">
-    <div class="hpline">
-      <div class="ph"><h2>{M.panelName ?? M.name}{#if shows(h, 'parts')} <span class="label kind"><Elem e={el.elem} />{el.elem}</span><span class="chip sm gale hdchip"><Elem e={el.weak} />Weak to {el.weak}</span><span class="chip sm hdchip"><Elem e={el.resist} />Resists {el.resist}</span>{/if}</h2><span class="mono">{m.hp} / {m.max} HP</span></div>
-      <div class="bar" style="height:10px"><i style="width:{pct(m.hp, m.max)}%;background:var(--ember)"></i></div>
-    </div>
+    <!-- name, HP and elements are in the health bar across the top (VersusBar) -->
     <div class="stagebody">
       <!-- the picture, then the monster's meters and condition under it: the telegraph beside sets the height, and this
            used to be a full-width row below both (Nov 2026: the hunt screen didn't fit a Steam Deck) -->
@@ -122,13 +119,11 @@
   .stip { position: absolute; right: 0; top: calc(100% + 8px); z-index: 40; width: 280px; padding: 10px 12px; border: 1px solid var(--gold); border-radius: 4px; background: var(--raise); color: var(--fg); font-size: var(--fs-sm); font-weight: 400; line-height: 1.45; text-align: left; text-transform: none; letter-spacing: 0; white-space: normal; box-shadow: 0 8px 24px rgba(0, 0, 0, .5); opacity: 0; visibility: hidden; transform: translateY(-4px); transition: opacity .12s, transform .12s, visibility .12s; pointer-events: none; }
   .cond:hover .stip, .cond:focus-visible .stip, .cond:focus .stip { opacity: 1; visibility: visible; transform: none; }
   @media (prefers-reduced-motion: reduce) { .stip { transition: none; } }
-  .kind { margin-left: 10px; font-size: var(--fs-sm); font-weight: 400; }
   .metarow { display: flex; gap: 10px 18px; align-items: flex-end; flex-wrap: wrap; }
   .metarow .meters { flex: 1 1 260px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px 16px; min-width: 0; }
   .metarow .ph { flex-wrap: nowrap; }
   .metarow .ph .label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
   .metarow .ph .mono { white-space: nowrap; flex: none; }
-  .hdchip { margin-left: 8px; vertical-align: middle; font-weight: 400; }
   .metarow .meters:empty { display: none; }
   .platecol { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
   .platecol .metarow { flex-direction: column; align-items: stretch; }

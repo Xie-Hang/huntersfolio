@@ -104,7 +104,7 @@ export const quakeback: MonsterDef = {
     if (m.under) {
       if (carries(h, 'Blunt')) return null; // the badge and the weapon panel already say only Blunt reaches it
       if (h.item === 'blast' && h.itemCharges > 0) return 'Throw the Blast Powder to force it up.';
-      return 'Only Blunt reaches it underground. Guard for the tremors.';
+      return 'Only Blunt reaches it underground. Block for the tremors.';
     }
     if (type === 'burrow' && !m.parts.claws.broken && carries(h, 'Cut')) return `Its claws dig it in. Your ${carryingName(h, 'Cut')} can take them off.`;
     return null;

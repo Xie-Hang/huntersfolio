@@ -28,7 +28,7 @@ export const bloodwhelk: MonsterDef = {
   common: 'bloodscale',
   rarePart: 'shell',
   rare: 'heartpearl',
-  habits: 'An Emberwhelk whose fire has gone out and whose slime has turned red. The slime clings and drinks: for a few turns it takes HP from you, past your guard, and heals the snail. Its gills heal it too. Break the gills and it can’t keep anything it takes.',
+  habits: 'An Emberwhelk whose fire has gone out and whose slime has turned red. The slime clings and drinks: for a few turns it takes HP from you, past your block, and heals the snail. Its gills heal it too. Break the gills and it can’t keep anything it takes.',
   intro: 'A dark shell slides out of the reeds on a trail of red slime.',
   enrageText: 'Its slime runs thick and dark. The Bloodwhelk is enraged!',
   parts: [
@@ -41,7 +41,7 @@ export const bloodwhelk: MonsterDef = {
     const r = emberwhelk.intent.call(this, h, type);
     const out = r.dmg ? { ...r, dmg: Math.round(r.dmg * HIT) } : r;
     if (type === 'spit') return { ...out, name: 'Spit Grit', text: 'It hawks a gob of grit and red slime.' };
-    if (type === 'slime') return { ...out, name: 'Leeching Slime', text: 'It surges forward on a wave of red slime.', note: h.arm.leechProof ? 'Your armor keeps the slime off' : `Then it drinks ${LEECH_TURNS} turns, past your guard` };
+    if (type === 'slime') return { ...out, name: 'Leeching Slime', text: 'It surges forward on a wave of red slime.', note: h.arm.leechProof ? 'Your armor keeps the slime off' : `Then it drinks ${LEECH_TURNS} turns, past your block` };
     return out;
   },
 
@@ -69,7 +69,7 @@ export const bloodwhelk: MonsterDef = {
 
   badges(h) {
     const s = h.mon.slime ?? 0;
-    return s > 0 ? [{ key: 'leech', label: 'Leeching', short: `${s} turn${s > 1 ? 's' : ''}`, cls: 'ember', desc: 'Its slime is drinking from you each turn, past your guard, and healing it. Breaking the gills stops it feeding.' }] : [];
+    return s > 0 ? [{ key: 'leech', label: 'Leeching', short: `${s} turn${s > 1 ? 's' : ''}`, cls: 'ember', desc: 'Its slime is drinking from you each turn, past your block, and healing it. Breaking the gills stops it feeding.' }] : [];
   },
 
   tip(h, type) {

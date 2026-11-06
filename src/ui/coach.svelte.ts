@@ -80,7 +80,7 @@ export const TIPS: Tip[] = [
       const h = hunt()!, w = E.currentWeapon(h), best = [...w.moves.keys()].filter(i => E.canUseMove(h, i)).sort((a, b) => w.moves[b].dmg - w.moves[a].dmg)[0];
       return `To attack, click a move. Each move needs the dice shapes on its right. You rolled what ${w.moves[best].name} needs: click it.`;
     },
-    done: () => { const h = hunt(); return !!h && h.dice.some(d => d.used && d.used !== 'Guard'); }
+    done: () => { const h = hunt(); return !!h && h.dice.some(d => d.used && d.used !== 'Block'); }
   },
   {
     id: 'guard', guide: true, learn: true, at: ['guard'],
@@ -88,7 +88,7 @@ export const TIPS: Tip[] = [
     text: () => {
       const h = hunt()!, inc = E.incoming(h), d = game.sel.length ? game.sel : E.autoDice(h, 'guard') ?? [], g = d.reduce((a, i) => a + E.guardOf(h, i), 0);
       const blank = d.length && d.every(i => h.dice[i].face === 'B');
-      return `${blank ? 'A blank fits no move, but it guards best.' : 'Dice that fit no move can Guard.'} Click Guard: it blocks ${g}${inc?.net ? `, so the ${inc.raw} becomes ${Math.max(0, inc.raw - g)}` : ''}.`;
+      return `${blank ? 'A blank fits no move, but it blocks best.' : 'Dice that fit no move can Block.'} Click Block: it stops ${g}${inc?.net ? `, so the ${inc.raw} becomes ${Math.max(0, inc.raw - g)}` : ''}.`;
     },
     done: () => (hunt()?.guard ?? 0) > 0
   },
@@ -127,7 +127,7 @@ export const TIPS: Tip[] = [
     when: () => { const h = hunt(); const inc = h && E.incoming(h); return !!h && (E.intentInfo(h).threat >= 3) && !!inc?.net && h.guard === 0; },
     text: () => {
       const h = hunt()!, inc = E.incoming(h)!, n = freeDice(h);
-      return `This one hurts: ${inc.raw} damage. Guarding with all ${n} dice blocks ${E.freeDice(h).reduce((t, i) => t + E.guardOf(h, i), 0)}. Guard, hit back, or split them: your call.`;
+      return `This one hurts: ${inc.raw} damage. Blocking with all ${n} dice blocks ${E.freeDice(h).reduce((t, i) => t + E.guardOf(h, i), 0)}. Block, hit back, or split them: your call.`;
     },
     done: () => (hunt()?.guard ?? 0) > 0
   },
@@ -191,7 +191,7 @@ export const TIPS: Tip[] = [
   {
     id: 'open', at: ['move', 'tele'],
     when: () => { const h = hunt(); return !!h && E.intentInfo(h).threat === 0 && E.intentInfo(h).dmg === 0 && h.turn > 1 && h.intent !== 'windup'; },
-    text: () => 'It won\'t attack this turn. No need to Guard: put every die into damage.'
+    text: () => 'It won\'t attack this turn. No need to Block: put every die into damage.'
   },
   {
     id: 'enraged', at: ['tele'],
@@ -220,7 +220,7 @@ export const TIPS: Tip[] = [
   {
     id: 'failed', at: ['tele'],
     when: () => game.view === 'hunt' && game.hunt?.over === 'lose',
-    text: () => 'Hunts can fail. You keep your weapons, armor and the materials of any part you broke; you lose the coin and the items you carried. Guard against its big hits, and break the part that powers them.'
+    text: () => 'Hunts can fail. You keep your weapons, armor and the materials of any part you broke; you lose the coin and the items you carried. Block against its big hits, and break the part that powers them.'
   },
   {
     id: 'forge', guide: true, learn: true, at: ['to-forge', 'nav-forge'],

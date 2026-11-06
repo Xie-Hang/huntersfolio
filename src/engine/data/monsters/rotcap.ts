@@ -51,7 +51,7 @@ export const rotcap: MonsterDef = {
       case 'slam': return { name: 'Cap Slam', text: 'It rears up and brings the whole cap down on you.', dmg: Math.round((enr ? 30 : 24) * (lb ? 0.7 : 1)), threat: 1 };
       case 'puff': return { name: 'Spore Puff', text: 'It shudders, and a cloud of spores rolls out from under the cap.', dmg: enr ? 18 : 14, threat: 1, note: 'If it hits, you’re infected for 3 turns' };
       case 'bloom': return { name: 'Bloom', text: 'The cap swells and splits along its gills.', dmg: 0, threat: 0, note: `It heals ${ROT_BLOOM_HEAL}, then bursts${b + 1 < BLOOM_TURNS ? ' after next turn' : ' next turn'}. A 2-dice Pierce hit on the cap pops it` };
-      case 'burst': return { name: 'Spore Burst', text: 'The cap is fit to burst!', dmg: enr ? 82 : 72, threat: enr ? 4 : 3, halfGuard: true, note: 'Half your guard, then infected 4 turns. A 2-dice Pierce hit on the cap pops it' };
+      case 'burst': return { name: 'Spore Burst', text: 'The cap is fit to burst!', dmg: enr ? 82 : 72, threat: enr ? 4 : 3, halfGuard: true, note: 'Half your block, then infected 4 turns. A 2-dice Pierce hit on the cap pops it' };
       case 'wilt': return { name: 'Wilting', text: 'The cap sags, emptied.', dmg: 0, threat: 0, note: 'A free turn to attack' };
       case 'popped': return { name: 'Popped', text: 'Spores drift out of the burst cap. It reels.', dmg: 0, threat: 0, note: 'Its action is lost' };
       case 'dazed': return { name: 'Dazed', text: 'It sways, its cap lolling.', dmg: 0, threat: 0, note: 'Its action is lost' };

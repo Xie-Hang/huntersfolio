@@ -111,7 +111,7 @@ export const fenmother: MonsterDef = {
     if ((m.mirage ?? 0) > 0) return h.chargeReady ? 'Your charge is ready. Make it your first hit: only the first one lands in the steam.' : 'In the steam only your first hit each turn lands. Charge, then strike once, hard.';
     if (type === 'gape') {
       if (h.item === 'smoke' && h.itemCharges > 0) return 'Throw the Smoke Pouch now and the Swallow misses.';
-      return carries(h, 'Blunt') ? `Daze the head with your ${carryingName(h, 'Blunt')} to stop the Swallow, or guard hard.` : 'It’s about to swallow you. Guard, or break the throat sac.';
+      return carries(h, 'Blunt') ? `Daze the head with your ${carryingName(h, 'Blunt')} to stop the Swallow, or block hard.` : 'It’s about to swallow you. Block, or break the throat sac.';
     }
     if (!m.parts.gills.broken && carries(h, 'Pierce')) return `Its gills heal it every turn. Break them with your ${carryingName(h, 'Pierce')}.`;
     return null;

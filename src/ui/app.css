@@ -67,7 +67,7 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 @media (max-width:720px){.grid{grid-template-columns:minmax(0,1fr)}.center{order:0}}
 .center{display:flex;flex-direction:column;gap:18px;min-width:0}
 /* hunt: log | monster, parts, you, dice | moves */
-.grid.hunt{grid-template-columns:minmax(0,1fr) minmax(0,340px)}
+.grid.hunt{grid-template-columns:minmax(0,1fr) minmax(0,340px);row-gap:12px}
 .grid.hunt.done{grid-template-columns:minmax(0,1fr)!important}
 .hunttip{border-color:var(--line-2);background:var(--raise)}
 .hunttip p{margin:0;font-size:var(--fs-md);line-height:1.4}

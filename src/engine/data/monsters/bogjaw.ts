@@ -87,7 +87,7 @@ export const bogjaw: MonsterDef = {
       : 'You’re swallowed. Every hit counts toward cutting free: Cut counts double, Blunt only half.';
     if (type === 'gape') {
       if (h.item === 'smoke' && h.itemCharges > 0) return 'Throw the Smoke Pouch now and the Swallow misses.';
-      return carries(h, 'Blunt') ? `Daze the jaw with your ${carryingName(h, 'Blunt')} to stop the Swallow, or guard hard.` : 'It’s about to swallow you. Guard, or break the throat sac.';
+      return carries(h, 'Blunt') ? `Daze the jaw with your ${carryingName(h, 'Blunt')} to stop the Swallow, or block hard.` : 'It’s about to swallow you. Block, or break the throat sac.';
     }
     if (!m.parts.sac.broken && carries(h, 'Cut')) return `Your ${carryingName(h, 'Cut')} can break the throat sac and end the Swallow for good.`;
     return null;

@@ -20,7 +20,7 @@ export function sparkPlayer(h: Hunt, n: number, hit: number): string {
   m.pSpark = 0; feat(h, 'discharged');
   const d = Math.round(hit * (1 - (h.arm.sparkLess ?? 0)));
   h.php = Math.max(0, h.php - d); h.stats.taken += d;
-  return `The spark on you discharges for ${d}! Guard can’t stop it.`;
+  return `The spark on you discharges for ${d}! Block can’t stop it.`;
 }
 /** The monster latches on for up to `turns` turns (armor caps it). */
 export function latchPlayer(h: Hunt, turns: number) {
