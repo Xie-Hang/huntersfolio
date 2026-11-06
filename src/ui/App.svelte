@@ -71,8 +71,9 @@
   $effect(() => { if ((window as unknown as { hf?: unknown }).hf) music.unlock(); });
   // The opening card: new players always; in the browser, every launch (its Begin click is what turns the sound on).
   // Automated runs (store captures, QA bots) skip it: navigator.webdriver is set only under automation.
-  const freshPlayer = settings.prefs.tips && game.save.hunts === 0 && !game.save.tips.includes('begin');
-  let introOpen = $state(!navigator.webdriver && (freshPlayer || !isDesktop()));
+  // (a new player is one who hasn't started: a save reset counts, so it's worked out live, not once at launch)
+  const freshPlayer = $derived(settings.prefs.tips && game.save.hunts === 0 && !game.save.tips.includes('begin') && !game.save.tips.includes('i-begin'));
+  let introOpen = $state(!navigator.webdriver && ((settings.prefs.tips && game.save.hunts === 0) || !isDesktop()));
   $effect(() => { music.setVolume(settings.prefs.music); });
   $effect(() => { setSfxVolume(settings.prefs.sfx); });
   $effect(() => { setUiSize(settings.prefs.uiSize); });
@@ -108,7 +109,10 @@
     if (!resetArmed) { resetArmed = true; resetTimer = setTimeout(() => (resetArmed = false), 3000); return; }
     resetArmed = false;
     game.reset();
-    setToast = 'Save reset. You’re back to 100 coin and starter gear.';
+    // a reset starts over as a new player: the Foothills, the tutorial prompts, and the opening card
+    settings.prefs.tips = true; settings.prefs.showAll = false; settings.save();
+    settingsOpen = false; introOpen = !navigator.webdriver;
+    setToast = 'Save reset. You start again in the Foothills.';
   }
 </script>
 
