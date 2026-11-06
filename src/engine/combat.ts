@@ -164,7 +164,7 @@ export const TRAP_CATCH: Record<'trapRush' | 'trapLand', string[]> = {
   trapLand: ['dive', 'erupt', 'rockburst']
 };
 /** monster actions a sprung trap holds it for (tunable: the sim tests 1 and 2) */
-export const TRAP_HOLD: Record<'trapRush' | 'trapLand', number> = { trapRush: 2, trapLand: 1 };
+export const TRAP_HOLD: Record<'trapRush' | 'trapLand', number> = { trapRush: 2, trapLand: 2 };
 export const trapCatches = (fx: string | null | undefined, intent: string) => !!fx && (TRAP_CATCH as Record<string, string[]>)[fx]?.includes(intent);
 const TRAPPED: Intent = { name: 'Trapped', text: 'It thrashes in the trap.', dmg: 0, threat: 0, note: 'Its action is lost' };
 export const intentInfo = (h: Hunt): Intent => (h.intent === 'trapped' ? TRAPPED : def(h).intent(h, h.intent));
@@ -184,6 +184,8 @@ export const freeDice = (h: Hunt) => h.dice.map((d, i) => (d.used ? -1 : i)).fil
  *  the telegraph is what it does AFTER your turn, so it was still on the ground. Say so on the button. */
 export function itemBlockReason(h: Hunt): string | null {
   if (!h.item || h.over || itemUsable(h)) return null;
+  const fx0 = ITEMS[h.item].effect;
+  if ((fx0 === 'trapRush' || fx0 === 'trapLand') && h.trapSet) return 'Set: it springs when you end your turn';
   if (h.itemUsed) return 'One item per turn: used this turn';
   if (h.itemCharges < 1) return 'None left';
   const fx = ITEMS[h.item].effect, next = h.intent;
@@ -192,6 +194,7 @@ export function itemBlockReason(h: Hunt): string | null {
   if (fx === 'thaw') return def(h).plateHot ? 'Its scales are already burning: a Firepot does nothing' : 'Only works while it has plating (ice or slate)';
   if (fx === 'cureInfect') return 'Only works while you’re infected';
   if (fx === 'cureSpark') return 'Only works with Spark pips on you or charged dice';
+  if (fx === 'trapRush' || fx === 'trapLand') return h.trapSet ? 'Set: it springs when you end your turn' : 'It’s already held';
   return null;
 }
 export function itemUsable(h: Hunt): boolean {

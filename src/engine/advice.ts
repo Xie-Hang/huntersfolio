@@ -4,7 +4,8 @@
 // reaches the monster and what it's weak to, never what to bring.
 import type { Element, Hunt, Save, WeaponInst } from './types';
 import { MONSTERS } from './data/monsters';
-import { plateBreak } from './combat';
+import { plateBreak, startHunt, TRAP_CATCH } from './combat';
+import { newSave } from './save';
 
 const TYPES = ['Cut', 'Blunt', 'Pierce'] as const;
 const ELEMS: Element[] = ['Stone', 'Gale', 'Ember', 'Frost'];
@@ -36,4 +37,15 @@ export function lossFacts(h: Hunt, s: Save): string[] {
   if (losses >= 2 && elems.every(e => !e)) out.push('Neither of your weapons carries an element. Elemental weapons are forged at the Forge.');
   if (M.elemental?.length && h.arm.resist !== M.elem && !h.arm.adaptive && !M.elemOf) out.push(`Armor that resists ${M.elem} cuts its ${M.elemental.join(' and ')} by 30%.`);
   return out.slice(0, 3);
+}
+
+/** The moves of this monster each trap catches, by name (Nov 2026 traps): asks its own move list for each move a
+ *  trap catches (an unknown move comes back blank), so it never drifts from what the engine does. Cached. */
+const trapCache: Record<string, { trapRush: string[]; trapLand: string[] }> = {};
+export function trapMoves(mid: string): { trapRush: string[]; trapLand: string[] } {
+  if (trapCache[mid]) return trapCache[mid];
+  const s = newSave(); s.loadout = { ...s.loadout, target: mid };
+  const h = startHunt(s, 1), M = MONSTERS[mid];
+  const names = (fx: 'trapRush' | 'trapLand') => TRAP_CATCH[fx].map(t => M.intent(h, t)).filter(i => i && i.dmg > 0 && i.name && i.name !== '…').map(i => i.name);
+  return (trapCache[mid] = { trapRush: names('trapRush'), trapLand: names('trapLand') });
 }

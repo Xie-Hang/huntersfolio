@@ -24,6 +24,7 @@
     const out: { key: string; label: string; short: string; cls: string; desc: string }[] = [];
     if (m.enraged) out.push({ key: 'enr', label: 'Enraged', short: 'hits harder', cls: 'hot', desc: 'Below half HP it fights harder for the rest of the hunt: its attacks hit harder and some of its moves change. Read its next move every turn.' });
     if (mud) out.push({ key: 'mud', label: 'Mud-caked', short: `hide takes ½ · ${m.wallow} turn${m.wallow > 1 ? 's' : ''}`, cls: 'mud', desc: 'Mud halves damage to its hide until it dries. Aim at another part meanwhile, or use Pierce, which ignores the mud.' });
+    if (h.intent === 'trapped') out.push({ key: 'trap', label: 'Trapped', short: `held · ${m.trapped ?? 1} turn${(m.trapped ?? 1) > 1 ? 's' : ''}`, cls: 'gold', desc: 'Caught in your trap: it loses its actions while it’s held. A snare set now can’t be torn free.' });
     if (m.air) out.push({ key: 'air', label: 'Airborne', short: 'only bows reach it', cls: 'gale', desc: `In the air, only Pierce (a bow) can hit it${isFlier ? '. Pinning Shot or a Weighted Net brings it down' : ''}. Otherwise guard until it comes down: when it lands, every weapon reaches it. It can't be captured in the air.` });
     if (m.under) out.push({ key: 'under', label: 'Underground', short: 'only Blunt reaches it', cls: 'mud', desc: 'Only Blunt reaches it below ground. A heavy Blunt hit drives it up, dazed, and cancels what it was digging toward. Otherwise, guard for what comes up.' });
     // every plated monster gets the badge but the Ashtail, whose burning scales have their own (Nov 2026 bug hunt: the Cragwing's slate had none)
@@ -50,7 +51,7 @@
       <!-- the picture, then the monster's meters and condition under it: the telegraph beside sets the height, and this
            used to be a full-width row below both (Nov 2026: the hunt screen didn't fit a Steam Deck) -->
       <div class="platecol">
-        <div class="plate"><Plate mon={h.mid} hunt={h} scene /></div>
+        <div class="plate"><Plate mon={h.mid} hunt={h.intent === 'trapped' ? { ...h, intent: 'dazed' } : h} scene /></div>
         <!-- meters and condition badges only matter mid-fight: gone on the result card (Mekkman, Nov 2026) -->
         {#if !h.over}
         <div class="metarow">
