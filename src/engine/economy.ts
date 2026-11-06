@@ -149,6 +149,10 @@ export function recipeState(s: Save, kind: RecipeKind, id: string): RecipeState 
   return { cls: 'short', text: miss ? `Need ${miss} more` : 'Need coin' };
 }
 
+/** Something at the Forge you can make or reinforce right now (the Forge's first tip waits for this, Nov 2026). */
+export const forgeReady = (s: Save) =>
+  (['w', 'a', 'c'] as RecipeKind[]).some(k => Object.keys(k === 'w' ? WEAPONS : k === 'a' ? ARMORS : CHARMS).some(id => { try { return recipeState(s, k, id).cls === 'ready'; } catch { return false; } }));
+
 /** Craft, upgrade or reinforce. Returns a message, or null if it couldn't be done. */
 export function forgeDo(s: Save, kind: RecipeKind, id: string): string | null {
   const r = recipeOf(s, kind, id);

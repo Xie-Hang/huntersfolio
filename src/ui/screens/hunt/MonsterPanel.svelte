@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { shows } from '../../reveal';
   import { input } from '../../pad.svelte';
   import Elem from '../../parts/Elem.svelte';
   import * as E from '../../../engine';
@@ -41,17 +42,17 @@
   const TONE = { gold: 'var(--gold-hi)', ember: 'var(--ember-soft)', ice: '#b9d3f0', gale: '#8fc3c9', stone: '#c9b89c' } as const;
 </script>
 
-<section class="panel stage" aria-label="The monster" use:shake={game.shakes.mon}>
+<section class="panel stage" class:over={h.over === 'win'} aria-label="The monster" use:shake={game.shakes.mon}>
   <div style="display:flex;flex-direction:column;gap:12px">
     <div class="hpline">
-      <div class="ph"><h2>{M.panelName ?? M.name} <span class="label kind"><Elem e={el.elem} />{el.elem}</span><span class="chip sm gale hdchip"><Elem e={el.weak} />Weak to {el.weak}</span><span class="chip sm hdchip"><Elem e={el.resist} />Resists {el.resist}</span></h2><span class="mono">{m.hp} / {m.max} HP</span></div>
+      <div class="ph"><h2>{M.panelName ?? M.name}{#if shows(h, 'parts')} <span class="label kind"><Elem e={el.elem} />{el.elem}</span><span class="chip sm gale hdchip"><Elem e={el.weak} />Weak to {el.weak}</span><span class="chip sm hdchip"><Elem e={el.resist} />Resists {el.resist}</span>{/if}</h2><span class="mono">{m.hp} / {m.max} HP</span></div>
       <div class="bar" style="height:10px"><i style="width:{pct(m.hp, m.max)}%;background:var(--ember)"></i></div>
     </div>
     <div class="stagebody">
       <!-- the picture, then the monster's meters and condition under it: the telegraph beside sets the height, and this
            used to be a full-width row below both (Nov 2026: the hunt screen didn't fit a Steam Deck) -->
       <div class="platecol">
-        <div class="plate"><Plate mon={h.mid} hunt={h.intent === 'trapped' ? { ...h, intent: 'dazed' } : h} scene /></div>
+        <div class="plate" style="position:relative"><Plate mon={h.mid} hunt={h.intent === 'trapped' ? { ...h, intent: 'dazed' } : h} scene />{#if h.over}<span class="stamp {h.over === 'win' ? (h.captured ? 'captured' : 'slain') : 'failed'}" aria-hidden="true">{h.over === 'win' ? (h.captured ? 'Captured' : 'Slain') : 'Escaped'}</span>{/if}</div>
         <!-- meters and condition badges only matter mid-fight: gone on the result card (Mekkman, Nov 2026) -->
         {#if !h.over}
         <div class="metarow">
@@ -66,7 +67,8 @@
             {/if}
           </div>
         {/if}
-        {#if E.carries(h, 'Blunt') && M.heads}
+        {#if !shows(h, 'all')}
+        {:else if E.carries(h, 'Blunt') && M.heads}
           <div class="hpline">
             <div class="heads">
               <span class="label" style="color:var(--daze)">Daze</span>

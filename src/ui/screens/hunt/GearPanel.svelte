@@ -9,6 +9,8 @@
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
   import { needLabel, needMarks, GLYPH, HOLLOW, elemLabel, markOf } from '../../fmt';
+  import { shows } from '../../reveal';
+  const full = $derived(shows(game.hunt, 'all'));
 
   const h = $derived(game.hunt!);
   const w = $derived(E.currentWeapon(h));
@@ -68,8 +70,8 @@
       {/each}
     </div>
   </div>
-  <p class="sigline"><span class="tag {sg.tag}" style="margin:0 6px 0 0">{sg.name}</span>{sg.text}</p>
-  {#if !over && E.cantHitReason(h, w)}<p class="cant">{E.cantHitReason(h, w)} Swap, Guard or Charge instead.</p>{/if}
+  {#if full}<p class="sigline"><span class="tag {sg.tag}" style="margin:0 6px 0 0">{sg.name}</span>{sg.text}</p>{/if}
+  {#if !over && E.cantHitReason(h, w)}<p class="cant">{E.cantHitReason(h, w)} {full ? 'Swap, Guard or Charge instead.' : 'Swap or Guard instead.'}</p>{/if}
 
   {#each w.moves as mv, i}
     {@const ok = E.canUseMove(h, i)}
@@ -77,24 +79,30 @@
     {@const miss = marks.filter(x => !x.have).map(x => (x.c === 'C' ? 'circle' : 'triangle'))}
     <button class="move {ok ? 'ready' : 'no'}" data-coach={i === bestReady ? 'move' : undefined} aria-disabled={!ok} onclick={() => ok && game.move(i)}>
       <span>
-        <span class="mn"><Key k={MOVE_KEYS[i]} />{mv.name}{#if mv.flow}<span class="tag flow">Flow</span>{/if}{#if mv.daze}<span class="tag daze">Daze</span>{/if}{#if mv.expose}<span class="tag expose">Expose</span>{/if}{#if !over && tipText?.includes(mv.name)}<span class="tag counter">Counter</span>{/if}</span>
-        <span class="md">{#if iceNow}{iceLine}{:else}{shownDmg(mv.dmg)} damage{halfAir ? ', halved in the air' : ''}{exposedNow ? ', exposed' : ''}{mv.part ? ` · ×${mv.part} toward breaks` : ''}{mv.daze ? ` · Daze +${mv.daze}` : ''}{mv.flow ? ' · +1 reroll' : ''}{/if}</span>
+        <span class="mn"><Key k={MOVE_KEYS[i]} />{mv.name}{#if full}{#if mv.flow}<span class="tag flow">Flow</span>{/if}{#if mv.daze}<span class="tag daze">Daze</span>{/if}{#if mv.expose}<span class="tag expose">Expose</span>{/if}{/if}{#if !over && tipText?.includes(mv.name)}<span class="tag counter">Counter</span>{/if}</span>
+        <span class="md">{#if iceNow}{iceLine}{:else}{shownDmg(mv.dmg)} damage{halfAir ? ', halved in the air' : ''}{exposedNow ? ', exposed' : ''}{full && mv.part ? ` · ×${mv.part} toward breaks` : ''}{full && mv.daze ? ` · Daze +${mv.daze}` : ''}{full && mv.flow ? ' · +1 reroll' : ''}{/if}</span>
       </span>
       <span class="need" aria-label="Needs {needLabel(mv.need)}{miss.length && !over ? `; missing ${miss.join(', ')}` : ''}">{#each marks as x}{#if x.have || over}<Pip c={x.c} />{:else}<span class="miss"><Pip c={x.c} hollow /></span>{/if}{/each}</span>
     </button>
   {/each}
 
-  <div class="divider"><span class="label">Or spend dice · blanks first</span><span class="label">{n} selected</span></div>
+  <div class="divider"><span class="label">{full ? 'Or spend dice · blanks first' : 'Or spend dice'}</span><span class="label">{n} selected</span></div>
   <button class="move dash {gOk ? 'ready' : 'no'}" data-coach="guard" aria-disabled={!gOk} onclick={() => gOk && game.guard()}>
     <span><span class="mn"><Key k="G" />Guard</span><span class="md">{selGuard ? `Blocks ${selGuard} with the selected dice` : auto.guard?.length ? `${usesLine(auto.guard)}: blocks ${auto.guard.reduce((a, i) => a + E.guardOf(h, i), 0)}` : `Blocks ${h.arm.guard} per die, ${Math.round(h.arm.guard * (h.arm.blankx2 ? E.VEST_BLANK_GUARD : E.BLANK_GUARD))} per blank · select dice`}</span></span><span class="need">Any</span>
   </button>
-  <button class="move dash {cOk ? 'ready' : 'no'}" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
+  {#if full}
+  <button class="move dash {cOk ? 'ready' : 'no'}" data-coach="charge" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
     <span><span class="mn"><Key k="C" />Charge</span><span class="md">{chargeRisk ? `The −${inc?.net} coming would break it: guard it under ${E.CHARGE_BREAK} first` : `Your first hit next turn deals double · a hit of ${E.CHARGE_BREAK}+ breaks it`}{!chargeRisk && auto.charge ? ` · ${usesLine(auto.charge)}` : ''}</span></span><span class="need">{cd}</span>
   </button>
+  {/if}
+  {#if shows(h, 'swap')}
   <button class="move dash {sOk ? 'ready' : 'no'}" data-coach="swap" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
     <span><span class="mn"><Key k="S" pad="RT" /><WeaponArt id={other.id} size={22} />Swap to {other.name}{#if swapCounter}<span class="tag counter">Counter</span>{/if}</span><span class="md">{other.type} · <Elem e={markOf(other)} />{elemLabel(other)}{auto.swap?.length ? ` · ${usesLine(auto.swap)}` : ''}</span></span><span class="need">{E.freeSwap(h) ? 'Free' : '1'}</span>
   </button>
-  <!-- Always shown, so players learn it exists before it's available. -->
+  {/if}
+  <!-- With everything on it's always shown, so players learn it exists before it's available. In the second and third
+       hunts it appears only once the monster is weak enough (it's the escape from a hunt going badly). -->
+  {#if full || (shows(h, 'parts') && capLive)}
   <button data-coach="capture" class="move capture {capLive && E.captureReady(h) ? 'live' : ''} {capOk ? 'ready' : 'no'}" aria-disabled={!capOk} onclick={() => capOk && game.capture()}>
     <span>
       <span class="mn"><Key k="X" />Capture</span>
@@ -110,8 +118,10 @@
     </span>
     <span class="need">2</span>
   </button>
+  {/if}
 
-  {#if h.item}
+  {#if !shows(h, 'item')}
+  {:else if h.item}
     {@const it = E.ITEMS[h.item]}
     <div class="divider"><span class="label">Item · Free action</span><span class="label">{h.itemCharges} left</span></div>
     <button class="move pocket {iOk ? 'ready' : 'no'}" data-coach="item" aria-disabled={!iOk} onclick={() => iOk && game.item()}>

@@ -6,6 +6,8 @@ import { read, write, remove, lockSaves, SAVE_KEY, HUNT_KEY } from './storage';
 import { sfx, type Sfx } from './sfx';
 import * as PL from './playlog';
 import { checkAchievements } from './achievements';
+import { settings } from './settings.svelte';
+import { shows } from './reveal';
 
 export type View = 'board' | 'forge' | 'shop' | 'hunt';
 type Panel = 'mon' | 'player';
@@ -95,7 +97,9 @@ class Game {
   begin(scripted = false) {
     E.fixLoadout(this.save);
     if (this.save.loadout.weapons.length !== 2 || !E.isUnlocked(this.save, this.save.loadout.target)) return;
-    this.hunt = E.startHunt(this.save, E.randomSeed(), scripted ? E.TUTORIAL_SCRIPT : undefined);
+    // the first three hunts each add one layer of the hunt screen (see reveal.ts); "Show every action" skips that
+    const lesson = settings.prefs.showAll || this.save.hunts >= 3 ? undefined : this.save.hunts + 1;
+    this.hunt = E.startHunt(this.save, E.randomSeed(), scripted ? E.TUTORIAL_SCRIPT : undefined, lesson);
     PL.huntBegin(this.hunt, this.save);
     this.undoStack = [];
     this.sel = [];
@@ -113,7 +117,7 @@ class Game {
   private float(at: Panel, text: string, cls = '') {
     const f = { id: ++floatId, at, text, cls };
     this.floats = [...this.floats, f];
-    setTimeout(() => (this.floats = this.floats.filter(x => x.id !== f.id)), 950);
+    setTimeout(() => (this.floats = this.floats.filter(x => x.id !== f.id)), cls === 'kill' ? 1600 : 950);
   }
   private shake(at: Panel) { this.shakes[at]++; }
 
@@ -144,7 +148,7 @@ class Game {
     sfx('dieTap');
   }
   target(part: string) {
-    if (!this.hunt || this.hunt.over) return;
+    if (!this.hunt || this.hunt.over || !shows(this.hunt, 'parts')) return;
     this.hunt.target = part;
     this.persist();
   }
@@ -165,22 +169,25 @@ class Game {
     } else {
       sounds.push(w.type === 'Cut' ? 'hitCut' : w.type === 'Blunt' ? 'hitBlunt' : 'hitPierce');
       if (r.dmg >= 50) sounds.push('bigHit');
-      this.float('mon', `−${r.dmg}`);
+      // the killing blow lands bigger and slower (Nov 2026 playtest: "a lack of satisfaction")
+      this.float('mon', `−${r.dmg}`, h.over === 'win' ? 'kill' : '');
     }
     if (r.broke) sounds.push('partBreak');
     if (h.intent === 'dazed' && intent0 !== 'dazed') sounds.push('daze');
     if (Object.values(h.mon.parts).filter(p => p.exposed > 0).length > exposed0) sounds.push('expose');
     if (h.over === 'win' && !h.captured) sounds.push('bigHit');
     sfx(...sounds);
-    if (r.broke || r.dmg >= 50) this.shake('mon');
+    if (r.broke || r.dmg >= 50 || h.over === 'win') this.shake('mon');
     if (h.rerolls > rr0) this.float('player', `+${h.rerolls - rr0} reroll`, 'heal');
   }
   /** the selected dice, or the ones the action would take on its own (E.autoDice) */
   private diceFor(a: E.DiceAction): number[] { return this.sel.length || !this.hunt ? this.sel : E.autoDice(this.hunt, a) ?? []; }
   guard() { const d = this.diceFor('guard'); if (this.act(h => E.guard(h, d), ok => ok)) sfx('guard'); }
-  charge() { const d = this.diceFor('charge'); if (this.act(h => E.charge(h, d), ok => ok)) sfx('charge'); }
-  swap() { const d = this.diceFor('swap'); if (this.act(h => E.swap(h, d), ok => ok)) sfx('swap'); }
+  // actions a layer hasn't shown yet are off for keys and pads too
+  charge() { if (!shows(this.hunt, 'all')) return; const d = this.diceFor('charge'); if (this.act(h => E.charge(h, d), ok => ok)) sfx('charge'); }
+  swap() { if (!shows(this.hunt, 'swap')) return; const d = this.diceFor('swap'); if (this.act(h => E.swap(h, d), ok => ok)) sfx('swap'); }
   capture() {
+    if (!shows(this.hunt, 'parts')) return;
     // the engine logs a reason when capture is blocked (airborne); keep that on screen
     const d = this.diceFor('capture');
     const r = this.act(h => E.capture(h, d), ok => ok);
@@ -194,6 +201,7 @@ class Game {
     if (idx?.length) { this.undoStack = []; this.roll(idx); sfx('reroll'); }
   }
   item() {
+    if (!shows(this.hunt, 'item')) return;
     const before = this.hunt?.php ?? 0;
     const ok = this.act(h => E.useItem(h), ok => ok);
     if (ok) sfx('item');

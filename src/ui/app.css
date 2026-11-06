@@ -67,9 +67,7 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 @media (max-width:720px){.grid{grid-template-columns:minmax(0,1fr)}.center{order:0}}
 .center{display:flex;flex-direction:column;gap:18px;min-width:0}
 /* hunt: log | monster, parts, you, dice | moves */
-.grid.hunt{grid-template-columns:minmax(0,220px) minmax(0,1fr) minmax(0,340px)}
-.grid.hunt .side{display:flex;flex-direction:column;gap:12px;min-width:0;position:sticky;top:16px}
-.grid.hunt .huntlog .log{max-height:calc(100vh - 320px)}
+.grid.hunt{grid-template-columns:minmax(0,1fr) minmax(0,340px)}
 .hunttip{border-color:var(--line-2);background:var(--raise)}
 .hunttip p{margin:0;font-size:var(--fs-md);line-height:1.4}
 .stage .plate{display:flex;align-items:center}
@@ -84,7 +82,9 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 /* short screens (Steam Deck 1280×800, 1366×768 laptops): the whole hunt fits without scrolling (Nov 2026 bug hunt: the
    dice ran off the bottom). The threat pips share the kicker's line, the dice lose their instruction line (the turn
    number is in the header), the header's tag and buttons shrink. */
-@media (max-height:820px) and (min-width:1101px){.youbox .ph.dph{display:none}.tele .tw{display:none}.wrap.hunting .top .btn{min-height:36px;padding-block:6px}.wrap.hunting .top .purse{padding-block:5px}.wrap.hunting .top .iconbtn{width:38px;height:38px;min-height:38px}.wrap.hunting .top .rankseal svg{height:38px;width:auto}.grid.hunt .center{gap:10px}}
+/* a bounty sits above the monster; on short screens it moves into the header's empty middle (no height to spare) */
+.top .bounty.inhead{display:none;flex:1 1 300px;align-self:center;max-width:620px;margin-inline:auto}
+@media (max-height:820px) and (min-width:1101px){.tele .recap .rt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tele .recap{flex-wrap:nowrap}.center > .bounty{display:none}.top .bounty.inhead{display:flex}.youbox .ph.dph{display:none}.tele .tw{display:none}.wrap.hunting .top .btn{min-height:36px;padding-block:6px}.wrap.hunting .top .purse{padding-block:5px}.wrap.hunting .top .iconbtn{width:38px;height:38px;min-height:38px}.wrap.hunting .top .rankseal svg{height:38px;width:auto}.grid.hunt .center{gap:10px}}
 @media (max-height:820px){.youbox > .panel{padding:12px 16px;gap:8px}.partspanel{padding:10px 14px;gap:6px}.wrap.hunting .top h1{font-size:calc(var(--fs-logo) * .72)}.wrap.hunting .top{padding-bottom:8px}.wrap.hunting{padding-block:10px 16px}}
 .stagetip{display:flex;align-items:center;gap:8px;font-size:var(--fs-sm);color:var(--fg);background:var(--raise);border:1px solid var(--line-2);border-radius:3px;padding:6px 12px}
 .stagetip.capture{border-color:var(--gold);color:var(--gold-hi)}
@@ -96,8 +96,8 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .youbox{border:1px solid var(--line);border-radius:4px;background:var(--panel)}
 .youbox > .panel{border:0;background:transparent}
 .youbox > .panel + .panel{border-top:1px solid var(--line);border-radius:0}
-@media (max-width:1100px){.grid.hunt{grid-template-columns:minmax(0,1fr) minmax(0,320px)}.grid.hunt .center{grid-column:1;order:0}.grid.hunt .side{grid-column:1 / -1;order:2;position:static}}
-@media (max-width:720px){.grid.hunt{grid-template-columns:minmax(0,1fr)}.grid.hunt .side{order:3}}
+@media (max-width:1100px){.grid.hunt{grid-template-columns:minmax(0,1fr) minmax(0,320px)}}
+@media (max-width:720px){.grid.hunt{grid-template-columns:minmax(0,1fr)}}
 /* Hunt Board (Nov 2026): page 1 is a grid of monster plates by region; page 2 is one monster's entry beside the loadout */
 .monpage{display:flex;flex-direction:column;gap:12px}
 .backbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
@@ -513,12 +513,26 @@ details.rules ul{margin:10px 0 0;padding-left:20px;display:flex;flex-direction:c
 .float{position:absolute;left:50%;top:38%;transform:translateX(-50%);font-family:var(--f-body);font-size:var(--fs-xl);font-weight:600;color:var(--gold-hi);text-shadow:0 2px 0 #000;animation:rise .9s ease-out forwards}
 .float.hurt{color:var(--ember-soft)}
 .float.heal{color:var(--life)}
+/* the kill (Nov 2026 playtest: no satisfaction): the last number lands huge and slow, the stage flashes, the monster
+   goes down, a SLAIN stamp hits the plate, then the result card's lines come in one at a time */
+.float.kill{font-size:calc(var(--fs-xl) * 2.2);top:30%;left:26%;color:var(--gold-hi);text-shadow:0 3px 0 #000,0 0 24px rgba(233,185,73,.5);animation:killrise 1.6s cubic-bezier(.2,.8,.3,1) forwards}
+@keyframes killrise{0%{opacity:0;transform:translate(-50%,0) scale(1.8)}12%{opacity:1;transform:translate(-50%,0) scale(1)}70%{opacity:1;transform:translate(-50%,-18px) scale(1)}100%{opacity:0;transform:translate(-50%,-40px) scale(.96)}}
+.stage.over::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 30% 45%,rgba(243,207,122,.35),transparent 60%);animation:killflash .9s ease-out forwards}
+@keyframes killflash{0%{opacity:1}100%{opacity:0}}
+.stamp{position:absolute;left:50%;top:44%;z-index:2;pointer-events:none;font-family:'IM Fell English SC',Georgia,serif;font-size:56px;line-height:1;letter-spacing:.06em;padding:8px 18px 4px;border:4px double currentColor;border-radius:4px;color:var(--ember);background:rgba(26,20,16,.55);transform:translate(-50%,-50%) rotate(-9deg);animation:stampin .42s cubic-bezier(.3,1.6,.5,1) .55s both}
+.stamp.captured{color:var(--gold-hi)}
+.stamp.failed{color:var(--soft);font-size:40px}
+@keyframes stampin{0%{opacity:0;transform:translate(-50%,-50%) rotate(-9deg) scale(2.6)}100%{opacity:1;transform:translate(-50%,-50%) rotate(-9deg) scale(1)}}
+.tele.end > *{animation:linein .38s ease-out both}
+.tele.end > *:nth-child(1){animation-delay:.9s}.tele.end > *:nth-child(2){animation-delay:1.05s}.tele.end > *:nth-child(3){animation-delay:1.25s}.tele.end > *:nth-child(4){animation-delay:1.45s}.tele.end > *:nth-child(5){animation-delay:1.65s}.tele.end > *:nth-child(n+6){animation-delay:1.85s}
+.tele.end .mats li{animation:linein .3s ease-out both;animation-delay:calc(1.5s + var(--i) * .18s)}
+@keyframes linein{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:none}}
 @keyframes rise{0%{opacity:0;transform:translate(-50%,10px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,-40px)}}
 .shake{animation:shake .35s}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
 @media (prefers-reduced-motion: reduce){
   dialog.settings[open]{animation:none}
-  .tele.danger,.die.rolling,.shake,.float,.hpbig .ghost,.move.capture.live{animation:none}
+  .tele.danger,.die.rolling,.shake,.float,.hpbig .ghost,.move.capture.live,.stamp,.tele.end > *,.tele.end .mats li,.stage.over::after{animation:none}
   .float{opacity:0}
   .die,.part,.move,.pick,.bar > i,.hpbig > i{transition:none}
 }

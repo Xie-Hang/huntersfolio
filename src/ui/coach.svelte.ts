@@ -7,6 +7,7 @@
 import * as E from '../engine';
 import { game } from './game.svelte';
 import { settings } from './settings.svelte';
+import { shows } from './reveal';
 
 export interface Tip {
   id: string;
@@ -53,21 +54,22 @@ export const TIPS: Tip[] = [
     when: () => { const h = hunt(); return !!h && h.turn === 1 && unusedTurn(h); },
     text: () => {
       const h = hunt()!, i = E.intentInfo(h), inc = E.incoming(h);
-      return `This is what the ${E.MONSTERS[h.mid].short} will do when you end your turn: ${i.name}${inc?.net ? `, ${inc.raw} damage to you` : ''}. Check it before every turn. It tells you when to attack and when to defend.`;
+      return `Its next move: ${i.name}${inc?.net ? `, ${inc.raw} damage to you` : ''}. Check it every turn: it tells you when to attack and when to defend.`;
     }
   },
   {
     id: 'g-hp', guide: true, info: true, at: ['you'],
     when: () => { const h = hunt(); return !!h && h.turn === 1 && unusedTurn(h); },
-    text: () => 'Your HP. The striped end is what that move will take off you if you do nothing about it.'
+    text: () => 'Your HP. The striped end is what that move will take if you do nothing.'
   },
   {
     id: 'aim', guide: true, learn: true, at: ['parts'],
-    when: () => { const h = hunt(); return !!h && h.turn === 1 && unusedTurn(h) && h.target !== bestPart(h).id; },
+    // the second hunt's new layer (the first hunt has no parts row: it aims for you)
+    when: () => { const h = hunt(); return !!h && shows(h, 'parts') && h.turn === 1 && unusedTurn(h) && h.target !== bestPart(h).id; },
     text: () => {
       const h = hunt()!, w = E.currentWeapon(h), p = bestPart(h), t = E.MONSTERS[h.mid].parts.find(x => x.id === h.target)!;
       const none = t.eff[w.type] === 0;
-      return `Aim first. Your ${w.name} is a ${w.type} weapon${none ? `, and ${w.type} does nothing to the ${t.name.toLowerCase()}` : ''}. Click the ${p.name}: ${w.type} breaks it best, and broken parts weaken the monster and drop materials.`;
+      return `New: aim. Your ${w.name} is ${w.type}${none ? `, which does nothing to the ${t.name.toLowerCase()}` : ''}. Click the ${p.name}: ${w.type} breaks it best. A broken part weakens the monster and drops materials.`;
     },
     done: () => { const h = hunt(); return !!h && h.target === bestPart(h).id; }
   },
@@ -76,7 +78,7 @@ export const TIPS: Tip[] = [
     when: () => { const h = hunt(); return !!h && unusedTurn(h) && anyMoveReady(h); },
     text: () => {
       const h = hunt()!, w = E.currentWeapon(h), best = [...w.moves.keys()].filter(i => E.canUseMove(h, i)).sort((a, b) => w.moves[b].dmg - w.moves[a].dmg)[0];
-      return `To attack, click a move. Each move needs the dice shapes shown on its right, and the game takes them from your roll. You rolled what ${w.moves[best].name} needs. Click it.`;
+      return `To attack, click a move. Each move needs the dice shapes on its right. You rolled what ${w.moves[best].name} needs: click it.`;
     },
     done: () => { const h = hunt(); return !!h && h.dice.some(d => d.used && d.used !== 'Guard'); }
   },
@@ -86,7 +88,7 @@ export const TIPS: Tip[] = [
     text: () => {
       const h = hunt()!, inc = E.incoming(h), d = game.sel.length ? game.sel : E.autoDice(h, 'guard') ?? [], g = d.reduce((a, i) => a + E.guardOf(h, i), 0);
       const blank = d.length && d.every(i => h.dice[i].face === 'B');
-      return `Your turn isn't over: you can keep acting until your dice run out. ${blank ? 'A blank fits no move, but it guards better than a shape.' : 'Dice that fit no move can still Guard.'} Click Guard: it takes ${blank ? (d.length === 1 ? 'the blank' : 'the blanks') : 'those dice'} on its own and blocks ${g}${inc?.net ? `, so the ${inc.raw} becomes ${Math.max(0, inc.raw - g)}` : ''}.`;
+      return `${blank ? 'A blank fits no move, but it guards best.' : 'Dice that fit no move can Guard.'} Click Guard: it blocks ${g}${inc?.net ? `, so the ${inc.raw} becomes ${Math.max(0, inc.raw - g)}` : ''}.`;
     },
     done: () => (hunt()?.guard ?? 0) > 0
   },
@@ -105,40 +107,40 @@ export const TIPS: Tip[] = [
   {
     id: 'reroll', guide: true, learn: true, at: ['reroll'], side: 'right',
     when: () => { const h = hunt(); return !!h && h.turn >= 2 && h.rerolls > 0 && unusedTurn(h) && game.sel.length > 0; },
-    text: () => `Click Reroll. Only the dice you selected roll again. You have ${hunt()!.rerolls} rerolls for the whole hunt, and a reroll can't be undone.`,
+    text: () => `Click Reroll. Only the selected dice roll again. You have ${hunt()!.rerolls} for the whole hunt.`,
     done: () => (hunt()?.stats.rerollsUsed ?? 0) > 0
   },
   {
     id: 'g-free', guide: true, info: true, at: ['tele'],
     when: () => { const h = hunt(); return !!h && h.turn >= 2 && (h.stats.rerollsUsed > 0 || game.save.tips.includes('reroll')); },
-    text: () => 'That\'s the basics: read its next move, aim, spend your dice, end the turn. The rest of this hunt is yours. More tips appear when something new happens.',
+    text: () => 'That\'s it: read its next move, spend your dice, end the turn. The rest of this hunt is yours. Your next few hunts add a little more each time.',
     next: 'Start hunting'
   },
   // ---- the first big attack: the most important lesson ----
   {
     id: 'windup', at: ['tele'],
     when: () => hunt()?.intent === 'windup',
-    text: () => 'It\'s winding up: next turn it charges, and that hits hard. This turn is safe, so put your dice into damage.'
+    text: () => 'It\'s winding up: next turn it charges, and that hits hard. This turn is safe: put every die into damage.'
   },
   {
     id: 'charge', at: ['guard'],
     when: () => { const h = hunt(); const inc = h && E.incoming(h); return !!h && (E.intentInfo(h).threat >= 3) && !!inc?.net && h.guard === 0; },
     text: () => {
       const h = hunt()!, inc = E.incoming(h)!, n = freeDice(h);
-      return `This one hurts: ${inc.raw} damage when you end your turn. Each die you Guard with blocks ${h.arm.guard}, a blank ${Math.round(h.arm.guard * (h.arm.blankx2 ? E.VEST_BLANK_GUARD : E.BLANK_GUARD))}, so all ${n} would block ${E.freeDice(h).reduce((t, i) => t + E.guardOf(h, i), 0)}. Guard, hit back, or split your dice: your call.`;
+      return `This one hurts: ${inc.raw} damage. Guarding with all ${n} dice blocks ${E.freeDice(h).reduce((t, i) => t + E.guardOf(h, i), 0)}. Guard, hit back, or split them: your call.`;
     },
     done: () => (hunt()?.guard ?? 0) > 0
   },
   {
     id: 'item', learn: true, at: ['item'],
-    when: () => { const h = hunt(); return !!h && !!h.item && E.itemUsable(h) && E.ITEMS[h.item].effect === 'heal30' && h.php <= h.pmax * 0.6; },
+    when: () => { const h = hunt(); return !!h && shows(h, 'item') && !!h.item && E.itemUsable(h) && E.ITEMS[h.item].effect === 'heal30' && h.php <= h.pmax * 0.6; },
     text: () => { const h = hunt()!; return `Running low? Your ${E.ITEMS[h.item!].name} heals 30 and costs no dice. One item per turn, ${h.itemCharges} left.`; },
     done: () => !!hunt()?.itemUsed
   },
   {
     // traps (Nov 2026): the first hunt you carry one, say what it catches and what it's for, once
     id: 'trap', learn: true, at: ['item'],
-    when: () => { const h = hunt(); return !!h && !!h.item && E.ITEMS[h.item].effect.startsWith('trap') && h.turn === 1 && unusedTurn(h); },
+    when: () => { const h = hunt(); return !!h && shows(h, 'item') && !!h.item && E.ITEMS[h.item].effect.startsWith('trap') && h.turn === 1 && unusedTurn(h); },
     text: () => {
       const h = hunt()!, it = E.ITEMS[h.item!], mv = E.trapMoves(h.mid)[it.effect as 'trapRush' | 'trapLand'];
       return `Your ${it.name} catches ${it.effect === 'trapRush' ? 'charges, lunges and pounces' : 'dives, and bursts up from underground'}${mv.length ? ` (the ${E.MONSTERS[h.mid].short}'s ${mv.join(', ')})` : ''}. Set it, free, on a turn its next move is one of those: you take no damage and it's held for ${E.TRAP_HOLD[it.effect as 'trapRush']} turns. If it's weak enough to capture when it springs, it's captured. Set on any other move, the trap is wasted.`;
@@ -148,21 +150,21 @@ export const TIPS: Tip[] = [
   {
     id: 'swap', learn: true, at: ['swap'],
     when: () => {
-      const h = hunt(); if (!h || h.turn < 5 || !unusedTurn(h)) return false;
+      const h = hunt(); if (!h || !shows(h, 'swap') || h.turn < 2 || !unusedTurn(h)) return false;
       const M = E.MONSTERS[h.mid], o = E.otherWeapon(h), w = E.currentWeapon(h);
       return M.parts.some(p => !h.mon.parts[p.id].broken && p.eff[o.type] > p.eff[w.type]);
     },
     text: () => {
       const h = hunt()!, o = E.otherWeapon(h), M = E.MONSTERS[h.mid], w = E.currentWeapon(h);
       const p = M.parts.find(p => !h.mon.parts[p.id].broken && p.eff[o.type] > p.eff[w.type])!;
-      return `You carry two weapons. Swapping costs 1 die. Your ${o.name} is ${o.type} and breaks the ${p.name.toLowerCase()} better.`;
+      return `New: you carry two weapons. Swapping costs 1 die. Your ${o.name} is ${o.type}: it breaks the ${p.name.toLowerCase()} better.`;
     },
     done: () => { const h = hunt(); return !!h && h.dice.some(d => d.used === 'Swap'); }
   },
   // ---- resist armor only cuts elemental attacks (Nov 2026): say so the first time it matters, or it looks like a bug ----
   {
     id: 'physical', at: ['tele'],
-    when: () => { const h = hunt(); const inc = h && E.incoming(h); return !!h && !!inc && inc.wearsResist && inc.elem === 0 && inc.raw > 0; },
+    when: () => { const h = hunt(); const inc = h && E.incoming(h); return !!h && shows(h, 'all') && !!inc && inc.wearsResist && inc.elem === 0 && inc.raw > 0; },
     text: () => {
       const h = hunt()!, M = E.MONSTERS[h.mid], i = E.intentInfo(h);
       return `Your ${h.arm.name} resists ${M.elem} attacks only. ${i.name} is a physical attack, so it hits in full. It's the ${M.elemental?.join(' and ') ?? 'elemental attacks'} your armor cuts by 30%.`;
@@ -180,6 +182,13 @@ export const TIPS: Tip[] = [
     text: () => 'Mud halves damage to its hide for 2 turns. Aim at another part until it dries.'
   },
   {
+    // the fourth hunt's layer: Charge (Capture has its own tip when it's ready)
+    id: 'chargeNew', learn: true, at: ['charge'],
+    when: () => { const h = hunt(); return !!h && shows(h, 'all') && h.turn >= 2 && unusedTurn(h) && (E.incoming(h)?.net ?? 0) < E.CHARGE_BREAK && !h.chargePending && !h.chargeReady; },
+    text: () => `New: Charge. Spend ${E.chargeDice(hunt()!)} dice now and your first hit next turn deals double. A hit of ${E.CHARGE_BREAK}+ on you breaks it.`,
+    done: () => !!hunt()?.chargePending
+  },
+  {
     id: 'open', at: ['move', 'tele'],
     when: () => { const h = hunt(); return !!h && E.intentInfo(h).threat === 0 && E.intentInfo(h).dmg === 0 && h.turn > 1 && h.intent !== 'windup'; },
     text: () => 'It won\'t attack this turn. No need to Guard: put every die into damage.'
@@ -191,8 +200,8 @@ export const TIPS: Tip[] = [
   },
   {
     id: 'capture', at: ['capture'],
-    when: () => { const h = hunt(); return !!h && E.captureReady(h); },
-    text: () => `It's weak enough to capture. Select 2 dice and click Capture to set a Snare. It closes when you end your turn, unless the monster's move hits you for ${E.CHARGE_BREAK} or more, so guard with what's left. A capture gives double part materials.`
+    when: () => { const h = hunt(); return !!h && shows(h, 'parts') && E.captureReady(h); },
+    text: () => `New: it's weak enough to capture. Capture sets a Snare with 2 dice. It closes when you end your turn, unless its move hits you for ${E.CHARGE_BREAK} or more. A capture gives double part materials.`
   },
   // ---- back in town ----
   {
@@ -215,8 +224,9 @@ export const TIPS: Tip[] = [
   },
   {
     id: 'forge', guide: true, learn: true, at: ['to-forge', 'nav-forge'],
-    when: () => game.save.hunts > 0 && game.view !== 'forge' && !(game.view === 'hunt' && game.hunt && !game.hunt.over) && Object.values(game.save.mats).some(n => n > 0),
-    text: () => 'You brought back coin and materials. Open the Forge to turn them into better weapons and armor.',
+    // Nov 2026 playtest: straight after the first win this was "more info". It now waits until something can be made.
+    when: () => game.save.hunts > 1 && game.view !== 'forge' && !(game.view === 'hunt' && game.hunt && !game.hunt.over) && E.forgeReady(game.save),
+    text: () => 'You have enough to make something at the Forge.',
     done: () => game.view === 'forge'
   },
   {
@@ -252,7 +262,8 @@ class Coach {
   }
   /** Got it / Next. Guided action steps can't be dismissed: they wait until the player does them. */
   dismiss() { const c = this.current; if (c && (!c.guide || c.info)) this.markSeen(c.id); }
-  skipAll() { settings.prefs.tips = false; settings.save(); }
+  /** `veteran`: skipping the tutorial itself also skips the one-layer-per-hunt screen */
+  skipAll(veteran = false) { settings.prefs.tips = false; if (veteran) settings.prefs.showAll = true; settings.save(); }
   /** Turning tips back on replays them from the start. */
   setEnabled(on: boolean) {
     settings.prefs.tips = on; settings.save();

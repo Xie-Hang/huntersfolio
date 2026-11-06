@@ -6,6 +6,9 @@
   import Tagged from '../../parts/Tagged.svelte';
   import Elem from '../../parts/Elem.svelte';
   import RankMedal from '../../parts/RankMedal.svelte';
+  import Modal from '../../parts/Modal.svelte';
+  import { shows } from '../../reveal';
+  let logOpen = $state(false);
 
   const h = $derived(game.hunt!);
   const M = $derived(E.MONSTERS[h.mid]);
@@ -22,20 +25,32 @@
   const breaksSnare = $derived(!!h.snareSet && !!inc && inc.net >= E.CHARGE_BREAK);
   const multi = $derived(info.name.includes(' + '));
   const cls = $derived(h.over ? 'end' : info.threat >= 3 ? 'danger' : info.threat === 0 ? 'calm' : '');
+  const full = $derived(shows(h, 'all'));
+  /** the Forge is the next step only from the second hunt on, and only when something there can be made */
+  const forgeNext = $derived(game.save.hunts > 1 && E.forgeReady(game.save));
+  /** the breakdown line only says something the big number doesn't (Nov 2026 playtest: "wordy"): armor resist, guard,
+   *  halving, a split element. A plain physical hit with nothing on it gets no line at all. */
+  const calcWorth = $derived(!!inc && (inc.wearsResist || inc.res || inc.phys > 0 && inc.elem > 0 || inc.elem > 0 || !!h.guard || !!inc.ward || inc.half || inc.noGuard || (inc.evade && !E.trapCatches(h.trapSet, h.intent))));
+  /** last turn, in one line: what you dealt, then what it did (the rest is in the full log) */
+  const recap = $derived(!h.over && h.recap && h.recap.turn === h.turn - 1 ? h.recap : null);
 </script>
 
 {#snippet stats()}
-  <div class="stats">
+  {#if full}<div class="stats">
     <span>Turns <b>{h.turn}</b></span><span>Damage dealt <b>{h.stats.dealt}</b></span>
     <span>Damage taken <b>{h.stats.taken}</b></span><span>Damage blocked <b>{h.stats.guarded}</b></span>
     <span>Parts broken <b>{h.stats.broken} / {M.parts.length}</b></span><span>Rerolls used <b>{h.stats.rerollsUsed}</b></span>
-  </div>
+  </div>{/if}
   <div style="display:flex;gap:10px;flex-wrap:wrap">
-    <button class="btn primary" data-coach="to-forge" onclick={() => game.go('forge')}>Go to the Forge</button>
-    <button class="btn" data-coach="to-shop" onclick={() => game.go('shop', E.surplusValue(game.save) > 0 ? 'sell' : undefined)}>{E.surplusValue(game.save) > 0 ? 'Sell at the Shop' : 'Shop'}</button>
+    <!-- one clear next step (Nov 2026 playtest: the first win led straight into "more info"): the Forge is the gold
+         button only when something there can be made; otherwise it's the Hunt Board, where new hunts are waiting -->
+    {#if forgeNext}<button class="btn primary" data-coach="to-forge" onclick={() => game.go('forge')}>Go to the Forge</button>
+    {:else}<button class="btn primary" onclick={() => game.go('board')}>Hunt Board</button>{/if}
+    {#if game.save.hunts > 1}<button class="btn" data-coach="to-shop" onclick={() => game.go('shop', E.surplusValue(game.save) > 0 ? 'sell' : undefined)}>{E.surplusValue(game.save) > 0 ? 'Sell at the Shop' : 'Shop'}</button>{/if}
     <!-- straight back to this monster's page, loadout ready (one click from hunting it again) -->
     <button class="btn" onclick={() => game.openMonster(h.mid)}>Hunt the {M.short} again</button>
-    <button class="btn" onclick={() => game.go('board')}>Hunt Board</button>
+    {#if forgeNext}<button class="btn" onclick={() => game.go('board')}>Hunt Board</button>
+    {:else if E.forgeReady(game.save)}<button class="btn" data-coach="to-forge" onclick={() => game.go('forge')}>Forge</button>{/if}
   </div>
 {/snippet}
 
@@ -52,12 +67,12 @@
       <span class="coin">+{r.coin} coin</span>
       <div>
         <span class="label">Materials</span>
-        <ul style="margin-top:6px">
-          {#each Object.entries(r.mats) as [k, v] (k)}<li class:rare={k === M.rare}><Icon id={k} size={18} />{E.matName(k)} ×{v}</li>{/each}
+        <ul class="mats" style="margin-top:6px">
+          {#each Object.entries(r.mats) as [k, v], i (k)}<li class:rare={k === M.rare} style="--i:{i}"><Icon id={k} size={18} />{E.matName(k)} ×{v}</li>{/each}
         </ul>
       </div>
-      {#if E.surplusValue(game.save) > 0}<p class="ital p0">Materials no recipe needs can be sold: yours are worth <b style="color:var(--gold-hi);font-style:normal">{E.surplusValue(game.save)} coin</b> at the Shop.</p>{/if}
-      {#if h.mon.parts[M.rarePart].broken && !r.rare}
+      {#if full && E.surplusValue(game.save) > 0}<p class="ital p0">Materials no recipe needs can be sold: yours are worth <b style="color:var(--gold-hi);font-style:normal">{E.surplusValue(game.save)} coin</b> at the Shop.</p>{/if}
+      {#if full && h.mon.parts[M.rarePart].broken && !r.rare}
         <p class="ital p0">No {E.matName(M.rare)} this time. Pity counter: {game.save.pity[M.rare] ?? 0} / {E.RARE.pityGuarantee}.</p>
       {/if}
       {#if r.unlocked?.length}<p class="unlock p0">New hunts unlocked: {r.unlocked.map(id => E.MONSTERS[id].short).join(', ')}.</p>{/if}
@@ -65,7 +80,7 @@
         {#if r.bounty.met}<p class="unlock p0">Bounty {r.bounty.repeat ? 'repeated' : 'complete'}: {B.name}. +{r.bounty.coin} coin{r.bounty.mat ? `, ${E.matName(r.bounty.mat)}` : ''}.{#if !r.bounty.repeat}{' '}{E.bountiesDone(game.save)} done{/if}{#if r.bounty.unlocked?.length}{' '}Unlocked at the Forge: {r.bounty.unlocked.join(', ')}.{:else if !r.bounty.repeat && E.nextBountyCharm(game.save)}{@const nx = E.nextBountyCharm(game.save)!}{' '}({nx.name} at {nx.need}).{/if}</p>
         {:else}<p class="ital p0">Bounty not met ({B.name}): {(r.bounty.missed ?? "").toLowerCase()}. It stays on your board.</p>{/if}
       {/if}
-      {#if r.returned && h.item}<p class="ital p0">{r.returned} unused {E.ITEMS[h.item].name} returned to your stash.</p>{/if}
+      {#if r.returned && h.item && shows(h, 'item')}<p class="ital p0">{r.returned} unused {E.ITEMS[h.item].name} returned to your stash.</p>{/if}
     {:else}
       <span class="kicker">Hunt failed</span>
       <h2 style="margin:0;font-weight:600">{M.name} wins this one</h2>
@@ -79,7 +94,7 @@
     {@render stats()}
   {:else}
     <div class="ph">
-      <span class="kicker">When you end your turn, it will</span>
+      <span class="kicker">Its next move</span>
       <span class="pips" aria-label="Threat {info.threat} of 4" title="Threat {info.threat} of 4"><span class="label tw" style="margin-right:6px">Threat</span>{#each [1, 2, 3, 4] as n}<i class:f={n <= info.threat}></i>{/each}</span>
     </div>
     <div class="nextline">
@@ -90,21 +105,40 @@
       {/if}
     </div>
     {#if !multi && !tip}<p class="say">{info.text}</p>{/if}
-    {#if inc}
+    {#if inc && !full}
+      {#if inc.net && !inc.noGuard}<div class="calc">Guard to block some of it.</div>{:else if inc.noGuard && inc.net}<div class="calc"><span class="nores">Guard can’t stop this one.</span></div>{/if}
+    {:else if inc && calcWorth}
       <div class="calc">
         {#if inc.elem === 0}<b>{inc.raw}</b> physical{#if inc.wearsResist} · <span class="nores">your armor's {E.monElem(h)} resist doesn't apply</span>{/if}
         {:else if inc.phys === 0}<Elem e={E.monElem(h)} /><b>{inc.raw}</b> {E.monElem(h)}{#if inc.res} · resisted by your armor → <b>{inc.after}</b>{/if}
-        {:else}<b>{inc.phys}</b> physical + <Elem e={E.monElem(h)} /><b>{inc.elem}</b> {E.monElem(h)}{#if inc.res} · {E.monElem(h)} part resisted → <b>{inc.after}</b>{/if}{/if}{#if inc.evade && !E.trapCatches(h.trapSet, h.intent)} · smoke: <b>misses</b>{:else if h.guard} · − <b>{inc.g}</b> guard{inc.half ? ' (halved)' : ''}{/if}{#if !inc.evade && inc.ward} · − <b>{inc.ward}</b> armor{/if}{#if !inc.evade && inc.net && inc.noGuard} · <span class="nores">guard can’t stop it</span>{:else if !inc.evade && inc.net} · <span style="color:var(--muted)">guard dice to reduce{inc.half ? ' (half as well)' : ''}</span>{/if}
+        {:else}<b>{inc.phys}</b> physical + <Elem e={E.monElem(h)} /><b>{inc.elem}</b> {E.monElem(h)}{#if inc.res} · {E.monElem(h)} part resisted → <b>{inc.after}</b>{/if}{/if}{#if inc.evade && !E.trapCatches(h.trapSet, h.intent)} · smoke: <b>misses</b>{:else if h.guard} · − <b>{inc.g}</b> guard{inc.half ? ' (halved)' : ''}{/if}{#if !inc.evade && inc.ward} · − <b>{inc.ward}</b> armor{/if}{#if !inc.evade && inc.net && inc.noGuard} · <span class="nores">guard can’t stop it</span>{:else if !inc.evade && inc.net && inc.half} · <span style="color:var(--muted)">guard counts half</span>{/if}
       </div>
     {/if}
     {#if tp?.extra}<div class="calc rider">+<b>{tp.extra}</b> at the end of the turn: {tp.why.join(', ')} · <span class="nores">guard can’t stop it</span></div>{/if}
     {#if E.trapCatches(h.trapSet, h.intent)}<div class="calc rider" style="color:var(--gold-hi)">Your {(E.ITEMS[h.item ?? '']?.name ?? 'trap')} catches it: no damage, and it’s held for {E.TRAP_HOLD[h.trapSet!]} turns{E.canCapture(h) ? '. It’s weak enough, so it’s captured' : ''}.</div>{:else if h.trapSet}<div class="calc rider"><span class="nores">Your {(E.ITEMS[h.item ?? '']?.name ?? 'trap')} won’t catch this: it’s wasted.</span></div>{/if}
     {#if info.note || info.steady || breaksCharge || breaksSnare}<div class="note">{[info.note, info.steady && E.carries(h, 'Blunt') ? 'Daze can\'t cancel it' : null, breaksCharge ? `This hit breaks your charge (${E.CHARGE_BREAK}+)` : null, breaksSnare ? `This hit tears it free of your snare: guard it under ${E.CHARGE_BREAK}` : null].filter(Boolean).join(' · ')}</div>{/if}
     {#if tip}<div class="answer" class:counter={isCounter}><b>{isCounter ? 'Counter:' : 'Tip:'}</b> <Tagged text={tip} /></div>{/if}
+    {#if recap}
+      <div class="recap">
+        <span class="label">Last turn</span>
+        <span class="rt">{#if recap.dealt}You dealt <b>{recap.dealt}</b>.{' '}{/if}{#each recap.lines.slice(0, 2) as l}<span class="rl {l.tone}"><Tagged text={l.t} /></span>{' '}{/each}</span>
+        <button class="linkbtn" onclick={() => (logOpen = true)}>Full log</button>
+      </div>
+    {/if}
   {/if}
 </section>
 
+<Modal bind:open={logOpen} title="Hunt log">
+  <ul class="log full">{#each h.log as l}<li class={l.tone}><Tagged text={l.t} /></li>{/each}</ul>
+</Modal>
+
 <style>
+  .recap { display: flex; gap: 6px 12px; align-items: baseline; flex-wrap: wrap; padding-top: 8px; border-top: 1px solid var(--line); font-size: var(--fs-sm); color: var(--soft); }
+  .recap .rt { flex: 1 1 200px; min-width: 0; }
+  .recap b { color: var(--fg); font-weight: 600; }
+  .recap .rl.ember { color: var(--ember-soft); } .recap .rl.gold { color: var(--gold-hi); }
+  .recap .linkbtn { font-size: var(--fs-sm); }
+  .log.full { max-height: 60vh; }
   .facts-after ul { margin: 6px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; color: var(--fg); }
   .facts-after li::marker { color: var(--gold); }
   .promoted { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--gold); border-radius: 3px; background: rgba(233,185,73,.08); color: var(--fg); }

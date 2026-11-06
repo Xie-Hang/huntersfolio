@@ -80,7 +80,8 @@ export const currentWeapon = (h: Hunt) => h.weps[h.weapon];
 export const otherWeapon = (h: Hunt) => h.weps[1 - h.weapon];
 
 export function log(h: Hunt, t: string, tone: Tone = '') {
-  h.log.unshift({ t, tone });
+  h.logSeq = (h.logSeq ?? 0) + 1;
+  h.log.unshift({ t, tone, n: h.logSeq });
   if (h.log.length > 30) h.log.pop();
 }
 
@@ -94,7 +95,7 @@ export const TUTORIAL_SCRIPT: Face[][] = [['C', 'C', 'T', 'B'], ['C', 'T', 'B', 
 /** the bounty this hunt counts for: the one taken, if it's for this monster and still open */
 const bountyFor = (s: Save, mon: string) => { const id = s.loadout.bounty; return id && BOUNTIES[id]?.mon === mon && bountyOpen(s, id) ? id : null; };
 
-export function startHunt(s: Save, seed: number, script?: Face[][]): Hunt {
+export function startHunt(s: Save, seed: number, script?: Face[][], lesson?: number): Hunt {
   fixLoadout(s);
   const L = s.loadout, MD = MONSTERS[L.target], arm = armorInst(L.armor, lvOf(s.armors, L.armor));
   let item = L.item, carried = 0;
@@ -114,8 +115,12 @@ export function startHunt(s: Save, seed: number, script?: Face[][]): Hunt {
     stats: { dealt: 0, taken: 0, guarded: 0, broken: 0, rerollsUsed: 0 },
     reward: null, rng: seed | 0,
     ...(bountyFor(s, MD.id) ? { bounty: bountyFor(s, MD.id)! } : {}),
-    ...(script?.length ? { script: script.map(t => [...t]) } : {})
+    ...(script?.length ? { script: script.map(t => [...t]) } : {}),
+    ...(lesson ? { lesson } : {})
   };
+  // the first layer hides the parts row: aim where the first weapon does best
+  if (lesson === 1) { h.mon.hp = h.mon.max = Math.round(MD.hp * LESSON1.hp); }
+  if (lesson === 1) h.target = [...MD.parts].sort((a, b) => (b.eff[h.weps[0].type] ?? 0) - (a.eff[h.weps[0].type] ?? 0))[0].id;
   if (h.charm && CHARMS[h.charm]?.effect === 'scout') h.rerolls++;
   rollAll(h);
   h.intent = MD.next(h, null);
@@ -175,7 +180,14 @@ export const TRAP_CATCH: Record<'trapRush' | 'trapLand', string[]> = {
 export const TRAP_HOLD: Record<'trapRush' | 'trapLand', number> = { trapRush: 2, trapLand: 2 };
 export const trapCatches = (fx: string | null | undefined, intent: string) => !!fx && (TRAP_CATCH as Record<string, string[]>)[fx]?.includes(intent);
 const TRAPPED: Intent = { name: 'Trapped', text: 'It thrashes in the trap.', dmg: 0, threat: 0, note: 'Its action is lost' };
-export const intentInfo = (h: Hunt): Intent => (h.intent === 'trapped' ? TRAPPED : def(h).intent(h, h.intent));
+/** The first hunt (lesson 1) is a gentler fight: a player who only knows the basics should win it, and win it in
+ *  about 8 turns (Nov 2026 playtest). Its moves hit softer and it has less HP. */
+export const LESSON1 = { hp: 0.7, dmg: 0.9 };
+export const intentInfo = (h: Hunt): Intent => {
+  if (h.intent === 'trapped') return TRAPPED;
+  const i = def(h).intent(h, h.intent);
+  return h.lesson === 1 && i.dmg > 0 ? { ...i, dmg: Math.round(i.dmg * LESSON1.dmg) } : i;
+};
 export const tip = (h: Hunt) => (h.over ? null : def(h).tip?.(h, h.intent) ?? null);
 export const canCapture = (h: Hunt) => h.mon.hp > 0 && h.mon.hp <= h.mon.max * CAPTURE_AT;
 export const captureBlocked = (h: Hunt) => canCapture(h) && def(h).canCapture?.(h) === false;
@@ -535,6 +547,7 @@ export interface TurnResult { taken: number }
 export function endTurn(h: Hunt): TurnResult {
   if (h.over) return { taken: 0 };
   const type = h.intent, info = intentInfo(h), m = h.mon, MD = def(h);
+  const mark = h.logSeq ?? 0, dealt = h.stats.dealt - (h.dealtAtTurnStart ?? 0);
   let taken = 0, landed = false;
   const live = h.dice.filter(d => d.charged && !d.used).length;
   if (live) {
@@ -599,6 +612,8 @@ export function endTurn(h: Hunt): TurnResult {
   if (h.php <= 0) { finish(h, 'lose'); return { taken }; }
   if (h.arm.mend && h.php < h.pmax) { const heal = Math.min(MEND, h.pmax - h.php); h.php += heal; log(h, `Your armor knits shut: +${heal} HP.`, 'gold'); }
   if (h.chargeReady) log(h, 'Your unused charge fades.');
+  h.recap = { turn: h.turn, dealt, lines: h.log.filter(l => (l.n ?? 0) > mark).reverse() };
+  h.dealtAtTurnStart = h.stats.dealt;
   h.turn++; h.chargeReady = h.chargePending; h.chargePending = false; h.guard = 0; h.itemUsed = false; h.freeSwapUsed = false;
   rollAll(h);
   if ((m.trapped ?? 0) > 0) h.intent = 'trapped';

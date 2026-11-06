@@ -4,6 +4,7 @@
   import { game } from '../../game.svelte';
   import { pct } from '../../fmt';
   import { shake } from '../../fx';
+  import { shows } from '../../reveal';
 
   const h = $derived(game.hunt!);
   // where your HP will be when your next turn starts: the attack and everything riding on the end of the turn
@@ -24,8 +25,8 @@
     </div>
     <div class="statrow">
       <div class="pstat">
-      <span>{h.arm.name}{h.arm.lv ? ` +${h.arm.lv}` : ''}</span>
-      {#if h.charm}<span title={E.CHARMS[h.charm].perk}>{E.CHARMS[h.charm].name}</span>{/if}
+      {#if shows(h, 'all')}<span>{h.arm.name}{h.arm.lv ? ` +${h.arm.lv}` : ''}</span>{/if}
+      {#if h.charm && shows(h, 'all')}<span title={E.CHARMS[h.charm].perk}>{E.CHARMS[h.charm].name}</span>{/if}
       <span>Guard this turn <b>{h.guard ? `−${h.guard}` : 'none'}</b>{#if h.arm.ward} · armor <b>−{h.arm.ward}</b> a hit{/if}</span>
       {#if h.chargeReady}<span class="gold">Charged: first hit ×2</span>{:else if h.chargePending}<span class="gold">Charging for next turn</span>{/if}
       {#if h.whet}<span class="gold">Sharpened: next hit +{Math.round(h.whet * 100)}%</span>{/if}

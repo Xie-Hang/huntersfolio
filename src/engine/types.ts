@@ -173,7 +173,7 @@ export interface Intent {
 }
 
 export type Tone = '' | 'gold' | 'ember' | 'daze';
-export interface LogEntry { t: string; tone: Tone }
+export interface LogEntry { t: string; tone: Tone; /** order written (for the last-turn recap) */ n?: number }
 
 export interface Die { face: Face; used: string | null; /** Glarewing: left unused at the end of your turn, it discharges into you */ charged?: boolean }
 
@@ -343,6 +343,13 @@ export interface Hunt {
   rng: number;
   /** tutorial: fixed faces for the opening turns (index 0 = turn 1); later turns roll normally */
   script?: Face[][];
+  /** which layer of the hunt screen this hunt teaches (1 = the first hunt: basics only). Unset = everything.
+   *  Monsters keep their extra moves (stances, mud) for later layers (Nov 2026 playtest: "overwhelming"). */
+  lesson?: number;
+  /** what happened last turn, for the line under the next move (Nov 2026: replaces the hunt log on screen) */
+  recap?: { turn: number; dealt: number; lines: LogEntry[] };
+  logSeq?: number;
+  dealtAtTurnStart?: number;
   /** notable moments this hunt, for achievements: 'daze' | 'interrupt' | 'grounded' | 'unearthed' | 'shatter' */
   feats?: string[];
   /** the bounty taken for this hunt */

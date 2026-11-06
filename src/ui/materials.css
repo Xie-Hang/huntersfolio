@@ -97,6 +97,13 @@ section.panel.bounty{background:linear-gradient(180deg,rgba(236,223,200,.045),rg
 section.panel.bounty::before{content:"";position:absolute;top:-6px;left:50%;width:12px;height:12px;margin-left:-6px;border-radius:50%;
   background:radial-gradient(circle at 35% 35%,#f3cf7a,#a87a24 70%);box-shadow:0 2px 2px rgba(0,0,0,.6)}
 section.panel.bounty.failed{border-color:var(--line-2)}
+/* the hunt's bounty strip: a pinned notice one line high (the nail stays on the strip above the monster) */
+.grid.hunt section.panel.bounty{padding-top:14px}
+.top section.panel.bounty.inhead{padding:6px 14px;flex-wrap:nowrap;gap:12px;font-size:var(--fs-sm)}
+.top section.panel.bounty.inhead::before{display:none}
+.top section.panel.bounty.inhead ul{flex-wrap:nowrap;font-size:var(--fs-sm);gap:12px;white-space:nowrap;overflow:hidden;min-width:0}
+.top section.panel.bounty.inhead h2{font-size:var(--fs-sm);white-space:nowrap}
+.top section.panel.bounty.inhead .pay{white-space:nowrap}
 
 /* dialogs (settings, how to play, the demo's end): folio pages, a double engraved rule with corner ornaments */
 dialog.settings{border-color:var(--mat-plate-rule);box-shadow:inset 0 0 0 4px var(--panel),inset 0 0 0 5px var(--mat-plate-inner),0 24px 64px rgba(0,0,0,.6);

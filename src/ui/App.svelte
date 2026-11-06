@@ -15,6 +15,7 @@
   import Forge from './screens/Forge.svelte';
   import Shop from './screens/Shop.svelte';
   import Hunt from './screens/Hunt.svelte';
+  import BountyPanel from './screens/hunt/BountyPanel.svelte';
   import { music } from './audio';
   import { setSfxVolume, sfx } from './sfx';
   import { settings } from './settings.svelte';
@@ -109,7 +110,7 @@
 
 <svelte:window onpointerdown={() => music.unlock()} onkeydown={e => { music.unlock(); onHuntKey(e); }} onclickcapture={uiClick} />
 
-{#if introOpen}<Intro fresh={freshPlayer} onbegin={() => (introOpen = false)} onskip={() => { coach.skipAll(); introOpen = false; }} />{/if}
+{#if introOpen}<Intro fresh={freshPlayer} onbegin={() => (introOpen = false)} onskip={() => { coach.skipAll(true); introOpen = false; }} />{/if}
 
 <div class="wrap" class:hunting={game.inHunt} inert={introOpen}>
   <header class="top">
@@ -118,6 +119,7 @@
       <!-- no build version in the header (Mekkman, Nov 2026: every screenshot is collateral); it lives in Settings -->
       <div class="sub">{sub}</div>
     </div>
+    {#if game.inHunt}<BountyPanel inhead />{/if}
     <div class="top-right">
       {#if !game.inHunt}
         <nav class="nav" aria-label="Town">
@@ -173,6 +175,10 @@
     <div class="setrow">
       <span><span class="nm">Tutorial tips</span><span class="md">Short prompts the first time something happens. Turning them on again replays them from the start.</span></span>
       <button class="btn quiet" role="switch" aria-checked={settings.prefs.tips} onclick={() => coach.setEnabled(!settings.prefs.tips)}>{settings.prefs.tips ? 'On' : 'Off'}</button>
+    </div>
+    <div class="setrow">
+      <span><span class="nm">Show every action</span><span class="md">Your first hunts add a little at a time: the basics, then aiming at parts and your item, then your second weapon. Turn this on to see everything from the first hunt. Takes effect from your next hunt.</span></span>
+      <button class="btn quiet" role="switch" aria-checked={settings.prefs.showAll} onclick={() => { settings.prefs.showAll = !settings.prefs.showAll; settings.save(); }}>{settings.prefs.showAll ? 'On' : 'Off'}</button>
     </div>
     <div class="setrow">
       <span><span class="nm">Feedback</span><span class="md">The game keeps a hunt log on this PC ({logCount.hunts} hunt{logCount.hunts === 1 ? '' : 's'} so far): what you hunted, how it went, how long turns took. Nothing is sent anywhere. Export it{feedbackInfo() ? ', then attach the file when you send feedback' : ' to send to the developer'}.</span></span>
