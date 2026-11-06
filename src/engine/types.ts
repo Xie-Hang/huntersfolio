@@ -99,7 +99,7 @@ export interface ArmorDef {
   craft: Cost;
 }
 
-export type ItemEffect = 'heal30' | 'smoke' | 'whet50' | 'whet100' | 'net' | 'blast' | 'thaw' | 'snare' | 'cureInfect' | 'cureSpark';
+export type ItemEffect = 'heal30' | 'smoke' | 'whet50' | 'whet100' | 'net' | 'blast' | 'thaw' | 'snare' | 'cureInfect' | 'cureSpark' | 'trapRush' | 'trapLand';
 export interface ItemDef {
   /** monster tier it belongs with (default 1); items above the edition's top tier aren't in that build */
   tier?: number;
@@ -181,6 +181,8 @@ export interface Die { face: Face; used: string | null; /** Glarewing: left unus
 export interface PartState { hp: number; max: number; broken: boolean; exposed: number; /** times broken this hunt, for parts that reform (the Warden's plates); rewards count it */ cracks?: number }
 
 export interface MonsterState {
+  /** turns it's still held by a trap */
+  trapped?: number;
   hp: number;
   max: number;
   parts: Record<string, PartState>;
@@ -319,6 +321,8 @@ export interface Hunt {
   chargePending: boolean;
   chargeReady: boolean;
   evade: boolean;
+  /** a trap set this turn (prototype, Nov 2026): springs on the monster's next move if it's the kind it catches */
+  trapSet?: 'trapRush' | 'trapLand';
   whet: number;
   target: string;
   mon: MonsterState;

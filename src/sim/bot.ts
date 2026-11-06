@@ -165,6 +165,7 @@ export function playTurn(h: Hunt, p: Policy) {
     else if (fx === 'blast' && h.intent === 'erupt' && !E.canHit(h, E.currentWeapon(h))) E.useItem(h);
     else if (fx === 'smoke' && inc >= 40) E.useItem(h);
     else if (fx === 'cureInfect' && (h.mon.pInf ?? 0) >= 2) E.useItem(h);
+    else if ((fx === 'trapRush' || fx === 'trapLand') && E.trapCatches(fx, h.intent)) E.useItem(h);
     else if (fx === 'cureSpark' && ((h.mon.pSpark ?? 0) >= 2 || h.dice.filter(d => d.charged && !d.used).length >= 2)) E.useItem(h);
   }
   // one reroll toward the strong recipe
