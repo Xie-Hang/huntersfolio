@@ -157,6 +157,14 @@ export function swallowPlayer(h: Hunt, n: number) {
 }
 
 /* ---------- reading the state ---------- */
+/* ---------- counter stances (Nov 2026) ---------- */
+/** A stance punishes one obvious play during your turn, and like a burn it never knocks you out. */
+export function stanceHurt(h: Hunt, n: number, line: string) {
+  const d = Math.min(n, h.php - 1); if (d <= 0) return;
+  h.php -= d; h.stats.taken += d; feat(h, 'stanced');
+  log(h, `${line}: −${d}.`, 'ember');
+}
+
 /* ---------- traps (prototype, Nov 2026) ---------- */
 /** what each trap catches, by the monster's move: ground rushes, and moves that land on you (dives, bursts up) */
 export const TRAP_CATCH: Record<'trapRush' | 'trapLand', string[]> = {

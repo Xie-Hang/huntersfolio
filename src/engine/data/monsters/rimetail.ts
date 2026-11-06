@@ -7,6 +7,7 @@
 // fewer layers), Jaw (Pierce; the Daze target; weaker Pounce). Each part rewards a different second weapon.
 import type { Intent, MonsterDef } from '../../types';
 import { carries, carryingName } from '../../util';
+import { stanceHurt } from '../../combat';
 
 export const RIME_LAYERS = 2, RIME_LAYERS_BROKEN = 1;
 const layers = (h: { mon: { parts: Record<string, { broken: boolean }> } }) => (h.mon.parts.mantle.broken ? RIME_LAYERS_BROKEN : RIME_LAYERS);
@@ -46,6 +47,7 @@ export const rimetail: MonsterDef = {
         ? { name: 'Stump Swipe', text: 'It swings round, lashing out with the stump of its tail.', dmg: enr ? 28 : 22, threat: 1 }
         : { name: 'Tail Sweep', text: 'It coils its barbed tail behind it, low to the ground.', dmg: enr ? 60 : 48, threat: enr ? 4 : 3, note: 'Sever the tail to stop this' };
       case 'rimecoat': return { name: 'Rime Coat', text: 'It goes still. Frost creeps across its back, hardening into plates.', dmg: 0, threat: 0, note: `Regrows ${layers(h)} layers of ice plating` };
+      case 'mirror': return { name: 'Ice Mirror', text: 'It turns its iced back to you, smooth as glass, and flicks its tail at you.', dmg: 14, threat: 1, note: 'Hits of 40 or more this turn glance off: half damage, and the shards hit you for 12 (they can’t knock you out)' };
       case 'dazed': return { name: 'Dazed', text: 'It reels, eyes unfocused, swaying on its feet.', dmg: 0, threat: 0, note: 'Its action is lost' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
@@ -53,16 +55,23 @@ export const rimetail: MonsterDef = {
 
   next(h) {
     const m = h.mon;
-    const t = ['pounce', 'pounce', 'sweep', 'rimecoat'][m.seq % 4]; m.seq++; return t;
+    const t = ['pounce', 'pounce', 'sweep', 'mirror', 'rimecoat'][m.seq % 5]; m.seq++; return t;
   },
 
   resolve(h, type) {
     const m = h.mon;
     switch (type) {
       case 'rimecoat': m.plating = layers(h); return `Ice plating regrows: ${m.plating} layers.`;
+      case 'mirror': return 'The ice dulls again.';
       case 'dazed': return 'It shakes its head, slowly coming back to its senses.';
     }
     return null;
+  },
+
+  absorb(h, dmg) {
+    if (h.intent !== 'mirror' || dmg < 40) return null;
+    stanceHurt(h, 12, 'Ice shards fly back at you');
+    return { dmg: Math.round(dmg / 2), note: 'ice mirror ½' };
   },
 
   tip(h, type) {

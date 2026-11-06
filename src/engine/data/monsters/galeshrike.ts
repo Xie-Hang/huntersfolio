@@ -52,6 +52,7 @@ export const galeshrike: MonsterDef = {
       case 'dive': return { name: 'Plunging Dive', text: 'It folds its wings and drops like a stone!', dmg: tb ? (enr ? 70 : 60) : (enr ? 95 : 80), threat: enr ? 4 : 3, note: 'Then it’s stuck for a turn' };
       case 'stuck': return { name: 'Beak stuck', text: 'Its beak is buried in the earth. It thrashes to pull free.', dmg: 0, threat: 0, note: 'Grounded. The crest is exposed' };
       case 'crashed': return { name: 'Brought down', text: 'It crashes to the ground in a tangle of feathers.', dmg: 0, threat: 0, note: 'Grounded. Its action is lost' };
+      case 'feint': return { name: 'Feint', text: 'It hops sideways, wings half open, snapping at you as it goes.', dmg: 18, threat: 1, note: 'It sidesteps your first Cut or Blunt hit this turn (the dice are still spent). Pierce isn’t dodged' };
       case 'dazed': return { name: 'Dazed', text: 'It reels, eyes unfocused, swaying on its feet.', dmg: 0, threat: 0, note: 'Its action is lost' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
@@ -62,7 +63,12 @@ export const galeshrike: MonsterDef = {
     if (prev === 'circle') return 'dive';
     if (prev === 'dive') return 'stuck';
     if (m.air) { if (m.airLeft > 1) { m.airLeft--; return 'gust'; } return 'circle'; }
-    const t = ['rake', 'takeoff'][m.seq % 2]; m.seq++; return t;
+    const t = ['rake', 'feint', 'takeoff'][m.seq % 3]; m.seq++; return t;
+  },
+
+  dodge(h, w) {
+    if (h.intent === 'feint' && !h.mon.stanceUsed && w.type !== 'Pierce') { h.mon.stanceUsed = true; return 'It sidesteps! Your hit finds only air.'; }
+    return null;
   },
 
   resolve(h, type) {
@@ -71,6 +77,7 @@ export const galeshrike: MonsterDef = {
       case 'takeoff': m.air = true; m.airLeft = airTurns(h); return 'It climbs into the wind. It’s airborne!';
       case 'circle': return 'It wheels overhead, lining up a dive.';
       case 'stuck': return 'It wrenches its beak free.';
+      case 'feint': h.mon.stanceUsed = false; return 'It settles, wary.';
       case 'crashed': return 'It scrambles back to its feet.';
       case 'dazed': return 'It shakes its head, slowly coming back to its senses.';
       case 'dive': m.air = false; m.airLeft = 0; return null;

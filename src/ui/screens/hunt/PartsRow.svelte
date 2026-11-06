@@ -46,7 +46,8 @@
   .pline .mono { flex: none; white-space: nowrap; }
   .pline .chip { flex: none; white-space: nowrap; padding-block: 1px; line-height: 1.35; }
   .pline:first-child { line-height: 1.2; }
-  .pline .pbar { flex: 1 1 40px; min-width: 30px; }
+  /* the bar gives way first: with a stance chip beside the tag, a narrow part keeps both chips and loses the bar */
+  .pline .pbar { flex: 1 1 40px; min-width: 0; }
   /* four parts (the Wanderer Sovereign) still fit on one row */
   .parts.row.four { flex-wrap: nowrap; }
   .parts.row.four .part { flex: 1 1 0; }

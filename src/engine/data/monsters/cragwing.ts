@@ -14,7 +14,7 @@ import type { Intent, MonsterDef } from '../../types';
 import { carries, carryingName, dazeTag } from '../../util';
 
 export const CRAG_LAYERS = 2;
-const CYCLE = ['lash', 'windup', 'takeoff', 'lash', 'burrow'] as const;
+const CYCLE = ['lash', 'windup', 'takeoff', 'lash', 'brace', 'burrow'] as const;
 const airTurns = (h: { mon: { parts: Record<string, { broken: boolean }> } }) => (h.mon.parts.wings.broken ? 1 : 2);
 
 export const cragwing: MonsterDef = {
@@ -52,6 +52,7 @@ export const cragwing: MonsterDef = {
   intent(h, type): Intent {
     const m = h.mon, enr = m.enraged;
     switch (type) {
+      case 'brace': return { name: 'Slate Brace', text: 'It hunkers down behind its slate, wings held wide, and butts at you.', dmg: 20, threat: 1, note: 'Hits on its Horn and Back deal half this turn. Its Wings are exposed' };
       case 'lash': return { name: 'Tail Lash', text: 'It swings round, its tail scattering loose slate.', dmg: enr ? 34 : 28, threat: 1 };
       case 'windup': return { name: 'Winding up', text: 'It drops its horned head and scrapes the scree, gathering itself.', dmg: 0, threat: 0, note: 'Shale Charge next turn: guard for it' };
       case 'charge': return { name: 'Shale Charge', text: 'It hurls itself down the slope, horn first!', dmg: enr ? 84 : 70, threat: enr ? 4 : 3 };
@@ -76,6 +77,8 @@ export const cragwing: MonsterDef = {
     if (m.air) { if (m.airLeft > 1) { m.airLeft--; return 'gust'; } return 'dive'; }
     let t: string = CYCLE[m.seq % CYCLE.length]; m.seq++;
     if (t === 'burrow' && m.parts.horn.broken) t = 'lash';
+    // bracing opens its wings for this one turn (exposure ticks down after its move)
+    if (t === 'brace' && !m.parts.wings.broken) m.parts.wings.exposed = Math.max(m.parts.wings.exposed, 1);
     return t;
   },
 
@@ -85,6 +88,7 @@ export const cragwing: MonsterDef = {
       case 'takeoff': m.air = true; m.airLeft = airTurns(h); return 'It rides the wind. It’s airborne!';
       case 'dive': m.air = false; m.airLeft = 0; return null;
       case 'perched': return 'It shakes out its wings.';
+      case 'brace': return 'It rises out of its brace.';
       case 'burrow': m.under = true; return 'It’s under the scree.';
       case 'rockburst':
         m.under = false;
@@ -100,7 +104,15 @@ export const cragwing: MonsterDef = {
   // In the air only Pierce reaches it; under the scree only Blunt (for half damage)
   canHit(h, w) { return h.mon.air ? w.type === 'Pierce' : h.mon.under ? w.type === 'Blunt' : true; },
   cantHitReason(h) { return h.mon.air ? 'It’s in the air: only Pierce (a bow) reaches it. Swap to a bow, throw a Net, or guard for the dive.' : 'Under the scree: only Blunt reaches it.'; },
-  hitMod(h) { return h.mon.under ? { mult: 0.5, note: 'through the scree ½' } : null; },
+  hitMod(h, partId) {
+    if (h.mon.under) return { mult: 0.5, note: 'through the scree ½' };
+    if (h.intent === 'brace' && (partId === 'horn' || partId === 'back')) return { mult: 0.5, note: 'braced ½' };
+    return null;
+  },
+  partNote(h, partId) {
+    if (h.intent === 'brace' && (partId === 'horn' || partId === 'back') && !h.mon.parts[partId].broken) return { chip: 'Braced ½', hint: 'Behind its slate: hits here deal half this turn' };
+    return null;
+  },
   onHit(h, mv, w) {
     if (h.mon.under && w.type === 'Blunt' && mv.need.length >= 2) { h.mon.under = false; h.intent = 'unearthed'; return 'The blow shakes the scree. It bursts up, stunned!'; }
     return null;

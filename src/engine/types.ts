@@ -181,6 +181,8 @@ export interface Die { face: Face; used: string | null; /** Glarewing: left unus
 export interface PartState { hp: number; max: number; broken: boolean; exposed: number; /** times broken this hunt, for parts that reform (the Warden's plates); rewards count it */ cracks?: number }
 
 export interface MonsterState {
+  /** a counter stance's one-off punishment already happened this turn */
+  stanceUsed?: boolean;
   /** turns it's still held by a trap */
   trapped?: number;
   hp: number;
