@@ -126,10 +126,16 @@ export const sovereign: MonsterDef = {
     const steps = (m.enraged ? STEPS2 : STEPS)[m.stance ?? 'bare'];
     const skip = (names: string[]) => { while ((m.stanceStep ?? 0) < steps.length && names.includes(steps[m.stanceStep ?? 0])) m.stanceStep = (m.stanceStep ?? 0) + 1; };
     if (type === 'dazed' || type === 'pinned') skip(['charge']);
+    // Nov 2026 bug hunt: a daze that replaced the dive left it in the air for the rest of the hunt, through other
+    // stances; a daze that replaced the burrow still led to an eruption from the surface (which nothing could cancel)
+    const fell = type === 'dazed' && m.air;
+    if (fell) { m.air = false; m.airLeft = 0; skip(['gust', 'dive']); }
+    if (type === 'dazed' && !m.under) skip(['erupt']);
     if (type === 'crashed') skip(['gust', 'dive']);
     if (type === 'unearthed') skip(['erupt']);
     switch (type) {
-      case 'shift': return `It shifts into its ${NAME[m.nextStance ?? 'bare']} stance.`;
+      // a new stance starts clean: what the old one was doing (flying, burrowing, ice) ends with it
+      case 'shift': m.air = false; m.airLeft = 0; m.under = false; m.plating = 0; return `It shifts into its ${NAME[m.nextStance ?? 'bare']} stance.`;
       case 'windup': return 'It braces to charge.';
       case 'takeoff': m.air = true; m.airLeft = 2; return 'It lifts into the air!';
       case 'dive': m.air = false; m.airLeft = 0; return 'It lands with a wet crash.';
@@ -139,7 +145,7 @@ export const sovereign: MonsterDef = {
       case 'pinned': return 'It pulls itself back together.';
       case 'crashed': return 'It gathers itself up off the ground.';
       case 'unearthed': return 'It shakes the grit off.';
-      case 'dazed': return 'It firms up again, slowly.';
+      case 'dazed': return fell ? 'Dazed, it drops out of the air and lands hard.' : 'It firms up again, slowly.';
     }
     return null;
   },

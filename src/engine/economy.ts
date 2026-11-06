@@ -5,7 +5,7 @@ import { ARMORS, CHARMS, ITEMS, MATERIALS } from './data/gear';
 import { MONSTERS } from './data/monsters';
 import { nextRandom } from './rng';
 import { settleBounty } from './bounty';
-import { rankAtLeast } from './rank';
+import { rankAtLeast, hunterRank } from './rank';
 
 /* ---------- tuning constants ---------- */
 export const REWARD = { base: 100, perPart: 40, capture: 60 };
@@ -298,7 +298,7 @@ export function contentComplete(s: Save): boolean {
 export function settleHunt(s: Save, h: Hunt) {
   if (!h.over || h.reward) return;
   const MD = MONSTERS[h.mid];
-  const lockedBefore = Object.keys(MONSTERS).filter(id => !isUnlocked(s, id));
+  const lockedBefore = Object.keys(MONSTERS).filter(id => !isUnlocked(s, id)), rankBefore = hunterRank(s);
   s.hunts++;
   s.items.snare = (s.items.snare ?? 0) + (h.snares ?? 0); // unused snares come home, win or lose
   const rec = (s.record[h.mid] ??= { hunts: 0, wins: 0, captures: 0, breaks: {} });
@@ -321,6 +321,7 @@ export function settleHunt(s: Save, h: Hunt) {
     for (const [k, v] of Object.entries(mats)) s.mats[k] = (s.mats[k] ?? 0) + v;
     if (h.item) s.items[h.item] = (s.items[h.item] ?? 0) + h.itemCharges;
     h.reward = { coin, mats, rare, returned: h.item ? h.itemCharges : 0, lost: 0, unlocked: lockedBefore.filter(id => isUnlocked(s, id)) };
+    const rankNow = hunterRank(s); if (rankNow !== rankBefore) h.reward.rankUp = rankNow;
   } else {
     // A failed hunt keeps the materials of the parts you broke (one each; no coin, no carve, no rare, and the
     // items you carried are lost). Playtest/sim (Nov 2026): losses paid nothing, so an under-geared player at a new

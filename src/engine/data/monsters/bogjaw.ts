@@ -61,6 +61,13 @@ export const bogjaw: MonsterDef = {
     return remember(h, choose(h, [['lash', 3], ['slam', 2], ['gape', sinceGape >= GAPE_EVERY ? 3 : 0]], threat));
   },
 
+  // Nov 2026 bug hunt: breaking the sac on the Swallow turn logged "it can't swallow you any more", then swallowed
+  // you. The telegraph changes on the spot instead, so what's on screen is what happens.
+  onBreak(h, partId) {
+    if (partId === 'sac' && h.intent === 'swallow') { h.intent = 'snap'; return 'With its sac torn, the lunge can only snap shut.'; }
+    return null;
+  },
+
   resolve(h, type, landed) {
     switch (type) {
       case 'swallow':

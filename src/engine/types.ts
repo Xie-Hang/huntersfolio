@@ -291,6 +291,9 @@ export interface Reward {
   lost: number;
   /** monsters this hunt unlocked */
   unlocked?: string[];
+  /** the Hunter Rank this hunt took you to, when it changed (Nov 2026 bug hunt: "Promoted!" used to show on any first
+   *  win against a promotion monster, rank change or not) */
+  rankUp?: string;
   /** the bounty outcome (win or lose) */
   bounty?: { id: string; met: boolean; missed?: string; coin: number; mat?: string; repeat?: boolean; unlocked?: string[] };
 }

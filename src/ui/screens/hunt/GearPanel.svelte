@@ -102,7 +102,7 @@
         {#if h.snareSet}Snare set: it closes when you end your turn, unless the hit you take is {E.CHARGE_BREAK} or more
         {:else if !capLive}Unlocks at {capAt} HP or less. Uses a Snare · {h.snares ? `${h.snares} carried` : 'none carried'}
         {:else if !h.snares}You have no Snare left. Buy them in the Shop
-        {:else if E.captureBlocked(h)}{E.monsterOf(h).flier ? 'Bring it down first' : 'Drive it to the surface first'}
+        {:else if E.captureBlocked(h)}{h.mon.air ? 'Bring it down first' : h.mon.under ? 'Drive it to the surface first' : 'It can’t be snared right now'}
         {:else if n === 0 && auto.capture}{usesLine(auto.capture)}. Holds unless its move hits you for {E.CHARGE_BREAK}+ · {h.snares} Snare{h.snares > 1 ? 's' : ''}
         {:else if n !== 2}Select 2 dice. Holds unless its move hits you for {E.CHARGE_BREAK}+ · {h.snares} Snare{h.snares > 1 ? 's' : ''}
         {:else}Holds unless its move hits you for {E.CHARGE_BREAK}+. Double part materials{/if}

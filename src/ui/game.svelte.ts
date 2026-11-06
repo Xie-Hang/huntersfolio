@@ -160,7 +160,7 @@ class Game {
     const sounds: Sfx[] = [];
     if (h.mon.plating < ice0) {
       sounds.push(h.mon.plating === 0 ? 'iceGone' : 'iceBreak');
-      const word = E.monsterOf(h).plateWord ? 'Scales' : 'Ice';
+      const pw = E.monsterOf(h).plateWord, word = pw === 'scale' ? 'Scales' : pw ? pw[0].toUpperCase() + pw.slice(1) : 'Ice';
       this.float('mon', h.mon.plating === 0 ? `${word} shattered` : `${word} cracked`, 'ice');
     } else {
       sounds.push(w.type === 'Cut' ? 'hitCut' : w.type === 'Blunt' ? 'hitBlunt' : 'hitPierce');
@@ -227,7 +227,8 @@ class Game {
     this.endArmed = false;
     PL.turnEnd(h);
     if (E.intentInfo(h).dmg > 0) { this.pulse.actIntent = h.intent; this.pulse.act++; }
-    const { taken } = E.endTurn(h);
+    // everything you lost this end of turn, not only the attack: a Spark going off or slime used to land with no number
+    const t0 = h.stats.taken; E.endTurn(h); const taken = h.stats.taken - t0;
     if (taken) { this.float('player', `−${taken}`, 'hurt'); if (taken >= E.CHARGE_BREAK) this.shake('player'); }
     if (taken) sfx(taken >= E.CHARGE_BREAK ? 'hurtHeavy' : 'hurt');
     if (!h.over) setTimeout(() => sfx('diceRoll'), taken ? 260 : 0); // the new roll lands after the hit

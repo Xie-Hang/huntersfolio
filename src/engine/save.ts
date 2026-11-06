@@ -119,7 +119,9 @@ export function loadSave(raw: unknown): Save {
   for (const id of Object.keys(out.weapons)) { if (out.loadout.weapons.length >= 2) break; if (!out.loadout.weapons.includes(id)) out.loadout.weapons.push(id); }
   if (!out.armors[out.loadout.armor]) out.loadout.armor = Object.keys(out.armors)[0];
   if (out.loadout.charm && !out.charms[out.loadout.charm]) out.loadout.charm = null;
-  if (out.loadout.bounty && (!BOUNTIES[out.loadout.bounty] || out.bounties[out.loadout.bounty])) out.loadout.bounty = null;
+  // only a bounty that no longer exists is dropped: done ones can be taken again (Nov 2026 bug hunt: a repeat you'd
+  // taken vanished when the game restarted)
+  if (out.loadout.bounty && !BOUNTIES[out.loadout.bounty]) out.loadout.bounty = null;
   out.version = SAVE_VERSION;
   return out;
 }

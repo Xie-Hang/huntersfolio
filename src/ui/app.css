@@ -81,6 +81,10 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .partspanel{padding:12px 14px;gap:8px}
 .parts.row .part .hint{display:none}
 .grid.hunt .center{gap:12px}
+/* short screens (Steam Deck 1280×800, 1366×768 laptops): the whole hunt fits without scrolling (Nov 2026 bug hunt: the
+   dice ran off the bottom). The threat pips share the kicker's line, the dice lose their instruction line (the turn
+   number is in the header), the header's tag and buttons shrink. */
+@media (max-height:820px) and (min-width:1101px){.youbox .ph.dph{display:none}.tele .tw{display:none}.wrap.hunting .top .btn{min-height:36px;padding-block:6px}.wrap.hunting .top .purse{padding-block:5px}.wrap.hunting .top .iconbtn{width:38px;height:38px;min-height:38px}.wrap.hunting .top .rankseal svg{height:38px;width:auto}.grid.hunt .center{gap:10px}}
 @media (max-height:820px){.youbox > .panel{padding:12px 16px;gap:8px}.partspanel{padding:10px 14px;gap:6px}.wrap.hunting .top h1{font-size:calc(var(--fs-logo) * .72)}.wrap.hunting .top{padding-bottom:8px}.wrap.hunting{padding-block:10px 16px}}
 .stagetip{display:flex;align-items:center;gap:8px;font-size:var(--fs-sm);color:var(--fg);background:var(--raise);border:1px solid var(--line-2);border-radius:3px;padding:6px 12px}
 .stagetip.capture{border-color:var(--gold);color:var(--gold-hi)}

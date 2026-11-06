@@ -13,14 +13,17 @@ export const RANK_REGION: Record<Rank, string> = { F: 'Ashfall Ridge', E: 'The M
 export const rankOfTier = (t: number): Rank => (t < 2 ? 'F' : t < 3 ? 'E' : t < 4 ? 'D' : 'D');
 
 const won = (s: Save, id: string) => (s.record[id]?.wins ?? 0) > 0;
-// main-path regions only (Mirewood 2, Stormspire 3, the apex 4): optional regions never skip a promotion
-const wonTier = (s: Save, min: number) => Object.values(MONSTERS).some(M => [2, 3, 4].includes(M.tier) && M.tier >= min && !M.promotion && won(s, M.id));
+// For saves from before ranks: wins that show a rank was reached. Rank E: anything past Ashfall Ridge (before the
+// Cragwing, the Gloamhollow opened straight after the Ridge, so an Arcmoth win means the player was past rank F:
+// Nov 2026 bug hunt, those saves had the rest of the Gloamhollow locked again). Rank D: a Stormspire win.
+const EVIDENCE: Record<'E' | 'D', number[]> = { E: [2, 2.2, 2.5, 3, 3.2], D: [3] };
+const wonTier = (s: Save, r: 'E' | 'D') => Object.values(MONSTERS).some(M => EVIDENCE[r].includes(M.tier) && !M.promotion && won(s, M.id));
 
 export function hunterRank(s: Save): Rank {
   const passed = (r: Rank) => Object.values(MONSTERS).some(M => M.promotion === r && won(s, M.id));
   if (passed('C')) return 'C';
-  if (passed('D') || wonTier(s, 3)) return 'D';
-  if (passed('E') || wonTier(s, 2)) return 'E';
+  if (passed('D') || wonTier(s, 'D')) return 'D';
+  if (passed('E') || wonTier(s, 'E')) return 'E';
   return 'F';
 }
 export const rankAtLeast = (s: Save, r: Rank) => RANKS.indexOf(hunterRank(s)) >= RANKS.indexOf(r);

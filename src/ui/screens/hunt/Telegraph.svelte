@@ -12,6 +12,9 @@
   const info = $derived(E.intentInfo(h));
   const tip = $derived(E.tip(h));
   const inc = $derived(E.incoming(h));
+  // the whole end of the turn, played out on a copy: the attack plus what rides on it (Spark, slime, infection, charged dice)
+  const tp = $derived(E.turnPreview(h));
+  const total = $derived((inc?.net ?? 0) + (tp?.extra ?? 0));
   /** the hint names one of your moves: that move answers what the monster is doing */
   const isCounter = $derived(!!tip && [...E.currentWeapon(h).moves, ...E.otherWeapon(h).moves].some(m => tip!.includes(m.name)));
   /** you're charging and this hit is big enough to break it */
@@ -42,9 +45,9 @@
     {#if h.over === 'win'}
       <span class="kicker" style="color:var(--gold-hi)">{h.captured ? 'Captured' : 'Slain'}</span>
       <h2 style="margin:0;font-weight:600">{M.name} is {h.captured ? 'captured' : 'down'}</h2>
-      {#if M.promotion && (game.save.record[M.id]?.wins ?? 0) === 1}
-        <!-- the first win of a promotion hunt: the rank-up moment -->
-        <div class="promoted" role="status"><RankMedal rank={M.promotion} size={52} /><span><b>Promoted!</b> You're now a rank {M.promotion} hunter.{M.promotion !== 'C' ? ' New hunts are open on the Hunt Board.' : ' Low Rank is yours.'}</span></div>
+      {#if r.rankUp}
+        <!-- the rank-up moment: only when the hunt actually changed your rank, and new hunts are promised only if some opened -->
+        <div class="promoted" role="status"><RankMedal rank={r.rankUp} size={52} /><span><b>Promoted!</b> You're now a rank {r.rankUp} hunter.{r.unlocked?.length ? ' New hunts are open on the Hunt Board.' : r.rankUp === 'C' ? ' Low Rank is yours.' : ''}</span></div>
       {/if}
       <span class="coin">+{r.coin} coin</span>
       <div>
@@ -77,13 +80,13 @@
   {:else}
     <div class="ph">
       <span class="kicker">When you end your turn, it will</span>
-      <span class="pips" aria-label="Threat {info.threat} of 4"><span class="label" style="margin-right:6px">Threat</span>{#each [1, 2, 3, 4] as n}<i class:f={n <= info.threat}></i>{/each}</span>
+      <span class="pips" aria-label="Threat {info.threat} of 4" title="Threat {info.threat} of 4"><span class="label tw" style="margin-right:6px">Threat</span>{#each [1, 2, 3, 4] as n}<i class:f={n <= info.threat}></i>{/each}</span>
     </div>
     <div class="nextline">
       {#if multi}<h3 class="mvname multi">{#each info.name.split(' + ') as n, i}{#if i}<span class="sep" aria-hidden="true">&nbsp;·&nbsp;</span>{/if}<span>{n}</span>{/each}</h3>
       {:else}<h3 class="mvname">{info.name}</h3>{/if}
-      {#if inc}
-        {#if inc.net}<span class="big" aria-label="{inc.net} damage to you">−{inc.net}</span>{:else}<span class="big safe">{inc.evade ? 'Dodged' : 'Blocked'}</span>{/if}
+      {#if inc || tp?.extra}
+        {#if total}<span class="big" aria-label="{total} damage to you this turn">−{total}</span>{:else}<span class="big safe">{inc?.evade ? 'Dodged' : 'Blocked'}</span>{/if}
       {/if}
     </div>
     {#if !multi && !tip}<p class="say">{info.text}</p>{/if}
@@ -91,9 +94,10 @@
       <div class="calc">
         {#if inc.elem === 0}<b>{inc.raw}</b> physical{#if inc.wearsResist} · <span class="nores">your armor's {E.monElem(h)} resist doesn't apply</span>{/if}
         {:else if inc.phys === 0}<Elem e={E.monElem(h)} /><b>{inc.raw}</b> {E.monElem(h)}{#if inc.res} · resisted by your armor → <b>{inc.after}</b>{/if}
-        {:else}<b>{inc.phys}</b> physical + <Elem e={E.monElem(h)} /><b>{inc.elem}</b> {E.monElem(h)}{#if inc.res} · {E.monElem(h)} part resisted → <b>{inc.after}</b>{/if}{/if}{#if inc.evade} · smoke: <b>misses</b>{:else if h.guard} · − <b>{inc.g}</b> guard{inc.half ? ' (halved)' : ''}{/if}{#if !inc.evade && inc.net && inc.noGuard} · <span class="nores">guard can’t stop it</span>{:else if !inc.evade && inc.net} · <span style="color:var(--muted)">guard dice to reduce{inc.half ? ' (half as well)' : ''}</span>{/if}
+        {:else}<b>{inc.phys}</b> physical + <Elem e={E.monElem(h)} /><b>{inc.elem}</b> {E.monElem(h)}{#if inc.res} · {E.monElem(h)} part resisted → <b>{inc.after}</b>{/if}{/if}{#if inc.evade} · smoke: <b>misses</b>{:else if h.guard} · − <b>{inc.g}</b> guard{inc.half ? ' (halved)' : ''}{/if}{#if !inc.evade && inc.ward} · − <b>{inc.ward}</b> armor{/if}{#if !inc.evade && inc.net && inc.noGuard} · <span class="nores">guard can’t stop it</span>{:else if !inc.evade && inc.net} · <span style="color:var(--muted)">guard dice to reduce{inc.half ? ' (half as well)' : ''}</span>{/if}
       </div>
     {/if}
+    {#if tp?.extra}<div class="calc rider">+<b>{tp.extra}</b> at the end of the turn: {tp.why.join(', ')} · <span class="nores">guard can’t stop it</span></div>{/if}
     {#if info.note || info.steady || breaksCharge || breaksSnare}<div class="note">{[info.note, info.steady && E.carries(h, 'Blunt') ? 'Daze can\'t cancel it' : null, breaksCharge ? `This hit breaks your charge (${E.CHARGE_BREAK}+)` : null, breaksSnare ? `This hit tears it free of your snare: guard it under ${E.CHARGE_BREAK}` : null].filter(Boolean).join(' · ')}</div>{/if}
     {#if tip}<div class="answer" class:counter={isCounter}><b>{isCounter ? 'Counter:' : 'Tip:'}</b> <Tagged text={tip} /></div>{/if}
   {/if}

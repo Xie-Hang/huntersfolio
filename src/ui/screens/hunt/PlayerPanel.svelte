@@ -6,9 +6,10 @@
   import { shake } from '../../fx';
 
   const h = $derived(game.hunt!);
-  const inc = $derived(E.incoming(h));
-  const net = $derived(inc ? Math.min(inc.net, h.php) : 0);
-  const after = $derived(h.php - net);
+  // where your HP will be when your next turn starts: the attack and everything riding on the end of the turn
+  const tp = $derived(E.turnPreview(h));
+  const after = $derived(tp ? Math.max(0, Math.min(h.php, tp.hpAfter)) : h.php);
+  const net = $derived(h.php - after);
 </script>
 
 <section class="panel" data-coach="you" aria-label="Your state" use:shake={game.shakes.player}>
@@ -25,7 +26,7 @@
       <div class="pstat">
       <span>{h.arm.name}{h.arm.lv ? ` +${h.arm.lv}` : ''}</span>
       {#if h.charm}<span title={E.CHARMS[h.charm].perk}>{E.CHARMS[h.charm].name}</span>{/if}
-      <span>Guard this turn <b>−{h.guard}</b></span>
+      <span>Guard this turn <b>{h.guard ? `−${h.guard}` : 'none'}</b>{#if h.arm.ward} · armor <b>−{h.arm.ward}</b> a hit{/if}</span>
       {#if h.chargeReady}<span class="gold">Charged: first hit ×2</span>{:else if h.chargePending}<span class="gold">Charging for next turn</span>{/if}
       {#if h.whet}<span class="gold">Sharpened: next hit +{Math.round(h.whet * 100)}%</span>{/if}
       {#if h.evade}<span class="gold">Hidden in smoke</span>{/if}

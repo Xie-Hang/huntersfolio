@@ -213,9 +213,26 @@ export function incoming(h: Hunt) {
   const info = intentInfo(h); if (!info.dmg) return null;
   const r = afterResist(h, info), res = r.resisted, after = r.after;
   const parts = { phys: r.phys, elem: r.elem, wearsResist: r.wearsResist, noGuard: !!info.noGuard };
-  if (h.evade) return { raw: info.dmg, after, net: 0, res, g: 0, half: !!info.halfGuard && !h.arm.steady, evade: true, ...parts };
-  const g = info.noGuard ? 0 : info.halfGuard && !h.arm.steady ? Math.floor(h.guard / 2) : h.guard;
-  return { raw: info.dmg, after, net: Math.max(0, after - g), res, g, half: !!info.halfGuard && !h.arm.steady, evade: false, ...parts };
+  if (h.evade) return { raw: info.dmg, after, net: 0, res, g: 0, ward: 0, half: !!info.halfGuard && !h.arm.steady, evade: true, ...parts };
+  const g = info.noGuard ? 0 : info.halfGuard && !h.arm.steady ? Math.floor(h.guard / 2) : h.guard, ward = h.arm.ward ?? 0;
+  return { raw: info.dmg, after, net: Math.max(0, after - g - ward), res, g, ward, half: !!info.halfGuard && !h.arm.steady, evade: false, ...parts };
+}
+
+/** What the end of this turn will do to you, found by playing it out on a copy of the hunt. The engine is
+ *  deterministic, so these are the numbers you'll take: the attack, plus anything riding on the end of the turn
+ *  that guard can't stop (Nov 2026 bug hunt: a Spark going off, slime, an infection that starts and ticks at once,
+ *  charged dice you didn't use were all missing from the preview). */
+export function turnPreview(h: Hunt): { attack: number; extra: number; why: string[]; hpAfter: number; lethal: boolean } | null {
+  if (h.over) return null;
+  const c: Hunt = JSON.parse(JSON.stringify(h)); c.log = [];
+  const taken0 = c.stats.taken, { taken } = endTurn(c);
+  const extra = Math.max(0, c.stats.taken - taken0 - taken), why: string[] = [];
+  if (extra) for (const { t } of [...c.log].reverse()) {
+    const w = /spark on you discharges/i.test(t) ? 'your Spark goes off' : /charged d(ie|ice)/i.test(t) && /discharge|go(es)? off/i.test(t) ? 'charged dice you didn’t use go off'
+      : /infection eats at you/i.test(t) ? 'the infection' : /slime (burns|drinks|stings)/i.test(t) ? 'its slime' : /magma burns you/i.test(t) ? 'the magma' : null;
+    if (w && !why.includes(w)) why.push(w);
+  }
+  return { attack: taken, extra, why, hpAfter: c.over === 'lose' ? 0 : c.php, lethal: c.over === 'lose' };
 }
 
 /** Indices of free dice that satisfy a recipe, preferring the ones in `prefer`. */
@@ -291,6 +308,11 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
     if (strip >= 2 && m.plating === 0) feat(h, 'shatter');
     log(h, `${mv.name} breaks ${strip} layer${strip > 1 ? 's' : ''} of ${word}. ${m.plating ? `${m.plating} left.` : 'The plating is gone!'}`, m.plating ? '' : 'gold');
     if (hot > 0) { const b = Math.min(hot, h.php - 1); if (b > 0) { h.php -= b; h.stats.taken += b; feat(h, 'burned'); log(h, `The scales are white-hot: you're burned for ${b}.`, 'ember'); } }
+    // the plating takes the damage, but the blow still lands: a Pinning Shot still grounds a flier, a heavy Blunt
+    // blow still drives a burrower up (Nov 2026 bug hunt: plating swallowed both, though the tips promise them)
+    if (mv.pin) { const t = MD.onPin?.(h); if (t) log(h, t, 'gold'); }
+    if (m.hp > 0) { const t = MD.onHit?.(h, mv, w); if (t) log(h, t, 'gold'); }
+    if (((before.air && !m.air) || (before.under && !m.under)) && charmFx(h) === 'landWhet') landWhet(h);
     flowReroll(h, mv);
     return { dmg: 0, broke: false };
   }
@@ -433,7 +455,8 @@ export function autoDice(h: Hunt, action: DiceAction): number[] | null {
 }
 export function swap(h: Hunt, idx: number[]): boolean {
   const sel = freeOnly(h, idx); if (h.over) return false;
-  if (freeSwap(h) && sel.length === 0) { if (h.arm.quickswap && !h.freeSwapUsed) h.freeSwapUsed = true; else h.swapOnceUsed = true; }
+  // a free swap (armor perk) never costs a die, even with dice selected (Nov 2026 bug hunt: the button said Free, then spent one)
+  if (freeSwap(h)) { if (h.arm.quickswap && !h.freeSwapUsed) h.freeSwapUsed = true; else h.swapOnceUsed = true; }
   else if (sel.length !== 1) return false;
   else h.dice[sel[0]].used = 'Swap';
   h.weapon = 1 - h.weapon;
@@ -447,7 +470,7 @@ export const captureReady = (h: Hunt) => canCapture(h) && !captureBlocked(h) && 
  *  CHARGE_BREAK or more tears it free (the snare is lost). Risk you can see and play around, not a roll. */
 export function capture(h: Hunt, idx: number[]): boolean {
   const sel = freeOnly(h, idx); if (sel.length !== 2 || !canCapture(h) || h.over || h.snareSet) return false;
-  if (captureBlocked(h)) { log(h, 'You can’t snare it while it’s in the air.'); return false; }
+  if (captureBlocked(h)) { log(h, `You can’t snare it while it’s ${h.mon.air ? 'in the air' : h.mon.under ? 'underground' : 'like this'}.`); return false; }
   if (h.snares < 1) { log(h, 'You have no Snare. Buy them in the Shop.'); return false; }
   sel.forEach(i => (h.dice[i].used = 'Snare'));
   h.snares--; h.snareSet = true;
@@ -470,7 +493,7 @@ export function useItem(h: Hunt): boolean {
     case 'whet50': h.whet = 0.5; log(h, 'You sharpen your edge. Next hit +50%.'); break;
     case 'whet100': h.whet = 1; log(h, 'You grind your edge on the tusk. Next hit +100%.'); break;
     case 'net': groundFlier(h); log(h, 'The net wraps its wings. It crashes to the ground!', 'gold'); if (charmFx(h) === 'landWhet') landWhet(h); break;
-    case 'thaw': h.mon.plating = 0; log(h, 'The firepot bursts against its back. The ice plating melts away!', 'gold'); break;
+    case 'thaw': { const pw = def(h).plateWord ?? 'ice'; h.mon.plating = 0; log(h, `The firepot bursts against its back. ${pw === 'ice' ? 'The ice plating melts away' : `The ${pw === 'scale' ? 'scales crack' : `${pw} cracks`} and falls away`}!`, 'gold'); break; }
     case 'blast': unearth(h); log(h, 'The powder goes off in its tunnel. It bursts up, stunned!', 'gold'); if (charmFx(h) === 'landWhet') landWhet(h); break;
     case 'cureInfect': h.mon.pInf = 0; h.mon.pInfDmg = 0; log(h, `${it.name}: the infection is gone.`, 'gold'); break;
     case 'cureSpark': h.mon.pSpark = 0; for (const d of h.dice) d.charged = false; log(h, `${it.name}: the spark drains out of you.`, 'gold'); break;
@@ -494,7 +517,7 @@ export function endTurn(h: Hunt): TurnResult {
   if (live) {
     const d = live * CHARGED_HIT; h.php = Math.max(0, h.php - d); h.stats.taken += d; feat(h, 'chargehit');
     log(h, `${live} charged ${live > 1 ? 'dice' : 'die'} you didn’t use discharge${live > 1 ? '' : 's'} into you for ${d}.`, 'ember');
-    if (h.php <= 0) { finish(h, 'lose'); return { taken: d }; }
+    if (h.php <= 0) { finish(h, 'lose'); return { taken: 0 }; } // its attack never came: `taken` is the attack only
   }
   if (info.dmg > 0) {
     if (h.evade) { h.evade = false; log(h, `${info.name} tears through the smoke and misses you.`, 'gold'); }

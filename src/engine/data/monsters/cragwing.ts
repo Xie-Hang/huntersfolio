@@ -26,7 +26,7 @@ export const cragwing: MonsterDef = {
   plated: CRAG_LAYERS,
   plateWord: 'slate',
   plateBreak: w => (w.type === 'Cut' ? 2 : 1),
-  kind: 'Scree drake · Promotion hunt',
+  kind: 'Scree drake',
   elem: 'Gale',
   // its elemental attacks: only these are cut by armor that resists Gale; the rest are physical
   elemental: ['Gust Buffet', 'Talon Dive'],

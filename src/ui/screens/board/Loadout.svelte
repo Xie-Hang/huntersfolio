@@ -79,7 +79,7 @@
 {/snippet}
 
 {#snippet armorNote(a: E.ArmorInst)}
-  {#if a.burnproof && M.burrower}<span class="good">Immune to its molten shell</span>{' · '}{/if}
+  {#if a.burnproof && M.burn}<span class="good">Immune to its {M.plateHot ? 'burning scales' : 'burns'}</span>{' · '}{/if}
   {#if a.infectLess && M.inflicts === 'Infect'}<span class="good">Shorter infections</span>{' · '}{/if}
   {#if (a.sparkLess || a.chargeProof) && M.inflicts === 'Spark'}<span class="good">{a.chargeProof && M.id === 'archeron' ? 'Your dice can’t be charged' : 'Weaker Discharge'}</span>{' · '}{/if}
   {#if a.latchMax && M.id === 'hollowfang'}<span class="good">Shorter latches</span>{' · '}{/if}
@@ -284,7 +284,7 @@
                 <span class="nm"><Icon id={k} />{it.name}{#if k === L.item}<span class="badge">Equipped</span>{/if}</span>
                 <span class="ty">{it.desc}</span>
                 {#if it.effect === 'net'}<span class="note">{#if M.flier}<span class="good">Grounds the {M.short}</span>{:else}<span class="bad">Only works on fliers</span>{/if}</span>{/if}
-                {#if it.effect === 'thaw'}<span class="note">{#if M.plated && M.plateHot}<span class="bad">Does nothing to burning scales</span>{:else if M.plated}<span class="good">Melts the {M.short}’s ice</span>{:else}<span class="bad">Only works on plated monsters</span>{/if}</span>{/if}
+                {#if it.effect === 'thaw'}<span class="note">{#if M.plated && M.plateHot}<span class="bad">Does nothing to burning scales</span>{:else if M.plated}<span class="good">{M.plateWord ? `Cracks the ${M.short}’s ${M.plateWord}` : `Melts the ${M.short}’s ice`}</span>{:else}<span class="bad">Only works on plated monsters</span>{/if}</span>{/if}
                 {#if it.effect === 'cureInfect'}<span class="note">{#if M.inflicts === 'Infect'}<span class="good">Cures the {M.short}’s infection</span>{:else}<span class="bad">It doesn’t infect</span>{/if}</span>{/if}
                 {#if it.effect === 'cureSpark'}<span class="note">{#if M.inflicts === 'Spark'}<span class="good">Clears the {M.short}’s spark</span>{:else}<span class="bad">It doesn’t spark</span>{/if}</span>{/if}
                 {#if it.effect === 'blast'}<span class="note">{#if M.burrower}<span class="good">Forces the {M.short} up</span>{:else}<span class="bad">Only works on burrowers</span>{/if}</span>{/if}

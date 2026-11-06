@@ -19,7 +19,7 @@ export const fenmother: MonsterDef = {
   id: 'fenmother',
   name: 'The Fenmother',
   short: 'Fenmother',
-  kind: 'Hot-spring toad · Promotion hunt',
+  kind: 'Hot-spring toad',
   elem: 'Ember',
   elemental: ['Scalding Belch'],
   weak: 'Stone',
@@ -66,6 +66,13 @@ export const fenmother: MonsterDef = {
     return remember(h, choose(h, [['lash', 3], ['belch', 2], ['gape', sinceGape >= GAPE_EVERY ? 3 : 0], ['steam', m.enraged && !steaming && sinceSteam >= STEAM_EVERY ? 4 : 0]], threat));
   },
 
+  // Nov 2026 bug hunt: breaking the sac on the Swallow turn logged "it can't swallow you any more", then swallowed
+  // you. The telegraph changes on the spot instead, so what's on screen is what happens.
+  onBreak(h, partId) {
+    if (partId === 'sac' && h.intent === 'swallow') { h.intent = 'snap'; return 'With its sac torn, the lunge can only snap shut.'; }
+    return null;
+  },
+
   resolve(h, type, landed) {
     const m = h.mon, lines: string[] = [];
     m.hits = 0;
@@ -84,7 +91,7 @@ export const fenmother: MonsterDef = {
   },
 
   // half HP: the steam rises for the first time
-  onPhase(h) { h.mon.mirage = 3; h.mon.lastSplit = h.turn; return 'The spring boils and the steam rises. For 3 turns, only your first hit each turn lands.'; },
+  onPhase(h) { h.mon.mirage = 3; h.mon.lastSplit = h.turn; return 'The spring boils and the steam rises. For the rest of this turn and the next 2, only your first hit each turn lands.'; },
 
   dodge(h) {
     const m = h.mon;

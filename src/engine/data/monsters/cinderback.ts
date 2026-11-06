@@ -61,7 +61,8 @@ export const cinderback: MonsterDef = {
 
   next(h, prev) {
     const m = h.mon;
-    if (prev === 'burrow') return 'erupt';
+    // still underground after anything (a daze included: Nov 2026 bug hunt), it comes up next
+    if (prev === 'burrow' || m.under) return 'erupt';
     if (prev === 'erupt') return 'venting';
     // m.seq counts swipes since the last burrow, so breaking the claws mid-cycle never makes it burrow early
     const swipes = m.parts.claws.broken ? 3 : 2;

@@ -26,7 +26,8 @@
     if (mud) out.push({ key: 'mud', label: 'Mud-caked', short: `hide takes ½ · ${m.wallow} turn${m.wallow > 1 ? 's' : ''}`, cls: 'mud', desc: 'Mud halves damage to its hide until it dries. Aim at another part meanwhile, or use Pierce, which ignores the mud.' });
     if (m.air) out.push({ key: 'air', label: 'Airborne', short: 'only bows reach it', cls: 'gale', desc: `In the air, only Pierce (a bow) can hit it${isFlier ? '. Pinning Shot or a Weighted Net brings it down' : ''}. Otherwise guard until it comes down: when it lands, every weapon reaches it. It can't be captured in the air.` });
     if (m.under) out.push({ key: 'under', label: 'Underground', short: 'only Blunt reaches it', cls: 'mud', desc: 'Only Blunt reaches it below ground. A heavy Blunt hit drives it up, dazed, and cancels what it was digging toward. Otherwise, guard for what comes up.' });
-    if (m.plating > 0 && !M.plateWord) out.push({ key: 'ice', label: `Ice ×${m.plating}`, short: 'hits break ice, not HP', cls: 'ice', desc: 'Each hit breaks a layer of ice instead of dealing damage (a Cut hit breaks two), and uses up a charge or whetstone bonus. Clear the ice first. A Firepot melts it all.' });
+    // every plated monster gets the badge but the Ashtail, whose burning scales have their own (Nov 2026 bug hunt: the Cragwing's slate had none)
+    if (m.plating > 0 && !M.plateHot) { const pw = M.plateWord ?? 'ice'; out.push({ key: 'ice', label: `${pw[0].toUpperCase() + pw.slice(1)} ×${m.plating}`, short: `hits break ${pw}, not HP`, cls: 'ice', desc: `Each hit breaks a layer of ${pw} instead of dealing damage (a Cut hit breaks two), and uses up a charge or whetstone bonus. Clear the ${pw} first. A Firepot ${pw === 'ice' ? 'melts' : 'cracks'} it all.` }); }
     if (m.molten > 0) out.push({ key: 'molt', label: 'Molten', short: `melee burns you ${m.enraged ? 8 : 5} · ${m.molten} turn${m.molten > 1 ? 's' : ''}`, cls: 'hot', desc: `Its shell is molten: every Cut or Blunt hit burns you ${m.enraged ? 8 : 5}. Pierce is safe, or guard and wait it out.` });
     if ((m.shell ?? 0) > 0) out.push({ key: 'shell', label: 'In its shell', short: 'your hits ½', cls: 'stone', desc: 'Your hits deal half until it comes out on its next action. A good turn to guard, charge or reroll for something big.' });
     if ((m.slime ?? 0) > 0 && M.inflicts !== 'Drain') out.push({ key: 'slime', label: 'Slime', short: `burning you · ${m.slime} turn${m.slime! > 1 ? 's' : ''}`, cls: 'hot', desc: 'The slime burns you a little at the end of each turn. It can\'t knock you out on its own. Breaking its foot stops the slime for good.' });
@@ -46,55 +47,59 @@
       <div class="bar" style="height:10px"><i style="width:{pct(m.hp, m.max)}%;background:var(--ember)"></i></div>
     </div>
     <div class="stagebody">
-      <div class="plate"><Plate mon={h.mid} hunt={h} scene /></div>
-      <Telegraph />
-    </div>
-    <!-- meters and condition badges only matter mid-fight: gone on the result card (Mekkman, Nov 2026) -->
-    {#if !h.over}
-    <div class="metarow">
-      <div class="meters">
-    {#if meter}
-      <div class="hpline" aria-label="{meter.label}: {meter.value} of {meter.max}">
-        <div class="ph"><span class="label" style="color:{TONE[meter.tone ?? 'gold']}">{meter.label}</span><span class="mono">{meter.note ?? `${meter.value} / ${meter.max}`}</span></div>
-        {#if meter.pips}
-          <div class="pipbar">{#each Array(meter.max) as _, i}<i class:f={i < meter.value} style="--c:{TONE[meter.tone ?? 'gold']}"></i>{/each}</div>
-        {:else}
-          <div class="bar"><i style="width:{pct(meter.value, meter.max)}%;background:{TONE[meter.tone ?? 'gold']}"></i></div>
+      <!-- the picture, then the monster's meters and condition under it: the telegraph beside sets the height, and this
+           used to be a full-width row below both (Nov 2026: the hunt screen didn't fit a Steam Deck) -->
+      <div class="platecol">
+        <div class="plate"><Plate mon={h.mid} hunt={h} scene /></div>
+        <!-- meters and condition badges only matter mid-fight: gone on the result card (Mekkman, Nov 2026) -->
+        {#if !h.over}
+        <div class="metarow">
+          <div class="meters">
+        {#if meter}
+          <div class="hpline" aria-label="{meter.label}: {meter.value} of {meter.max}">
+            <div class="ph"><span class="label" style="color:{TONE[meter.tone ?? 'gold']}">{meter.label}</span><span class="mono">{meter.note ?? `${meter.value} / ${meter.max}`}</span></div>
+            {#if meter.pips}
+              <div class="pipbar">{#each Array(meter.max) as _, i}<i class:f={i < meter.value} style="--c:{TONE[meter.tone ?? 'gold']}"></i>{/each}</div>
+            {:else}
+              <div class="bar"><i style="width:{pct(meter.value, meter.max)}%;background:{TONE[meter.tone ?? 'gold']}"></i></div>
+            {/if}
+          </div>
+        {/if}
+        {#if E.carries(h, 'Blunt') && M.heads}
+          <div class="hpline">
+            <div class="heads">
+              <span class="label" style="color:var(--daze)">Daze</span>
+              {#each M.heads.filter(x => !m.parts[x].broken) as hd (hd)}
+                {@const reel = (m.reel?.[hd] ?? 0) > 0}
+                {@const v = m.headDaze?.[hd] ?? 0}
+                <div class="hd" aria-label="{M.parts.find(p => p.id === hd)!.name} daze: {reel ? 'reeling' : `${v} of ${E.HEAD_DAZE_MAX}`}">
+                  <span class="label">{M.parts.find(p => p.id === hd)!.name.replace(' Head', '')}{reel ? ' · Reeling' : ''}</span>
+                  <div class="bar" class:locked={reel}><i style="width:{pct(v, E.HEAD_DAZE_MAX)}%;background:var(--daze)"></i></div>
+                </div>
+              {/each}
+            </div>
+          </div>
+        {:else if E.carries(h, 'Blunt')}
+          <div class="hpline">
+            <div class="ph"><span class="label" style="color:var(--daze)">Daze · Blunt hits to the {headName}</span><span class="mono">{m.dazeLock ? 'Recovering' : `${m.daze} / ${m.dazeMax}`}</span></div>
+            <div class="bar" class:locked={m.dazeLock > 0}><i style="width:{pct(m.daze, m.dazeMax)}%;background:var(--daze)"></i></div>
+          </div>
+        {/if}
+          </div>
+          {#if statuses.length}
+            <div class="conds" aria-label="Its condition">
+              {#each statuses as st (st.key)}
+                <button type="button" class="cond {st.cls}" aria-describedby="{uid}-{st.key}"><b>{st.label}</b><span class="sh">{st.short}</span><span class="i" aria-hidden="true">?</span>
+                <span class="stip" id="{uid}-{st.key}" role="tooltip">{st.desc}</span>
+                </button>
+              {/each}
+            </div>
+          {/if}
+        </div>
         {/if}
       </div>
-    {/if}
-    {#if E.carries(h, 'Blunt') && M.heads}
-      <div class="hpline">
-        <div class="heads">
-          <span class="label" style="color:var(--daze)">Daze</span>
-          {#each M.heads.filter(x => !m.parts[x].broken) as hd (hd)}
-            {@const reel = (m.reel?.[hd] ?? 0) > 0}
-            {@const v = m.headDaze?.[hd] ?? 0}
-            <div class="hd" aria-label="{M.parts.find(p => p.id === hd)!.name} daze: {reel ? 'reeling' : `${v} of ${E.HEAD_DAZE_MAX}`}">
-              <span class="label">{M.parts.find(p => p.id === hd)!.name.replace(' Head', '')}{reel ? ' · Reeling' : ''}</span>
-              <div class="bar" class:locked={reel}><i style="width:{pct(v, E.HEAD_DAZE_MAX)}%;background:var(--daze)"></i></div>
-            </div>
-          {/each}
-        </div>
-      </div>
-    {:else if E.carries(h, 'Blunt')}
-      <div class="hpline">
-        <div class="ph"><span class="label" style="color:var(--daze)">Daze · Blunt hits to the {headName}</span><span class="mono">{m.dazeLock ? 'Recovering' : `${m.daze} / ${m.dazeMax}`}</span></div>
-        <div class="bar" class:locked={m.dazeLock > 0}><i style="width:{pct(m.daze, m.dazeMax)}%;background:var(--daze)"></i></div>
-      </div>
-    {/if}
-      </div>
-      {#if statuses.length}
-        <div class="conds" aria-label="Its condition">
-          {#each statuses as st (st.key)}
-            <button type="button" class="cond {st.cls}" aria-describedby="{uid}-{st.key}"><b>{st.label}</b><span class="sh">{st.short}</span><span class="i" aria-hidden="true">?</span>
-            <span class="stip" id="{uid}-{st.key}" role="tooltip">{st.desc}</span>
-            </button>
-          {/each}
-        </div>
-      {/if}
+      <Telegraph />
     </div>
-    {/if}
   </div>
   <div class="fx">
     {#each game.floats.filter(f => f.at === 'mon') as f (f.id)}<span class="float {f.cls}">{f.text}</span>{/each}
@@ -122,6 +127,10 @@
   .metarow .ph .mono { white-space: nowrap; flex: none; }
   .hdchip { margin-left: 8px; vertical-align: middle; font-weight: 400; }
   .metarow .meters:empty { display: none; }
+  .platecol { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .platecol .metarow { flex-direction: column; align-items: stretch; }
+  .platecol .metarow .meters { flex: none; grid-template-columns: minmax(0, 1fr); }
+  .platecol .conds { justify-content: flex-start; margin-left: 0; }
   .stagebody { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 14px; align-items: start; }
   @media (max-width: 720px) { .stagebody { grid-template-columns: minmax(0, 1fr); } }
   .heads { display: flex; align-items: center; gap: 12px; }

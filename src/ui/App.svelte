@@ -127,7 +127,7 @@
         </nav>
       {/if}
       <!-- Hunter Rank (Nov 2026): a seal with your rank's letter -->
-      <span class="rankseal" title="Hunter Rank {E.hunterRank(game.save)}: {E.promotionFor(game.save) ? `pass the ${E.promotionFor(game.save)!.short} promotion hunt to rank up` : 'Low Rank cleared'}"><RankMedal rank={E.hunterRank(game.save)} size={46} /><span class="rl"><span>Hunter</span><span>Rank {E.hunterRank(game.save)}</span></span></span>
+      <span class="rankseal" title="Hunter Rank {E.hunterRank(game.save)}: {E.promotionFor(game.save) ? `pass the ${E.promotionFor(game.save)!.short} promotion hunt to rank up` : E.hunterRank(game.save) === 'C' ? 'Low Rank cleared' : 'the next promotion hunt is in the full game'}"><RankMedal rank={E.hunterRank(game.save)} size={46} /><span class="rl"><span>Hunter</span><span>Rank {E.hunterRank(game.save)}</span></span></span>
       <span class="purse">{game.save.coin} coin</span>
       {#if game.inHunt}
         <button class="btn quiet" onclick={() => game.abandon()}>Abandon hunt</button>

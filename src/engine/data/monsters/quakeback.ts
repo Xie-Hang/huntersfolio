@@ -58,7 +58,8 @@ export const quakeback: MonsterDef = {
   next(h, prev) {
     const m = h.mon;
     if (prev === 'burrow') return 'tremor';
-    if (prev === 'tremor' && m.under) return m.charges < TREMORS ? 'tremor' : 'rockburst';
+    // still underground after anything (a daze included: Nov 2026 bug hunt), it keeps to its tremors and bursts up
+    if (m.under) return m.charges < TREMORS ? 'tremor' : 'rockburst';
     if (prev === 'rockburst') return 'settle';
     const cycle = m.parts.claws.broken ? ['swipe', 'rockfall', 'swipe', 'swipe', 'swipe'] : ['swipe', 'rockfall', 'swipe', 'swipe', 'burrow'];
     let t = cycle[m.seq % cycle.length]; m.seq++;

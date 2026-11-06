@@ -10,7 +10,7 @@
 </script>
 
 <section class="panel" aria-label="Your dice">
-  <div class="ph"><span class="label">Your dice · turn {h.turn}</span><span class="label">{input.mode === 'pad' ? 'Select any dice (A), then pick a move, or reroll them' : 'Click any dice to select them, then pick a move, or reroll them'}</span></div>
+  <div class="ph dph"><span class="label">Your dice · turn {h.turn}</span><span class="label">{input.mode === 'pad' ? 'Select any dice (A), then pick a move, or reroll them' : 'Click any dice to select them, then pick a move, or reroll them'}</span></div>
   <div class="diceline">
   <div class="tray" data-coach="dice">
     {#each h.dice as d, i}
