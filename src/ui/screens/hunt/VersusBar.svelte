@@ -1,6 +1,6 @@
 <script lang="ts">
-  // One health bar for the whole fight, like a fighting game: you on the left, the monster on the right, the turn
-  // between (Mekkman, Nov 2026, from playtest feedback: "the HP of both together as one panel"). Your side carries what
+  // One health bar for the whole fight, like a fighting game: the monster on the left (above its picture), you on the
+  // right (above your moves), the turn between (swapped 7 Nov) (Mekkman, Nov 2026, from playtest feedback: "the HP of both together as one panel"). Your side carries what
   // the next hit will take (the striped end), your Block, and your own conditions; the monster's side its weakness.
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
@@ -20,15 +20,24 @@
 </script>
 
 <section class="panel vs" aria-label="Health">
+  <div class="vside mon">
+    <div class="vtop">
+      <h2 class="vnm">{#if shows(h, 'parts')}<span class="vkind" title="{el.elem} monster"><Elem e={el.elem} /></span>{/if}{M.panelName ?? M.name}</h2>
+      {#if shows(h, 'parts')}<span class="chip sm gale"><Elem e={el.weak} />Weak to {el.weak}</span><span class="chip sm"><Elem e={el.resist} />Resists {el.resist}</span>{/if}
+      <span class="vnum">{m.hp} / {m.max}</span>
+    </div>
+    <div class="vhb" role="img" aria-label="{M.name}: {m.hp} of {m.max} HP"><i class="vfill" style="width:{pct(m.hp, m.max)}%"></i></div>
+  </div>
+  <div class="vmid" aria-label="Turn {h.turn}"><span class="t">Turn</span><span class="n">{h.turn}</span></div>
   <div class="vside you" data-coach="you" use:shake={game.shakes.player}>
     <div class="vtop">
-      <h2 class="vnm">You</h2>
-      {#if h.guard > 0}<span class="vblk" title="Block this turn: taken off the next hit"><svg viewBox="0 0 16 18" width="13" height="15" aria-hidden="true"><path d="M8 1l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V4z" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>Block {h.guard}</span>{/if}
       <span class="vnum">{h.php} / {h.pmax}{#if net}{' '}<span class="vnx">→ {after}</span>{/if}</span>
+      {#if h.guard > 0}<span class="vblk" title="Block this turn: taken off the next hit"><svg viewBox="0 0 16 18" width="13" height="15" aria-hidden="true"><path d="M8 1l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V4z" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>Block {h.guard}</span>{/if}
+      <h2 class="vnm">You</h2>
     </div>
-    <div class="vhb" role="img" aria-label="{h.php} of {h.pmax} HP{net ? `, about to take ${net}` : ''}">
+    <div class="vhb r" role="img" aria-label="{h.php} of {h.pmax} HP{net ? `, about to take ${net}` : ''}">
       <i class="vfill" style="width:{pct(after, h.pmax)}%"></i>
-      {#if net}<i class="vghost" style="left:{pct(after, h.pmax)}%;width:{pct(net, h.pmax)}%"></i>{/if}
+      {#if net}<i class="vghost" style="right:{pct(after, h.pmax)}%;width:{pct(net, h.pmax)}%"></i>{/if}
     </div>
     <div class="vst">
       {#if h.arm.ward && shows(h, 'all')}<span>Armor −{h.arm.ward} a hit</span>{/if}
@@ -42,31 +51,23 @@
       {#each game.floats.filter(f => f.at === 'player') as f (f.id)}<span class="float {f.cls}">{f.text}</span>{/each}
     </div>
   </div>
-  <div class="vmid" aria-label="Turn {h.turn}"><span class="t">Turn</span><span class="n">{h.turn}</span></div>
-  <div class="vside mon">
-    <div class="vtop">
-      <span class="vnum">{m.hp} / {m.max}</span>
-      {#if shows(h, 'parts')}<span class="chip sm gale"><Elem e={el.weak} />Weak to {el.weak}</span><span class="chip sm"><Elem e={el.resist} />Resists {el.resist}</span>{/if}
-      <h2 class="vnm">{#if shows(h, 'parts')}<span class="vkind" title="{el.elem} monster"><Elem e={el.elem} /></span>{/if}{M.panelName ?? M.name}</h2>
-    </div>
-    <div class="vhb r" role="img" aria-label="{M.name}: {m.hp} of {m.max} HP"><i class="vfill" style="width:{pct(m.hp, m.max)}%"></i></div>
-  </div>
 </section>
 
 <style>
   .vs { grid-column: 1 / -1; order: -2; display: grid; grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1fr); align-items: start; gap: 4px 16px; padding: 8px 16px; }
   .vside { position: relative; display: flex; flex-direction: column; gap: 5px; min-width: 0; }
   .vtop { display: flex; align-items: center; gap: 10px; min-height: 24px; }
-  .mon .vtop { justify-content: flex-end; }
+  .you .vtop { justify-content: flex-end; }
   .vnm { margin: 0; font-size: var(--fs-lg); line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
   .vnum { font-variant-numeric: tabular-nums; color: var(--soft); white-space: nowrap; }
-  .you .vnum { margin-left: auto; }
-  .mon .vnum { margin-right: auto; }
+  .mon .vnum { margin-left: auto; }
+  .you .vnum { margin-right: auto; }
+  .you .vst { justify-content: flex-end; }
   .vnx { color: var(--ember-soft); }
   .vblk { display: inline-flex; align-items: center; gap: 5px; padding: 1px 9px; border: 1px solid var(--line-2); border-radius: 999px; font-size: var(--fs-sm); font-weight: 600; white-space: nowrap; }
   .vhb { position: relative; height: 14px; border-radius: 3px; background: #0c0907; box-shadow: inset 0 0 0 1px var(--line-2); overflow: hidden; }
-  .vhb .vfill { position: absolute; inset: 0 auto 0 0; background: var(--life); transition: width .35s ease; }
-  .vhb.r .vfill { inset: 0 0 0 auto; background: linear-gradient(90deg, var(--ember), #b8452a); }
+  .vhb .vfill { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, #b8452a, var(--ember)); transition: width .35s ease; }
+  .vhb.r .vfill { inset: 0 0 0 auto; background: var(--life); }
   .vhb .vghost { position: absolute; top: 0; bottom: 0; background: repeating-linear-gradient(-45deg, var(--ember) 0 6px, #a8522a 6px 12px); animation: ghost 1.2s ease-in-out infinite; }
   .vst { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; font-size: var(--fs-sm); color: var(--soft); min-height: 0; }
   .vst:empty { display: none; }
