@@ -115,8 +115,8 @@
   <header class="top">
     <div>
       <h1 aria-label="Hunter's Folio"><span class="hn">Hunter’s</span> <span>Folio</span></h1>
-      <!-- the build version has its own span so collateral captures can hide it (Mekkman, Nov 2026: no build version on store art) -->
-      <div class="sub"><span class="build">{BUILD} · </span>{sub}</div>
+      <!-- no build version in the header (Mekkman, Nov 2026: every screenshot is collateral); it lives in Settings -->
+      <div class="sub">{sub}</div>
     </div>
     <div class="top-right">
       {#if !game.inHunt}
@@ -182,6 +182,7 @@
       </span>
     </div>
     <div class="setrow"><span><span class="nm">Credits</span><span class="md">Music: placeholder tracks composed in code for Hunter's Folio. Final music to come. Sound effects: synthesized in code. Logo type: IM Fell English, digitised by Igino Marini (SIL Open Font License).</span></span></div>
+    <div class="setrow"><span><span class="nm">Version</span><span class="md">{BUILD}{E.EDITION === 'demo' ? ' (demo)' : ''}. Mention it when you report a bug.</span></span></div>
     <div class="toast" aria-live="polite">{setToast}</div>
   </Modal>
 

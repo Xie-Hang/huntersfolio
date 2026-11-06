@@ -33,7 +33,8 @@
     return {
       t, known,
       unknown: E.UNKNOWN.filter(u => u.tier === t && (filter === 'All' || u.elem === filter || !u.elem)),
-      lockHint: hints.length > 1 && hints.every(h => h === hints[0]) ? hints[0] : null
+      // only when the whole region is shut: on Ashfall Ridge the Gorehorn is open, so its locked cards say why themselves
+      lockHint: hints.length > 1 && hints.length === known.length && hints.every(h => h === hints[0]) ? hints[0] : null
     };
   };
   const sections = $derived(SECTIONS.map(sec => ({
@@ -82,7 +83,7 @@
         <h3 class="rankhead"><RankMedal rank={sec.rank} size={44} dim={sec.rank !== myRank} /><span>Rank {sec.rank} · {E.RANK_REGION[sec.rank]}</span><span class="label rs">{rankState(sec.rank)}</span></h3>
         {#each sec.groups as g (g.t)}
           <div class="region">
-            <h4 class="group">{E.TIERS[g.t]}{#if sec.optional.includes(g.t)}<span class="opt">&nbsp;· optional</span>{/if}{#if g.lockHint}<span class="lockline"><svg class="lk" viewBox="0 0 12 14" width="11" height="13" aria-hidden="true"><path d="M3 6V4.2a3 3 0 0 1 6 0V6" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="1.5" y="6" width="9" height="7" rx="1.2" fill="currentColor"/></svg>{g.lockHint}</span>{/if}</h4>
+            {#if sec.optional.includes(g.t) || g.lockHint}<h4 class="group">{#if sec.optional.includes(g.t)}{E.TIERS[g.t]}<span class="opt">&nbsp;· optional</span>{/if}{#if g.lockHint}<span class="lockline" class:solo={!sec.optional.includes(g.t)}><svg class="lk" viewBox="0 0 12 14" width="11" height="13" aria-hidden="true"><path d="M3 6V4.2a3 3 0 0 1 6 0V6" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="1.5" y="6" width="9" height="7" rx="1.2" fill="currentColor"/></svg>{g.lockHint}</span>{/if}</h4>{/if}
             <div class="mgrid">
               {#each g.known as N (N.id)}
                 {@const r = record(game.save, N.id)}
@@ -95,7 +96,7 @@
                   {#if open}
                     <span class="st" class:new={!r.wins}>{r.wins ? `Hunted ×${r.wins}` : 'Not yet hunted'}{#if E.BOUNTIES_ON && r.wins && E.bountiesFor(N.id).length}{@const b = done(N.id)}{' '}· Bounties {b.n}/{b.of}{/if}</span>
                   {:else}
-                    <span class="st"><svg class="lk" viewBox="0 0 12 14" width="11" height="13" aria-hidden="true"><path d="M3 6V4.2a3 3 0 0 1 6 0V6" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="1.5" y="6" width="9" height="7" rx="1.2" fill="currentColor"/></svg>{#if g.lockHint}{@const x = E.unlockParts(N.id).extra}Locked{x ? ` · also the ${x}` : ''}{:else}Locked · {E.unlockHint(N.id)}{/if}</span>
+                    <span class="st"><svg class="lk" viewBox="0 0 12 14" width="11" height="13" aria-hidden="true"><path d="M3 6V4.2a3 3 0 0 1 6 0V6" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="1.5" y="6" width="9" height="7" rx="1.2" fill="currentColor"/></svg>{#if g.lockHint}{@const x = E.unlockParts(N.id).extra}Locked{x ? ` · also the ${x}` : ''}{:else}Locked · {E.unlockHint(N.id).replace(/ first$/, '')}{/if}</span>
                   {/if}
                 </button>
               {/each}

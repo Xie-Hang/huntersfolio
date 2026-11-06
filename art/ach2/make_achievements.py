@@ -342,6 +342,33 @@ ICONS.update({
     'MIRE_CHANGED': lambda: ''.join(plate_sz(n, x, y, 112, V, (60, 40, 790, 450)) for n, x, y in [('fever_idle', 18, 50), ('heron_idle', 128, 50), ('bwhelk_idle', 73, 136)]),
 })
 
+# promotions (Nov 2026): the new rank's guild tag on its chain, in the in-game metals, the old iron tag behind
+FELL = base64.b64encode((ROOT.parent / 'fonts' / 'im-fell-english-sc-latin-400-normal.woff2').read_bytes()).decode()
+METAL = {'F': ('#a19c93', '#6b6760', '#3a3834'), 'E': ('#d79a6e', '#9a5a35', '#4f2a16'), 'D': ('#cfb07c', '#8e6c3c', '#4a361b')}
+INKBOX = {'F': (-2, 62, 70, 2), 'E': (-2, 67, 68, 2), 'D': (-4, 77, 71, 0)}  # IM Fell SC ink box at 100px (as RankMedal)
+
+
+def tag(rank, cx, cy, s, ang=0, beads=True):
+    hi, body, edge = METAL[rank]; l, r, a, d = INKBOX[rank]; fs = 19 * s; k = fs / 100
+    x = cx - (r - l) / 2 * k; y = cy + 6.5 * s + (a - d) / 2 * k
+    gid = f'm{rank}{int(cx)}'
+    chain = ''.join(f'<circle cx="{cx + sg * (1.6 + i * 1.55) * s:.1f}" cy="{cy - 14 * s - i * 1.9 * s - 6 * s:.1f}" r="{.85 * s:.1f}" fill="#9a958c" stroke="#3a3834" stroke-width="{.3 * s:.1f}"/>' for sg in (-1, 1) for i in range(12)) if beads else ''
+    return (f'<defs><linearGradient id="{gid}" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="{hi}"/><stop offset=".6" stop-color="{body}"/><stop offset="1" stop-color="{edge}"/></linearGradient></defs>'
+            f'<g transform="rotate({ang} {cx} {cy})">{chain}'
+            f'<rect x="{cx - 15 * s}" y="{cy - 17 * s}" width="{30 * s}" height="{42 * s}" rx="{7 * s}" fill="url(#{gid})" stroke="{INK}" stroke-width="{1.2 * s / 2.5 + 3}"/>'
+            f'<rect x="{cx - 12 * s}" y="{cy - 9 * s}" width="{24 * s}" height="{31 * s}" rx="{4 * s}" fill="none" stroke="{edge}" stroke-width="{.7 * s}" opacity=".7"/>'
+            f'<circle cx="{cx}" cy="{cy - 13 * s}" r="{2 * s}" fill="#14100d" stroke="{edge}" stroke-width="{.6 * s}"/>'
+            f'<text x="{x:.1f}" y="{y + .7 * s:.1f}" font-size="{fs:.1f}" fill="{hi}" opacity=".55" font-family="Fell">{rank}</text>'
+            f'<text x="{x:.1f}" y="{y:.1f}" font-size="{fs:.1f}" fill="{edge}" font-family="Fell">{rank}</text></g>')
+
+
+def promo(old, new):
+    font = f'<style>@font-face{{font-family:Fell;src:url(data:font/woff2;base64,{FELL}) format("woff2")}}</style>'
+    return font + sparks(150, 132, 9, 64, 92) + tag(old, 78, 128, 2.6, -14, beads=False) + tag(new, 140, 120, 3.6, 6)
+
+
+ICONS.update({'RANK_E': lambda: promo('F', 'E'), 'RANK_D': lambda: promo('E', 'D')})
+
 for aid, fn in ICONS.items():
     body = fn()
     (SVG / f'{aid}.svg').write_text(frame(body, True))

@@ -46,7 +46,7 @@ describe('counter stances', () => {
   });
   it('Slate Brace: Horn and Back hits deal half and the Wings are exposed', () => {
     const h = hunt('cragwing', ['blade', 'bow']); h.mon.seq = 4;
-    expect(E.monsterOf(h).next(h)).toBe('brace'); h.intent = 'brace';
+    expect(E.monsterOf(h).next(h, h.intent)).toBe('brace'); h.intent = 'brace';
     expect(h.mon.parts.wings.exposed).toBeGreaterThan(0);
     expect(E.monsterOf(h).hitMod!(h, 'horn', E.currentWeapon(h))?.mult).toBe(0.5);
     expect(E.monsterOf(h).hitMod!(h, 'wings', E.currentWeapon(h))).toBeNull();

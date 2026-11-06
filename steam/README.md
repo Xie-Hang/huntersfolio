@@ -13,7 +13,7 @@ Everything Steam-side, in order. Do the parts as they become possible.
 1. Put the App ID in `steam/ids.json` → `full.app`. The depot ID is under SteamPipe → Depots (usually App ID + 1) → `full.depot`.
 2. **Store page** (Store Admin): paste the store text (Claude Docs "Steam store text"), upload capsules and library art from `art/store/png/`, the six screenshots (`art/screens`), the trailer (`Hunters-Folio-trailer.mp4`) and, in the description, the clips (`Hunters-Folio-store-clips.zip`). Release date: "Coming soon" or "2027". Fill in the content survey.
 3. **Submit for review.** Valve reviews the store page (allow about a week). Once approved, publish it as Coming Soon. The page must be live at least two weeks before any release, and the community forum (where Send feedback points) only exists once it's public.
-4. **Achievements** (Stats & Achievements → Achievements): enter the 16 from `art/achievements.csv` with their icons, on the **full game only**. Then Publish. Demo and Playtest builds don't send achievements (Valve advises none in demos); players keep earning them in the save, and the full game sends the whole list on its first launch.
+4. **Achievements** (Stats & Achievements → Achievements): enter the 34 from `art/achievements.csv` with their icons, on the **full game only**. Then Publish. Demo and Playtest builds don't send achievements (Valve advises none in demos); players keep earning them in the save, and the full game sends the whole list on its first launch.
 
 ## 2. Installation settings (same for each app: full, demo, Playtest)
 
