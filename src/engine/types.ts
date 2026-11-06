@@ -110,6 +110,8 @@ export interface ItemDef {
   craft?: Cost;
   yields?: number;
   desc: string;
+  /** one line for the Shop card when desc runs long; desc then opens on hover (Nov 2026 text audit) */
+  short?: string;
   effect: ItemEffect;
   /** carried automatically, outside the item slot (Snares) */
   pouch?: boolean;

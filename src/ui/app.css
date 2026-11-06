@@ -68,6 +68,7 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .center{display:flex;flex-direction:column;gap:18px;min-width:0}
 /* hunt: log | monster, parts, you, dice | moves */
 .grid.hunt{grid-template-columns:minmax(0,1fr) minmax(0,340px)}
+.grid.hunt.done{grid-template-columns:minmax(0,1fr)!important}
 .hunttip{border-color:var(--line-2);background:var(--raise)}
 .hunttip p{margin:0;font-size:var(--fs-md);line-height:1.4}
 .stage .plate{display:flex;align-items:center}
@@ -646,3 +647,16 @@ kbd.key.pad-lb,kbd.key.pad-rb,kbd.key.pad-lt,kbd.key.pad-rt{border-radius:6px;fo
 .btn.primary kbd.key.pad{color:var(--ink);border-color:rgba(26,20,16,.55)}
 html[data-input="pad"] :focus{outline:3px solid var(--gold-hi)!important;outline-offset:3px}
 html[data-input="pad"] body{cursor:none}
+
+/* one step away (detail.svelte.ts): the same marker everywhere, so it's learnt once */
+.dt{text-decoration:underline dotted;text-decoration-color:var(--muted);text-underline-offset:3px;cursor:help}
+.dt:focus-visible{outline:2px solid var(--gold-hi);outline-offset:2px;border-radius:2px}
+/* How to play: short sections, one open at a time */
+.helpsecs{display:flex;flex-direction:column;gap:6px}
+.helpsecs details{border:1px solid var(--line);border-radius:3px;background:var(--raise)}
+.helpsecs summary{cursor:pointer;padding:10px 14px;font-weight:600;color:var(--fg);list-style:none;display:flex;justify-content:space-between}
+.helpsecs summary::-webkit-details-marker{display:none}
+.helpsecs summary::after{content:"+";color:var(--muted)}
+.helpsecs details[open] summary::after{content:"−"}
+.helpsecs summary:focus-visible{outline:2px solid var(--gold-hi);outline-offset:-2px}
+.helpsecs .helplist{margin:0;padding:0 14px 12px 32px}

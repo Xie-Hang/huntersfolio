@@ -9,6 +9,7 @@
   import { glyphs, needLabel, elemLabel, markOf } from '../fmt';
   import Costs from '../parts/Costs.svelte';
   import { tick } from 'svelte';
+  import { full, detail } from '../detail.svelte';
 
   type Tab = 'weapons' | 'armor' | 'charms';
   let tab = $state<Tab>('weapons');
@@ -28,8 +29,22 @@
       : byRegion(Object.values(tab === 'armor' ? E.ARMORS : E.CHARMS));
     return raw
       .map(g => ({ ...g, rows: g.rows.filter(r => !readyOnly || E.recipeState(s, kind, r.id).cls === 'ready') }))
-      .filter(g => g.rows.length);
+      .map(g => fold(g))
+      .filter(g => g.rows.length || g.folded);
   });
+  /** Nov 2026 text audit: a line shows what you own and its next step; the rest of the line, and gear from monsters
+   *  you haven't hunted, folds into "+N more" (a click opens it in place). Text detail: Full shows everything. */
+  let opened = $state<Record<string, boolean>>({});
+  function fold<G extends { group: string; rows: { id: string; depth: number }[] }>(g: G): G & { folded: number } {
+    if (full() || readyOnly || opened[`${tab}:${g.group}`]) return { ...g, folded: 0 };
+    const keep = g.rows.filter(r => {
+      if (E.isOwned(s, kind, r.id) || s.tracked === `${kind}:${r.id}`) return true;
+      if (!E.gearKnown(s, kind, r.id)) return false;
+      const from = kind === 'w' ? E.WEAPONS[r.id].from : undefined;
+      return !from || !!s.weapons[from]; // the next step: its parent is yours (or it starts a line)
+    });
+    return { ...g, rows: keep, folded: g.rows.length - keep.length };
+  }
   function byRegion(defs: { id: string; tier?: number }[]) {
     const out: { group: string; sig: null; rows: { id: string; depth: number }[] }[] = [];
     for (const d of defs) {
@@ -57,7 +72,7 @@
     const tk = `${kind}:${sel}`;
     s.tracked = s.tracked === tk ? null : tk;
     game.persist();
-    toast = s.tracked ? 'Tracking. Its materials are flagged on the Hunt Board and in the Shop.' : 'Stopped tracking.';
+    toast = s.tracked ? 'Tracking: its materials are flagged on the Hunt Board and in the Shop.' : 'Stopped tracking.';
   }
   function setTab(t: Tab) { tab = t; toast = ''; }
 </script>
@@ -117,6 +132,7 @@
           </button>
         {/each}
         {/if}
+        {#if g.folded}<button class="ffold" onclick={() => (opened[`${tab}:${g.group}`] = true)}>+{g.folded} more {kind === 'w' ? 'in these lines' : 'from monsters you haven’t hunted'}</button>{/if}
       {:else}
         <p class="ital" style="padding:12px;margin:0">Nothing is ready to make yet. Untick "Ready to make" to see everything.</p>
       {/each}
@@ -154,15 +170,15 @@
           </div>
           <!-- 3. What kind of weapon -->
           <div class="fd-type">
-            <span class="tag {sg.tag}" style="margin:0">{sg.name}</span>
+            <span class="tag {sg.tag}" style="margin:0" use:detail={sg.text}>{sg.name}</span>
             <span>{d.type}</span><span class="sep">·</span>
             <span>{#if d.elem || d.status}<Elem e={markOf(d)} />{elemLabel(d)}{:else}No element{/if}</span>
           </div>
-          <p class="fd-sig">{sg.text}</p>
+          {#if full()}<p class="fd-sig">{sg.text}</p>{/if}
         {:else if kind === 'c'}
           {@const c = E.CHARMS[sel]}
           <p class="fd-perk">{c.perk}</p>
-          <span class="fd-sig">{c.bounties ? `A bounty-board charm: unlocked by completing ${c.bounties} different bounties, then crafted for coin.` : `Made from ${c.src} materials.`} Goes in the charm slot; one charm at a time.</span>
+          <span class="fd-sig">{c.bounties ? `Unlocked by ${c.bounties} different bounties, then crafted for coin.` : `Made from ${c.src} materials.`}{full() ? ' Goes in the charm slot; one charm at a time.' : ''}</span>
         {:else}
           {@const a = E.ownedArmor(s, sel)}
           {@const base = E.ARMORS[sel]}
@@ -183,7 +199,7 @@
             <div class="label rule">{r.action === 'reinforce' ? `To reinforce to +${lv + 1}` : r.action === 'upgrade' ? `To craft (from your ${E.WEAPONS[E.WEAPONS[sel].from!].name})` : r.locked ? (kind === 'c' ? `To craft (once you've completed ${E.CHARMS[sel].bounties} different bounties: ${E.bountiesDone(s)} so far)` : `To craft (once you own the ${E.WEAPONS[E.WEAPONS[sel].from!].name})`) : 'To craft'}</div>
             <Costs cost={r.cost} />
             {#if (r.action || r.locked) && (r.cost.coin ?? 0) > s.coin && E.surplusValue(s) > 0}
-              <p class="sellhint">Short on coin? Your spare materials sell for <b>{E.surplusValue(s)} coin</b>. <button class="linkbtn" onclick={() => game.go('shop', 'sell')}>Sell them at the Shop</button></p>
+              <p class="sellhint">Spare materials sell for <b>{E.surplusValue(s)} coin</b>. <button class="linkbtn" onclick={() => game.go('shop', 'sell')}>Sell at the Shop</button></p>
             {/if}
           </div>
         {/if}
@@ -201,7 +217,7 @@
           {#if r.action === 'upgrade'}
             {@const from = E.WEAPONS[sel].from!}
             {@const flv = E.lvOf(s.weapons, from)}
-            <span class="pl">You keep your {E.WEAPONS[from].name}{flv ? ` (+${flv})` : ''}. The new weapon starts at +0.</span>
+            <span class="pl">You keep your {E.WEAPONS[from].name}{flv ? ` (+${flv})` : ''}.</span>
           {/if}
         </div>
         <div class="toast" aria-live="polite">{toast}</div>
@@ -225,6 +241,9 @@
 </div>
 
 <style>
+  .ffold { all: unset; cursor: pointer; display: block; padding: 6px 12px 10px; font-size: var(--fs-sm); color: var(--muted); }
+  .ffold:hover, .ffold:focus-visible { color: var(--fg); text-decoration: underline; }
+  .ffold:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: -2px; }
   /* armor and charms are compared side by side, so the tile grid gets the wider share (three columns); the
      weapon trees keep the even split */
   @media (min-width: 1100px) { .forgegrid.wide { grid-template-columns: minmax(0, 1.75fr) minmax(340px, 1fr); } }

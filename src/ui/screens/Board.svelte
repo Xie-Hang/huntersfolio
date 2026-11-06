@@ -11,6 +11,7 @@
   import RankMedal from '../parts/RankMedal.svelte';
   import Bestiary from './board/Bestiary.svelte';
   import Loadout from './board/Loadout.svelte';
+  import { full } from '../detail.svelte';
 
   let filter = $state<'All' | E.Element>('All');
   const known = Object.keys(E.MONSTERS).length;
@@ -43,6 +44,13 @@
     groups: [...sec.main, ...sec.optional].map(groupOf).concat(E.UNKNOWN.some(u => u.tier === sec.promo) ? [groupOf(sec.promo)] : []).filter(g => g.known.length || g.unknown.length)
   })).filter(sec => sec.promoMon || sec.groups.length));
   const myRank = $derived(E.hunterRank(game.save));
+  // ranks you haven't reached fold into one line (Nov 2026 text audit: at rank F, ranks E and D were 2 screens of
+  // locked cards); a click opens one. Text detail: Full keeps them open.
+  let openRank = $state<Record<string, boolean>>({});
+  const ahead = (r: E.Rank) => !E.rankAtLeast(game.save, r);
+  const folded = (r: E.Rank) => ahead(r) && !full() && !openRank[r];
+  const count = (sec: { groups: { known: unknown[]; unknown: { n: number }[] }[]; promoMon: unknown }) =>
+    sec.groups.reduce((n, g) => n + g.known.length + g.unknown.reduce((k, u) => k + u.n, 0), 0) + (sec.promoMon ? 1 : 0);
   const rankState = (r: E.Rank) => (r === myRank ? 'Your rank' : E.rankAtLeast(game.save, r) ? 'Passed' : 'Not yet');
   const done = (id: string) => { const bs = E.bountiesFor(id); return { n: bs.filter(b => game.save.bounties[b.id]).length, of: bs.length }; };
 
@@ -58,7 +66,6 @@
   <div class="monpage">
     <div class="backbar">
       <button class="btn quiet" data-sound onclick={() => game.go('board')}><span aria-hidden="true">←</span> All monsters</button>
-      <span class="label">{E.TIERS[M.tier]}</span>
     </div>
     <div class="mongrid">
       <section class="panel monmain" aria-label="Bestiary entry"><Bestiary mon={M.id} /></section>
@@ -81,6 +88,9 @@
     {#each sections as sec (sec.rank)}
       <div class="ranksec" class:current={sec.rank === myRank}>
         <h3 class="rankhead"><RankMedal rank={sec.rank} size={44} dim={sec.rank !== myRank} /><span>Rank {sec.rank} · {E.RANK_REGION[sec.rank]}</span><span class="label rs">{rankState(sec.rank)}</span></h3>
+        {#if folded(sec.rank)}
+          <button class="rankfold" onclick={() => (openRank[sec.rank] = true)}>{count(sec)} monsters · opens at rank {sec.rank} · <u>Look</u></button>
+        {:else}
         {#each sec.groups as g (g.t)}
           <div class="region">
             {#if sec.optional.includes(g.t) || g.lockHint}<h4 class="group">{#if sec.optional.includes(g.t)}{E.TIERS[g.t]}<span class="opt">&nbsp;· optional</span>{/if}{#if g.lockHint}<span class="lockline" class:solo={!sec.optional.includes(g.t)}><svg class="lk" viewBox="0 0 12 14" width="11" height="13" aria-hidden="true"><path d="M3 6V4.2a3 3 0 0 1 6 0V6" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="1.5" y="6" width="9" height="7" rx="1.2" fill="currentColor"/></svg>{g.lockHint}</span>{/if}</h4>{/if}
@@ -129,6 +139,7 @@
             </span>
           </button>
         {/if}
+        {/if}
       </div>
     {:else}
       <p class="ital p0">No monsters of that element sighted yet.</p>
@@ -138,3 +149,9 @@
     {/if}
   </section>
 {/if}
+
+<style>
+  .rankfold { all: unset; cursor: pointer; display: block; padding: 4px 2px 12px 56px; color: var(--muted); font-size: var(--fs-sm); }
+  .rankfold:hover, .rankfold:focus-visible { color: var(--fg); }
+  .rankfold:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 2px; }
+</style>

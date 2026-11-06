@@ -10,6 +10,7 @@
   import { game } from '../../game.svelte';
   import { needLabel, needMarks, GLYPH, HOLLOW, elemLabel, markOf } from '../../fmt';
   import { shows } from '../../reveal';
+  import { detail, full as fullText } from '../../detail.svelte';
   const full = $derived(shows(game.hunt, 'all'));
 
   const h = $derived(game.hunt!);
@@ -70,7 +71,7 @@
       {/each}
     </div>
   </div>
-  {#if full}<p class="sigline"><span class="tag {sg.tag}" style="margin:0 6px 0 0">{sg.name}</span>{sg.text}</p>{/if}
+  {#if full && fullText()}<p class="sigline"><span class="tag {sg.tag}" style="margin:0 6px 0 0">{sg.name}</span>{sg.text}</p>{/if}
   {#if !over && E.cantHitReason(h, w)}<p class="cant">{E.cantHitReason(h, w)} {full ? 'Swap, Guard or Charge instead.' : 'Swap or Guard instead.'}</p>{/if}
 
   {#each w.moves as mv, i}
@@ -79,20 +80,20 @@
     {@const miss = marks.filter(x => !x.have).map(x => (x.c === 'C' ? 'circle' : 'triangle'))}
     <button class="move {ok ? 'ready' : 'no'}" data-coach={i === bestReady ? 'move' : undefined} aria-disabled={!ok} onclick={() => ok && game.move(i)}>
       <span>
-        <span class="mn"><Key k={MOVE_KEYS[i]} />{mv.name}{#if full}{#if mv.flow}<span class="tag flow">Flow</span>{/if}{#if mv.daze}<span class="tag daze">Daze</span>{/if}{#if mv.expose}<span class="tag expose">Expose</span>{/if}{/if}{#if !over && tipText?.includes(mv.name)}<span class="tag counter">Counter</span>{/if}</span>
+        <span class="mn"><Key k={MOVE_KEYS[i]} />{mv.name}{#if full}{#if mv.flow}<span class="tag flow" use:detail={E.SIGNATURES.Cut.text}>Flow</span>{/if}{#if mv.daze}<span class="tag daze" use:detail={E.SIGNATURES.Blunt.text}>Daze</span>{/if}{#if mv.expose}<span class="tag expose" use:detail={E.SIGNATURES.Pierce.text}>Expose</span>{/if}{/if}{#if !over && tipText?.includes(mv.name)}<span class="tag counter">Counter</span>{/if}</span>
         <span class="md">{#if iceNow}{iceLine}{:else}{shownDmg(mv.dmg)} damage{halfAir ? ', halved in the air' : ''}{exposedNow ? ', exposed' : ''}{full && mv.part ? ` · ×${mv.part} toward breaks` : ''}{full && mv.daze ? ` · Daze +${mv.daze}` : ''}{full && mv.flow ? ' · +1 reroll' : ''}{/if}</span>
       </span>
       <span class="need" aria-label="Needs {needLabel(mv.need)}{miss.length && !over ? `; missing ${miss.join(', ')}` : ''}">{#each marks as x}{#if x.have || over}<Pip c={x.c} />{:else}<span class="miss"><Pip c={x.c} hollow /></span>{/if}{/each}</span>
     </button>
   {/each}
 
-  <div class="divider"><span class="label">{full ? 'Or spend dice · blanks first' : 'Or spend dice'}</span><span class="label">{n} selected</span></div>
+  <div class="divider"><span class="label">Or spend dice</span><span class="label">{n} selected</span></div>
   <button class="move dash {gOk ? 'ready' : 'no'}" data-coach="guard" aria-disabled={!gOk} onclick={() => gOk && game.guard()}>
-    <span><span class="mn"><Key k="G" />Guard</span><span class="md">{selGuard ? `Blocks ${selGuard} with the selected dice` : auto.guard?.length ? `${usesLine(auto.guard)}: blocks ${auto.guard.reduce((a, i) => a + E.guardOf(h, i), 0)}` : `Blocks ${h.arm.guard} per die, ${Math.round(h.arm.guard * (h.arm.blankx2 ? E.VEST_BLANK_GUARD : E.BLANK_GUARD))} per blank · select dice`}</span></span><span class="need">Any</span>
+    <span><span class="mn"><Key k="G" />Guard</span><span class="md">{selGuard ? `Blocks ${selGuard} with the selected dice` : auto.guard?.length ? `${usesLine(auto.guard)}: blocks ${auto.guard.reduce((a, i) => a + E.guardOf(h, i), 0)}` : `${h.arm.guard} a die · ${Math.round(h.arm.guard * (h.arm.blankx2 ? E.VEST_BLANK_GUARD : E.BLANK_GUARD))} a blank`}</span></span><span class="need">Any</span>
   </button>
   {#if full}
   <button class="move dash {cOk ? 'ready' : 'no'}" data-coach="charge" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
-    <span><span class="mn"><Key k="C" />Charge</span><span class="md">{chargeRisk ? `The −${inc?.net} coming would break it: guard it under ${E.CHARGE_BREAK} first` : `Your first hit next turn deals double · a hit of ${E.CHARGE_BREAK}+ breaks it`}{!chargeRisk && auto.charge ? ` · ${usesLine(auto.charge)}` : ''}</span></span><span class="need">{cd}</span>
+    <span><span class="mn"><Key k="C" />Charge</span><span class="md">{chargeRisk ? `The −${inc?.net} coming would break it: guard it under ${E.CHARGE_BREAK} first` : `Next hit ×2 · breaks at ${E.CHARGE_BREAK}+`}{!chargeRisk && auto.charge ? ` · ${usesLine(auto.charge)}` : ''}</span></span><span class="need">{cd}</span>
   </button>
   {/if}
   {#if shows(h, 'swap')}
@@ -108,7 +109,7 @@
       <span class="mn"><Key k="X" />Capture</span>
       <span class="md">
         {#if h.snareSet}Snare set: it closes when you end your turn, unless the hit you take is {E.CHARGE_BREAK} or more
-        {:else if !capLive}Unlocks at {capAt} HP or less. Uses a Snare · {h.snares ? `${h.snares} carried` : 'none carried'}
+        {:else if !capLive}At {capAt} HP · {h.snares ? `${h.snares} Snare${h.snares > 1 ? 's' : ''}` : 'no Snares'}
         {:else if !h.snares}You have no Snare left. Buy them in the Shop
         {:else if E.captureBlocked(h)}{h.mon.air ? 'Bring it down first' : h.mon.under ? 'Drive it to the surface first' : 'It can’t be snared right now'}
         {:else if n === 0 && auto.capture}{usesLine(auto.capture)}. Holds unless its move hits you for {E.CHARGE_BREAK}+ · {h.snares} Snare{h.snares > 1 ? 's' : ''}

@@ -5,6 +5,8 @@
   import RankMedal from './parts/RankMedal.svelte';
   import Coach from './parts/Coach.svelte';
   import Intro from './parts/Intro.svelte';
+  import DetailTip from './parts/DetailTip.svelte';
+  import { detail } from './detail.svelte';
   import { onHuntKey } from './keys';
   import { storeAvailable, openStore, feedbackInfo, openFeedback, feedbackButton } from './store';
   import * as PL from './playlog';
@@ -57,7 +59,7 @@
   const sub = $derived.by(() => {
     const v = game.view, h = game.hunt;
     const label = v === 'hunt' && h ? E.MONSTERS[h.mid].short : NAV.find(n => n[0] === v)?.[1] ?? '';
-    return `${label}${v === 'hunt' && h ? ` · Turn ${h.turn}` : ''} · Hunts ${game.save.hunts}${game.newerSave ? ' · Not saving' : ''}`;
+    return `${label}${v === 'hunt' && h ? ` · Turn ${h.turn}` : ` · Hunts ${game.save.hunts}`}${game.newerSave ? ' · Not saving' : ''}`;
   });
 
   $effect(() => { if (settingsOpen) { setToast = ''; logCount = PL.counts(); } });
@@ -144,10 +146,7 @@
   </header>
 
   <Modal bind:open={settingsOpen} title="Settings">
-    <div class="setrow">
-      <span><span class="nm">Save data</span><span class="md">Progress is saved automatically. Hunts so far: <b>{game.save.hunts}</b>.{#if game.inHunt}{' '}Finish or abandon this hunt before resetting.{/if}</span></span>
-      <button class="btn quiet danger" disabled={game.inHunt} onclick={reset}>{resetArmed ? 'Click again to erase everything' : 'Reset save'}</button>
-    </div>
+    <!-- Nov 2026 text audit: one short line per row; Save data last, so Reset isn't the first thing under the cursor -->
     <div class="setrow">
       <label class="slider"><span class="nm">Music volume</span>
         <input type="range" min="0" max="1" step="0.05" bind:value={settings.prefs.music} onchange={() => settings.save()} />
@@ -165,7 +164,7 @@
       <button class="btn quiet" role="switch" aria-checked={fullscreen} onclick={toggleFullscreen}>{fullscreen ? 'On' : 'Off'}</button>
     </div>
     <div class="setrow">
-      <span><span class="nm">Interface size</span><span class="md">Scales text and everything around it together, so nothing gets cramped or cut off.</span></span>
+      <span><span class="nm">Interface size</span><span class="md">Scales text and layout together.</span></span>
       <span class="seg" role="radiogroup" aria-label="Interface size">
         {#each UI_SIZES as f}
           <button role="radio" aria-checked={settings.prefs.uiSize === f} onclick={() => setSize(f)}>{Math.round(f * 100)}%</button>
@@ -173,22 +172,34 @@
       </span>
     </div>
     <div class="setrow">
-      <span><span class="nm">Tutorial tips</span><span class="md">Short prompts the first time something happens. Turning them on again replays them from the start.</span></span>
+      <span><span class="nm">Text detail</span><span class="md">Compact keeps rules behind <span class="dt" style="cursor:default">dotted words</span> (hover, focus or tap). Full shows them all.</span></span>
+      <span class="seg" role="radiogroup" aria-label="Text detail">
+        {#each [['compact', 'Compact'], ['full', 'Full']] as [v, l]}
+          <button role="radio" aria-checked={settings.prefs.detail === v} onclick={() => { settings.prefs.detail = v as 'compact' | 'full'; settings.save(); }}>{l}</button>
+        {/each}
+      </span>
+    </div>
+    <div class="setrow">
+      <span><span class="nm">Tutorial tips</span><span class="md">Turning them on again replays them.</span></span>
       <button class="btn quiet" role="switch" aria-checked={settings.prefs.tips} onclick={() => coach.setEnabled(!settings.prefs.tips)}>{settings.prefs.tips ? 'On' : 'Off'}</button>
     </div>
     <div class="setrow">
-      <span><span class="nm">Show every action</span><span class="md">Your first hunts add a little at a time: the basics, then aiming at parts and your item, then your second weapon. Turn this on to see everything from the first hunt. Takes effect from your next hunt.</span></span>
+      <span><span class="nm">Show every action</span><span class="md">From your first hunt, instead of a little more each hunt. From your next hunt.</span></span>
       <button class="btn quiet" role="switch" aria-checked={settings.prefs.showAll} onclick={() => { settings.prefs.showAll = !settings.prefs.showAll; settings.save(); }}>{settings.prefs.showAll ? 'On' : 'Off'}</button>
     </div>
     <div class="setrow">
-      <span><span class="nm">Feedback</span><span class="md">The game keeps a hunt log on this PC ({logCount.hunts} hunt{logCount.hunts === 1 ? '' : 's'} so far): what you hunted, how it went, how long turns took. Nothing is sent anywhere. Export it{feedbackInfo() ? ', then attach the file when you send feedback' : ' to send to the developer'}.</span></span>
+      <span><span class="nm">Feedback</span><span class="md">Your hunt log ({logCount.hunts} hunt{logCount.hunts === 1 ? '' : 's'}) stays on this PC. Export it to <span use:detail={'What you hunted, how each hunt went and how long turns took. Nothing is sent anywhere unless you attach the file yourself.'}>send with feedback</span>.</span></span>
       <span class="btnrow">
         <button class="btn quiet" onclick={exportFromSettings}>Export report</button>
         {#if feedbackInfo()}<button class="btn quiet" onclick={() => openFeedback()}>{feedbackButton()}</button>{/if}
       </span>
     </div>
-    <div class="setrow"><span><span class="nm">Credits</span><span class="md">Music: placeholder tracks composed in code for Hunter's Folio. Final music to come. Sound effects: synthesized in code. Logo type: IM Fell English, digitised by Igino Marini (SIL Open Font License).</span></span></div>
-    <div class="setrow"><span><span class="nm">Version</span><span class="md">{BUILD}{E.EDITION === 'demo' ? ' (demo)' : ''}. Mention it when you report a bug.</span></span></div>
+    <div class="setrow">
+      <span><span class="nm">Save data</span><span class="md">Saved automatically · {game.save.hunts} hunts.{#if game.inHunt}{' '}Finish this hunt to reset.{/if}</span></span>
+      <button class="btn quiet danger" disabled={game.inHunt} onclick={reset}>{resetArmed ? 'Click again to erase everything' : 'Reset save'}</button>
+    </div>
+    <div class="setrow"><span><span class="nm">Credits</span><span class="md">Placeholder music and sound effects made in code. Logo type: IM Fell English by Igino Marini (SIL OFL).</span></span></div>
+    <div class="setrow"><span><span class="nm">Version</span><span class="md">{BUILD}{E.EDITION === 'demo' ? ' (demo)' : ''}</span></span></div>
     <div class="toast" aria-live="polite">{setToast}</div>
   </Modal>
 
@@ -215,25 +226,48 @@
   </Modal>
 
   <Modal bind:open={helpOpen} title="How to play" wide>
-    <ul class="helplist">
-      <li><strong>Loop:</strong> pick a monster and gear at the Hunt Board, hunt, bring back coin and materials, then craft, upgrade or reinforce at the Forge and stock up at the Shop.</li>
-      <li>Each turn you roll 4 dice (circle, triangle or blank). The panel above the dice shows what the monster will do when you end your turn, and how much it will hurt.</li>
-      <li>Weapon moves take the dice they need. Aim at a part on the left; the chip shows how well your weapon type breaks it.</li>
-      <li>Select dice to <strong>Reroll</strong>, <strong>Guard</strong>, <strong>Charge</strong>, <strong>Swap</strong>, or <strong>Capture</strong> (when the monster is at 20% HP or less; doubles part materials).</li>
-      <li><span class="tag flow" style="margin:0">Flow</span> Cut: light moves give a reroll. <span class="tag daze" style="margin:0">Daze</span> Blunt: hits to the head part fill a daze meter. <span class="tag expose" style="margin:0">Expose</span> Pierce: hits expose the part for 2 turns, so every hit there from either weapon deals +15% and counts double toward breaking it. Shoot first, then swap and cash in.</li>
-      <li><strong>Bows</strong> attack from range: they ignore mud, hit fliers at full damage and are safe from molten shells. The Pinning Shot interrupts wind-ups and brings fliers down.</li>
-      <li><strong>Airborne</strong> monsters can only be hit with Pierce (bows). A Pinning Shot or a Weighted Net brings them down; when they land, every weapon reaches them again.</li>
-      <li><strong>Underground</strong> monsters can only be hit by Blunt, at half damage. A Blunt move that uses 2 or more dice drives them up and cancels their attack. So does Blast Powder.</li>
-      <li><strong>Ice plating</strong> breaks before a monster takes damage: a hit breaks layers of ice instead. A Cut hit breaks 2 layers, anything else 1. A Firepot melts all of it.</li>
-      <li><strong>Molten</strong> monsters burn you a little each time you hit them with Cut or Blunt. Pierce attacks from range and is safe.</li>
-      <li><strong>Charms</strong> go in their own slot and give one small perk each. Craft them at the Forge from monster materials.</li>
-      <li><strong>Avg</strong> next to a weapon = expected damage per turn if all 4 dice go to attacking, without rerolls.</li>
-      <li>Reinforcing (+1 to +3) adds 5% weapon damage, or 10 HP and 1 guard to armor, per level. Upgrades keep the reinforcement.</li>
-      <li>Rare materials (8%, 12% on capture) get 3% likelier with every miss and are guaranteed on the 12th break of their part.</li>
-      <li><strong>Keys in a hunt:</strong> <kbd>1</kbd>–<kbd>4</kbd> select dice · <kbd>Q</kbd> <kbd>W</kbd> <kbd>E</kbd> moves · <kbd>G</kbd> guard · <kbd>C</kbd> charge · <kbd>S</kbd> swap · <kbd>X</kbd> capture · <kbd>I</kbd> item · <kbd>R</kbd> reroll · <kbd>Space</kbd> end turn · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · <kbd>Esc</kbd> clear selection.</li>
-      <li><strong>Controller:</strong> d-pad or left stick moves between controls, <kbd>A</kbd> selects, <kbd>B</kbd> goes back. In a hunt: <kbd>Y</kbd> end turn · <kbd>X</kbd> reroll selected · <kbd>LB</kbd> <kbd>RB</kbd> aim at a part · <kbd>LT</kbd> undo · <kbd>RT</kbd> swap weapon · <kbd>B</kbd> clear selection. Elsewhere <kbd>LB</kbd> <kbd>RB</kbd> switch screens. <kbd>Menu</kbd> settings, <kbd>View</kbd> this help.</li>
-      <li>Progress is saved automatically. Reset it from Settings (the gear).</li>
-    </ul>
+    <!-- Nov 2026 text audit: was one 466-word list. Now short sections, one open at a time, each line one rule -->
+    <div class="helpsecs">
+      <details name="help" open><summary>The loop</summary><ul class="helplist">
+        <li>Pick a monster and gear at the Hunt Board, hunt it, bring back coin and materials.</li>
+        <li>Make and reinforce gear at the Forge; buy items at the Shop.</li>
+        <li>Progress saves itself. Reset it in Settings.</li>
+      </ul></details>
+      <details name="help"><summary>A turn</summary><ul class="helplist">
+        <li>You roll 4 dice: circles, triangles and blanks.</li>
+        <li>The panel by the monster shows its next move and how much it will hurt.</li>
+        <li>Spend dice on moves, <strong>Guard</strong> with the rest (a blank guards best), then end the turn.</li>
+        <li><strong>Reroll</strong> the dice you select; rerolls are counted for the whole hunt.</li>
+        <li><strong>Charge</strong>: spend 2 dice, and your first hit next turn deals double.</li>
+        <li><strong>Capture</strong> at 20% HP or less: a Snare closes at the end of your turn. Double part materials.</li>
+      </ul></details>
+      <details name="help"><summary>Parts and breaks</summary><ul class="helplist">
+        <li>Aim at a part above your HP. Its chip says how well your weapon type breaks it.</li>
+        <li>A broken part weakens the monster and drops its material.</li>
+        <li>Rare materials get likelier with every miss, and drop for sure on the 12th break of their part.</li>
+      </ul></details>
+      <details name="help"><summary>Weapons</summary><ul class="helplist">
+        <li><span class="tag flow" style="margin:0">Flow</span> Cut: light moves give back a reroll.</li>
+        <li><span class="tag daze" style="margin:0">Daze</span> Blunt: hits to the head fill a daze meter; full, it loses a turn.</li>
+        <li><span class="tag expose" style="margin:0">Expose</span> Pierce: the part takes +15% and breaks twice as fast for 2 turns, from either weapon.</li>
+        <li>You carry two weapons. Swapping costs 1 die. <strong>Avg</strong> is damage a turn with all 4 dice.</li>
+      </ul></details>
+      <details name="help"><summary>Monster states</summary><ul class="helplist">
+        <li><strong>Airborne:</strong> only Pierce reaches it. A Pinning Shot or a Weighted Net brings it down.</li>
+        <li><strong>Underground:</strong> only Blunt, at half damage. A 2-die Blunt move or Blast Powder drives it up.</li>
+        <li><strong>Ice plating:</strong> hits break layers before HP. Cut breaks 2, others 1, a Firepot all.</li>
+        <li><strong>Molten:</strong> Cut and Blunt hits burn you a little. Pierce is safe.</li>
+      </ul></details>
+      <details name="help"><summary>Gear</summary><ul class="helplist">
+        <li>Armor sets your HP and guard. Resist armor cuts one element's attacks by 30%.</li>
+        <li>Charms give one small perk each. Items are a free action once a turn.</li>
+        <li>Each reinforcement (+1 to +3) adds 5% damage, or 10 HP and 1 guard to armor. Upgrades keep it.</li>
+      </ul></details>
+      <details name="help"><summary>Controls</summary><ul class="helplist">
+        <li><strong>Keys:</strong> <kbd>1</kbd>–<kbd>4</kbd> dice · <kbd>Q</kbd> <kbd>W</kbd> <kbd>E</kbd> moves · <kbd>G</kbd> guard · <kbd>C</kbd> charge · <kbd>S</kbd> swap · <kbd>X</kbd> capture · <kbd>I</kbd> item · <kbd>R</kbd> reroll · <kbd>Space</kbd> end turn · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · <kbd>Esc</kbd> clear.</li>
+        <li><strong>Controller:</strong> d-pad moves, <kbd>A</kbd> selects, <kbd>B</kbd> back. In a hunt: <kbd>Y</kbd> end turn · <kbd>X</kbd> reroll · <kbd>LB</kbd> <kbd>RB</kbd> aim · <kbd>LT</kbd> undo · <kbd>RT</kbd> swap. Elsewhere <kbd>LB</kbd> <kbd>RB</kbd> switch screens. <kbd>Menu</kbd> settings, <kbd>View</kbd> this help.</li>
+      </ul></details>
+    </div>
   </Modal>
 
   {#if game.view === 'board'}<Board />
@@ -244,4 +278,5 @@
 </div>
 
 {#if !introOpen}<Coach />{/if}
+<DetailTip />
 

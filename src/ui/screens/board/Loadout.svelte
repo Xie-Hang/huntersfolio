@@ -6,6 +6,7 @@
   import { coach } from '../../coach.svelte';
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
+  import { detail, full } from '../../detail.svelte';
   import { SLOT_LABEL, bestParts, movesLine, weaponVs, elemLabel, markOf } from '../../fmt';
   import { tick } from 'svelte';
 
@@ -87,7 +88,7 @@
   {#if a.adaptive}<span class="good">Resists whatever element it attacks with −30%</span>
   {:else if !a.resist}<span class="neutral">No resistance</span>
   {:else if M.elemOf}<span class="neutral">Resists its {a.resist} stance's attacks</span>
-  {:else if a.resist === M.elem}<span class="good">Resists its {M.elem} attacks −30%{M.elemental?.length ? ` (${M.elemental.join(', ')}; not its physical ones)` : ''}</span>
+  {:else if a.resist === M.elem}{#if full() || !M.elemental?.length}<span class="good">Resists its {M.elem} attacks −30%{M.elemental?.length ? ` (${M.elemental.join(', ')}; not its physical ones)` : ''}</span>{:else}<span class="good" use:detail={`${M.elemental.join(', ')}. Its other attacks are physical, and resist doesn’t touch those.`}>Resists {M.elemental.length} of its moves −30%</span>{/if}
   {:else}<span class="bad">{a.resist} resist does nothing here</span>{/if}
 {/snippet}
 
@@ -98,7 +99,7 @@
 {/snippet}
 
 <section class="panel loadout" aria-label="Loadout" bind:this={root}>
-  <div class="ph"><h2>Loadout</h2><span class="label">For the {M.short}</span></div>
+  <div class="ph"><h2>Loadout</h2></div>
 
   {#if !picker}
     <div class="slots">
@@ -146,13 +147,13 @@
         {@const have = game.save.items[L.item] ?? 0}
         <button class="slot" data-slot="item" onclick={() => open('item')}>
           <span class="sl">Item</span>
-          <span><span class="nm"><Icon id={L.item} />{it.name}</span><span class="sub2"><span>Carry {Math.min(have, it.max)} of {have}</span><span>{it.desc}</span></span></span>
+          <span><span class="nm"><Icon id={L.item} />{it.name}</span><span class="sub2"><span>Carry {Math.min(have, it.max)} of {have}</span>{#if it.short && !full()}<span use:detail={it.desc}>{it.short}</span>{:else}<span>{it.desc}</span>{/if}</span></span>
           <span class="chg">Change</span>
         </button>
       {:else}
         <button class="slot empty" data-slot="item" onclick={() => open('item')}>
           <span class="sl">Item</span>
-          <span><span class="nm">No item</span><span class="sub2"><span>Free action, once per turn. Carried charges are lost if the hunt fails.</span></span></span>
+          <span><span class="nm">No item</span><span class="sub2">{#if full()}<span>Free action, once per turn. Carried charges are lost if the hunt fails.</span>{:else}<span use:detail={'Using it is a free action, once per turn. Charges you carry are lost if the hunt fails.'}>A free action, once a turn</span>{/if}</span></span>
           <span class="chg">Choose</span>
         </button>
       {/if}
@@ -301,10 +302,10 @@
 
   <div class="campfoot">
     {#if !E.isUnlocked(game.save, mon)}
-      <span class="ital">{E.unlockHint(M.id)} to unlock this hunt. You can still read up and prepare.</span>
+      <span class="ital">{E.unlockHint(M.id)} to unlock it.</span>
       <button class="btn primary" disabled>Locked</button>
     {:else}
-      <span class="ital">{nWeapons === 2 ? 'Swap weapons mid-hunt for 1 die.' : 'Choose two weapons to bring.'}</span>
+      <span class="ital">{nWeapons === 2 ? (full() ? 'Swap weapons mid-hunt for 1 die.' : '') : 'Choose two weapons to bring.'}</span>
       <button class="btn primary" data-sound data-coach="begin" disabled={nWeapons !== 2} onclick={() => game.begin(coach.scriptFirstHunt())}>Hunt the {M.short}</button>
     {/if}
   </div>

@@ -40,7 +40,7 @@ export const ARMORS: Record<string, ArmorDef> = Object.fromEntries(armors.filter
 const items: ItemDef[] = [
   { id: 'salve', name: 'Bitterroot Salve', max: 3, price: 30, desc: 'Heal 30.', effect: 'heal30' },
   // Playtest (Nov 2026): capture was free and safe. A snare costs coin, and it can be torn free.
-  { id: 'snare', name: 'Snare', max: 2, price: 40, desc: 'Needed to capture. Carried on every hunt outside your item slot; each attempt uses one.', effect: 'snare', pouch: true },
+  { id: 'snare', name: 'Snare', max: 2, price: 40, desc: 'Needed to capture. Carried on every hunt outside your item slot; each attempt uses one.', short: 'Needed to capture. Carried outside your item slot.', effect: 'snare', pouch: true },
   { id: 'smoke', name: 'Smoke Pouch', max: 2, price: 50, desc: "The monster's next attack misses.", effect: 'smoke' },
   { id: 'whet', name: 'Whetstone', max: 2, price: 40, desc: 'Your next hit deals +50%.', effect: 'whet50' },
   { id: 'net', name: 'Weighted Net', max: 2, price: 50, desc: 'Brings an airborne monster down. It loses its action.', effect: 'net' },
@@ -49,8 +49,8 @@ const items: ItemDef[] = [
   { id: 'purge', tier: 2.2, name: 'Purging Tonic', max: 2, price: 50, desc: 'Cures an infection on you.', effect: 'cureInfect' },
   { id: 'groundsalt', tier: 2.2, name: 'Grounding Salt', max: 2, price: 50, desc: 'Clears the Spark pips on you and your charged dice.', effect: 'cureSpark' },
   // Traps (prototype, Nov 2026; working names): set this turn, they catch only the move they're built for
-  { id: 'tripline', name: 'Tripline', max: 2, price: 60, desc: 'Catches a charge, lunge or pounce: no damage, and it\u2019s held. Held while weak enough to capture, it\u2019s captured. Lost if its move is anything else.', effect: 'trapRush' },
-  { id: 'stakebed', name: 'Stakebed', max: 2, price: 60, desc: 'Catches a dive, or a burst up from underground: no damage, and it\u2019s held. Held while weak enough to capture, it\u2019s captured. Lost if its move is anything else.', effect: 'trapLand' },
+  { id: 'tripline', name: 'Tripline', max: 2, price: 60, desc: 'Catches a charge, lunge or pounce: no damage, and it\u2019s held. Held while weak enough to capture, it\u2019s captured. Lost if its move is anything else.', short: 'Catches a charge, lunge or pounce.', effect: 'trapRush' },
+  { id: 'stakebed', name: 'Stakebed', max: 2, price: 60, desc: 'Catches a dive, or a burst up from underground: no damage, and it\u2019s held. Held while weak enough to capture, it\u2019s captured. Lost if its move is anything else.', short: 'Catches a dive, or a burst up from underground.', effect: 'trapLand' },
   { id: 'tuskwhet', name: 'Tusk Whetstone', max: 2, craft: { tusk: 1, coin: 20 }, yields: 2, desc: 'Your next hit deals +100%.', effect: 'whet100' }
 ];
 export const ITEMS: Record<string, ItemDef> = Object.fromEntries(items.filter(inEdition).map(i => [i.id, i]));

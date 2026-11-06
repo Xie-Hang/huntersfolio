@@ -149,6 +149,17 @@ export function recipeState(s: Save, kind: RecipeKind, id: string): RecipeState 
   return { cls: 'short', text: miss ? `Need ${miss} more` : 'Need coin' };
 }
 
+/** Gear whose materials all come from monsters you've hunted, or that you own (Nov 2026 text audit: the Forge listed
+ *  about 70 weapons at rank F; gear from monsters you haven't met is folded away until you meet them). */
+export function gearKnown(s: Save, kind: RecipeKind, id: string): boolean {
+  if (isOwned(s, kind, id)) return true;
+  const d = kind === 'w' ? WEAPONS[id] : kind === 'a' ? ARMORS[id] : CHARMS[id];
+  if (kind === 'c' && (d as { bounties?: number }).bounties) return true;
+  const c = (d as { cost?: Cost }).cost ?? (d as { craft?: Cost }).craft ?? {};
+  const mons = Object.keys(c).filter(k => k !== 'coin').map(k => Object.values(MONSTERS).find(M => M.common === k || M.rare === k || M.parts.some(p => p.mat === k))?.id).filter(Boolean) as string[];
+  return mons.every(m => (s.record[m]?.hunts ?? 0) > 0);
+}
+
 /** Something at the Forge you can make or reinforce right now (the Forge's first tip waits for this, Nov 2026). */
 export const forgeReady = (s: Save) =>
   (['w', 'a', 'c'] as RecipeKind[]).some(k => Object.keys(k === 'w' ? WEAPONS : k === 'a' ? ARMORS : CHARMS).some(id => { try { return recipeState(s, k, id).cls === 'ready'; } catch { return false; } }));

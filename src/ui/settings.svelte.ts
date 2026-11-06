@@ -5,8 +5,9 @@ const KEY = 'settings';
 import { UI_SIZES } from './display';
 
 /** showAll: skip the first hunts' simpler screen and show every action from the start */
-interface Prefs { music: number; sfx: number; fullscreen: boolean; uiSize: number; tips: boolean; showAll: boolean }
-const DEFAULTS: Prefs = { music: 0.7, sfx: 0.8, fullscreen: false, uiSize: 1, tips: true, showAll: false };
+/** detail: 'compact' keeps rules one step away (hover, focus, tap); 'full' shows them on screen (Nov 2026 text audit) */
+interface Prefs { music: number; sfx: number; fullscreen: boolean; uiSize: number; tips: boolean; showAll: boolean; detail: 'compact' | 'full' }
+const DEFAULTS: Prefs = { music: 0.7, sfx: 0.8, fullscreen: false, uiSize: 1, tips: true, showAll: false, detail: 'compact' };
 
 function loadPrefs(): Prefs {
   const raw = read(KEY) as Partial<Prefs> | null;
@@ -17,6 +18,7 @@ function loadPrefs(): Prefs {
     fullscreen: raw?.fullscreen === true,
     tips: raw?.tips !== false,
     showAll: raw?.showAll === true,
+    detail: raw?.detail === 'full' ? 'full' : 'compact',
     uiSize: (UI_SIZES as readonly number[]).includes(raw?.uiSize as number) ? (raw!.uiSize as number) : DEFAULTS.uiSize
   };
 }

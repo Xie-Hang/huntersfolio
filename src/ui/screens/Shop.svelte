@@ -4,6 +4,7 @@
   import * as E from '../../engine';
   import { game } from '../game.svelte';
   import Costs from '../parts/Costs.svelte';
+  import { detail, full } from '../detail.svelte';
 
   type Tab = 'buy' | 'craft' | 'sell';
   let tab = $state<Tab>(game.shopTab);
@@ -15,7 +16,9 @@
   const clamp = (key: string, max: number) => Math.max(1, Math.min(qty[key] ?? 1, Math.max(1, max)));
   function setQty(key: string, v: number, max: number) { qty[key] = Math.max(1, Math.min(Math.max(1, max), Math.floor(v) || 1)); }
 
-  const buyRows = $derived(Object.values(E.ITEMS).filter(it => it.price));
+  // only items for monsters you can hunt (Nov 2026 text audit: rank F saw the Mirewood's cures)
+  const reach = $derived(Math.max(1, ...Object.values(E.MONSTERS).filter(M => E.isUnlocked(s, M.id)).map(M => M.tier)));
+  const buyRows = $derived(Object.values(E.ITEMS).filter(it => it.price && (full() || (it.tier ?? 1) <= reach)));
   const craftRows = $derived(Object.values(E.ITEMS).filter(it => it.craft));
   const sellRows = $derived(
     Object.values(E.MATERIALS).filter(m => (s.mats[m.id] ?? 0) > 0).map(m => {
@@ -65,19 +68,20 @@
           {@const max = Math.max(1, Math.floor(s.coin / it.price!))}
           {@const q = clamp(it.id, max)}
           <article class="scard">
-            <div class="sc-top"><Icon id={it.id} size={34} /><span class="sc-nm"><span class="nm">{it.name}</span><span class="have">You have {s.items[it.id] ?? 0} · carry up to {it.max}</span></span><span class="price">{it.price}<small>each</small></span></div>
-            <p class="md">{it.desc}</p>
+            <!-- the price once, on the button; quiet buttons (gold means "do this now", and eleven of them meant nothing) -->
+            <div class="sc-top"><Icon id={it.id} size={34} /><span class="sc-nm"><span class="nm">{it.name}</span><span class="have">Have {s.items[it.id] ?? 0} · max {it.max}</span></span></div>
+            {#if it.short && !full()}<p class="md"><span use:detail={it.desc}>{it.short}</span></p>{:else}<p class="md">{it.desc}</p>{/if}
             <div class="sc-ctl">{@render stepper(it.id, max)}</div>
-            <button class="btn primary sc-go" data-sound disabled={s.coin < it.price! * q} onclick={() => run(sv => E.buyItem(sv, it.id, q), it.id)}>Buy {q} · {it.price! * q} coin</button>
+            <button class="btn sc-go" data-sound disabled={s.coin < it.price! * q} onclick={() => run(sv => E.buyItem(sv, it.id, q), it.id)}>Buy {q} · {it.price! * q} coin</button>
           </article>
         {/each}
       {:else if tab === 'craft'}
         {#each craftRows as it (it.id)}
           <article class="scard">
-            <div class="sc-top"><Icon id={it.id} size={34} /><span class="sc-nm"><span class="nm">{it.name}</span><span class="have">You have {s.items[it.id] ?? 0} · makes {it.yields ?? 1}</span></span></div>
+            <div class="sc-top"><Icon id={it.id} size={34} /><span class="sc-nm"><span class="nm">{it.name}</span><span class="have">Have {s.items[it.id] ?? 0} · makes {it.yields ?? 1}</span></span></div>
             <p class="md">{it.desc}</p>
             <Costs cost={it.craft!} />
-            <button class="btn primary sc-go" data-sound disabled={!E.canPay(s, it.craft!)} onclick={() => run(sv => E.craftItem(sv, it.id))}>Craft {it.yields ?? 1}</button>
+            <button class="btn sc-go" data-sound disabled={!E.canPay(s, it.craft!)} onclick={() => run(sv => E.craftItem(sv, it.id))}>Craft {it.yields ?? 1}</button>
           </article>
         {/each}
       {:else}
@@ -85,12 +89,12 @@
           {@const key = `s:${r.m.id}`}
           {@const q = clamp(key, r.have)}
           <article class="scard">
-            <div class="sc-top"><Icon id={r.m.id} size={34} /><span class="sc-nm"><span class="nm">{r.m.base}{#if r.m.rare}<span class="rare"> · rare</span>{/if}</span><span class="have">{r.m.src} · you have {r.have}</span></span><span class="price">{r.m.sell}<small>each</small></span></div>
+            <div class="sc-top"><Icon id={r.m.id} size={34} /><span class="sc-nm"><span class="nm">{r.m.base}{#if r.m.rare}<span class="rare"> · rare</span>{/if}</span><span class="have">{r.m.src} · have {r.have}</span></span></div>
             {#if r.tn}<p class="warn">Tracked: {r.tn}</p>
             {:else if r.uses.length}<p class="warn">Keep {r.keep} for {r.uses.slice(0, 2).join(', ')}{r.uses.length > 2 ? ` +${r.uses.length - 2} more` : ''}</p>
             {:else}<p class="md">No recipe you can still make needs it.</p>{/if}
             <div class="sc-ctl">{@render stepper(key, r.have)}</div>
-            <button class="btn primary sc-go" data-sound onclick={() => run(sv => E.sellMat(sv, r.m.id, q), key)}>Sell {q} · {r.m.sell * q} coin</button>
+            <button class="btn sc-go" data-sound onclick={() => run(sv => E.sellMat(sv, r.m.id, q), key)}>Sell {q} · {r.m.sell * q} coin</button>
           </article>
         {/each}
       {/if}

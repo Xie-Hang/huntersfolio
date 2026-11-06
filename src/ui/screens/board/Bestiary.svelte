@@ -8,6 +8,10 @@
   import { game } from '../../game.svelte';
   import { DAMAGE_TYPES, effName, record } from '../../fmt';
   import Plate from '../../parts/Plate.svelte';
+  import { detail, full } from '../../detail.svelte';
+  // on the monster's own page its name after every material is noise (Nov 2026 text audit)
+  const mname = (id: string) => (full() ? E.matName(id) : E.MATERIALS[id]?.base ?? E.matName(id));
+  const BREAKS = 'Best, Half, None: how much of that damage type counts toward breaking the part. A broken part drops its material.';
 
   let { mon }: { mon: string } = $props();
   const M = $derived(E.MONSTERS[mon]);
@@ -46,22 +50,22 @@
   {#if tab === 'parts'}
     <div class="etable-wrap" role="tabpanel" id="mp-parts" aria-labelledby="mt-parts">
       <table class="etable">
-        <thead><tr><th>Part</th>{#each DAMAGE_TYPES as t}<th>{t}</th>{/each}<th>Drops · you have</th></tr></thead>
+        <thead><tr><th>Part</th>{#each DAMAGE_TYPES as t}<th><span use:detail={BREAKS}>{t}</span></th>{/each}<th>Drops</th></tr></thead>
         <tbody>
           {#each M.parts as p (p.id)}
             <tr>
               <td style="color:var(--fg)">{p.name}</td>
               {#each DAMAGE_TYPES as t}{@const e = p.eff[t]}<td class={e >= 1 ? 'b' : e > 0 ? 'h' : 'n'}>{effName(e)}</td>{/each}
               <td class="drops">
-                <span><Icon id={p.mat} size={16} />{E.matName(p.mat)} <b class:zero={!have(p.mat)}>×{have(p.mat)}</b></span>
-                {#if p.id === M.rarePart}<span class="rare"><Icon id={M.rare} size={16} />{E.matName(M.rare)} <b class:zero={!have(M.rare)}>×{have(M.rare)}</b></span>{/if}
+                <span><Icon id={p.mat} size={16} />{mname(p.mat)}{#if have(p.mat) || full()} <b class:zero={!have(p.mat)}>×{have(p.mat)}</b>{/if}</span>
+                {#if p.id === M.rarePart}<span class="rare"><Icon id={M.rare} size={16} />{mname(M.rare)}{#if have(M.rare) || full()} <b class:zero={!have(M.rare)}>×{have(M.rare)}</b>{/if}</span>{/if}
               </td>
             </tr>
           {/each}
-          <tr><td style="color:var(--soft)">Any win</td><td colspan={DAMAGE_TYPES.length}></td><td class="drops"><span><Icon id={M.common} size={16} />{E.matName(M.common)} <b class:zero={!have(M.common)}>×{have(M.common)}</b></span></td></tr>
+          <tr><td style="color:var(--soft)">Any win</td><td colspan={DAMAGE_TYPES.length}></td><td class="drops"><span><Icon id={M.common} size={16} />{mname(M.common)}{#if have(M.common) || full()} <b class:zero={!have(M.common)}>×{have(M.common)}</b>{/if}</span></td></tr>
         </tbody>
       </table>
-      <p class="tnote">Best, Half, None: how much of that damage type counts toward breaking the part. A broken part drops its material.</p>
+      {#if full()}<p class="tnote">{BREAKS}</p>{/if}
     </div>
   {:else}
     <div role="tabpanel" id="mp-habits" aria-labelledby="mt-habits"><dl class="facts">

@@ -36,11 +36,11 @@
 </script>
 
 {#snippet stats()}
-  {#if full}<div class="stats">
+  {#if full}<details class="hstats"><summary>Hunt stats</summary><div class="stats">
     <span>Turns <b>{h.turn}</b></span><span>Damage dealt <b>{h.stats.dealt}</b></span>
     <span>Damage taken <b>{h.stats.taken}</b></span><span>Damage blocked <b>{h.stats.guarded}</b></span>
     <span>Parts broken <b>{h.stats.broken} / {M.parts.length}</b></span><span>Rerolls used <b>{h.stats.rerollsUsed}</b></span>
-  </div>{/if}
+  </div></details>{/if}
   <div style="display:flex;gap:10px;flex-wrap:wrap">
     <!-- one clear next step (Nov 2026 playtest: the first win led straight into "more info"): the Forge is the gold
          button only when something there can be made; otherwise it's the Hunt Board, where new hunts are waiting -->
@@ -139,6 +139,8 @@
   .recap .rl.ember { color: var(--ember-soft); } .recap .rl.gold { color: var(--gold-hi); }
   .recap .linkbtn { font-size: var(--fs-sm); }
   .log.full { max-height: 60vh; }
+  .hstats summary { cursor: pointer; color: var(--soft); font-size: var(--fs-sm); width: max-content; }
+  .hstats[open] summary { margin-bottom: 6px; }
   .facts-after ul { margin: 6px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; color: var(--fg); }
   .facts-after li::marker { color: var(--gold); }
   .promoted { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--gold); border-radius: 3px; background: rgba(233,185,73,.08); color: var(--fg); }

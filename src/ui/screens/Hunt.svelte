@@ -15,11 +15,12 @@
   const h = $derived(game.hunt!);
 </script>
 
-<main class="grid hunt">
+<!-- when the hunt ends the action column goes (Nov 2026 text audit: 74 words of buttons that did nothing) -->
+<main class="grid hunt" class:done={!!h.over}>
   <div class="center">
     <BountyPanel />
     <MonsterPanel />
     {#if !h.over}{#if shows(h, 'parts')}<PartsRow />{/if}<div class="youbox"><PlayerPanel /><DicePanel /></div>{/if}
   </div>
-  <GearPanel />
+  {#if !h.over}<GearPanel />{/if}
 </main>
