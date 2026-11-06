@@ -111,7 +111,8 @@ export function loadSave(raw: unknown): Save {
     bounties: Object.fromEntries(Object.keys(s.bounties && typeof s.bounties === 'object' ? s.bounties : {}).filter(k => BOUNTIES[k]).map(k => [k, true])) as Save['bounties']
   };
   // A hunt takes two weapons; only a damaged save can have fewer, so give back the starter pair.
-  if (Object.keys(out.weapons).length < 2) out.weapons = { ...base.weapons, ...out.weapons };
+  // (the Foothills start with one weapon, the Training Blade)
+  if (Object.keys(out.weapons).length < 2 && !(typeof out.island === 'number' && out.island < 3)) out.weapons = { ...base.weapons, ...out.weapons };
   if (!Object.keys(out.armors).length) out.armors = base.armors;
   if (!MONSTERS[out.loadout.target]) out.loadout.target = 'gorehorn';
   if (!Array.isArray(out.loadout.weapons)) out.loadout.weapons = [...base.loadout.weapons];

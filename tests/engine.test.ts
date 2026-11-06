@@ -338,7 +338,7 @@ describe('Forge trees', () => {
     const E = await import('../src/engine');
     const ids = E.TREES.flatMap(t => t.nodes.map(n => n[0]));
     expect(new Set(ids).size).toBe(ids.length);
-    expect(ids.sort()).toEqual(Object.keys(E.WEAPONS).sort());
+    expect(ids.sort()).toEqual(Object.keys(E.WEAPONS).filter(id => !E.WEAPONS[id].starter).sort()); // the Training Blade is given, never made
     for (const t of E.TREES) t.nodes.forEach(([id], i) => { const f = E.WEAPONS[id].from; if (f) expect(t.nodes.findIndex(n => n[0] === f)).toBeLessThan(i); });
   });
 });

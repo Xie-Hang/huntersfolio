@@ -73,13 +73,13 @@
   {#if ring}<div class="coach-ring" class:guide={t.guide} style="left:{ring.x}px;top:{ring.y}px;width:{ring.w}px;height:{ring.h}px" aria-hidden="true"></div>{/if}
   <div class="coach" class:guide={t.guide} role="status" aria-live="polite" bind:clientHeight={cardH} style="left:{pos.x}px;top:{pos.y}px;width:min({W}px, calc(100vw - {EDGE * 2}px))">
     {#if arrow}<span class="coach-arrow {arrow.side}" style="{arrow.side === 'up' || arrow.side === 'down' ? 'left' : 'top'}:{arrow.at}px" aria-hidden="true"></span>{/if}
-    <span class="coach-head">{t.guide ? (game.inHunt ? (!game.save.hunts || game.hunt?.lesson === 1 ? 'Your first hunt' : game.hunt?.lesson ? 'New this hunt' : 'Tutorial') : 'Getting started') : t.text().startsWith('New:') ? 'New this hunt' : 'Tip'}</span>
+    <span class="coach-head">{t.id.startsWith('i-') ? 'The Foothills' : t.guide ? (game.inHunt ? (!game.save.hunts || game.hunt?.lesson === 1 ? 'Your first hunt' : game.hunt?.lesson ? 'New this hunt' : 'Tutorial') : 'Getting started') : t.text().startsWith('New:') ? 'New this hunt' : 'Tip'}</span>
     <p>{padWords(t.text())}</p>
     <div class="coach-acts">
       <button class="coach-skip" onclick={() => coach.skipAll(!!t.guide)}>{t.guide ? 'Skip tutorial' : 'Skip tips'}</button>
       {#if !t.guide}<button class="btn quiet" onclick={() => coach.dismiss()}>Got it</button>
       {:else if t.info}<button class="btn primary" onclick={() => coach.dismiss()}>{t.next ?? 'Next'}</button>
-      {:else}<span class="coach-wait">{padWords('Do it to continue')}</span>{/if}
+      {/if}<!-- no "Do it to continue" line: a playtester clicked it, thinking it was the button (Nov 2026) -->
     </div>
   </div>
 {/if}

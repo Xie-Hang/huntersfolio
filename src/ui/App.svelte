@@ -127,14 +127,19 @@
     <div class="top-right">
       {#if !game.inHunt}
         <nav class="nav" aria-label="Town">
-          {#each NAV.filter(([v]) => v === 'board' || game.save.hunts > 0) as [v, label]}
+          {#each NAV.filter(([v]) => v === 'board' || (game.save.hunts > 0 && (v === 'forge' ? E.forgeOpen(game.save) : E.shopOpen(game.save)))) as [v, label]}
             <button aria-current={game.view === v ? 'page' : 'false'} data-coach="nav-{v}" onclick={() => game.go(v)}>{label}</button>
           {/each}
         </nav>
       {/if}
       <!-- Hunter Rank (Nov 2026): a seal with your rank's letter -->
+      {#if E.islandDone(game.save)}
       <span class="rankseal" title="Hunter Rank {E.hunterRank(game.save)}: {E.promotionFor(game.save) ? `pass the ${E.promotionFor(game.save)!.short} promotion hunt to rank up` : E.hunterRank(game.save) === 'C' ? 'Low Rank cleared' : 'the next promotion hunt is in the full game'}"><RankMedal rank={E.hunterRank(game.save)} size={46} /><span class="rl"><span>Hunter</span><span>Rank {E.hunterRank(game.save)}</span></span></span>
-      <span class="purse">{game.save.coin} coin</span>
+      {:else}
+      <!-- the Foothills: not a Hunter yet (the island ends with becoming one) -->
+      <span class="rankseal" title="Apprentice: finish the Foothills to become a Hunter"><RankMedal rank="F" size={46} dim /><span class="rl"><span>Rank</span><span>Apprentice</span></span></span>
+      {/if}
+      {#if E.forgeOpen(game.save)}<span class="purse">{game.save.coin} coin</span>{/if}
       {#if game.inHunt}
         <button class="btn quiet" onclick={() => game.abandon()}>Abandon hunt</button>
       {/if}

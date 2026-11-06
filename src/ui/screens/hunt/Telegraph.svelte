@@ -27,7 +27,7 @@
   const cls = $derived(h.over ? 'end' : info.threat >= 3 ? 'danger' : info.threat === 0 ? 'calm' : '');
   const full = $derived(shows(h, 'all'));
   /** the Forge is the next step only from the second hunt on, and only when something there can be made */
-  const forgeNext = $derived(game.save.hunts > 1 && E.forgeReady(game.save));
+  const forgeNext = $derived(game.save.hunts > 1 && E.forgeOpen(game.save) && E.forgeReady(game.save));
   /** the breakdown line only says something the big number doesn't (Nov 2026 playtest: "wordy"): armor resist, guard,
    *  halving, a split element. A plain physical hit with nothing on it gets no line at all. */
   const calcWorth = $derived(!!inc && (inc.wearsResist || inc.res || inc.phys > 0 && inc.elem > 0 || inc.elem > 0 || !!h.guard || !!inc.ward || inc.half || inc.noGuard || (inc.evade && !E.trapCatches(h.trapSet, h.intent))));
@@ -45,12 +45,13 @@
     <!-- one clear next step (Nov 2026 playtest: the first win led straight into "more info"): the Forge is the gold
          button only when something there can be made; otherwise it's the Hunt Board, where new hunts are waiting -->
     {#if forgeNext}<button class="btn primary" data-coach="to-forge" onclick={() => game.go('forge')}>Go to the Forge</button>
+    {:else if !E.islandDone(game.save) && game.save.loadout.target !== h.mid}<button class="btn primary" data-coach="to-next" onclick={() => game.openMonster(game.save.loadout.target)}>Next: the {E.MONSTERS[game.save.loadout.target].short}</button>
     {:else}<button class="btn primary" onclick={() => game.go('board')}>Hunt Board</button>{/if}
-    {#if game.save.hunts > 1}<button class="btn" data-coach="to-shop" onclick={() => game.go('shop', E.surplusValue(game.save) > 0 ? 'sell' : undefined)}>{E.surplusValue(game.save) > 0 ? 'Sell at the Shop' : 'Shop'}</button>{/if}
+    {#if game.save.hunts > 1 && E.shopOpen(game.save)}<button class="btn" data-coach="to-shop" onclick={() => game.go('shop', E.surplusValue(game.save) > 0 ? 'sell' : undefined)}>{E.surplusValue(game.save) > 0 ? 'Sell at the Shop' : 'Shop'}</button>{/if}
     <!-- straight back to this monster's page, loadout ready (one click from hunting it again) -->
     <button class="btn" onclick={() => game.openMonster(h.mid)}>Hunt the {M.short} again</button>
     {#if forgeNext}<button class="btn" onclick={() => game.go('board')}>Hunt Board</button>
-    {:else if E.forgeReady(game.save)}<button class="btn" data-coach="to-forge" onclick={() => game.go('forge')}>Forge</button>{/if}
+    {:else if E.forgeOpen(game.save) && E.forgeReady(game.save)}<button class="btn" data-coach="to-forge" onclick={() => game.go('forge')}>Forge</button>{/if}
   </div>
 {/snippet}
 

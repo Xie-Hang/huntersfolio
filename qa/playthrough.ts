@@ -82,8 +82,16 @@ async function forgeAll(p: Page) {
   let streak = 0, endSeenAt = 0; const allTimes: number[] = [], mem: number[] = [];
   for (let n = 1; n <= 45; n++) {
     await p.click('[data-coach="nav-board"]').catch(() => {});
-    const s = await getJSON(p, SAVE) as E.Save | null;
-    if (s) {
+    let s = await getJSON(p, SAVE) as E.Save | null;
+    // the Foothills (the tutorial island, Nov 2026): play it as a new player does, then make the blade at the Forge
+    if (s && !E.islandDone(s) && E.islandStep(s) === 2) {
+      await p.click('[data-coach="nav-forge"]'); await p.click('[data-coach="forge-act"]'); await p.waitForTimeout(150);
+      await check(p, 'island forge');
+      s = await getJSON(p, SAVE) as E.Save;
+      console.log(`island: blade made, done=${E.islandDone(s)}`);
+      await p.click('[data-coach="nav-board"]');
+    }
+    if (s && E.islandDone(s)) {
       const beaten = (id: string) => (s.record[id]?.wins ?? 0) > 0;
       if (t1.every(beaten) && endSeenAt) break;
       const todo = t1.filter(id => E.isUnlocked(s, id) && !beaten(id));
@@ -122,7 +130,7 @@ async function forgeAll(p: Page) {
     await dismissEnd();
     await p.click('button:has-text("Hunt Board")').catch(() => {});
     await dismissEnd();
-    await forgeAll(p);
+    if (E.islandDone((await getJSON(p, SAVE)) as E.Save)) await forgeAll(p); // the Forge opens partway through the Foothills
     mem.push((await check(p, `board ${n}`)).mem);
   }
   const s = await getJSON(p, SAVE) as E.Save;

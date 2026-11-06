@@ -19,6 +19,9 @@
   const mon = $derived(L.target);
   const M = $derived(E.MONSTERS[mon]);
   const nWeapons = $derived(L.weapons.filter(Boolean).length);
+  // the Foothills (the tutorial island): one weapon, nothing else to choose yet
+  const isl = $derived(!E.islandDone(game.save));
+  const need = $derived(isl ? 1 : 2);
   const openBounties = $derived(E.BOUNTIES_ON ? E.bountiesFor(mon).filter(b => E.bountyOpen(game.save, b.id) && !game.save.bounties[b.id]).length : 0);
   const B = $derived(L.bounty && E.BOUNTIES[L.bounty]?.mon === mon && E.bountyOpen(game.save, L.bounty) ? E.BOUNTIES[L.bounty] : null);
   const breaks = $derived(B ? E.loadoutBreaks(game.save) : null);
@@ -103,7 +106,7 @@
 
   {#if !picker}
     <div class="slots">
-      {#each ['w0', 'w1'] as const as slot, idx}
+      {#each (isl ? ['w0'] : ['w0', 'w1']) as ('w0' | 'w1')[] as slot, idx}
         {@const id = L.weapons[idx]}
         {#if !id}
           <button class="slot empty" data-slot={slot} onclick={() => open(slot)}><span class="sl">{SLOT_LABEL[slot]}</span><span><span class="nm">Empty</span></span><span class="chg">Choose</span></button>
@@ -120,6 +123,8 @@
           </button>
         {/if}
       {/each}
+      {#if isl}
+      {:else}
       {#if L.armor}
         {@const a = E.ownedArmor(game.save, L.armor)}
         <button class="slot" data-slot="armor" onclick={() => open('armor')}>
@@ -157,9 +162,10 @@
           <span class="chg">Choose</span>
         </button>
       {/if}
+      {/if}
     </div>
     <!-- the bounty is not gear: an optional contract pinned beside the loadout, drawn as a notice, not a slot -->
-    {#if allB.length}
+    {#if allB.length && !isl}
       <div class="bnotice-wrap">
         <div class="label bnlabel"><span>Bounty · optional</span><span>{doneN} of {allB.length} done</span></div>
         {#if !beaten}
@@ -305,8 +311,8 @@
       <span class="ital">{E.unlockHint(M.id)} to unlock it.</span>
       <button class="btn primary" disabled>Locked</button>
     {:else}
-      <span class="ital">{nWeapons === 2 ? (full() ? 'Swap weapons mid-hunt for 1 die.' : '') : 'Choose two weapons to bring.'}</span>
-      <button class="btn primary" data-sound data-coach="begin" disabled={nWeapons !== 2} onclick={() => game.begin(coach.scriptFirstHunt())}>Hunt the {M.short}</button>
+      <span class="ital">{isl ? '' : nWeapons === 2 ? (full() ? 'Swap weapons mid-hunt for 1 die.' : '') : 'Choose two weapons to bring.'}</span>
+      <button class="btn primary" data-sound data-coach="begin" disabled={nWeapons !== need} onclick={() => game.begin(coach.scriptFirstHunt())}>Hunt the {M.short}</button>
     {/if}
   </div>
 </section>

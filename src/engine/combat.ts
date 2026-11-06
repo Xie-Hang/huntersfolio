@@ -77,7 +77,8 @@ export const charmFx = (h: Hunt) => (h.charm ? CHARMS[h.charm]?.effect ?? null :
 export const chargeDice = (h: Hunt) => (charmFx(h) === 'charge1' ? 1 : 2);
 export const LIGHT_CUT_BONUS = 4, DAZE_HEAL = 20;
 export const currentWeapon = (h: Hunt) => h.weps[h.weapon];
-export const otherWeapon = (h: Hunt) => h.weps[1 - h.weapon];
+/** the weapon you aren't holding (the Foothills start with one weapon: then it's the same one) */
+export const otherWeapon = (h: Hunt) => h.weps[1 - h.weapon] ?? h.weps[h.weapon];
 
 export function log(h: Hunt, t: string, tone: Tone = '') {
   h.logSeq = (h.logSeq ?? 0) + 1;
@@ -116,7 +117,8 @@ export function startHunt(s: Save, seed: number, script?: Face[][], lesson?: num
     reward: null, rng: seed | 0,
     ...(bountyFor(s, MD.id) ? { bounty: bountyFor(s, MD.id)! } : {}),
     ...(script?.length ? { script: script.map(t => [...t]) } : {}),
-    ...(lesson ? { lesson } : {})
+    ...(lesson ? { lesson } : {}),
+    ...(MD.island ? { ndice: MD.island.dice, faces: [...MD.island.faces], show: [...MD.island.show] } : {})
   };
   // the first layer hides the parts row: aim where the first weapon does best
   if (lesson === 1) { h.mon.hp = h.mon.max = Math.round(MD.hp * LESSON1.hp); }
@@ -124,7 +126,7 @@ export function startHunt(s: Save, seed: number, script?: Face[][], lesson?: num
   if (h.charm && CHARMS[h.charm]?.effect === 'scout') h.rerolls++;
   rollAll(h);
   h.intent = MD.next(h, null);
-  log(h, `You set out with the ${h.weps[0].name} and ${h.weps[1].name}.`);
+  log(h, h.weps[1] ? `You set out with the ${h.weps[0].name} and ${h.weps[1].name}.` : `You set out with the ${h.weps[0].name}.`);
   log(h, MD.intro);
   return h;
 }
@@ -137,7 +139,7 @@ export const GUT_CUT: Record<string, number> = { Cut: 2, Pierce: 1, Blunt: 0.5 }
 
 function rollAll(h: Hunt) {
   const fixed = h.script?.[h.turn - 1];
-  h.dice = [0, 1, 2, 3].map(i => ({ face: fixed?.[i] ?? rollFace(h), used: null as string | null }));
+  h.dice = Array.from({ length: h.ndice ?? 4 }, (_, i) => ({ face: fixed?.[i] ?? rollFace(h), used: null as string | null }));
   // swallowed: the last dice are stuck inside the monster until you cut free
   const g = h.mon.gut ?? 0;
   for (let i = 4 - g; i < 4; i++) if (i >= 0) h.dice[i].used = SWALLOWED;
@@ -281,7 +283,7 @@ export function pickDice(h: Hunt, need: string, prefer: number[] = []): number[]
   }
   return picks;
 }
-export const canUseMove = (h: Hunt, i: number) => !h.over && canHit(h, currentWeapon(h)) && !!pickDice(h, currentWeapon(h).moves[i].need);
+export const canUseMove = (h: Hunt, i: number) => !h.over && !!currentWeapon(h).moves[i] && canHit(h, currentWeapon(h)) && !!pickDice(h, currentWeapon(h).moves[i].need);
 
 /* ---------- player actions ---------- */
 function flowReroll(h: Hunt, mv: { flow?: boolean }) {
@@ -327,6 +329,7 @@ export function addDaze(h: Hunt, n: number): string | null {
 export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | null {
   if (h.over) return null;
   const w = currentWeapon(h), mv = w.moves[i], m = h.mon, MD = def(h);
+  if (!mv) return null;
   if (!canHit(h, w)) return null;
   const picks = pickDice(h, mv.need, prefer); if (!picks) return null;
   const wasCapturable = canCapture(h);

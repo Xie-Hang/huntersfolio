@@ -25,6 +25,8 @@ export interface Move {
 }
 
 export interface WeaponDef {
+  /** a starting weapon you're given, never made (the Foothills' Training Blade): kept out of the Forge */
+  starter?: boolean;
   /** monster tier it comes from (default 1); gear above the edition's top tier isn't in that build */
   tier?: number;
   id: string;
@@ -348,6 +350,10 @@ export interface Hunt {
   /** which layer of the hunt screen this hunt teaches (1 = the first hunt: basics only). Unset = everything.
    *  Monsters keep their extra moves (stances, mud) for later layers (Nov 2026 playtest: "overwhelming"). */
   lesson?: number;
+  /** a Foothills hunt: dice rolled, the faces they can show, and what the hunt screen shows (MonsterDef.island) */
+  ndice?: number;
+  faces?: Face[];
+  show?: string[];
   /** what happened last turn, for the line under the next move (Nov 2026: replaces the hunt log on screen) */
   recap?: { turn: number; dealt: number; lines: LogEntry[] };
   logSeq?: number;
@@ -363,6 +369,9 @@ export interface Hunt {
 }
 
 export interface MonsterDef {
+  /** a Foothills monster (the tutorial island, Nov 2026): how many dice you roll against it, which faces they can
+   *  show, and which parts of the hunt screen it teaches (see ui/reveal.ts). Everything else stays hidden. */
+  island?: { dice: number; faces: Face[]; show: string[] };
   /** a shorter name for the hunt screen's header, when the full one doesn't fit beside its chips */
   panelName?: string;
   /** a variant of this monster (the changed Ashfall Ridge, Nov 2026): same body, new element and mechanic */
@@ -482,4 +491,7 @@ export interface Save {
   achievements: string[];
   /** bounties completed */
   bounties: Record<string, true>;
+  /** the Foothills (the tutorial island, Nov 2026): the step reached. Absent = done (saves from before the island,
+   *  and players who skipped it). See engine/island.ts. */
+  island?: number;
 }

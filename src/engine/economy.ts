@@ -6,6 +6,7 @@ import { MONSTERS } from './data/monsters';
 import { nextRandom } from './rng';
 import { settleBounty } from './bounty';
 import { rankAtLeast, hunterRank } from './rank';
+import { islandDone, advanceIsland } from './island';
 
 /* ---------- tuning constants ---------- */
 export const REWARD = { base: 100, perPart: 40, capture: 60 };
@@ -15,7 +16,8 @@ export const RARE = { chance: 0.08, captureChance: 0.12, pityStep: 0.03, pityGua
 export function gearSource(kind: 'w' | 'a', id: string): string {
   const d = kind === 'w' ? WEAPONS[id] : ARMORS[id];
   const c = (d as { cost?: Cost }).cost ?? (d as { craft?: Cost }).craft ?? {};
-  for (const k of Object.keys(c)) if (k !== 'coin') { const src = Object.values(MONSTERS).find(M => M.common === k || M.rare === k || M.parts.some(p => p.mat === k)); if (src) return src.id; }
+  // the Foothills' materials don't count: the Hunter's Blade takes Crab Shell but reinforces with Gorehorn hide like before
+  for (const k of Object.keys(c)) if (k !== 'coin') { const src = Object.values(MONSTERS).find(M => M.tier >= 1 && (M.common === k || M.rare === k || M.parts.some(p => p.mat === k))); if (src) return src.id; }
   return 'gorehorn';
 }
 /** Reinforcing (weapon rework, Nov 2026): coin plus the common material of the monster the gear comes from, so a
@@ -72,6 +74,8 @@ const avgCache = new Map<string, number>();
 export const EXPOSE_DMG_FOR_AVG = 1.15;
 /** Expected damage per turn if all 4 dice go to attacking, without rerolls. */
 export function avgDmg(moves: Move[]): number {
+  // a weapon with fewer than three moves (the Foothills' Training Blade): pad with moves that never fit
+  if (moves.length < 3) moves = [...moves, ...Array.from({ length: 3 - moves.length }, () => ({ name: '', need: 'CCCCC', dmg: 0 }))];
   const key = moves.map(m => m.need + ':' + m.dmg + (m.expose ? 'x' : '')).join('|');
   const hit = avgCache.get(key); if (hit != null) return hit;
   const nc = moves.map(m => ({ C: [...m.need].filter(c => c === 'C').length, T: [...m.need].filter(c => c === 'T').length }));
@@ -118,6 +122,7 @@ export interface Recipe { action: 'craft' | 'upgrade' | 'reinforce' | null; cost
 export function recipeOf(s: Save, kind: RecipeKind, id: string): Recipe {
   if (kind === 'w') {
     const d = WEAPONS[id];
+    if (d.starter) return { action: null, cost: null };
     if (s.weapons[id]) { const lv = s.weapons[id].lv; return lv < MAX_REINFORCE ? { action: 'reinforce', cost: reinforceCost(lv, 'w', id) } : { action: null, cost: null }; }
     if (d.craft) return { action: 'craft', cost: d.craft };
     if (d.from && s.weapons[d.from]) return { action: 'upgrade', cost: d.cost! };
@@ -188,6 +193,7 @@ export function forgeDo(s: Save, kind: RecipeKind, id: string): string | null {
     if (r.action === 'reinforce') { s.armors[id].lv++; msg = `${ARMORS[id].name} reinforced to +${s.armors[id].lv}.`; }
   }
   if (s.tracked === `${kind}:${id}` && r.action !== 'reinforce') s.tracked = null;
+  if (kind === 'w' && r.action === 'craft' && advanceIsland(s, { made: id })) msg += ' The maul is yours too, a gift from the lodge. Ashfall Ridge is open.';
   return msg;
 }
 
@@ -279,7 +285,10 @@ export function isUnlocked(s: Save, id: string): boolean {
   const reqs = req ? (Array.isArray(req) ? req : [req]) : [];
   // a promotion hunt counts as passed once you hold its rank (older saves earn their rank from their records)
   const met = (r: string) => (s.record[r]?.wins ?? 0) > 0 || (!!MONSTERS[r]?.promotion && rankAtLeast(s, MONSTERS[r].promotion!));
-  return reqs.every(met) || (s.record[id]?.hunts ?? 0) > 0;
+  if ((s.record[id]?.hunts ?? 0) > 0) return true;
+  // the Ridge and everything past it wait for the Foothills (the tutorial island)
+  if ((MONSTERS[id]?.tier ?? 1) >= 1 && !islandDone(s)) return false;
+  return reqs.every(met);
 }
 
 /** How to unlock a locked monster, in words: "Beat the Gorehorn first" or "Beat every monster on Ashfall Ridge first". */
@@ -337,6 +346,7 @@ export function settleHunt(s: Save, h: Hunt) {
     if (h.item) s.items[h.item] = (s.items[h.item] ?? 0) + h.itemCharges;
     h.reward = { coin, mats, rare, returned: h.item ? h.itemCharges : 0, lost: 0, unlocked: lockedBefore.filter(id => isUnlocked(s, id)) };
     const rankNow = hunterRank(s); if (rankNow !== rankBefore) h.reward.rankUp = rankNow;
+    advanceIsland(s, { won: h.mid });
   } else {
     // A failed hunt keeps the materials of the parts you broke (one each; no coin, no carve, no rare, and the
     // items you carried are lost). Playtest/sim (Nov 2026): losses paid nothing, so an under-geared player at a new

@@ -14,7 +14,7 @@
   const m = $derived(h.mon);
   const el = $derived(E.elemsNow(h.mid, h));
   // where your HP will be when your next turn starts: the attack and everything riding on the end of the turn
-  const tp = $derived(h.over ? null : E.turnPreview(h));
+  const tp = $derived(h.over || !shows(h, 'intent') ? null : E.turnPreview(h));
   const after = $derived(tp ? Math.max(0, Math.min(h.php, tp.hpAfter)) : h.php);
   const net = $derived(h.php - after);
 </script>

@@ -629,6 +629,7 @@ svg.wc.static *{animation:none!important}
 /* 768-tall laptops: the dashed actions drop their one-line explanations (How to play and hovering still explain them) */
 @media (max-height:820px){
   .grid .move.dash .md{display:none}
+  .grid .move.dash.keepmd .md{display:block}
   .grid .move{min-height:38px}
   .grid .panel{padding:12px 14px;gap:6px}
   .grid .move.ready, .grid .move.no{min-height:36px}

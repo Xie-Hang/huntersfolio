@@ -62,10 +62,10 @@
   <div class="wname">
     <div class="ph" style="gap:8px">
       <h2 style="margin:0;font-weight:600;font-size:var(--fs-lg);display:flex;align-items:center;gap:8px"><WeaponArt id={w.id} size={34} />{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}</h2>
-      <span class="avg">{E.avgVs(w, h.mid)} avg</span>
+      {#if shows(h, 'parts')}<span class="avg">{E.avgVs(w, h.mid)} avg</span>{/if}
     </div>
     <div class="elemrow">
-      <span class="elem" style="color:{elemColor}">{w.type} · <Elem e={markOf(w)} />{elemLabel(w)}{em > 1 ? ' · hits weakness' : em < 1 ? ' · resisted' : ''}{halfAir ? ' · half damage in the air' : ''}</span>
+      {#if !shows(h, 'parts')}<span class="elem" style="color:var(--muted)">{w.type}</span>{:else}<span class="elem" style="color:{elemColor}">{w.type} · <Elem e={markOf(w)} />{elemLabel(w)}{em > 1 ? ' · hits weakness' : em < 1 ? ' · resisted' : ''}{halfAir ? ' · half damage in the air' : ''}</span>{/if}
       <!-- status weapons (Nov 2026): the meter your hits fill on the monster, one per status you carry -->
       {#each smeters as sm (sm.st)}
         <span class="smeter" title="{sm.st}: each hit fills it by the dice the move used. Full: {SWHAT[sm.st]}. Each fill makes the next one take longer." aria-label="{sm.st} meter {sm.value} of {sm.max}">
@@ -90,9 +90,11 @@
     </button>
   {/each}
 
-  <button class="move dash {gOk ? 'ready' : 'no'}" class:pick={gOk && n > 0} data-coach="guard" aria-disabled={!gOk} onclick={() => gOk && game.guard()}>
+  {#if shows(h, 'block')}
+  <button class="move dash {gOk ? 'ready' : 'no'}" class:pick={gOk && n > 0} class:keepmd={!shows(h, 'all')} data-coach="guard" aria-disabled={!gOk} onclick={() => gOk && game.guard()}>
     <span><span class="mn"><Key k="G" />Block</span><span class="md">{selGuard ? `Blocks ${selGuard} with the selected dice` : auto.guard?.length ? `${usesLine(auto.guard)}: blocks ${auto.guard.reduce((a, i) => a + E.guardOf(h, i), 0)}` : `${h.arm.guard} a die · ${Math.round(h.arm.guard * (h.arm.blankx2 ? E.VEST_BLANK_GUARD : E.BLANK_GUARD))} a blank`}</span></span><span class="need dice"><CostDie c="any" /></span>
   </button>
+  {/if}
   {#if full}
   <button class="move dash {cOk ? 'ready' : 'no'}" data-coach="charge" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
     <span><span class="mn"><Key k="C" />Charge</span><span class="md">{chargeRisk ? `The −${inc?.net} coming would break it: block it under ${E.CHARGE_BREAK} first` : `Next hit ×2 · breaks at ${E.CHARGE_BREAK}+`}{!chargeRisk && auto.charge ? ` · ${usesLine(auto.charge)}` : ''}</span></span><span class="need dice"><CostDie c="any" /><span class="x">×{cd}</span></span>

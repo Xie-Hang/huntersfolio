@@ -2,6 +2,7 @@
   import Key from '../../parts/Key.svelte';
   import { input } from '../../pad.svelte';
   import { game } from '../../game.svelte';
+  import { shows } from '../../reveal';
   const h = $derived(game.hunt!);
   const over = $derived(!!h.over);
   const n = $derived(game.sel.length);
@@ -41,10 +42,12 @@
   <button class="btn primary endbtn" class:armed={game.endArmed} data-sound data-coach="end" disabled={over} onclick={() => game.requestEnd()}>
     <Key k="Space" pad="Y" />{#if game.endArmed}<span class="et">End turn anyway?<small>{spare} {spare === 1 ? 'die' : 'dice'} unspent · press again</small></span>{:else if spare}<span class="et">End turn<small>{spare} {spare === 1 ? 'die' : 'dice'} unspent</small></span>{:else}End turn{/if}
   </button>
+    {#if shows(h, 'reroll') || shows(h, 'undo')}
     <div class="grp">
-      <button class="btn quiet" class:rr={n > 0 && h.rerolls > 0 && !over} data-sound data-coach="reroll" disabled={!n || h.rerolls < 1 || over} onclick={() => game.reroll()}><Key k="R" pad="X" />{n > 0 && h.rerolls > 0 ? `Reroll ${n} ${n === 1 ? 'die' : 'dice'}` : 'Reroll'} · {h.rerolls} left</button>
-      <button class="btn quiet" disabled={!game.undoStack.length || over} onclick={() => game.undo()}><Key k="U" pad="LT" />Undo</button>
+      {#if shows(h, 'reroll')}<button class="btn quiet" class:rr={n > 0 && h.rerolls > 0 && !over} data-sound data-coach="reroll" disabled={!n || h.rerolls < 1 || over} onclick={() => game.reroll()}><Key k="R" pad="X" />{n > 0 && h.rerolls > 0 ? `Reroll ${n} ${n === 1 ? 'die' : 'dice'}` : 'Reroll'} · {h.rerolls} left</button>{/if}
+      {#if shows(h, 'undo')}<button class="btn quiet" disabled={!game.undoStack.length || over} onclick={() => game.undo()}><Key k="U" pad="LT" />Undo</button>{/if}
     </div>
+    {/if}
   </div>
   </div>
 </section>

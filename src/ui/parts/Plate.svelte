@@ -30,6 +30,9 @@
 <div class="plate-stage">
 {#if scene}<Scene region={(ALL_MONSTERS[mon]?.tier ?? 1) === 2.2 ? 'hollow' : (ALL_MONSTERS[mon]?.tier ?? 1) === 3.2 ? 'mire' : (ALL_MONSTERS[mon]?.tier ?? 1) === 4 ? 'caldera' : (ALL_MONSTERS[mon]?.tier ?? 1) === 3 ? 'spire' : [2, 2.4].includes(ALL_MONSTERS[mon]?.tier ?? 1) ? 'mire' : 'ridge'} />{/if}
 {#if ALL_MONSTERS[mon]?.variantOf}<Variant {mon} {hunt} />
+<!-- the Foothills (Nov 2026): placeholders until their plates are drawn, posed still -->
+{:else if mon === 'scuttlehog'}<div class="young" style="--k:.68"><Gorehorn hunt={null} /></div>
+{:else if mon === 'snapclaw'}<div class="young" style="--k:.82"><Cinderback hunt={null} /></div>
 {:else if mon === 'gorehorn'}<Gorehorn {hunt} />
 {:else if mon === 'galeshrike'}<Galeshrike {hunt} />
 {:else if mon === 'cinderback'}<Cinderback {hunt} />
@@ -53,5 +56,6 @@
 
 <style>
   .plate-stage { position: relative; }
+  .young { transform: scale(var(--k)); transform-origin: 50% 85%; }
   .plate-stage :global(svg.wc) { position: relative; }
 </style>

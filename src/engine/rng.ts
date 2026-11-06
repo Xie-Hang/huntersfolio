@@ -12,6 +12,8 @@ export function nextRandom(h: { rng: number }): number {
 export const FACES: Face[] = ['C', 'C', 'T', 'T', 'B', 'B'];
 
 export function rollFace(h: Hunt): Face {
+  // a Foothills hunt can limit the faces (the first one rolls only circles)
+  if (h.faces?.length) return h.faces[Math.floor(nextRandom(h) * h.faces.length)];
   return FACES[Math.floor(nextRandom(h) * 6)];
 }
 

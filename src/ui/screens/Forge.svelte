@@ -22,7 +22,10 @@
   const kind = $derived<E.RecipeKind>(tab === 'weapons' ? 'w' : tab === 'armor' ? 'a' : 'c');
   const s = $derived(game.save);
 
+  // the Foothills (the tutorial island): the Forge holds one recipe, the Hunter's Blade, and nothing else yet
+  const isl = $derived(!E.islandDone(game.save));
   const groups = $derived.by(() => {
+    if (isl) return [{ group: 'Cut', sig: null, rows: [{ id: 'blade', depth: 0 }], folded: 0 }];
     const raw = tab === 'weapons'
       ? E.TREES.filter(t => ftype === 'All' || t.type === ftype).map(t => ({ group: t.type as string, sig: E.SIGNATURES[t.type], rows: t.nodes.map(([id, depth]) => ({ id, depth })) }))
       // armor and charms: grouped by the region they come from, shown as a grid of tiles (Mekkman, Nov 2026)
@@ -80,6 +83,7 @@
 <div class="forgegrid" class:wide={tab !== 'weapons'}>
   <section class="panel forgepanel" aria-label="Forge">
     <div class="ph"><h2>The Forge</h2><span class="label">{E.trackedLine(s)}</span></div>
+    {#if !isl}
     <div class="tabs" role="tablist">
       <button role="tab" aria-selected={tab === 'weapons'} onclick={() => setTab('weapons')}>Weapons</button>
       <button role="tab" aria-selected={tab === 'armor'} onclick={() => setTab('armor')}>Armor</button>
@@ -95,6 +99,7 @@
       </div>
       <label class="label readyto"><input type="checkbox" bind:checked={readyOnly} /> Ready to make</label>
     </div>
+    {/if}
     <div class="flist">
       {#each groups as g (g.group)}
         <div class="fgroup"><span>{g.group}</span>{#if g.sig}<span class="tag {g.sig.tag}" style="margin:0">{g.sig.name}</span>{/if}</div>
@@ -211,7 +216,7 @@
           {:else if owned}
             <span class="pl">{kind === 'c' ? 'Owned. Equip it at the Hunt Board.' : 'Fully reinforced.'}</span>
           {/if}
-          {#if r.cost && (r.action || r.locked) && !(kind === 'c' && E.CHARMS[sel].bounties)}
+          {#if r.cost && (r.action || r.locked) && !(kind === 'c' && E.CHARMS[sel].bounties) && !isl}
             <button class="btn quiet" data-coach="track" aria-pressed={s.tracked === tk} onclick={track}>{s.tracked === tk ? 'Untrack' : 'Track'}</button>
           {/if}
           {#if r.action === 'upgrade'}

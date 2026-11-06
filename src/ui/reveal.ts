@@ -16,7 +16,15 @@ export const LAYER = {
   all: 4
 } as const;
 
+/** Foothills hunts (the tutorial island, Nov 2026) name exactly what they show (MonsterDef.island.show); these are
+ *  the extra keys they can name. Every other hunt shows them all. */
+export type Show = keyof typeof LAYER | 'intent' | 'block' | 'reroll' | 'undo';
+
 const base = (h: Hunt | null | undefined, k: keyof typeof LAYER) => (h?.lesson ?? 99) >= LAYER[k];
 /** Swap also shows early against a flier or a burrower: there, one weapon can't reach it and you'd be stuck. */
-export const shows = (h: Hunt | null | undefined, k: keyof typeof LAYER) =>
-  base(h, k) || (k === 'swap' && !!h && (h.lesson ?? 99) >= 2 && !!(MONSTERS[h.mid]?.flier || MONSTERS[h.mid]?.burrower));
+export const shows = (h: Hunt | null | undefined, k: Show): boolean => {
+  if (h?.show) return h.show.includes(k) && (k !== 'swap' || h.weps.length > 1);
+  if (k === 'intent' || k === 'block' || k === 'reroll' || k === 'undo') return true;
+  if (k === 'swap' && h && h.weps.length < 2) return false;
+  return base(h, k) || (k === 'swap' && !!h && (h.lesson ?? 99) >= 2 && !!(MONSTERS[h.mid]?.flier || MONSTERS[h.mid]?.burrower));
+};

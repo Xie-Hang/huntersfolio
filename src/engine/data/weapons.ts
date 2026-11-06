@@ -26,7 +26,9 @@ const BOW: Move[] = [
 ];
 
 const list: WeaponDef[] = [
-  { id: 'blade', name: "Hunter's Blade", type: 'Cut', elem: null, kind: 'Longsword', note: 'Plain steel. Never wrong, never the best.', moves: BLADE, mult: 1, craft: { coin: 100 } },
+  // the Foothills' first weapon (the tutorial island, Nov 2026): one move, no Flow. Never made at the Forge.
+  { id: 'training', name: 'Training Blade', type: 'Cut', elem: null, kind: 'Practice sword', note: 'Blunt-tipped, for learning on.', moves: [{ name: 'Slash', need: 'C', dmg: 12 }], mult: 1, starter: true },
+  { id: 'blade', name: "Hunter's Blade", type: 'Cut', elem: null, kind: 'Longsword', note: 'Plain steel. Never wrong, never the best.', moves: BLADE, mult: 1, craft: { coin: 100, shell: 2 } },
   { id: 'saber', name: 'Bristle Saber', type: 'Cut', elem: null, kind: 'Longsword', note: 'Edged with Gorehorn bristles. Bites deeper.', moves: BLADE, mult: 1.2, from: 'blade', cost: { coin: 300, pelt: 2, hide: 3 } },
   { id: 'gale', name: 'Galecutter', type: 'Cut', elem: 'Gale', kind: 'Curved blade', note: 'Hooked with Galeshrike talons. Sings when swung.', moves: GALE, mult: 1.1, from: 'blade', cost: { coin: 300, talon: 2, plume: 3 } },
   { id: 'storm', name: 'Stormcleaver', type: 'Cut', elem: 'Gale', kind: 'Curved blade', note: 'A Tempest Eye spins in the guard.', moves: GALE, mult: 1.35, from: 'gale', cost: { coin: 500, tempesteye: 1, talon: 3 } },
@@ -140,7 +142,7 @@ export const WEAPONS: Record<string, WeaponDef> = Object.fromEntries(list.filter
  *  edition shows up (a hand-kept list once left the Mirewood weapons out of the Forge). Children follow their
  *  parent, in the order they're listed above. */
 export const TREES: { type: DamageType; nodes: [string, number][] }[] = (['Cut', 'Blunt', 'Pierce'] as DamageType[]).map(type => {
-  const ws = Object.values(WEAPONS).filter(w => w.type === type);
+  const ws = Object.values(WEAPONS).filter(w => w.type === type && !w.starter);
   const nodes: [string, number][] = [];
   const walk = (id: string, depth: number) => { nodes.push([id, depth]); for (const c of ws) if (c.from === id) walk(c.id, depth + 1); };
   for (const w of ws) if (!w.from || !WEAPONS[w.from]) walk(w.id, 0);

@@ -39,6 +39,68 @@ const bestPart = (h: E.Hunt) => {
   return M.parts.filter(p => !h.mon.parts[p.id].broken).sort((a, b) => b.eff[w.type] - a.eff[w.type])[0];
 };
 
+/** the Foothills (the tutorial island, Nov 2026): one short prompt at a time, eight words or fewer, each pointing at
+ *  the one thing to press. These are the only tips while the island is on; the Ridge's own tips come after. */
+const onIsland = (mid: string) => { const h = hunt(); return h && h.mid === mid ? h : null; };
+const ISLAND: Tip[] = [
+  {
+    id: 'i-begin', guide: true, learn: true, at: ['begin'],
+    when: () => game.view === 'board' && !game.hunt && E.islandStep(game.save) === 0,
+    text: () => 'Your first hunt: a Scuttlehog. Tap Hunt.',
+    done: () => game.view === 'hunt'
+  },
+  {
+    id: 'i-die', guide: true, learn: true, at: ['dice'],
+    when: () => { const h = onIsland('scuttlehog'); return !!h && h.turn === 1 && unusedTurn(h) && !game.sel.length; },
+    text: () => 'Tap a die.',
+    done: () => game.sel.length > 0 || !!hunt()?.dice.some(d => d.used)
+  },
+  {
+    id: 'i-move', guide: true, learn: true, at: ['move'],
+    when: () => { const h = onIsland('scuttlehog'); return !!h && h.turn === 1 && game.sel.length > 0 && unusedTurn(h); },
+    text: () => 'Now tap Slash.',
+    done: () => !!hunt()?.dice.some(d => d.used)
+  },
+  {
+    id: 'i-end', guide: true, learn: true, at: ['end'],
+    when: () => { const h = onIsland('scuttlehog'); return !!h && h.turn === 1 && freeDice(h) === 0; },
+    text: () => 'Dice spent. End your turn.',
+    done: () => (hunt()?.turn ?? 1) > 1
+  },
+  {
+    id: 'i-tele', guide: true, info: true, at: ['tele'],
+    when: () => { const h = onIsland('snapclaw'); return !!h && h.turn === 1 && unusedTurn(h); },
+    text: () => 'This is its next move. Watch it.',
+    next: 'Got it'
+  },
+  {
+    id: 'i-block', guide: true, learn: true, at: ['guard'],
+    when: () => { const h = onIsland('snapclaw'); return !!h && h.intent === 'pinch' && h.guard === 0 && freeDice(h) > 0; },
+    text: () => 'A big hit is coming. Block it.',
+    done: () => (hunt()?.guard ?? 0) > 0
+  },
+  {
+    id: 'i-forge', guide: true, learn: true, at: ['to-forge', 'nav-forge'],
+    when: () => E.islandStep(game.save) === 2 && game.view !== 'forge' && !(game.view === 'hunt' && game.hunt && !game.hunt.over),
+    text: () => 'You have Shell. Make a blade.',
+    done: () => game.view === 'forge'
+  },
+  {
+    id: 'i-make', guide: true, learn: true, at: ['forge-act'],
+    when: () => E.islandStep(game.save) === 2 && game.view === 'forge',
+    text: () => 'Make the Hunter\'s Blade.',
+    done: () => E.islandDone(game.save)
+  },
+  {
+    id: 'i-ridge', guide: true, info: true, at: ['begin', 'nav-board'],
+    when: () => E.islandDone(game.save) && game.save.tips.includes('i-make') && game.view !== 'hunt' && !(game.save.record.gorehorn?.hunts ?? 0),
+    text: () => 'A gift: the maul. Ashfall Ridge is open.',
+    next: 'Got it'
+  }
+];
+/** the first Ridge hunt's basics, already taught in the Foothills */
+const ISLAND_TAUGHT = ['begin', 'g-next', 'g-hp', 'move', 'guard', 'end'];
+
 export const TIPS: Tip[] = [
   // ---- the guided first hunt ----
   // Playtest (Nov 2026): players clicked "Got it" and were lost. These steps can't be dismissed: each stays, with
@@ -242,15 +304,18 @@ class Coach {
   current = $derived.by<Tip | null>(() => {
     if (!settings.prefs.tips) return null;
     const seen = game.save.tips;
-    return TIPS.find(t => !seen.includes(t.id) && t.when()) ?? null;
+    if (!E.islandDone(game.save) || (game.save.tips.includes('i-make') && !seen.includes('i-ridge'))) return ISLAND.find(t => !seen.includes(t.id) && t.when()) ?? null;
+    const did = seen.includes('i-begin');
+    return TIPS.find(t => !seen.includes(t.id) && !(did && ISLAND_TAUGHT.includes(t.id)) && t.when()) ?? null;
   });
   private shown: string | null = null;
 
   /** Call from an effect: retires the tip on screen once it's done or its moment has passed. */
   sync() {
-    if (settings.prefs.tips) for (const t of TIPS) if (t.learn && !game.save.tips.includes(t.id) && t.done?.()) this.markSeen(t.id);
+    if (settings.prefs.tips) for (const t of [...ISLAND, ...TIPS]) if (t.learn && !game.save.tips.includes(t.id) && t.done?.()) this.markSeen(t.id);
     const cur = this.current;
-    if (this.shown && this.shown !== cur?.id) this.markSeen(this.shown);
+    // an island prompt waits for its moment: one shown and not yet done stays pending (only retire it once done)
+    if (this.shown && this.shown !== cur?.id && !this.shown.startsWith('i-')) this.markSeen(this.shown);
     this.shown = cur?.id ?? null;
     if (cur?.done?.()) this.markSeen(cur.id);
   }
@@ -263,7 +328,7 @@ class Coach {
   /** Got it / Next. Guided action steps can't be dismissed: they wait until the player does them. */
   dismiss() { const c = this.current; if (c && (!c.guide || c.info)) this.markSeen(c.id); }
   /** `veteran`: skipping the tutorial itself also skips the one-layer-per-hunt screen */
-  skipAll(veteran = false) { settings.prefs.tips = false; if (veteran) settings.prefs.showAll = true; settings.save(); }
+  skipAll(veteran = false) { settings.prefs.tips = false; if (veteran) { settings.prefs.showAll = true; game.skipIsland(); } settings.save(); }
   /** Turning tips back on replays them from the start. */
   setEnabled(on: boolean) {
     settings.prefs.tips = on; settings.save();

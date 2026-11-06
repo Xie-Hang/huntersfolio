@@ -44,6 +44,10 @@
     groups: [...sec.main, ...sec.optional].map(groupOf).concat(E.UNKNOWN.some(u => u.tier === sec.promo) ? [groupOf(sec.promo)] : []).filter(g => g.known.length || g.unknown.length)
   })).filter(sec => sec.promoMon || sec.groups.length));
   const myRank = $derived(E.hunterRank(game.save));
+  // the Foothills (the tutorial island, Nov 2026): its monsters appear one at a time, and the Ridge and the ranks wait
+  const isl = $derived(!E.islandDone(game.save));
+  const foothills = $derived(Object.values(E.MONSTERS).filter(N => N.tier === 0.5));
+  const footOpen = $derived(foothills.filter(N => E.isUnlocked(game.save, N.id)));
   // ranks you haven't reached fold into one line (Nov 2026 text audit: at rank F, ranks E and D were 2 screens of
   // locked cards); a click opens one. Text detail: Full keeps them open.
   let openRank = $state<Record<string, boolean>>({});
@@ -78,6 +82,26 @@
       <h2>Choose a monster</h2>
       <span class="label">{known} of {total} sighted</span>
     </div>
+    {#if footOpen.length}
+      <div class="ranksec" class:current={isl}>
+        <h3 class="rankhead"><span>The Foothills</span><span class="label rs">{isl ? 'Where you learn' : 'Done'}</span></h3>
+        <div class="mgrid">
+          {#each footOpen as N (N.id)}
+            {@const r = record(game.save, N.id)}
+            <button class="mcard" aria-current={N.id === game.save.loadout.target} data-id={N.id} aria-label={N.short} onclick={() => game.openMonster(N.id)}>
+              <span class="mthumb" aria-hidden="true"><Plate mon={N.id} /></span>
+              <span class="nm">{N.short}</span>
+              <span class="meta"><span>{N.kind}</span></span>
+              <span class="st" class:new={!r.wins}>{r.wins ? `Hunted ×${r.wins}` : 'Not yet hunted'}</span>
+            </button>
+          {/each}
+        </div>
+        {#if isl && foothills.length > footOpen.length}<p class="rankfold" style="padding-left:2px">{foothills.length - footOpen.length} more in the Foothills</p>{/if}
+      </div>
+    {/if}
+    {#if isl}
+      <p class="rankfold" style="padding-left:2px">Ashfall Ridge · after the Foothills</p>
+    {:else}
     <div class="filters" aria-label="Filter by element">
       {#each ['All', ...ELEMS] as f}
         <button aria-pressed={filter === f} onclick={() => (filter = f as typeof filter)}>
@@ -85,7 +109,8 @@
         </button>
       {/each}
     </div>
-    {#each sections as sec (sec.rank)}
+    {/if}
+    {#each (isl ? [] : sections) as sec (sec.rank)}
       <div class="ranksec" class:current={sec.rank === myRank}>
         <h3 class="rankhead"><RankMedal rank={sec.rank} size={44} dim={sec.rank !== myRank} /><span>Rank {sec.rank} · {E.RANK_REGION[sec.rank]}</span><span class="label rs">{rankState(sec.rank)}</span></h3>
         {#if folded(sec.rank)}
@@ -142,7 +167,7 @@
         {/if}
       </div>
     {:else}
-      <p class="ital p0">No monsters of that element sighted yet.</p>
+      {#if !isl}<p class="ital p0">No monsters of that element sighted yet.</p>{/if}
     {/each}
     {#if E.EDITION === "demo" && storeAvailable() && game.save.endSeen}
       <div class="wishrow"><span class="md">The rest of the hunt is in the full game.</span><button class="btn quiet" onclick={() => openStore()}>Wishlist on Steam</button></div>

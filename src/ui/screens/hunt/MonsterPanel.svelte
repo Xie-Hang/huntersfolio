@@ -45,7 +45,8 @@
 <section class="panel stage" class:over={h.over === 'win'} aria-label="The monster" use:shake={game.shakes.mon}>
   <div style="display:flex;flex-direction:column;gap:12px">
     <!-- name, HP and elements are in the health bar across the top (VersusBar) -->
-    <div class="stagebody">
+    <!-- the first Foothills hunt doesn't show its next move yet: the picture takes the whole panel -->
+    <div class="stagebody" class:solo={!shows(h, 'intent') && !h.over}>
       <!-- the picture, then the monster's meters and condition under it: the telegraph beside sets the height, and this
            used to be a full-width row below both (Nov 2026: the hunt screen didn't fit a Steam Deck) -->
       <div class="platecol">
@@ -98,7 +99,7 @@
         </div>
         {/if}
       </div>
-      <Telegraph />
+      {#if shows(h, 'intent') || h.over}<Telegraph />{/if}
     </div>
   </div>
   <div class="fx">
@@ -129,6 +130,8 @@
   .platecol .metarow { flex-direction: column; align-items: stretch; }
   .platecol .metarow .meters { flex: none; grid-template-columns: minmax(0, 1fr); }
   .platecol .conds { justify-content: flex-start; margin-left: 0; }
+  .stagebody.solo { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+  .stagebody.solo .platecol { width: min(100%, 460px); }
   .stagebody { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 14px; align-items: start; }
   @media (max-width: 720px) { .stagebody { grid-template-columns: minmax(0, 1fr); } }
   .heads { display: flex; align-items: center; gap: 12px; }

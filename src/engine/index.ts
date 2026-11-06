@@ -14,3 +14,4 @@ export * from './behaviour';
 export * from './bounty';
 export * from './rank';
 export * from './advice';
+export * from './island';

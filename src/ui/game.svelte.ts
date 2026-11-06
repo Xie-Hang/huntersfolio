@@ -42,7 +42,8 @@ class Game {
   load() {
     const raw = read(SAVE_KEY);
     if (E.isNewerSave(raw) || E.isFullSaveInDemo(raw, E.EDITION)) { lockSaves(); this.newerSave = true; this.save = E.newSave(); return; }
-    this.save = E.loadSave(raw);
+    // nothing on this PC yet: a new player, who starts in the Foothills
+    this.save = raw ? E.loadSave(raw) : E.newPlayerSave();
     if (E.EDITION === 'full') this.save.edition = 'full';
     E.fixLoadout(this.save);
     const h = read(HUNT_KEY) as E.Hunt | null;
@@ -64,8 +65,16 @@ class Game {
     if (this.hunt && !this.hunt.over) write(HUNT_KEY, $state.snapshot(this.hunt));
     else remove(HUNT_KEY);
   }
+  /** "Skip tutorial" on the Foothills: kit out as the island would, leave any island hunt, open the Ridge */
+  skipIsland() {
+    if (E.islandDone(this.save)) return;
+    if (this.hunt && !this.hunt.over && E.MONSTERS[this.hunt.mid]?.island) { this.hunt = null; this.undoStack = []; this.sel = []; this.view = 'board'; }
+    E.skipIsland(this.save);
+    this.boardMon = true;
+    this.persist();
+  }
   reset() {
-    this.save = E.newSave();
+    this.save = E.newPlayerSave();
     this.hunt = null;
     this.undoStack = [];
     this.sel = [];
@@ -96,15 +105,20 @@ class Game {
   /** `scripted`: the tutorial's first hunt, opening on fixed dice */
   begin(scripted = false) {
     E.fixLoadout(this.save);
-    if (this.save.loadout.weapons.length !== 2 || !E.isUnlocked(this.save, this.save.loadout.target)) return;
-    // the first three hunts each add one layer of the hunt screen (see reveal.ts); "Show every action" skips that
-    const lesson = settings.prefs.showAll || this.save.hunts >= 3 ? undefined : this.save.hunts + 1;
+    const L = this.save.loadout;
+    // two weapons, except in the Foothills (the Training Blade alone)
+    if (!L.weapons.length || (L.weapons.length !== 2 && E.islandDone(this.save)) || !E.isUnlocked(this.save, L.target)) return;
+    // the first three hunts each add one layer of the hunt screen (see reveal.ts); "Show every action" skips that.
+    // Foothills hunts name what they show themselves (MonsterDef.island) and don't count toward the Ridge's layers.
+    const isl = !!E.MONSTERS[L.target]?.island, prior = E.ISLAND_MONSTERS.reduce((n, id) => n + (this.save.record[id]?.hunts ?? 0), 0);
+    const ridgeHunts = this.save.hunts - prior;
+    const lesson = isl || settings.prefs.showAll || ridgeHunts >= 3 ? undefined : ridgeHunts + 1;
     this.hunt = E.startHunt(this.save, E.randomSeed(), scripted ? E.TUTORIAL_SCRIPT : undefined, lesson);
     PL.huntBegin(this.hunt, this.save);
     this.undoStack = [];
     this.sel = [];
     this.view = 'hunt';
-    this.roll([0, 1, 2, 3]);
+    this.roll(this.hunt.dice.map((_, i) => i));
     sfx('diceRoll');
     this.persist();
   }
@@ -143,7 +157,7 @@ class Game {
 
   toggleDie(i: number) {
     const h = this.hunt;
-    if (!h || h.over || h.dice[i].used) return;
+    if (!h || h.over || !h.dice[i] || h.dice[i].used) return;
     this.sel = this.sel.includes(i) ? this.sel.filter(x => x !== i) : [...this.sel, i];
     sfx('dieTap');
   }
@@ -182,7 +196,7 @@ class Game {
   }
   /** the selected dice, or the ones the action would take on its own (E.autoDice) */
   private diceFor(a: E.DiceAction): number[] { return this.sel.length || !this.hunt ? this.sel : E.autoDice(this.hunt, a) ?? []; }
-  guard() { const d = this.diceFor('guard'); if (this.act(h => E.guard(h, d), ok => ok)) sfx('guard'); }
+  guard() { if (!shows(this.hunt, 'block')) return; const d = this.diceFor('guard'); if (this.act(h => E.guard(h, d), ok => ok)) sfx('guard'); }
   // actions a layer hasn't shown yet are off for keys and pads too
   charge() { if (!shows(this.hunt, 'all')) return; const d = this.diceFor('charge'); if (this.act(h => E.charge(h, d), ok => ok)) sfx('charge'); }
   swap() { if (!shows(this.hunt, 'swap')) return; const d = this.diceFor('swap'); if (this.act(h => E.swap(h, d), ok => ok)) sfx('swap'); }
@@ -195,6 +209,7 @@ class Game {
     if (r === false) this.persist();
   }
   reroll() {
+    if (!shows(this.hunt, 'reroll')) return;
     const idx = this.act(h => E.reroll(h, this.sel), r => r.length > 0);
     // A reroll can't be undone, and neither can anything before it: undoing would rewind the dice seed and let
     // the player peek at what a reroll gives, then pick different dice (playtest: "you can cheese it").
@@ -208,7 +223,7 @@ class Game {
     if (ok && this.hunt && this.hunt.php > before) this.float('player', `+${this.hunt.php - before}`, 'heal');
   }
   undo() {
-    if (!this.hunt || this.hunt.over || !this.undoStack.length) return;
+    if (!this.hunt || this.hunt.over || !this.undoStack.length || !shows(this.hunt, 'undo')) return;
     this.hunt = this.undoStack[this.undoStack.length - 1];
     this.undoStack = this.undoStack.slice(0, -1);
     this.sel = [];
@@ -242,7 +257,7 @@ class Game {
     if (!h.over) setTimeout(() => sfx('diceRoll'), taken ? 260 : 0); // the new roll lands after the hit
     this.undoStack = [];
     this.sel = [];
-    if (!h.over) this.roll([0, 1, 2, 3]);
+    if (!h.over) this.roll(h.dice.map((_, i) => i));
     this.after();
   }
   abandon() {
