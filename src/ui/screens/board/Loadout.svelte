@@ -287,6 +287,7 @@
                 {#if it.effect === 'thaw'}<span class="note">{#if M.plated && M.plateHot}<span class="bad">Does nothing to burning scales</span>{:else if M.plated}<span class="good">{M.plateWord ? `Cracks the ${M.short}’s ${M.plateWord}` : `Melts the ${M.short}’s ice`}</span>{:else}<span class="bad">Only works on plated monsters</span>{/if}</span>{/if}
                 {#if it.effect === 'cureInfect'}<span class="note">{#if M.inflicts === 'Infect'}<span class="good">Cures the {M.short}’s infection</span>{:else}<span class="bad">It doesn’t infect</span>{/if}</span>{/if}
                 {#if it.effect === 'cureSpark'}<span class="note">{#if M.inflicts === 'Spark'}<span class="good">Clears the {M.short}’s spark</span>{:else}<span class="bad">It doesn’t spark</span>{/if}</span>{/if}
+                {#if it.effect === 'trapRush' || it.effect === 'trapLand'}{@const mv = E.trapMoves(M.id)[it.effect]}<span class="note">{#if mv.length}<span class="good">Catches its {mv.join(', ')}</span>{:else}<span class="bad">The {M.short} has no move this catches</span>{/if}</span>{/if}
                 {#if it.effect === 'blast'}<span class="note">{#if M.burrower}<span class="good">Forces the {M.short} up</span>{:else}<span class="bad">Only works on burrowers</span>{/if}</span>{/if}
               </span>
               <span class="num">{Math.min(have, it.max)}</span><span class="num">{have}</span>

@@ -86,7 +86,7 @@
       {#if multi}<h3 class="mvname multi">{#each info.name.split(' + ') as n, i}{#if i}<span class="sep" aria-hidden="true">&nbsp;·&nbsp;</span>{/if}<span>{n}</span>{/each}</h3>
       {:else}<h3 class="mvname">{info.name}</h3>{/if}
       {#if inc || tp?.extra}
-        {#if total}<span class="big" aria-label="{total} damage to you this turn">−{total}</span>{:else}<span class="big safe">{inc?.evade ? 'Dodged' : 'Blocked'}</span>{/if}
+        {#if total}<span class="big" aria-label="{total} damage to you this turn">−{total}</span>{:else}<span class="big safe">{E.trapCatches(h.trapSet, h.intent) ? 'Trapped' : inc?.evade ? 'Dodged' : 'Blocked'}</span>{/if}
       {/if}
     </div>
     {#if !multi && !tip}<p class="say">{info.text}</p>{/if}
@@ -94,10 +94,11 @@
       <div class="calc">
         {#if inc.elem === 0}<b>{inc.raw}</b> physical{#if inc.wearsResist} · <span class="nores">your armor's {E.monElem(h)} resist doesn't apply</span>{/if}
         {:else if inc.phys === 0}<Elem e={E.monElem(h)} /><b>{inc.raw}</b> {E.monElem(h)}{#if inc.res} · resisted by your armor → <b>{inc.after}</b>{/if}
-        {:else}<b>{inc.phys}</b> physical + <Elem e={E.monElem(h)} /><b>{inc.elem}</b> {E.monElem(h)}{#if inc.res} · {E.monElem(h)} part resisted → <b>{inc.after}</b>{/if}{/if}{#if inc.evade} · smoke: <b>misses</b>{:else if h.guard} · − <b>{inc.g}</b> guard{inc.half ? ' (halved)' : ''}{/if}{#if !inc.evade && inc.ward} · − <b>{inc.ward}</b> armor{/if}{#if !inc.evade && inc.net && inc.noGuard} · <span class="nores">guard can’t stop it</span>{:else if !inc.evade && inc.net} · <span style="color:var(--muted)">guard dice to reduce{inc.half ? ' (half as well)' : ''}</span>{/if}
+        {:else}<b>{inc.phys}</b> physical + <Elem e={E.monElem(h)} /><b>{inc.elem}</b> {E.monElem(h)}{#if inc.res} · {E.monElem(h)} part resisted → <b>{inc.after}</b>{/if}{/if}{#if inc.evade && !E.trapCatches(h.trapSet, h.intent)} · smoke: <b>misses</b>{:else if h.guard} · − <b>{inc.g}</b> guard{inc.half ? ' (halved)' : ''}{/if}{#if !inc.evade && inc.ward} · − <b>{inc.ward}</b> armor{/if}{#if !inc.evade && inc.net && inc.noGuard} · <span class="nores">guard can’t stop it</span>{:else if !inc.evade && inc.net} · <span style="color:var(--muted)">guard dice to reduce{inc.half ? ' (half as well)' : ''}</span>{/if}
       </div>
     {/if}
     {#if tp?.extra}<div class="calc rider">+<b>{tp.extra}</b> at the end of the turn: {tp.why.join(', ')} · <span class="nores">guard can’t stop it</span></div>{/if}
+    {#if E.trapCatches(h.trapSet, h.intent)}<div class="calc rider" style="color:var(--gold-hi)">Your {(E.ITEMS[h.item ?? '']?.name ?? 'trap')} catches it: no damage, and it’s held for {E.TRAP_HOLD[h.trapSet!]} turns{E.canCapture(h) ? '. It’s weak enough, so it’s captured' : ''}.</div>{:else if h.trapSet}<div class="calc rider"><span class="nores">Your {(E.ITEMS[h.item ?? '']?.name ?? 'trap')} won’t catch this: it’s wasted.</span></div>{/if}
     {#if info.note || info.steady || breaksCharge || breaksSnare}<div class="note">{[info.note, info.steady && E.carries(h, 'Blunt') ? 'Daze can\'t cancel it' : null, breaksCharge ? `This hit breaks your charge (${E.CHARGE_BREAK}+)` : null, breaksSnare ? `This hit tears it free of your snare: guard it under ${E.CHARGE_BREAK}` : null].filter(Boolean).join(' · ')}</div>{/if}
     {#if tip}<div class="answer" class:counter={isCounter}><b>{isCounter ? 'Counter:' : 'Tip:'}</b> <Tagged text={tip} /></div>{/if}
   {/if}

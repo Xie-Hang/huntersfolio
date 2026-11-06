@@ -157,7 +157,17 @@ export function swallowPlayer(h: Hunt, n: number) {
 }
 
 /* ---------- reading the state ---------- */
-export const intentInfo = (h: Hunt): Intent => def(h).intent(h, h.intent);
+/* ---------- traps (prototype, Nov 2026) ---------- */
+/** what each trap catches, by the monster's move: ground rushes, and moves that land on you (dives, bursts up) */
+export const TRAP_CATCH: Record<'trapRush' | 'trapLand', string[]> = {
+  trapRush: ['charge', 'lunge', 'pounce', 'swallow', 'cyclone'],
+  trapLand: ['dive', 'erupt', 'rockburst']
+};
+/** monster actions a sprung trap holds it for (tunable: the sim tests 1 and 2) */
+export const TRAP_HOLD: Record<'trapRush' | 'trapLand', number> = { trapRush: 2, trapLand: 2 };
+export const trapCatches = (fx: string | null | undefined, intent: string) => !!fx && (TRAP_CATCH as Record<string, string[]>)[fx]?.includes(intent);
+const TRAPPED: Intent = { name: 'Trapped', text: 'It thrashes in the trap.', dmg: 0, threat: 0, note: 'Its action is lost' };
+export const intentInfo = (h: Hunt): Intent => (h.intent === 'trapped' ? TRAPPED : def(h).intent(h, h.intent));
 export const tip = (h: Hunt) => (h.over ? null : def(h).tip?.(h, h.intent) ?? null);
 export const canCapture = (h: Hunt) => h.mon.hp > 0 && h.mon.hp <= h.mon.max * CAPTURE_AT;
 export const captureBlocked = (h: Hunt) => canCapture(h) && def(h).canCapture?.(h) === false;
@@ -174,6 +184,8 @@ export const freeDice = (h: Hunt) => h.dice.map((d, i) => (d.used ? -1 : i)).fil
  *  the telegraph is what it does AFTER your turn, so it was still on the ground. Say so on the button. */
 export function itemBlockReason(h: Hunt): string | null {
   if (!h.item || h.over || itemUsable(h)) return null;
+  const fx0 = ITEMS[h.item].effect;
+  if ((fx0 === 'trapRush' || fx0 === 'trapLand') && h.trapSet) return 'Set: it springs when you end your turn';
   if (h.itemUsed) return 'One item per turn: used this turn';
   if (h.itemCharges < 1) return 'None left';
   const fx = ITEMS[h.item].effect, next = h.intent;
@@ -182,6 +194,7 @@ export function itemBlockReason(h: Hunt): string | null {
   if (fx === 'thaw') return def(h).plateHot ? 'Its scales are already burning: a Firepot does nothing' : 'Only works while it has plating (ice or slate)';
   if (fx === 'cureInfect') return 'Only works while you’re infected';
   if (fx === 'cureSpark') return 'Only works with Spark pips on you or charged dice';
+  if (fx === 'trapRush' || fx === 'trapLand') return h.trapSet ? 'Set: it springs when you end your turn' : 'It’s already held';
   return null;
 }
 export function itemUsable(h: Hunt): boolean {
@@ -191,6 +204,7 @@ export function itemUsable(h: Hunt): boolean {
   if (ITEMS[h.item].effect === 'thaw') return h.mon.plating > 0 && !def(h).plateHot;
   if (ITEMS[h.item].effect === 'cureInfect') return (h.mon.pInf ?? 0) > 0;
   if (ITEMS[h.item].effect === 'cureSpark') return (h.mon.pSpark ?? 0) > 0 || h.dice.some(d => d.charged && !d.used);
+  if (ITEMS[h.item].effect === 'trapRush' || ITEMS[h.item].effect === 'trapLand') return !h.trapSet && h.intent !== 'trapped';
   return true;
 }
 
@@ -213,7 +227,7 @@ export function incoming(h: Hunt) {
   const info = intentInfo(h); if (!info.dmg) return null;
   const r = afterResist(h, info), res = r.resisted, after = r.after;
   const parts = { phys: r.phys, elem: r.elem, wearsResist: r.wearsResist, noGuard: !!info.noGuard };
-  if (h.evade) return { raw: info.dmg, after, net: 0, res, g: 0, ward: 0, half: !!info.halfGuard && !h.arm.steady, evade: true, ...parts };
+  if (h.evade || trapCatches(h.trapSet, h.intent)) return { raw: info.dmg, after, net: 0, res, g: 0, ward: 0, half: !!info.halfGuard && !h.arm.steady, evade: true, ...parts };
   const g = info.noGuard ? 0 : info.halfGuard && !h.arm.steady ? Math.floor(h.guard / 2) : h.guard, ward = h.arm.ward ?? 0;
   return { raw: info.dmg, after, net: Math.max(0, after - g - ward), res, g, ward, half: !!info.halfGuard && !h.arm.steady, evade: false, ...parts };
 }
@@ -496,6 +510,7 @@ export function useItem(h: Hunt): boolean {
     case 'thaw': { const pw = def(h).plateWord ?? 'ice'; h.mon.plating = 0; log(h, `The firepot bursts against its back. ${pw === 'ice' ? 'The ice plating melts away' : `The ${pw === 'scale' ? 'scales crack' : `${pw} cracks`} and falls away`}!`, 'gold'); break; }
     case 'blast': unearth(h); log(h, 'The powder goes off in its tunnel. It bursts up, stunned!', 'gold'); if (charmFx(h) === 'landWhet') landWhet(h); break;
     case 'cureInfect': h.mon.pInf = 0; h.mon.pInfDmg = 0; log(h, `${it.name}: the infection is gone.`, 'gold'); break;
+    case 'trapRush': case 'trapLand': h.trapSet = it.effect; log(h, `You set the ${it.name}. ${trapCatches(it.effect, h.intent) ? 'Its next move will run straight into it.' : 'Its next move isn’t one it catches: the trap will be wasted.'}`, 'gold'); break;
     case 'cureSpark': h.mon.pSpark = 0; for (const d of h.dice) d.charged = false; log(h, `${it.name}: the spark drains out of you.`, 'gold'); break;
   }
   return true;
@@ -519,7 +534,22 @@ export function endTurn(h: Hunt): TurnResult {
     log(h, `${live} charged ${live > 1 ? 'dice' : 'die'} you didn’t use discharge${live > 1 ? '' : 's'} into you for ${d}.`, 'ember');
     if (h.php <= 0) { finish(h, 'lose'); return { taken: 0 }; } // its attack never came: `taken` is the attack only
   }
-  if (info.dmg > 0) {
+  let caught = false;
+  if (h.trapSet) {
+    const fx = h.trapSet; h.trapSet = undefined;
+    if (trapCatches(fx, type)) {
+      // its move ends where it would have (a dive lands, a burrower surfaces) without hitting you; what was already
+      // running still runs (slime on you burns), so its line is kept unless it's only about the move that missed
+      const after = MD.resolve(h, type, false);
+      if (after && !/smoke|slip away/i.test(after)) log(h, after);
+      m.air = false; m.airLeft = 0; m.under = false; caught = true; feat(h, 'trapped');
+      if (canCapture(h)) { h.captured = true; log(h, `${info.name}: straight into your trap. Weak and held, it's captured!`, 'gold'); finish(h, 'win'); return { taken: 0 }; }
+      m.trapped = TRAP_HOLD[fx];
+      log(h, `${info.name}: straight into your trap! It's held for ${m.trapped} action${m.trapped > 1 ? 's' : ''}.`, 'gold');
+    } else log(h, `${info.name} isn't a move your trap catches. The trap is wasted.`, 'ember');
+  }
+  if (type === 'trapped') m.trapped = Math.max(0, (m.trapped ?? 1) - 1);
+  if (!caught && info.dmg > 0) {
     if (h.evade) { h.evade = false; log(h, `${info.name} tears through the smoke and misses you.`, 'gold'); }
     else {
       const ar = afterResist(h, info), res = ar.resisted;
@@ -540,7 +570,7 @@ export function endTurn(h: Hunt): TurnResult {
     }
     if (h.php > 0) log(h, `The hit knocks you back and the ${MD.short} tears free of the snare!`, 'ember');
   }
-  const line = MD.resolve(h, type, landed);
+  const line = caught || type === 'trapped' ? null : MD.resolve(h, type, landed);
   if (line) log(h, line);
   if ((m.infected ?? 0) > 0 && m.hp > 0) {
     const d = Math.min(m.hp, m.infectDmg ?? 0); m.hp -= d; h.stats.dealt += d; m.infected!--;
@@ -563,7 +593,7 @@ export function endTurn(h: Hunt): TurnResult {
   if (h.chargeReady) log(h, 'Your unused charge fades.');
   h.turn++; h.chargeReady = h.chargePending; h.chargePending = false; h.guard = 0; h.itemUsed = false; h.freeSwapUsed = false;
   rollAll(h);
-  h.intent = MD.next(h, type);
-  if (m.dazeQueued) { m.dazeQueued = false; h.intent = 'dazed'; }
+  if ((m.trapped ?? 0) > 0) h.intent = 'trapped';
+  else { h.intent = MD.next(h, caught || type === 'trapped' ? 'dazed' : type); if (m.dazeQueued) { m.dazeQueued = false; h.intent = 'dazed'; } }
   return { taken };
 }

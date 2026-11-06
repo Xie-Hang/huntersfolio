@@ -115,7 +115,7 @@
     {@const it = E.ITEMS[h.item]}
     <div class="divider"><span class="label">Item · Free action</span><span class="label">{h.itemCharges} left</span></div>
     <button class="move pocket {iOk ? 'ready' : 'no'}" data-coach="item" aria-disabled={!iOk} onclick={() => iOk && game.item()}>
-      <span><span class="mn"><Key k="I" /><Icon id={h.item} size={20} />{it.name}</span><span class="md">{#if E.itemBlockReason(h)}<span class="why">{E.itemBlockReason(h)}</span>{:else}{it.desc}{/if}</span></span>
+      <span><span class="mn"><Key k="I" /><Icon id={h.item} size={20} />{it.name}</span><span class="md">{#if E.itemBlockReason(h)}<span class="why">{E.itemBlockReason(h)}</span>{:else if it.effect === 'trapRush' || it.effect === 'trapLand'}{#if E.trapCatches(it.effect, h.intent)}<span class="good">Catches this {E.intentInfo(h).name}: no damage, held {E.TRAP_HOLD[it.effect]} turns{E.canCapture(h) ? ', and it’s weak enough: captured' : ''}</span>{:else}<span class="why">Won’t catch its {E.intentInfo(h).name}: wasted if set now</span>{/if}{:else}{it.desc}{/if}</span></span>
       <span class="need">Free</span>
     </button>
   {:else}

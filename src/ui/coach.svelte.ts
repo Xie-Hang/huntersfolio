@@ -136,6 +136,16 @@ export const TIPS: Tip[] = [
     done: () => !!hunt()?.itemUsed
   },
   {
+    // traps (Nov 2026): the first hunt you carry one, say what it catches and what it's for, once
+    id: 'trap', learn: true, at: ['item'],
+    when: () => { const h = hunt(); return !!h && !!h.item && E.ITEMS[h.item].effect.startsWith('trap') && h.turn === 1 && unusedTurn(h); },
+    text: () => {
+      const h = hunt()!, it = E.ITEMS[h.item!], mv = E.trapMoves(h.mid)[it.effect as 'trapRush' | 'trapLand'];
+      return `Your ${it.name} catches ${it.effect === 'trapRush' ? 'charges, lunges and pounces' : 'dives, and bursts up from underground'}${mv.length ? ` (the ${E.MONSTERS[h.mid].short}'s ${mv.join(', ')})` : ''}. Set it, free, on a turn its next move is one of those: you take no damage and it's held for ${E.TRAP_HOLD[it.effect as 'trapRush']} turns. If it's weak enough to capture when it springs, it's captured. Set on any other move, the trap is wasted.`;
+    },
+    done: () => !!hunt()?.itemUsed || (hunt()?.turn ?? 1) > 3
+  },
+  {
     id: 'swap', learn: true, at: ['swap'],
     when: () => {
       const h = hunt(); if (!h || h.turn < 5 || !unusedTurn(h)) return false;
