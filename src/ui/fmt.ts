@@ -16,8 +16,7 @@ export const effName = (e: number) => (e >= 1 ? 'Best' : e > 0 ? 'Half' : 'None'
 /** a part chip for the weapon in your hand (Nov 2026 playtest: nobody knew what "Cut: None" meant). It's about
  *  breaking the part only: hits still hurt the monster. */
 export const effWord = (e: number) => (e >= 1 ? 'Breaks more' : e > 0 ? 'Breaks less' : 'Can’t break');
-/** the same, short, for the monster page's table where the weapon is the column (Blade, Maul, Bow) */
-export const effShort = (e: number) => (e >= 1 ? 'Fast' : e > 0 ? 'Slow' : 'No');
+/** the weapon nouns the monster page's parts table uses as column heads */
 export const TYPE_NOUN: Record<string, string> = { Cut: 'Blade', Blunt: 'Maul', Pierce: 'Bow' };
 export const effCls = (e: number) => (e >= 1 ? 'best' : e > 0 ? 'half' : 'none');
 export const pct = (a: number, b: number) => Math.max(0, Math.min(100, Math.round((a / b) * 100)));

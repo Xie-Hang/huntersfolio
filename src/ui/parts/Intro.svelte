@@ -30,7 +30,7 @@
 
 <style>
   .intro{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:24px max(16px, env(safe-area-inset-left, 0px));
-    background:var(--mat-doodle-hunt) 0 0/220px 220px,rgba(14,11,9,.95)}
+    background:rgba(14,11,9,.93)} /* a plain dim: the page's own doodle pattern shows through once, not twice */
   .intro-card{box-sizing:border-box;width:min(560px,100%);border:1px solid var(--mat-plate-rule);border-radius:4px;padding:36px 40px 30px;display:flex;flex-direction:column;gap:12px}
   .intro-logo{margin:0 0 8px;font-family:'IM Fell English',Georgia,serif;font-weight:400;font-size:calc(var(--fs-logo) * 1.3);line-height:1;color:var(--ember);text-align:center}
   .intro-logo .hn{font-family:'IM Fell English SC',Georgia,serif;font-size:.62em;letter-spacing:.06em;color:var(--fg)}

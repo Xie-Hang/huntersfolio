@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Pip from '../parts/Pip.svelte';
+  import CostDie from '../parts/CostDie.svelte';
   import Icon from '../parts/Icon.svelte';
   import WeaponArt from '../parts/WeaponArt.svelte';
   // List-detail: upgrade trees on the left, the selected recipe on the right.
@@ -170,8 +170,8 @@
           <div class="fd-stat">
             <span class="big">{now}</span>
             <span class="unit">Avg damage per turn</span>
-            {#if base != null}<span class="delta {now >= base ? 'up' : 'down'}">{now >= base ? '▲ +' : '▼ '}{now - base} vs your {E.WEAPONS[d.from!].name}</span>
-            {:else if next != null}<span class="delta up">▲ {next} at +{lv + 1}</span>{/if}
+            {#if base != null}<span class="delta {now >= base ? 'up' : 'down'}">{now >= base ? '↑ +' : '↓ '}{now - base} vs your {E.WEAPONS[d.from!].name}</span>
+            {:else if next != null}<span class="delta up">↑ {next} at +{lv + 1}</span>{/if}
           </div>
           <!-- 3. What kind of weapon -->
           <div class="fd-type">
@@ -189,7 +189,7 @@
           {@const base = E.ARMORS[sel]}
           <div class="fd-stat">
             <span class="big">{owned ? a.hp : base.hp}</span><span class="unit">HP</span>
-            {#if owned && lv < E.MAX_REINFORCE}<span class="delta up">▲ {a.hp + 10} HP, block {a.guard + 1} at +{lv + 1}</span>{/if}
+            {#if owned && lv < E.MAX_REINFORCE}<span class="delta up">↑ {a.hp + 10} HP, block {a.guard + 1} at +{lv + 1}</span>{/if}
           </div>
           <div class="fd-type">
             <span>Block {owned ? a.guard : base.guard} per die</span><span class="sep">·</span><span>{base.rerolls} rerolls</span><span class="sep">·</span>
@@ -234,7 +234,7 @@
             <div class="label rule">Moves and details</div>
             <ul class="fd-moves">
               {#each E.movesAt(sel, wLevel(sel)) as m}
-                <li><span class="need" aria-label="Needs {needLabel(m.need)}">{#each [...m.need] as c}<Pip {c} />{/each}</span><span>{m.name}</span><span class="n">{m.dmg}</span></li>
+                <li><span class="need" aria-label="Needs {needLabel(m.need)}">{#each [...m.need] as c}<CostDie {c} small />{/each}</span><span>{m.name}</span><span class="n">{m.dmg}</span></li>
               {/each}
             </ul>
             <p class="fd-note">{d.kind}. {d.note}</p>

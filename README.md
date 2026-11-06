@@ -64,7 +64,7 @@ The very first hunt opens on fixed dice for two turns (`TUTORIAL_SCRIPT` in `src
 
 Player settings live apart from the save (key `settings`), so resetting progress keeps them. The desktop shell reads them at startup to open fullscreen if that was chosen. Interface size uses Electron's page zoom so layouts reflow; in the browser it falls back to CSS zoom.
 
-Hunt shortcuts: 1–4 dice, Q/W/E moves, G guard, C charge, S swap, X capture, I item, R reroll, Space end turn, Ctrl+Z or U undo, Esc clear selection. F11 toggles fullscreen anywhere.
+Hunt shortcuts: 1–4 dice, Q/W/E moves, G block, C charge, S swap, X capture, I item, R reroll, Space end turn, Ctrl+Z or U undo, Esc clear selection. F11 toggles fullscreen anywhere.
 
 ## Saves
 

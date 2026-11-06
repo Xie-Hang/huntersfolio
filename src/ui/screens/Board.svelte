@@ -66,23 +66,9 @@
 
 <svelte:window onkeydown={onKey} />
 
-{#if game.boardMon && M}
-  <div class="monpage">
-    <div class="backbar">
-      <button class="btn quiet" data-sound onclick={() => game.go('board')}><span aria-hidden="true">←</span> All monsters</button>
-    </div>
-    <div class="mongrid">
-      <section class="panel monmain" aria-label="Bestiary entry"><Bestiary mon={M.id} /></section>
-      <div class="monload"><Loadout /></div>
-    </div>
-  </div>
-{:else}
-  <section class="panel boardpanel" aria-label="Monsters">
-    <div class="ph">
-      <h2>Choose a monster</h2>
-      <span class="label">{known} of {total} sighted</span>
-    </div>
-    {#if footOpen.length}
+<!-- the Foothills: first on the board while you're on the island, last once you've left it -->
+{#snippet foot()}
+  {#if footOpen.length}
       <div class="ranksec" class:current={isl}>
         <h3 class="rankhead"><span>The Foothills</span><span class="label rs">{isl ? 'Where you learn' : 'Done'}</span></h3>
         <div class="mgrid">
@@ -99,6 +85,26 @@
         {#if isl && foothills.length > footOpen.length}<p class="rankfold" style="padding-left:2px">{foothills.length - footOpen.length} more in the Foothills</p>{/if}
       </div>
     {/if}
+{/snippet}
+
+
+{#if game.boardMon && M}
+  <div class="monpage">
+    <div class="backbar">
+      <button class="btn quiet" data-sound onclick={() => game.go('board')}><span aria-hidden="true">←</span> All monsters</button>
+    </div>
+    <div class="mongrid">
+      <section class="panel monmain" aria-label="Bestiary entry"><Bestiary mon={M.id} /></section>
+      <div class="monload"><Loadout /></div>
+    </div>
+  </div>
+{:else}
+  <section class="panel boardpanel" aria-label="Monsters">
+    <div class="ph">
+      <h2>Choose a monster</h2>
+      <span class="label">{known} of {total} sighted</span>
+    </div>
+    {#if isl}{@render foot()}{/if}
     {#if isl}
       <p class="rankfold" style="padding-left:2px">Ashfall Ridge · after the Foothills</p>
     {:else}
@@ -169,6 +175,7 @@
     {:else}
       {#if !isl}<p class="ital p0">No monsters of that element sighted yet.</p>{/if}
     {/each}
+    {#if !isl}{@render foot()}{/if}
     {#if E.EDITION === "demo" && storeAvailable() && game.save.endSeen}
       <div class="wishrow"><span class="md">The rest of the hunt is in the full game.</span><button class="btn quiet" onclick={() => openStore()}>Wishlist on Steam</button></div>
     {/if}

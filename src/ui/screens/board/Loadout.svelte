@@ -7,7 +7,8 @@
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
   import { detail, full } from '../../detail.svelte';
-  import { SLOT_LABEL, bestParts, movesLine, weaponVs, elemLabel, markOf } from '../../fmt';
+  import { SLOT_LABEL, bestParts, weaponVs, elemLabel, markOf } from '../../fmt';
+  import CostDie from '../../parts/CostDie.svelte';
   import { tick } from 'svelte';
 
   type Slot = 'w0' | 'w1' | 'armor' | 'charm' | 'item' | 'bounty';
@@ -75,7 +76,7 @@
   {@const m = E.elemMult(w.elem, mon)}
   {@const best = bestParts(mon, w.type)}
   {#if M.elemOf}{#if w.elem}<span class="neutral">Hits its {w.elem === 'Stone' ? 'Ember' : w.elem === 'Gale' ? 'Stone' : w.elem === 'Ember' ? 'Frost' : 'Gale'} stance's weakness</span>{/if}{:else if m > 1}<span class="good">Hits weakness</span>{:else if m < 1}<span class="bad">Resisted</span>{/if}
-  {#if best.length}{m !== 1 ? ' · ' : ''}<span class="best">Breaks {best.join(', ')}</span>{/if}
+  {#if best.length}{m !== 1 ? ' · ' : ''}<span class="best">Breaks more: {best.join(', ')}</span>{/if}
   {#if M.flier}{' · '}{#if w.type === 'Pierce'}<span class="good">Reaches it in the air</span>{:else}<span class="bad">Can’t reach it in the air</span>{/if}{/if}
   {#if M.plated}{@const n = M.plateBreak?.(w) ?? (w.type === 'Cut' ? 2 : 1)}{@const word = M.plateWord === 'scale' ? 'scales' : (M.plateWord ?? 'ice')}{' · '}{#if n >= M.plated}<span class="good">Clears its {word} in one hit</span>{:else}<span class="bad">Takes {Math.ceil(M.plated / n)} hits to clear its {word}</span>{/if}{#if M.plateHot && w.type === 'Cut'}{' · '}<span class="bad">Hot scales burn your hand</span>{/if}{/if}
   {#if M.id === 'rimeshrike' && w.type === 'Pierce'}{' · '}<span class="bad">Glances off its shroud on the ground</span>{/if}
@@ -98,7 +99,7 @@
 {#snippet delta(v: number, cur: number)}
   {@const d = v - cur}
   {#if !d}<small class="delta same">Same</small>
-  {:else}<small class="delta {d > 0 ? 'up' : 'down'}">{d > 0 ? '▲ +' : '▼ '}{d}</small>{/if}
+  {:else}<small class="delta {d > 0 ? 'up' : 'down'}">{d > 0 ? '↑ +' : '↓ '}{d}</small>{/if}
 {/snippet}
 
 <section class="panel loadout" aria-label="Loadout" bind:this={root}>
@@ -113,14 +114,22 @@
         {:else}
           {@const w = E.ownedWeapon(game.save, id)}
           {@const sg = E.SIGNATURES[w.type]}
+          {#if isl}
+          <!-- the Foothills: one weapon and nothing to compare yet -->
+          <div class="slot" data-slot={slot}>
+            <span class="sl">Weapon</span>
+            <span><span class="nm"><WeaponArt id={id} size={34} />{w.name}</span><span class="sub2"><span>{w.type}</span></span></span>
+          </div>
+          {:else}
           <button class="slot" data-slot={slot} onclick={() => open(slot)}>
             <span class="sl">{SLOT_LABEL[slot]}</span>
             <span>
               <span class="nm"><WeaponArt id={id} size={34} />{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}{' '}<span class="avg">{weaponVs(game.save, id, mon)} avg</span></span>
-              <span class="sub2"><span><span class="tag {sg.tag}" style="margin:0 4px 0 0">{sg.name}</span>{w.type} · <Elem e={markOf(w)} />{elemLabel(w)}</span><span>{@render weaponNotes(w)}</span></span>
+              <span class="sub2"><span>{#if w.moves.some(m => m.flow || m.daze || m.expose)}<span class="tag {sg.tag}" style="margin:0 4px 0 0">{sg.name}</span>{/if}{w.type} · <Elem e={markOf(w)} />{elemLabel(w)}</span><span>{@render weaponNotes(w)}</span></span>
             </span>
             <span class="chg">Change</span>
           </button>
+          {/if}
         {/if}
       {/each}
       {#if isl}
@@ -234,7 +243,7 @@
             <button class="prow" aria-current={id === cur} onclick={() => choose(id)}>
               <span>
                 <span class="nm"><WeaponArt id={id} size={28} />{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}{#if id === cur}<span class="badge">Equipped</span>{:else if id === other}<span class="badge">In {SLOT_LABEL[idx ? 'w0' : 'w1']}</span>{/if}</span>
-                <span class="ty">{w.type} · <Elem e={markOf(w)} />{elemLabel(w)} · {movesLine(w.moves)}</span>
+                <span class="ty">{w.type} · <Elem e={markOf(w)} />{elemLabel(w)}{#each w.moves as m} · <span class="mvl">{#each [...m.need] as c}<CostDie {c} small />{/each} {m.dmg}</span>{/each}</span>
                 <span class="note">{@render weaponNotes(w)}</span>
               </span>
               <span class="num">{v}{#if id === cur}<small class="delta same">Equipped</small>{:else}{@render delta(v, curV)}{/if}</span>
@@ -340,4 +349,5 @@
   .bnotice .bad { color: var(--ember-soft); font-size: var(--fs-sm); }
   .pay { color: var(--gold-hi); font-size: var(--fs-sm); }
   .tag.hard { color: var(--ember-soft); border-color: var(--ember-soft); }
+  .mvl { display: inline-flex; align-items: center; gap: 3px; }
 </style>

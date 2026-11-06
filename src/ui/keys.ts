@@ -1,5 +1,5 @@
 // Keyboard shortcuts for hunts. Mouse stays the main input; keys are for speed.
-// 1–4 dice · Q W E moves · G guard · C charge · S swap · X capture · I item · R reroll
+// 1–4 dice · Q W E moves · G block · C charge · S swap · X capture · I item · R reroll
 // Space end turn · Ctrl+Z or U undo · Esc clear selection.
 import * as E from '../engine';
 import { game } from './game.svelte';

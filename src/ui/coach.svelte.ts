@@ -131,7 +131,7 @@ export const TIPS: Tip[] = [
     text: () => {
       const h = hunt()!, w = E.currentWeapon(h), p = bestPart(h), t = E.MONSTERS[h.mid].parts.find(x => x.id === h.target)!;
       const none = t.eff[w.type] === 0;
-      return `New: aim. Your ${w.name} is ${w.type}${none ? `, which does nothing to the ${t.name.toLowerCase()}` : ''}. Click the ${p.name}: ${w.type} breaks it best. A broken part weakens the monster and drops materials.`;
+      return `New: aim. Your ${w.name}${none ? ` can’t break the ${t.name.toLowerCase()}` : ` breaks less on the ${t.name.toLowerCase()}`}. Click the ${p.name}: it breaks more. A broken part drops materials.`;
     },
     done: () => { const h = hunt(); return !!h && h.target === bestPart(h).id; }
   },
