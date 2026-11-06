@@ -538,7 +538,10 @@ export function endTurn(h: Hunt): TurnResult {
   if (h.trapSet) {
     const fx = h.trapSet; h.trapSet = undefined;
     if (trapCatches(fx, type)) {
-      MD.resolve(h, type, false); // its move ends where it would have (a dive lands, a burrower surfaces), without hitting you
+      // its move ends where it would have (a dive lands, a burrower surfaces) without hitting you; what was already
+      // running still runs (slime on you burns), so its line is kept unless it's only about the move that missed
+      const after = MD.resolve(h, type, false);
+      if (after && !/smoke|slip away/i.test(after)) log(h, after);
       m.air = false; m.airLeft = 0; m.under = false; caught = true; feat(h, 'trapped');
       if (canCapture(h)) { h.captured = true; log(h, `${info.name}: straight into your trap. Weak and held, it's captured!`, 'gold'); finish(h, 'win'); return { taken: 0 }; }
       m.trapped = TRAP_HOLD[fx];
