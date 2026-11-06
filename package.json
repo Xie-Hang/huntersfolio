@@ -13,6 +13,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "sim": "tsx src/sim/cli.ts",
+    "sim:depth": "tsx src/sim/depth.ts",
     "desktop": "npm run build && electron .",
     "dist:win": "npm run build && electron-builder --win dir zip --x64",
     "steam:build": "node scripts/steam.mjs build",
