@@ -74,7 +74,8 @@ const ISLAND: Tip[] = [
     id: 'i-quick', guide: true, learn: true, at: ['move'],
     when: () => { const h = onIsland('scuttlehog'); return !!h && h.turn === 2 && unusedTurn(h) && !game.sel.length; },
     text: () => 'Shortcut: click Slash. It picks the die.',
-    done: () => { const h = hunt(); return !!h && (!unusedTurn(h) || h.turn > 2); }
+    // (only from turn 2 on: on turn 1 the dice get used the long way, and that must not count as having learned it)
+    done: () => { const h = hunt(); return !!h && h.mid === 'scuttlehog' && ((h.turn === 2 && !unusedTurn(h)) || h.turn > 2); }
   },
   {
     id: 'i-tele', guide: true, info: true, at: ['tele'],
