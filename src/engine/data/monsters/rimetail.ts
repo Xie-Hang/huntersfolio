@@ -23,7 +23,7 @@ export const rimetail: MonsterDef = {
   elemental: ['Tail Sweep'],
   weak: 'Ember',
   resist: 'Gale',
-  hp: 320,
+  hp: 330,
   tier: 1,
   requires: 'gorehorn',
   head: 'jaw',

@@ -142,18 +142,18 @@ function tryExposeCombo(h: Hunt, p: Policy): boolean {
   applyPlan(h, bestPlan(h, p));
   return true;
 }
-/** Both skill levels: swap when this roll suits the other weapon (Nov 2026: each weapon type has its own dice
- *  pattern, so an awkward roll for one is often a good one for the other). Paid with a blank when there is one.
- *  Casual players only take an obvious gain; skilled players take any real one. Tried on copies. */
+/** Skilled only: swap when this roll suits the other weapon (Nov 2026: each weapon type has its own dice pattern,
+ *  so an awkward roll for one is often a good one for the other). Paid with a blank when there is one. */
 function tryRollSwap(h: Hunt, p: Policy): boolean {
-  if (h.over || E.freeDice(h).length < 2) return false;
+  // casual players don't swap to fit a roll (7 Nov playtest: none of the four ever swapped)
+  if (p.skill !== 'skilled' || h.over || E.freeDice(h).length < 2) return false;
   const oth = E.otherWeapon(h);
   if (!E.canHit(h, oth) || effFor(h, oth, h.target) === 0) return false;
   const pay = E.autoDice(h, 'swap'); if (!pay) return false;
   const base = clone(h); applyPlan(base, bestPlan(base, p));
   const c = clone(h); if (!E.swap(c, pay)) return false;
   applyPlan(c, bestPlan(c, p));
-  if (stateScore(h, c) <= stateScore(h, base) + (p.skill === 'casual' ? 20 : 5)) return false;
+  if (stateScore(h, c) <= stateScore(h, base) + 5) return false;
   E.swap(h, pay);
   applyPlan(h, bestPlan(h, p));
   return true;

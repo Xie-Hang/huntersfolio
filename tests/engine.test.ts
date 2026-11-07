@@ -15,10 +15,11 @@ describe('hunts are deterministic', () => {
 
 describe('average damage shown on weapons', () => {
   it('matches the tuned values', () => {
+    // each type has its own dice pattern (Nov 2026): blade Fangs, bow Claws, maul a mix
     expect(E.avgDmg(E.WEAPONS.blade.moves)).toBe(30);
-    expect(E.avgDmg(E.WEAPONS.maul.moves)).toBe(33);
-    expect(E.avgDmg(E.WEAPONS.bow.moves)).toBe(30); // includes Expose on follow-up arrows
-    expect(E.avgDmg(E.movesAt('tusk', 0))).toBe(42);
+    expect(E.avgDmg(E.WEAPONS.maul.moves)).toBe(35);
+    expect(E.avgDmg(E.WEAPONS.bow.moves)).toBe(31); // includes Expose on follow-up arrows
+    expect(E.avgDmg(E.movesAt('tusk', 0))).toBe(44);
   });
 });
 
@@ -117,7 +118,7 @@ describe('Cinderback', () => {
   });
   it('a 2-die Blunt hit drives it up and cancels the eruption; a 1-die hit does not', () => {
     const h = burrowed(['maul', 'blade']);
-    expect(E.useMove(h, 0)!.dmg).toBe(6); // Thump 12, half through the ground
+    expect(E.useMove(h, 0)!.dmg).toBe(7); // Thump 13, half through the ground
     expect(h.intent).toBe('erupt');
     E.useMove(h, 1); // Smash
     expect(h.mon.under).toBe(false);

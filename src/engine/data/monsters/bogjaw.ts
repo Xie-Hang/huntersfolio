@@ -22,7 +22,7 @@ export const bogjaw: MonsterDef = {
   elemental: ['Body Slam'],
   weak: 'Gale',
   resist: 'Ember',
-  hp: 500,
+  hp: 470,
   tier: 2,
   requires: ['cragwing'], // rank E: the Cragwing promotion opens the Mirewood (Nov 2026)
   head: 'jaw',

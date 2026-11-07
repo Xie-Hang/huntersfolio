@@ -23,7 +23,7 @@ export const emberwhelk: MonsterDef = {
   elemental: ['Spit Cinders', 'Molten Slime'],
   weak: 'Stone',
   resist: 'Frost',
-  hp: 460,
+  hp: 445,
   tier: 2,
   requires: ['cragwing'], // rank E: the Cragwing promotion opens the Mirewood (Nov 2026)
   head: 'shell',

@@ -44,7 +44,7 @@ export const duskheron: MonsterDef = {
   elemental: ['Twin Spear'],
   weak: 'Frost',
   resist: 'Stone',
-  hp: 520,
+  hp: 505,
   tier: 2,
   requires: ['cragwing'], // rank E: the Cragwing promotion opens the Mirewood (Nov 2026)
   head: 'upper',

@@ -6,29 +6,32 @@ export const DZ = { light: 10, medium: 20, strong: 50 };
 
 const BLADE: Move[] = [
   // Flow sits on the middle move (Mekkman, Nov 2026): useful, but a choice, not a free extra on every cheap swing
-  { name: 'Slash', need: 'C', dmg: 12 },
+  // damage ×1.2 on the old numbers: a blade can only use Claws in Rend, so it hits harder to keep pace (Nov 2026)
+  { name: 'Slash', need: 'C', dmg: 14 },
   // each weapon type has its own dice pattern (Nov 2026 playtest: "the combinations are too similar"):
   // blades want Fangs, bows want Claws, mauls want a mix. Carry two and an awkward roll often suits the other one.
-  { name: 'Cleave', need: 'CC', dmg: 26, flow: true },
-  { name: 'Rend', need: 'CCT', dmg: 56, part: 2 }
+  { name: 'Cleave', need: 'CC', dmg: 31, flow: true },
+  { name: 'Rend', need: 'CCT', dmg: 67, part: 2 }
 ];
 const GALE: Move[] = [
   // curved blades cost what blades cost (they used to mirror them with Claws, which looked like the bow)
-  { name: 'Gust Cut', need: 'C', dmg: 12 },
-  { name: 'Shear', need: 'CC', dmg: 26, flow: true },
-  { name: 'Tempest', need: 'CCT', dmg: 56, part: 2 }
+  { name: 'Gust Cut', need: 'C', dmg: 14 },
+  { name: 'Shear', need: 'CC', dmg: 31, flow: true },
+  { name: 'Tempest', need: 'CCT', dmg: 67, part: 2 }
 ];
 const MAUL: Move[] = [
   // only the strongest move dazes (Mekkman, Nov 2026): Daze was the strongest of the three signatures
-  { name: 'Thump', need: 'C', dmg: 12 },
-  { name: 'Smash', need: 'CT', dmg: 28, part: 1.5 },
-  { name: 'Skullcrack', need: 'CTT', dmg: 56, part: 2, daze: DZ.strong }
+  // damage ×1.05: keeps the Blunt checks' edge now that blades and bows hit harder (Nov 2026)
+  { name: 'Thump', need: 'C', dmg: 13 },
+  { name: 'Smash', need: 'CT', dmg: 29, part: 1.5 },
+  { name: 'Skullcrack', need: 'CTT', dmg: 59, part: 2, daze: DZ.strong }
 ];
 const BOW: Move[] = [
-  { name: 'Quick Shot', need: 'T', dmg: 12, expose: true },
+  // damage ×1.2: a bow can only use Fangs in Pinning Shot (Nov 2026)
+  { name: 'Quick Shot', need: 'T', dmg: 14, expose: true },
   // only the cheap shot exposes (Mekkman, Nov 2026): a one-die setup that weaker players lean on
-  { name: 'Volley', need: 'TT', dmg: 28 },
-  { name: 'Pinning Shot', need: 'TTC', dmg: 54, part: 1.5, pin: true }
+  { name: 'Volley', need: 'TT', dmg: 34 },
+  { name: 'Pinning Shot', need: 'TTC', dmg: 65, part: 1.5, pin: true }
 ];
 
 // The Oath line (Mekkman, Nov 2026): no element, the weapon type's signature on every move, unlocked by bounties and

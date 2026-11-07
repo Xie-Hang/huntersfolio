@@ -13,7 +13,7 @@ import type { Hunt, Intent, MonsterDef } from '../../types';
 import { choose, remember } from '../../behaviour';
 import { carries, carryingName } from '../../util';
 
-export const SOAK = 28, SOAK_BROKEN = 10, SHATTER_AT = 30, SHATTER_TURNS = 2, BURN = 8, SPIT_TURNS = 2, MELT_BURN = 8;
+export const SOAK = 38, SOAK_BROKEN = 10, SHATTER_AT = 30, SHATTER_TURNS = 2, BURN = 8, SPIT_TURNS = 2, MELT_BURN = 8;
 const STOKE_EVERY = 4;
 export const soakMax = (h: Hunt) => (h.mon.parts.spine.broken ? SOAK_BROKEN : SOAK) * (h.mon.stoked ? 2 : 1);
 const armourUp = (h: Hunt) => !h.mon.melt && !((h.mon.shatter ?? 0) > 0);

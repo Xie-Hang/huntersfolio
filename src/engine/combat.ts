@@ -139,7 +139,7 @@ export const SWALLOWED = 'Swallowed', FROZEN = 'Frozen', SHAKEN = 'Shaken';
 /** damage it takes to cut your way out once swallowed; Cut counts double, slick armor halves it */
 export const GUT_ESCAPE = 60;
 /** how much each damage type counts toward cutting free: blades slice out, clubs barely dent the gut wall */
-export const GUT_CUT: Record<string, number> = { Cut: 2, Pierce: 1, Blunt: 0.5 };
+export const GUT_CUT: Record<string, number> = { Cut: 3, Blunt: 0.5, Pierce: 1 };
 
 function rollAll(h: Hunt) {
   const fixed = h.script?.[h.turn - 1];
