@@ -23,7 +23,7 @@
   <div class="vside mon">
     <div class="vtop">
       <h2 class="vnm">{#if shows(h, 'elements')}<span class="vkind" title="{el.elem} monster"><Elem e={el.elem} /></span>{/if}{M.panelName ?? M.name}</h2>
-      {#if shows(h, 'elements')}<span class="chip sm gale"><Elem e={el.weak} />Weak to {el.weak}</span><span class="chip sm"><Elem e={el.resist} />Resists {el.resist}</span>{/if}
+      {#if shows(h, 'elements')}<span class="vel" data-coach="elems"><span class="chip sm gale"><Elem e={el.weak} />Weak to {el.weak}</span><span class="chip sm"><Elem e={el.resist} />Resists {el.resist}</span></span>{/if}
       <span class="vnum">{m.hp} / {m.max}</span>
     </div>
     <div class="vhb" role="img" aria-label="{M.name}: {m.hp} of {m.max} HP"><i class="vfill" style="width:{pct(m.hp, m.max)}%"></i></div>
@@ -54,6 +54,7 @@
 </section>
 
 <style>
+  .vel { display: inline-flex; gap: 6px; }
   .vs { grid-column: 1 / -1; order: -2; display: grid; grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1fr); align-items: start; gap: 4px 16px; padding: 8px 16px; }
   .vside { position: relative; display: flex; flex-direction: column; gap: 5px; min-width: 0; }
   .vtop { display: flex; align-items: center; gap: 10px; min-height: 24px; }

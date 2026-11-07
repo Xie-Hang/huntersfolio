@@ -62,8 +62,7 @@ const SHOW: [number, string[]][] = [
   [3, ['parts', 'undo']],
   [5, ['swap', 'reroll', 'daze', 'rend']],
   [7, ['item', 'capture', 'flow']],
-  [9, ['charge', 'enraged']],
-  [11, ['elements']]
+  [9, ['charge', 'enraged', 'elements']]
 ];
 export const islandShow = (s: Save): string[] => SHOW.filter(([st]) => islandStep(s) >= st).flatMap(([, k]) => k);
 

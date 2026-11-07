@@ -110,11 +110,12 @@ describe('Dice actions pick their own dice (no selection)', () => {
     expect(E.repeatCount(h, 0, [0])).toBe(1);
     expect(E.repeatCount(h, 0, [0, 2])).toBe(0); // a Claw left over: not a repeat
   });
-  it('Charge, Swap and Capture take blanks first, else exactly the dice left, else ask', () => {
+  it('Charge, Swap and Capture take blanks first, then the dice your moves miss least', () => {
     const h = hunt(); dice(h, 'BCBT');
     expect(E.autoDice(h, 'charge')).toEqual([0, 2]);
     expect(E.autoDice(h, 'swap')).toEqual([0]);
-    dice(h, 'CTCB'); expect(E.autoDice(h, 'charge')).toBeNull();
+    // Fang Claw Fang blank: the blank, then the die its moves miss least
+    dice(h, 'CTCB'); expect(E.autoDice(h, 'charge')?.length).toBe(2); expect(E.autoDice(h, 'charge')).toContain(3);
     h.dice[0].used = 'x' as never; h.dice[1].used = 'x' as never;
     expect(E.autoDice(h, 'capture')).toEqual([2, 3]);
   });

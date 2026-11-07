@@ -97,7 +97,7 @@
             </div>
           </div>
         {:else if E.carries(h, 'Blunt')}
-          <div class="hpline">
+          <div class="hpline" data-coach="daze">
             <div class="ph"><span class="label" style="color:var(--daze)">Daze · Blunt hits to the {headName}</span><span class="mono">{m.dazeLock ? 'Recovering' : `${m.daze} / ${m.dazeMax}`}</span></div>
             <div class="bar" class:locked={m.dazeLock > 0}><i style="width:{pct(m.daze, m.dazeMax)}%;background:var(--daze)"></i></div>
           </div>

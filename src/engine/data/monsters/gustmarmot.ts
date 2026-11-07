@@ -42,7 +42,8 @@ export const gustmarmot: MonsterDef = {
   },
   next(_h, prev) {
     if (prev === 'whistle') return 'gust';
-    const t = ['nip', 'nip', 'whistle'][_h.mon.seq % 3]; _h.mon.seq++; return t;
+    // it opens with Flapping, so the Charge lesson comes on turn 1, with nothing else going on (Nov 2026 playtest)
+    const t = ['whistle', 'nip', 'nip'][_h.mon.seq % 3]; _h.mon.seq++; return t;
   },
   resolve(_h, type) { return type === 'whistle' ? 'The wind gathers around it.' : null; }
 };

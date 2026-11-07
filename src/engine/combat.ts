@@ -517,16 +517,28 @@ export function autoDice(h: Hunt, action: DiceAction): number[] | null {
     if (blanks.length) return blanks;
     if (free.length && (free.length === 1 || !currentWeapon(h).moves.some((_, i) => canUseMove(h, i)))) return free;
     // no blanks: the one die your moves miss least (Nov 2026 playtest: "why can't I block?")
-    if (!safe.length) return null;
-    const faces = (ix: number[]) => ix.map(i => h.dice[i].face as string), all = planDmg(h, faces(safe));
-    let pick = safe[safe.length - 1], least = Infinity;
-    for (const i of [...safe].reverse()) { const loss = all - planDmg(h, faces(safe.filter(j => j !== i))); if (loss < least) { least = loss; pick = i; } }
-    return [pick];
+    return safe.length ? leastUseful(h, safe, 1) : null;
   }
   if (action === 'swap' && freeSwap(h)) return [];
   const n = action === 'charge' ? chargeDice(h) : action === 'swap' ? 1 : 2;
   if (blanks.length >= n) return blanks.slice(0, n);
-  return free.length === n ? free : null;
+  if (free.length === n) return free;
+  // else the blanks plus the dice your moves miss least, like Block (Nov 2026 playtest: Charge sat greyed out on the
+  // Shrikelet's wind-up because nothing was picked, and the Charge prompt never came)
+  const safe = free.filter(i => !h.dice[i].charged);
+  return safe.length >= n ? [...blanks, ...leastUseful(h, safe.filter(i => !blanks.includes(i)), n - blanks.length)] : null;
+}
+/** the k dice whose loss costs your moves the least damage, taken one at a time */
+function leastUseful(h: Hunt, pool: number[], k: number): number[] {
+  const faces = (ix: number[]) => ix.map(i => h.dice[i].face as string), out: number[] = [];
+  let left = [...pool];
+  while (out.length < k && left.length) {
+    const all = planDmg(h, faces(left));
+    let pick = left[left.length - 1], least = Infinity;
+    for (const i of [...left].reverse()) { const loss = all - planDmg(h, faces(left.filter(j => j !== i))); if (loss < least) { least = loss; pick = i; } }
+    out.push(pick); left = left.filter(j => j !== pick);
+  }
+  return out.sort((a, b) => a - b);
 }
 /** the Cragwing's Rockslide buried your footing: no Swap this turn */
 export const swapBuried = (h: Hunt) => (h.mon.slide ?? 0) > 0;

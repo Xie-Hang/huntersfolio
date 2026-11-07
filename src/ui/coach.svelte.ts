@@ -168,6 +168,11 @@ const ISLAND: Tip[] = [
     done: () => { const h = hunt(); return !!h && E.currentWeapon(h).type === 'Blunt'; }
   },
   {
+    id: 'i-daze', head: 'Daze', guide: true, info: true, at: ['daze'],
+    when: () => { const h = onIsland('burrowmole'); return !!h && h.mon.daze > 0 && !h.mon.dazeLock && freeDice(h) > 0; },
+    text: () => 'Maul hits fill Daze. Full: it loses a turn.'
+  },
+  {
     id: 'i-pick', head: 'Reroll', guide: true, learn: true, at: ['die-blank'],
     // (whatever else is selected: a tester had picked a die first and got "Now select Reroll" with no blank chosen)
     when: () => { const h = onIsland('burrowmole'); return !!h && h.rerolls > 0 && h.stats.rerollsUsed === 0 && unusedTurn(h) && !h.mon.under && !game.sel.some(i => h.dice[i]?.face === 'B') && h.dice.some(d => d.face === 'B' && !d.used); },
@@ -219,6 +224,17 @@ const ISLAND: Tip[] = [
   },
   // the second Tuskling is the hunt for armor: its hide makes the vest (Mekkman, Nov 2026: make it guided)
   {
+    // what losing costs, before the first hunt with an item carried (Nov 2026 playtest)
+    id: 'i-fail', head: 'Losing a hunt', guide: true, info: true, at: ['slot-item'],
+    when: () => E.islandStep(game.save) === 7 && game.view === 'board' && game.boardMon && !huntOn(),
+    text: () => 'Lose, and carried items are gone. Select it.'
+  },
+  {
+    id: 'i-flow', head: 'Flow', guide: true, info: true, at: ['move'],
+    when: () => { const h = onIsland('tuskling'); return !!h && E.islandStep(game.save) === 7 && h.turn === 1 && unusedTurn(h) && E.canUseMove(h, 0); },
+    text: () => 'Moves tagged Flow give a reroll back.'
+  },
+  {
     id: 'i-hides', guide: true, info: true, at: ['begin'], head: 'Armor',
     when: () => E.islandStep(game.save) === 7 && game.view === 'board' && game.boardMon && game.save.loadout.target === 'tuskling' && !huntOn(),
     text: () => 'Its hides make armor. Select Hunt.'
@@ -231,8 +247,8 @@ const ISLAND: Tip[] = [
   },
   {
     id: 'i-salve', head: 'Items', guide: true, learn: true, at: ['item'],
-    when: () => { const h = onIsland('tuskling'); return !!h && !!h.item && E.itemUsable(h) && h.php <= h.pmax * 0.75; },
-    text: () => 'Hurt? Use your salve. It costs no dice.',
+    when: () => { const h = onIsland('tuskling'); return !!h && E.islandStep(game.save) === 7 && !!h.item && E.itemUsable(h) && h.php < h.pmax && h.turn >= 2; },
+    text: () => 'Items cost no dice. Use your salve.',
     done: () => !!hunt()?.itemUsed
   },
   {
@@ -256,9 +272,15 @@ const ISLAND: Tip[] = [
   },
   {
     id: 'i-windup', head: 'Charge', guide: true, learn: true, at: ['charge'],
-    when: () => { const h = onIsland('gustmarmot'); return !!h && h.intent === 'whistle' && !h.chargePending && !h.chargeReady && freeDice(h) >= E.chargeDice(h); },
+    when: () => { const h = onIsland('gustmarmot'); return !!h && h.intent === 'whistle' && unusedTurn(h) && !h.chargePending && !h.chargeReady && freeDice(h) >= E.chargeDice(h); },
     text: () => 'It\u2019s winding up. Charge now.',
     done: () => { const h = hunt(); return !!h && (h.chargePending || h.chargeReady); }
+  },
+  {
+    // weakness and resistance, before the Forge asks you to track a Gale blade (Nov 2026 playtest: "what is Gale?")
+    id: 'i-elems', head: 'Elements', guide: true, info: true, at: ['elems'],
+    when: () => { const h = onIsland('gustmarmot'); return !!h && h.turn >= 2 && unusedTurn(h) && game.save.tips.includes('i-windup'); },
+    text: () => { const M = E.MONSTERS.gustmarmot; return `Weak to ${M.weak}: more damage. Resists ${M.resist}: less.`; }
   },
   {
     id: 'i-charged', guide: true, info: true, at: ['moves', 'move'],
@@ -281,7 +303,7 @@ const ISLAND: Tip[] = [
   {
     id: 'i-track2', head: 'Tracking', guide: true, learn: true, at: () => (game.forgeTab !== 'weapons' ? ['tab-weapons'] : game.forgeSel !== 'whistle' ? ['row-whistle'] : ['track']),
     when: () => E.islandStep(game.save) === 10 && game.view === 'forge',
-    text: () => (game.forgeTab !== 'weapons' ? 'Select Weapons.' : game.forgeSel !== 'whistle' ? 'Select the Whistling Blade.' : 'Gale beats the Gorehorn. Track this blade.'),
+    text: () => (game.forgeTab !== 'weapons' ? 'Select Weapons.' : game.forgeSel !== 'whistle' ? 'Select the Whistling Blade.' : 'The Gorehorn is weak to Gale. Track this.'),
     done: () => E.islandStep(game.save) >= 11
   },
   {

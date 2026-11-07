@@ -146,9 +146,9 @@
           {@const it = E.ITEMS[L.item]}
           {#if E.islandStep(game.save) >= 14}
           <!-- step 14: the Shop's new stock, so the item can be changed -->
-          <button class="slot" data-slot="item" onclick={() => open('item')}><span class="sl">Item</span><span><span class="nm"><Icon id={L.item} />{it.name}</span><span class="sub2"><span>Carry {Math.min(game.save.items[L.item] ?? 0, it.max)}</span></span></span><span class="chg">Change</span></button>
+          <button class="slot" data-slot="item" data-coach="slot-item" onclick={() => open('item')}><span class="sl">Item</span><span><span class="nm"><Icon id={L.item} />{it.name}</span><span class="sub2"><span>Carry {Math.min(game.save.items[L.item] ?? 0, it.max)}</span></span></span><span class="chg">Change</span></button>
           {:else}
-          <div class="slot" data-slot="item"><span class="sl">Item</span><span><span class="nm"><Icon id={L.item} />{it.name}</span><span class="sub2"><span>Carry {Math.min(game.save.items[L.item] ?? 0, it.max)}</span></span></span></div>
+          <div class="slot" data-slot="item" data-coach="slot-item"><span class="sl">Item</span><span><span class="nm"><Icon id={L.item} />{it.name}</span><span class="sub2"><span>Carry {Math.min(game.save.items[L.item] ?? 0, it.max)}</span></span></span></div>
           {/if}
         {/if}
       {:else}
