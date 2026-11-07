@@ -6,9 +6,9 @@
 // over: scuttlehog = the Cragling, snapclaw = the Rimekit, burrowmole = the Cinderpup, gustmarmot = the Shrikelet.
 // The steps (all three slices built, Nov 2026):
 //   0 hunt the Cragling            dice into a move, end the turn
-//   1 hunt the Rimekit             faces, its next move, Block (Undo, no prompt)
+//   1 hunt the Rimekit             faces, its next move, one move with several dice (Slash ×2), Block
 //   2 the Forge: the Hunter's Blade
-//   3 hunt the Tuskling            aim at a part, breaks drop materials
+//   3 hunt the Tuskling            aim at a part, breaks drop materials, Undo
 //   4 the lodge: take the maul     two weapons
 //   5 hunt the Cinderpup           swap, Reroll, Daze (and Rend, the reason to reroll)
 //   6 the Shop: buy a salve        items (selling is offered once you have one)
@@ -58,8 +58,8 @@ export const islandShop = (s: Save) => (islandStep(s) >= 14 ? ['salve', 'smoke',
 /** What a Foothills hunt shows, by the step it's hunted at: each hunt adds what it teaches. The town steps (2, 4, 6)
  *  show what the hunt before them did. */
 const SHOW: [number, string[]][] = [
-  [1, ['intent', 'block', 'undo']],
-  [3, ['parts']],
+  [1, ['intent', 'block']],
+  [3, ['parts', 'undo']],
   [5, ['swap', 'reroll', 'daze', 'rend']],
   [7, ['item', 'capture', 'flow']],
   [9, ['charge']],

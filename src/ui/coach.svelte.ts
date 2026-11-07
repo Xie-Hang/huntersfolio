@@ -129,7 +129,8 @@ const ISLAND: Tip[] = [
   },
   {
     id: 'i-undo', guide: true, learn: true, at: ['undo'],
-    when: () => { const h = onIsland('snapclaw'); return !!h && h.turn >= 2 && h.intent !== 'pinch' && game.undoStack.length > 0 && !unusedTurn(h); },
+    // on the Tuskling, not the Rimekit (Nov 2026: the Rimekit already teaches faces, its next move, Slash ×2 and Block)
+    when: () => { const h = onIsland('tuskling'); return !!h && E.islandStep(game.save) === 3 && h.turn >= 2 && game.undoStack.length > 0 && !unusedTurn(h); },
     text: () => 'Changed your mind? Select Undo to take it back.',
     done: () => game.undos > 0
   },
