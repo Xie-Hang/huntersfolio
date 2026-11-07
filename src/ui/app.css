@@ -693,3 +693,20 @@ html[data-input="pad"] body{cursor:none}
 .helpsecs details[open] summary::after{content:"−"}
 .helpsecs summary:focus-visible{outline:2px solid var(--gold-hi);outline-offset:-2px}
 .helpsecs .helplist{margin:0;padding:0 14px 12px 32px}
+
+/* hunt layout drafts (Nov 2026): monster left, player right */
+.grid.hunt.lay{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.grid.hunt.lay.done{grid-template-columns:minmax(0,1fr)!important}
+.lay .mcol,.lay .pcol{display:flex;flex-direction:column;gap:12px;min-width:0}
+.lay-a .stage .stagebody,.lay-b .stage .stagebody,.lay-c .stage .stagebody{grid-template-columns:minmax(0,1fr)}
+.lay .stage .platecol{flex-direction:row;align-items:flex-start}
+.lay .stage .platecol > .plate{flex:1 1 60%}
+.lay .stage .platecol > .metarow{flex:0 1 40%;min-width:0}
+.lay .stage .platecol > .metarow:empty{display:none}
+.lay .diceline .tray{gap:10px}
+.lay-a .gearpanel .move{min-height:44px;padding-block:6px}
+.lay-b .gearpanel,.lay-c .gearpanel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-auto-flow:row dense;column-gap:10px;align-items:start}
+.lay-b .gearpanel > *,.lay-c .gearpanel > *{grid-column:1 / -1}
+.lay-b .gearpanel > .move:not(.dash):not(.capture):not(.pocket),.lay-c .gearpanel > .move:not(.dash):not(.capture):not(.pocket){grid-column:1}
+.lay-b .gearpanel > .move.dash,.lay-b .gearpanel > .move.capture,.lay-b .gearpanel > .move.pocket,.lay-c .gearpanel > .move.dash,.lay-c .gearpanel > .move.capture,.lay-c .gearpanel > .move.pocket{grid-column:2}
+.lay-b .gearpanel > .divider,.lay-c .gearpanel > .divider{grid-column:2}

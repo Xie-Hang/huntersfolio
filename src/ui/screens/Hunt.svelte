@@ -14,9 +14,13 @@
   import BountyPanel from './hunt/BountyPanel.svelte';
   import { shows } from '../reveal';
   const h = $derived(game.hunt!);
+  // layout drafts (Nov 2026 playtest: "the hunt screen feels a bit everywhere"): HP across the top, the monster on
+  // the left, the player on the right. ?layout=a|b|c picks a draft; none = the current screen.
+  const L = typeof location !== 'undefined' ? new URLSearchParams(location.search).get('layout') : null;
 </script>
 
 <!-- when the hunt ends the action column goes (Nov 2026 text audit: 74 words of buttons that did nothing) -->
+{#if !L}
 <main class="grid hunt" class:done={!!h.over}>
   <VersusBar />
   <div class="center">
@@ -26,3 +30,19 @@
   </div>
   {#if !h.over}<GearPanel />{/if}
 </main>
+{:else}
+<main class="grid hunt lay lay-{L}" class:done={!!h.over}>
+  <VersusBar />
+  <div class="mcol">
+    <BountyPanel />
+    <MonsterPanel />
+    {#if !h.over && shows(h, 'parts')}<PartsRow />{/if}
+  </div>
+  {#if !h.over}
+  <div class="pcol">
+    {#if L === 'b'}<GearPanel /><div class="youbox"><DicePanel /></div>
+    {:else}<div class="youbox"><DicePanel /></div><GearPanel />{/if}
+  </div>
+  {/if}
+</main>
+{/if}
