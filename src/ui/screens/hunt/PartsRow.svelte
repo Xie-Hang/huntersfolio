@@ -3,7 +3,7 @@
   import { input } from '../../pad.svelte';
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
-  import { effCls, effWord, pct } from '../../fmt';
+  import { effCls, effWord, pct, stop } from '../../fmt';
   import Rich from '../../parts/Rich.svelte';
   const h = $derived(game.hunt!);
   const M = $derived(E.MONSTERS[h.mid]);
@@ -14,7 +14,7 @@
 </script>
 
 <section class="panel partspanel" aria-label="Parts" data-coach="parts">
-    <div class="ph"><span class="label aimword">Aim{input.mode === 'pad' ? ' · LB / RB' : ''}</span><span class="label aimhint">{#if tp}<b>{tp.name}:</b> <Rich text={tn ? tn.hint : m.parts[tp.id].broken ? 'Broken. It still takes hits here.' : tp.hint} />{:else}{input.mode === 'pad' ? 'LB / RB or select a part to aim' : 'Select a part to aim at it'}{/if}</span></div>
+    <div class="ph"><span class="label aimword">Aim{input.mode === 'pad' ? ' · LB / RB' : ''}</span><span class="label aimhint">{#if tp}<b>{tp.name}:</b> <Rich text={stop(tn ? tn.hint : m.parts[tp.id].broken ? 'Broken. It still takes hits here.' : tp.hint)} />{:else}{input.mode === 'pad' ? 'LB / RB or select a part to aim' : 'Select a part to aim at it'}{/if}</span></div>
     <div class="parts row" class:four={M.parts.length >= 4} style="--n:{M.parts.length}">
       {#each M.parts as p (p.id)}
         {@const st = m.parts[p.id]}
@@ -34,7 +34,7 @@
           </span>
           <!-- the HP bar on its own line at the bottom, so every box's bar lines up (Mekkman, Nov 2026) -->
           {#if !st.broken}<span class="bar pbar"><i style="width:{pct(st.hp, st.max)}%;background:{on ? 'var(--gold)' : '#8c7a62'}"></i></span>{/if}
-          <span class="hint"><Rich text={note ? note.hint : st.broken ? 'It still takes hits here.' : p.hint} /></span>
+          <span class="hint"><Rich text={stop(note ? note.hint : st.broken ? 'It still takes hits here.' : p.hint)} /></span>
         </button>
       {/each}
     </div>

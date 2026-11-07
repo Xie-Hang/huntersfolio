@@ -4,7 +4,7 @@
   import Elem from '../../parts/Elem.svelte';
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
-  import { pct } from '../../fmt';
+  import { pct, stop } from '../../fmt';
   import { shake } from '../../fx';
   import Plate from '../../parts/Plate.svelte';
   import Rich from '../../parts/Rich.svelte';
@@ -115,7 +115,7 @@
             <div class="conds" aria-label="Its condition">
               {#each statuses as st (st.key)}
                 <button type="button" class="cond {st.cls}" aria-describedby="{uid}-{st.key}"><b>{st.label}</b>{#if st.n}<span class="cnt" aria-label="{st.n} turns left">{st.n}</span>{/if}<span class="i" aria-hidden="true">i</span>
-                <span class="stip" id="{uid}-{st.key}" role="tooltip"><strong class="sth"><Rich text={cap1(st.short)} /></strong>{#each st.desc.split('\n') as para}<span class="stp"><Rich text={para} /></span>{/each}</span>
+                <span class="stip" id="{uid}-{st.key}" role="tooltip"><strong class="sth"><Rich text={cap1(st.short)} /></strong>{#each st.desc.split('\n') as para}<span class="stp"><Rich text={stop(para)} /></span>{/each}</span>
                 </button>
               {/each}
             </div>

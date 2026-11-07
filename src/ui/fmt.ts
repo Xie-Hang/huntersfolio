@@ -15,6 +15,9 @@ export const movesLine = (moves: E.Move[]) => moves.map(m => `${glyphs(m.need)} 
 export const effName = (e: number) => (e >= 1 ? 'Best' : e > 0 ? 'Half' : 'None');
 /** a part chip for the weapon in your hand (Nov 2026 playtest: nobody knew what "Cut: None" meant). It's about
  *  breaking the part only: hits still hurt the monster. */
+/** Punctuation rule (8 Nov 2026, Mekkman): anything read as a sentence ends with a full stop (card notes, tips,
+ *  part hints); labels, chips, captions and tip headers don't. This adds the stop where data left it off. */
+export const stop = (s: string) => (/[.!?…]$/.test(s.replace(/\*+$/, '').trim()) ? s : s.trimEnd() + '.');
 export const effWord = (e: number) => (e >= 1 ? 'Breaks more' : e > 0 ? 'Breaks less' : 'Can’t break');
 /** the weapon nouns the monster page's parts table uses as column heads */
 export const TYPE_NOUN: Record<string, string> = { Cut: 'Cut', Blunt: 'Blunt', Pierce: 'Pierce' };
