@@ -43,17 +43,17 @@ describe('items', () => {
 });
 
 describe('Expose (Pierce)', () => {
-  it('a Pierce hit exposes the part; the next hit there, from any weapon, gets +15% and double break progress', () => {
+  it('a Pierce hit exposes the part; the next hit there, from any weapon, gets +20% and double break progress', () => {
     const s = starter(); s.weapons = { bow: { lv: 0 }, blade: { lv: 0 } }; s.loadout.weapons = ['bow', 'blade'];
     const h = E.startHunt(s, 2); h.target = 'hide';
-    h.dice = [{ face: 'C', used: null }, { face: 'B', used: null }, { face: 'C', used: null }, { face: 'B', used: null }];
-    E.useMove(h, 0); // Quick Shot 12: exposes, gets no bonus itself
+    h.dice = [{ face: 'T', used: null }, { face: 'B', used: null }, { face: 'C', used: null }, { face: 'B', used: null }];
+    E.useMove(h, 0); // Quick Shot 14 (a Claw): exposes, gets no bonus itself
     expect(h.mon.parts.hide.exposed).toBe(E.EXPOSE_TURNS);
-    expect(h.mon.parts.hide.hp).toBe(240 - 6); // Pierce is Half on the hide
+    expect(h.mon.parts.hide.hp).toBe(240 - 7); // Pierce is Half on the hide
     E.swap(h, [1]);
-    const hit = E.useMove(h, 0)!; // Slash 12 → 14 exposed; Cut is Best on the hide, ×2 toward the break
-    expect(hit.dmg).toBe(14);
-    expect(h.mon.parts.hide.hp).toBe(240 - 6 - 28);
+    const hit = E.useMove(h, 0)!; // Slash 14 → 17 exposed; Cut is Best on the hide, ×2 toward the break
+    expect(hit.dmg).toBe(17);
+    expect(h.mon.parts.hide.hp).toBe(240 - 7 - 34);
   });
   it('wears off after two turns', () => {
     const s = starter(); const h = E.startHunt(s, 2); h.mon.parts.hide.exposed = E.EXPOSE_TURNS; h.php = 999;
@@ -157,7 +157,7 @@ describe('Rimetail (ice plating)', () => {
     expect(r.dmg).toBe(0);
     expect(h.mon.plating).toBe(0);
     expect(h.mon.hp).toBe(h.mon.max);
-    expect(E.useMove(h, 0)!.dmg).toBe(12); // ice gone: hits land
+    expect(E.useMove(h, 0)!.dmg).toBe(14); // ice gone: hits land
   });
   it('any other hit breaks one layer, and a charged hit is wasted on the ice', () => {
     const h = plated(['maul', 'blade']); h.chargeReady = true;
@@ -196,7 +196,7 @@ describe('charms', () => {
   });
   it('Plume Charm: the exposing hit gets the bonus too', () => {
     const h = withCharm('plumecharm', ['bow', 'maul']); h.target = 'legs';
-    expect(E.useMove(h, 0)!.dmg).toBe(Math.round(12 * E.EXPOSE_DMG));
+    expect(E.useMove(h, 0)!.dmg).toBe(Math.round(14 * E.EXPOSE_DMG));
   });
   it('Kiln Charm: Charge costs 1 die', () => {
     const h = withCharm('kilncharm', ['blade', 'maul']);
@@ -205,7 +205,7 @@ describe('charms', () => {
   });
   it('Rime Charm: light Cut moves deal 4 more', () => {
     const h = withCharm('rimecharm', ['blade', 'maul']); h.target = 'hide';
-    expect(E.useMove(h, 0)!.dmg).toBe(12 + E.LIGHT_CUT_BONUS);
+    expect(E.useMove(h, 0)!.dmg).toBe(14 + E.LIGHT_CUT_BONUS);
   });
   it('v2 saves gain an empty charm slot', () => {
     const s = E.loadSave({ version: 2, coin: 10, loadout: { weapons: ['blade', 'maul'], armor: 'jerkin', item: null, target: 'gorehorn' } });

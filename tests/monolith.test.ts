@@ -21,12 +21,12 @@ describe('Tier 3: the Monolith Warden', () => {
   });
   it('plated: every hit deals ×0.4; breaking the plates exposes the core to Pierce ×2, then it reforms', () => {
     const h = E.startHunt(ready(), 2);
-    h.target = 'arms'; h.weapon = 0; dice(h, 'CCCC');
+    h.target = 'arms'; h.weapon = 0; dice(h, 'CTCT');
     const plated = E.useMove(h, 0)!.dmg;
-    h.mon.parts.plates.hp = 1; h.target = 'plates'; dice(h, 'CCCC');
+    h.mon.parts.plates.hp = 1; h.target = 'plates'; dice(h, 'CTCT');
     E.useMove(h, 0);
     expect(h.mon.parts.plates.broken).toBe(true); expect(h.mon.core).toBe(2);
-    h.weapon = 1; h.target = 'core'; dice(h, 'CCCC');
+    h.weapon = 1; h.target = 'core'; dice(h, 'CTCT');
     const core = E.useMove(h, 0)!.dmg;
     expect(core).toBeGreaterThan(plated * 3);
     h.intent = 'sweep'; E.endTurn(h); E.endTurn(h);

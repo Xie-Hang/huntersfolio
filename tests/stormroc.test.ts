@@ -22,7 +22,7 @@ describe('Tier 3: the Stormcrown Roc', () => {
   });
   it('a Pierce hit on the crown drains a pip, and snuffs out a telegraphed Thunderhead', () => {
     const h = E.startHunt(ready(), 3);
-    h.mon.storm = 3; h.intent = 'thunder'; h.target = 'crown'; h.weapon = 0; dice(h, 'CCCC');
+    h.mon.storm = 3; h.intent = 'thunder'; h.target = 'crown'; h.weapon = 0; dice(h, 'CTCT');
     E.useMove(h, 0);
     expect(h.mon.storm).toBe(2); expect(h.intent).toBe('gutter');
     expect(h.feats).toContain('interrupt');
@@ -30,7 +30,7 @@ describe('Tier 3: the Stormcrown Roc', () => {
   it('phase 2: it takes to the air for good, and a net grounds it for one turn only', () => {
     const s = ready(); s.items.net = 2; s.loadout.item = 'net';
     const h = E.startHunt(s, 4);
-    h.mon.hp = Math.floor(h.mon.max / 2) + 5; h.target = 'wings'; h.weapon = 0; dice(h, 'CCCC');
+    h.mon.hp = Math.floor(h.mon.max / 2) + 5; h.target = 'wings'; h.weapon = 0; dice(h, 'CTCT');
     E.useMove(h, 0);
     expect(h.mon.enraged).toBe(true); expect(h.mon.skyLock).toBe(true); expect(h.mon.air).toBe(true);
     E.useItem(h);

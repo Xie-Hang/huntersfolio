@@ -108,11 +108,11 @@ describe('Ashtail', () => {
   it('Pierce clears 2 layers of scales, Cut 1 and burns you, Frost all of them', () => {
     const bow = ready('ashtail', [['bow', 0], ['blade', 0]]);
     expect(bow.mon.plating).toBe(2);
-    dice(bow, 'CCCC'); E.useMove(bow, 0); expect(bow.mon.plating).toBe(0);
+    dice(bow, 'CTCT'); E.useMove(bow, 0); expect(bow.mon.plating).toBe(0);
     const cut = ready('ashtail', [['blade', 0], ['bow', 0]]); const hp = cut.php;
-    dice(cut, 'CCCC'); E.useMove(cut, 0); expect(cut.mon.plating).toBe(1); expect(cut.php).toBeLessThan(hp);
+    dice(cut, 'CTCT'); E.useMove(cut, 0); expect(cut.mon.plating).toBe(1); expect(cut.php).toBeLessThan(hp);
     const frost = ready('ashtail', [['rimefang', 0], ['bow', 0]]);
-    dice(frost, 'CCCC'); E.useMove(frost, 0); expect(frost.mon.plating).toBe(0);
+    dice(frost, 'CTCT'); E.useMove(frost, 0); expect(frost.mon.plating).toBe(0);
   });
   it('a Firepot does nothing, and says why', () => {
     const s = E.newSave(); for (const id of Object.keys(E.MONSTERS)) s.record[id] = { hunts: 1, wins: 1, captures: 0, breaks: {} };
