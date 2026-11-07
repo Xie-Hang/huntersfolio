@@ -115,6 +115,7 @@ class Game {
     const ridgeHunts = this.save.hunts - prior;
     const lesson = isl || settings.prefs.showAll || ridgeHunts >= 3 ? undefined : ridgeHunts + 1;
     this.hunt = E.startHunt(this.save, E.randomSeed(), scripted ? E.TUTORIAL_SCRIPT : undefined, lesson);
+    this.rerollLesson(true);
     PL.huntBegin(this.hunt, this.save);
     this.undoStack = [];
     this.sel = [];
@@ -216,6 +217,17 @@ class Game {
     // A reroll can't be undone, and neither can anything before it: undoing would rewind the dice seed and let
     // the player peek at what a reroll gives, then pick different dice (playtest: "you can cheese it").
     if (idx?.length) { this.undoStack = []; this.roll(idx); sfx('reroll'); }
+    this.rerollLesson(false);
+  }
+  /** The Burrowmole's reroll lesson (the Foothills) is sure to happen, not left to the dice: the opening roll has a
+   *  blank to reroll, and after that first reroll the next turn rolls two blanks (with a reroll still in hand) for
+   *  "you can reroll several". Mekkman, Nov 2026. */
+  rerollLesson(start: boolean) {
+    const h = this.hunt;
+    if (!h || h.over || h.mid !== 'burrowmole' || E.islandStep(this.save) !== 5) return;
+    const seen = (id: string) => this.save.tips.includes(id);
+    if (start && !seen('i-pick')) { const f: E.Face[] = ['C', 'B', 'T', 'C']; h.dice.forEach((d, i) => { d.face = f[i] ?? d.face; }); }
+    if (!start && h.stats.rerollsUsed === 1 && !seen('i-multi')) { h.script = h.script ?? []; h.script[h.turn] = ['B', 'C', 'B', 'T']; }
   }
   item() {
     if (!shows(this.hunt, 'item')) return;
@@ -257,6 +269,8 @@ class Game {
     if (E.intentInfo(h).dmg > 0) { this.pulse.actIntent = h.intent; this.pulse.act++; }
     // everything you lost this end of turn, not only the attack: a Spark going off or slime used to land with no number
     const t0 = h.stats.taken; E.endTurn(h); const taken = h.stats.taken - t0;
+    // the reroll lesson's second step needs a reroll in hand on its turn
+    if (h.mid === 'burrowmole' && E.islandStep(this.save) === 5 && h.stats.rerollsUsed === 1 && !this.save.tips.includes('i-multi')) h.rerolls = Math.max(h.rerolls, 1);
     if (taken) { this.float('player', `−${taken}`, 'hurt'); if (taken >= E.CHARGE_BREAK) this.shake('player'); }
     if (taken) sfx(taken >= E.CHARGE_BREAK ? 'hurtHeavy' : 'hurt');
     if (!h.over) setTimeout(() => sfx('diceRoll'), taken ? 260 : 0); // the new roll lands after the hit
