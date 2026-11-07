@@ -1,4 +1,4 @@
-// One step away (Nov 2026 screen text audit): text a player needs only sometimes sits behind a dotted underline and
+// One step away (Nov 2026 screen text audit): text a player needs only sometimes sits behind a small circled i and
 // opens on hover, controller focus or tap, never deeper than that. Settings → Text detail: Full puts it back on
 // screen instead (`full()`), for players who want everything showing.
 // The tip is drawn once, at the top of the page (DetailTip.svelte), so a panel's overflow never clips it.
@@ -23,10 +23,11 @@ class TipState {
 }
 export const tip = new TipState();
 
-/** `use:detail={'the rule, in one or two sentences'}`: a dotted underline, the text on hover, focus or tap */
+/** `use:detail={'the rule, in one or two sentences'}`: a small circled i, the text on hover, focus or tap */
 export function detail(el: HTMLElement, text: string) {
   let t = text;
-  el.classList.add('dt');
+  // the mark only shows when there is something behind it (Nov 2026: an empty tip still drew its mark)
+  el.classList.toggle('dt', !!t);
   // inside a button (a move's Flow tag) the button keeps its click and focus; the tip shows on hover, or while the
   // button has focus (a pad's focus lands on the button)
   const host = el.tagName === 'BUTTON' ? null : el.closest('button');
@@ -39,7 +40,7 @@ export function detail(el: HTMLElement, text: string) {
   el.addEventListener('mouseenter', on); el.addEventListener('mouseleave', off);
   focusEl.addEventListener('focus', on); focusEl.addEventListener('blur', off); el.addEventListener('click', tap);
   return {
-    update(v: string) { t = v; if (tip.owner === el) on(); },
+    update(v: string) { t = v; el.classList.toggle('dt', !!t); if (!t) off(); else if (tip.owner === el) on(); },
     destroy() { off(); el.removeEventListener('mouseenter', on); el.removeEventListener('mouseleave', off); focusEl.removeEventListener('focus', on); focusEl.removeEventListener('blur', off); el.removeEventListener('click', tap); }
   };
 }

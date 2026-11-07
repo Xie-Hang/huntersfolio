@@ -685,7 +685,11 @@ html[data-input="pad"] :focus{outline:3px solid var(--gold-hi)!important;outline
 html[data-input="pad"] body{cursor:none}
 
 /* one step away (detail.svelte.ts): the same marker everywhere, so it's learnt once */
-.dt{text-decoration:underline dotted;text-decoration-color:var(--muted);text-underline-offset:3px;cursor:help}
+/* more detail one step away: a small circled i after the text, the same mark as the status badges (Mekkman, Nov 2026:
+   it replaced a dotted underline, for one consistent sign of "there's more here") */
+.dt{cursor:help}
+.dt::after{content:"i";display:inline-grid;place-items:center;width:14px;height:14px;box-sizing:border-box;margin-left:6px;vertical-align:1px;border-radius:50%;border:1.5px solid currentColor;font-family:var(--f-body);font-size:10px;font-weight:700;font-style:normal;line-height:1;opacity:.6;text-decoration:none}
+.dt:hover::after,.dt:focus-visible::after,button:hover .dt::after,button:focus-visible .dt::after{opacity:1}
 .dt:focus-visible{outline:2px solid var(--gold-hi);outline-offset:2px;border-radius:2px}
 /* How to play: short sections, one open at a time */
 .helpsecs{display:flex;flex-direction:column;gap:6px}
@@ -759,3 +763,8 @@ html[data-input="pad"] body{cursor:none}
 .gearpanel .move.pocket.no:has(.iset){opacity:1;border-color:var(--gold)}
 .gearpanel .move.pocket.ready:has(.iwarn),.gearpanel .move.pocket.no:has(.iwarn){opacity:1;border-color:var(--ember)}
 .gearpanel .move.pocket .md.iinfo{color:var(--muted)}
+
+/* a one-line button line that's cut to fit keeps its i: the line shrinks to its text (up to the button's width) and
+   the mark sits in its own space at the end, outside the cut */
+.gearpanel .move .md.dt{display:inline-block;max-width:100%;box-sizing:border-box;position:relative;padding-right:20px;vertical-align:top}
+.gearpanel .move .md.dt::after{position:absolute;right:0;top:50%;transform:translateY(-50%);margin:0}

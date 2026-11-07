@@ -106,7 +106,7 @@
           {#if statuses.length}
             <div class="conds" aria-label="Its condition">
               {#each statuses as st (st.key)}
-                <button type="button" class="cond {st.cls}" aria-describedby="{uid}-{st.key}"><b>{st.label}</b><span class="sh">{st.short}</span><span class="i" aria-hidden="true">?</span>
+                <button type="button" class="cond {st.cls}" aria-describedby="{uid}-{st.key}"><b>{st.label}</b><span class="sh">{st.short}</span><span class="i" aria-hidden="true">i</span>
                 <span class="stip" id="{uid}-{st.key}" role="tooltip">{st.desc}</span>
                 </button>
               {/each}

@@ -184,7 +184,7 @@
       </span>
     </div>
     <div class="setrow">
-      <span><span class="nm">Text detail</span><span class="md">Compact keeps rules behind <span class="dt" style="cursor:default">dotted words</span> (hover or select). Full shows them all.</span></span>
+      <span><span class="nm">Text detail</span><span class="md">Compact keeps rules behind the <span class="dt" style="cursor:default">mark</span> (hover or select). Full shows them all.</span></span>
       <span class="seg" role="radiogroup" aria-label="Text detail">
         {#each [['compact', 'Compact'], ['full', 'Full']] as [v, l]}
           <button role="radio" aria-checked={settings.prefs.detail === v} onclick={() => { settings.prefs.detail = v as 'compact' | 'full'; settings.save(); }}>{l}</button>
