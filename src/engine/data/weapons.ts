@@ -28,6 +28,18 @@ const BOW: Move[] = [
   { name: 'Pinning Shot', need: 'CTT', dmg: 54, part: 1.5, pin: true }
 ];
 
+// The Oath line (Mekkman, Nov 2026): no element, the weapon type's signature on every move, unlocked by bounties and
+// paid for in coin, no monster parts. A reliable choice that keeps up to the Stormspire, never the best one: the
+// right element still wins (×1.5 on a weakness). Daze on the light moves is small; Flow gives one reroll a turn.
+const OATH_BLADE: Move[] = BLADE.map(m => ({ ...m, flow: true }));
+const OATH_MAUL: Move[] = [
+  { ...MAUL[0], daze: DZ.light },
+  { ...MAUL[1], daze: DZ.medium },
+  { ...MAUL[2] }
+];
+const OATH_BOW: Move[] = BOW.map(m => ({ ...m, expose: true }));
+export const OATH = { step: [1.3, 1.5, 1.7], coin: [500, 900, 1500], bounties: [4, 10, 20] };
+
 const list: WeaponDef[] = [
   // the Foothills' first weapon (the tutorial island, Nov 2026): one move, no Flow. Never made at the Forge.
   // the Foothills' last weapon (tracked at step 10, made at step 12): the Hunter's Blade's moves, with Gale.
@@ -69,6 +81,20 @@ const list: WeaponDef[] = [
   { id: 'rimeshot', name: 'Rimeshot Bow', type: 'Pierce', elem: 'Frost', kind: 'Bow', note: 'Strung with frozen sinew. The arrowheads are Rimetail fangs.', moves: BOW, mult: 1.1, from: 'bow', cost: { coin: 300, frostfang: 2, rimescale: 2 } },
   { id: 'ridgebow', name: 'Ridgestone Bow', type: 'Pierce', elem: 'Stone', kind: 'Bow', note: 'Arrowheads knapped from Ashfall Ridge stone. Heavy, and they shatter on impact.', moves: BOW, mult: 1.1, from: 'bow', cost: { coin: 300, sinew: 1, pelt: 2, hide: 2 } }
 ];
+
+// the Oath line: three steps per weapon type
+for (const [type, base, kind, moves, nm, note] of [
+  ['Cut', 'oathblade', 'Longsword', OATH_BLADE, 'Oathblade', 'Plain guild steel, blessed at the board. Every cut flows.'],
+  ['Blunt', 'oathmaul', 'Maul', OATH_MAUL, 'Oathmaul', 'A guild maul, banded in iron. Every blow rings the skull.'],
+  ['Pierce', 'oathbow', 'Bow', OATH_BOW, 'Oathbow', 'A guild bow of seasoned ash. Every arrow finds the gap.']
+] as const) {
+  const names = [nm, `Sworn ${nm}`, `Grand ${nm}`];
+  names.forEach((name, i) => list.push({
+    id: i ? `${base}${i + 1}` : base, tier: [2, 2, 3][i], name, type: type as DamageType, elem: null, kind, note, moves: moves as Move[],
+    mult: OATH.step[i], bounties: OATH.bounties[i],
+    ...(i ? { from: i === 1 ? base : `${base}2`, cost: { coin: OATH.coin[i] } } : { craft: { coin: OATH.coin[i] } })
+  }));
+}
 
 // Tier 2 · Mirewood: step 3 of each line (×1.6), grown from the step-2 rare weapon.
 list.push(
@@ -156,7 +182,7 @@ export const TREES: { type: DamageType; nodes: [string, number][] }[] = (['Cut',
 });
 
 export const SIGNATURES: Record<DamageType, { tag: 'flow' | 'daze' | 'expose'; name: string; text: string }> = {
-  Cut: { tag: 'flow', name: 'Flow', text: 'The middle move adds 1 to your rerolls left. Its dice are still spent.' },
+  Cut: { tag: 'flow', name: 'Flow', text: 'The middle move adds 1 to your rerolls left, once a turn. Its dice are still spent.' },
   Blunt: { tag: 'daze', name: 'Daze', text: 'The strongest move, on the head, fills a daze meter. Full meter: the monster loses its action, then recovers for a turn.' },
   Pierce: { tag: 'expose', name: 'Expose', text: 'The light shot exposes the part for 2 turns: every hit there, from either weapon, deals +20% and counts double toward breaking it.' }
 };

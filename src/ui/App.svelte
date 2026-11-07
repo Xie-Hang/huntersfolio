@@ -259,7 +259,7 @@
         <li>Rare materials get likelier with every miss, and drop for sure on the 12th break of their part.</li>
       </ul></details>
       <details name="help"><summary>Weapons</summary><ul class="helplist">
-        <li><span class="tag flow" style="margin:0">Flow</span> Cut: the middle move (Cleave) gives back a reroll.</li>
+        <li><span class="tag flow" style="margin:0">Flow</span> Cut: the middle move (Cleave) gives back a reroll, once a turn.</li>
         <li><span class="tag daze" style="margin:0">Daze</span> Blunt: Skullcrack to the head fills a daze meter; full, it loses a turn.</li>
         <li><span class="tag expose" style="margin:0">Expose</span> Pierce: Quick Shot exposes the part: it takes +20% and breaks twice as fast for 2 turns, from either weapon.</li>
         <li>You carry two weapons. Swapping costs 1 die. <strong>Avg</strong> is damage a turn with all 4 dice.</li>

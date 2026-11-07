@@ -312,8 +312,9 @@ function planDmg(h: Hunt, faces: string[]): number {
 
 /* ---------- player actions ---------- */
 function flowReroll(h: Hunt, mv: { flow?: boolean }) {
-  if (!mv.flow) return;
-  h.rerolls++;
+  // one Flow reroll a turn, however many Flow moves you use (Mekkman, Nov 2026)
+  if (!mv.flow || h.flowUsed) return;
+  h.flowUsed = true; h.rerolls++;
   log(h, 'Flow: +1 reroll.');
 }
 
@@ -671,7 +672,7 @@ export function endTurn(h: Hunt): TurnResult {
   if (h.chargeReady) log(h, 'Your unused charge fades.');
   h.recap = { turn: h.turn, dealt, lines: h.log.filter(l => (l.n ?? 0) > mark).reverse() };
   h.dealtAtTurnStart = h.stats.dealt;
-  h.turn++; h.chargeReady = h.chargePending; h.chargePending = false; h.guard = 0; h.itemUsed = false; h.freeSwapUsed = false;
+  h.turn++; h.chargeReady = h.chargePending; h.chargePending = false; h.guard = 0; h.itemUsed = false; h.freeSwapUsed = false; h.flowUsed = false;
   rollAll(h);
   if ((m.trapped ?? 0) > 0) h.intent = 'trapped';
   else { h.intent = MD.next(h, caught || type === 'trapped' ? 'dazed' : type); if (m.dazeQueued) { m.dazeQueued = false; h.intent = 'dazed'; } }

@@ -46,6 +46,8 @@ export interface WeaponDef {
   cost?: Cost;
   /** recipe uses stand-in materials until a monster of this element exists */
   placeholder?: Element;
+  /** the Oath line: locked until this many different bounties are done */
+  bounties?: number;
   /** a status weapon (no element): its hits fill this status meter on the monster */
   status?: Status;
   /** what a full meter does: Infect damage a turn, Spark's Discharge, or Drain's share of your max HP healed */
@@ -346,6 +348,8 @@ export interface Hunt {
   guard: number;
   chargePending: boolean;
   chargeReady: boolean;
+  /** a Flow reroll was given this turn (one a turn, Nov 2026) */
+  flowUsed?: boolean;
   evade: boolean;
   /** a trap set this turn (prototype, Nov 2026): springs on the monster's next move if it's the kind it catches */
   trapSet?: 'trapRush' | 'trapLand';

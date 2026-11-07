@@ -130,6 +130,7 @@ export function recipeOf(s: Save, kind: RecipeKind, id: string): Recipe {
     const d = WEAPONS[id];
     if (d.starter) return { action: null, cost: null };
     if (s.weapons[id]) { const lv = s.weapons[id].lv; return lv < MAX_REINFORCE ? { action: 'reinforce', cost: reinforceCost(lv, 'w', id) } : { action: null, cost: null }; }
+    if (d.bounties && Object.keys(s.bounties).length < d.bounties) return { action: null, cost: d.craft ?? d.cost ?? null, locked: true };
     if (d.craft) return { action: 'craft', cost: d.craft };
     if (d.from && s.weapons[d.from]) return { action: 'upgrade', cost: d.cost! };
     return { action: null, cost: d.cost ?? null, locked: true };
@@ -151,7 +152,8 @@ export type RecipeState = { cls: 'owned' | 'ready' | 'short' | 'locked'; text: s
 export function recipeState(s: Save, kind: RecipeKind, id: string): RecipeState {
   const owned = isOwned(s, kind, id);
   const r = recipeOf(s, kind, id);
-  if (r.locked) return kind === 'c' ? { cls: 'locked', text: `Complete ${CHARMS[id].bounties} bounties (${Object.keys(s.bounties).length} done)` } : { cls: 'locked', text: `Needs ${WEAPONS[WEAPONS[id].from!].name}` };
+  const nb = kind === 'c' ? CHARMS[id].bounties : kind === 'w' ? WEAPONS[id].bounties : 0;
+  if (r.locked) return nb && Object.keys(s.bounties).length < nb ? { cls: 'locked', text: `Complete ${nb} bounties (${Object.keys(s.bounties).length} done)` } : { cls: 'locked', text: `Needs ${WEAPONS[WEAPONS[id].from!].name}` };
   if (owned && !r.action) return { cls: 'owned', text: kind === 'c' ? 'Owned' : 'Owned · max' };
   const ready = !!r.cost && canPay(s, r.cost);
   if (owned) return ready ? { cls: 'ready', text: 'Owned · reinforce ready' } : { cls: 'owned', text: 'Owned' };
