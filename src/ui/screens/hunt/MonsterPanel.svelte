@@ -146,7 +146,7 @@
   .cond .sh { font-weight: 500; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   .cond { max-width: 100%; white-space: nowrap; }
   .cond b { flex: none; }
-  .cond .i { flex: none; display: inline-grid; place-items: center; align-self: center; width: 14px; height: 14px; min-width: 14px; line-height: 1; box-sizing: border-box; border-radius: 50%; border: 1.5px solid currentColor; font-size: 10px; font-weight: 700; opacity: .75; }
+  .cond .i { flex: none; align-self: center; width: 15px; height: 15px; font-size: 0; background-color: currentColor; -webkit-mask: var(--icon-i) center/contain no-repeat; mask: var(--icon-i) center/contain no-repeat; opacity: .85; }
   .cond:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 2px; }
   .cond.inf { --c: #9fc062; } .cond.hot { --c: #e8773a; } .cond.ice { --c: #b9d3f0; } .cond.gale { --c: #8fc3c9; } .cond.mud { --c: #b49a74; } .cond.stone { --c: #c9b89c; } .cond.gold { --c: #e9b949; } .cond.ember { --c: #e0915f; }
   .cond.hot b { color: #2a1206; }

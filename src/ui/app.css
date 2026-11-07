@@ -688,7 +688,9 @@ html[data-input="pad"] body{cursor:none}
 /* more detail one step away: a small circled i after the text, the same mark as the status badges (Mekkman, Nov 2026:
    it replaced a dotted underline, for one consistent sign of "there's more here") */
 .dt{cursor:help}
-.dt::after{content:"i";display:inline-grid;place-items:center;width:14px;height:14px;box-sizing:border-box;margin-left:6px;vertical-align:1px;border-radius:50%;border:1.5px solid currentColor;font-family:var(--f-body);font-size:10px;font-weight:700;font-style:normal;line-height:1;opacity:.6;text-decoration:none}
+/* the info mark: a filled circle in the text colour with the i cut out, so it reads as an icon, not a letter of the caption (8 Nov 2026) */
+:root{--icon-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M8 0a8 8 0 1 0 0 16A8 8 0 1 0 8 0zM6.9 3.3h2.2v2.1H6.9zM6.9 6.6h2.2v6.1H6.9z'/%3E%3C/svg%3E")}
+.dt::after{content:"";display:inline-block;width:14px;height:14px;flex:none;margin-left:6px;vertical-align:-2px;background-color:currentColor;-webkit-mask:var(--icon-i) center/contain no-repeat;mask:var(--icon-i) center/contain no-repeat;opacity:.75}
 .dt:hover::after,.dt:focus-visible::after,button:hover .dt::after,button:focus-visible .dt::after{opacity:1}
 .dt:focus-visible{outline:2px solid var(--gold-hi);outline-offset:2px;border-radius:2px}
 /* How to play: short sections, one open at a time */
