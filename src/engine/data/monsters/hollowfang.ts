@@ -105,7 +105,7 @@ export const hollowfang: MonsterDef = {
 
   badges(h) {
     const l = h.mon.latch ?? 0;
-    return l > 0 ? [{ key: 'latch', label: 'Latched on', short: `${l} turn${l > 1 ? 's' : ''}`, cls: 'ember', desc: 'It’s clamped on and drinking: block can’t stop it, and it heals what it drinks. A 2-dice Cut move tears it off.' }] : [];
+    return l > 0 ? [{ key: 'latch', label: 'Latched on', short: `drinks past block · ${l} turn${l > 1 ? 's' : ''}`, cls: 'ember', desc: 'It’s clamped on and drinking: block can’t stop it, and it heals what it drinks. A 2-dice Cut move tears it off.' }] : [];
   },
 
   // no tip: the Drinking telegraph says how to tear it off

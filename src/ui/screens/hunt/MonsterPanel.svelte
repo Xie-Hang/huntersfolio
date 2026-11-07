@@ -34,7 +34,7 @@
     if (m.molten > 0) out.push({ key: 'molt', label: 'Molten', short: `melee burns you ${m.enraged ? 8 : 5} · ${m.molten} turn${m.molten > 1 ? 's' : ''}`, cls: 'hot', desc: `Its shell is molten: every Cut or Blunt hit burns you ${m.enraged ? 8 : 5}. Pierce is safe, or block and wait it out.` });
     if ((m.shell ?? 0) > 0) out.push({ key: 'shell', label: 'In its shell', short: 'your hits ½', cls: 'stone', desc: 'Your hits deal half until it comes out on its next action. A good turn to block, charge or reroll for something big.' });
     if ((m.slime ?? 0) > 0 && M.inflicts !== 'Drain') out.push({ key: 'slime', label: 'Slime', short: `burning you · ${m.slime} turn${m.slime! > 1 ? 's' : ''}`, cls: 'hot', desc: 'The slime burns you a little at the end of each turn. It can\'t knock you out on its own. Breaking its foot stops the slime for good.' });
-    if ((m.mirage ?? 0) > 0 && M.id !== 'fenmother') out.push({ key: 'mir', label: 'Images', short: `only your 1st hit lands · ${m.mirage} turn${m.mirage! > 1 ? 's' : ''}`, cls: 'ice', desc: `Mirror images surround it: only your first hit each turn lands; later hits shatter an image. Make that first hit count (charge it). ${(m.hits ?? 0) > 0 ? 'You have already landed this turn\'s hit.' : ''}` });
+    if ((m.mirage ?? 0) > 0 && M.id !== 'fenmother') out.push({ key: 'mir', label: 'Images', short: `1st hit only · ${m.mirage} turn${m.mirage! > 1 ? 's' : ''}`, cls: 'ice', desc: `Mirror images surround it: only your first hit each turn lands; later hits shatter an image. Make that first hit count (charge it). ${(m.hits ?? 0) > 0 ? 'You have already landed this turn\'s hit.' : ''}` });
     if ((m.infected ?? 0) > 0) out.push({ key: 'inf', label: 'Infected', short: `−${m.infectDmg} · ${m.infected} turn${m.infected! > 1 ? 's' : ''}`, cls: 'inf', desc: 'Your Infect weapon filled its meter: it takes this much at the end of each turn until the infection runs out.' });
     out.push(...(M.badges?.(h) ?? []));
     if (E.canCapture(h) && shows(h, 'capture')) out.push({ key: 'cap', label: 'Capturable', short: h.snareSet ? 'snare set' : h.snares ? `set a Snare · ${h.snares} carried` : 'no Snare carried', cls: 'gold', desc: `At ${Math.round(E.CAPTURE_AT * 100)}% HP or less it can be captured: set a Snare (2 dice). It closes when you end your turn unless its move hits you for ${E.CHARGE_BREAK} or more. Double part materials.` });
@@ -137,10 +137,12 @@
   .conds { flex: 0 1 auto; display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; align-items: center; margin-left: auto; }
   .cond { all: unset; pointer-events: auto; position: relative; box-sizing: border-box; cursor: help; display: inline-flex; align-items: baseline; gap: 6px; padding: 4px 8px; border-radius: 3px; background: var(--c, var(--bone)); color: var(--ink); font-family: var(--f-body); font-size: var(--fs-sm); line-height: 1.2; box-shadow: 0 2px 0 rgba(0, 0, 0, .45), 0 0 0 1px rgba(0, 0, 0, .35); }
   .cond b { font-weight: 700; text-transform: uppercase; letter-spacing: .04em; font-size: 12px; }
-  .cond .sh { font-weight: 500; }
-  .cond .i { display: inline-grid; place-items: center; align-self: center; width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid currentColor; font-size: 10px; font-weight: 700; opacity: .75; }
+  .cond .sh { font-weight: 500; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .cond { max-width: 100%; white-space: nowrap; }
+  .cond b { flex: none; }
+  .cond .i { flex: none; display: inline-grid; place-items: center; align-self: center; width: 14px; height: 14px; min-width: 14px; line-height: 1; box-sizing: border-box; border-radius: 50%; border: 1.5px solid currentColor; font-size: 10px; font-weight: 700; opacity: .75; }
   .cond:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 2px; }
-  .cond.inf { --c: #9fc062; } .cond.hot { --c: #e8773a; } .cond.ice { --c: #b9d3f0; } .cond.gale { --c: #8fc3c9; } .cond.mud { --c: #b49a74; } .cond.stone { --c: #c9b89c; } .cond.gold { --c: #e9b949; }
+  .cond.inf { --c: #9fc062; } .cond.hot { --c: #e8773a; } .cond.ice { --c: #b9d3f0; } .cond.gale { --c: #8fc3c9; } .cond.mud { --c: #b49a74; } .cond.stone { --c: #c9b89c; } .cond.gold { --c: #e9b949; } .cond.ember { --c: #e0915f; }
   .cond.hot b { color: #2a1206; }
   .stip { position: absolute; right: 0; top: calc(100% + 8px); z-index: 40; width: 280px; padding: 10px 12px; border: 1px solid var(--gold); border-radius: 4px; background: var(--raise); color: var(--fg); font-size: var(--fs-sm); font-weight: 400; line-height: 1.45; text-align: left; text-transform: none; letter-spacing: 0; white-space: normal; box-shadow: 0 8px 24px rgba(0, 0, 0, .5); opacity: 0; visibility: hidden; transform: translateY(-4px); transition: opacity .12s, transform .12s, visibility .12s; pointer-events: none; }
   .cond:hover .stip, .cond:focus-visible .stip, .cond:focus .stip { opacity: 1; visibility: visible; transform: none; }
