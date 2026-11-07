@@ -144,9 +144,12 @@ class Game {
   /* ---------- effects ---------- */
   private roll(idx: number[]) {
     this.rolling = idx;
-    this.rolledAt = performance.now();
-    setTimeout(() => (this.rolling = []), ROLL_MS + 4 * ROLL_STAGGER + 40);
+    const at = (this.rolledAt = performance.now());
+    setTimeout(() => { if (this.rolledAt === at) this.rolling = []; }, ROLL_MS + 4 * ROLL_STAGGER + 40);
   }
+  /** land the dice at once: any input (selecting a die, pointing at or using an action) cuts the tumble short
+   *  (Nov 2026 playtest: the animation kept playing while the player was already choosing) */
+  settle() { if (this.rolling.length) this.rolling = []; }
   private float(at: Panel, text: string, cls = '') {
     const f = { id: ++floatId, at, text, cls };
     this.floats = [...this.floats, f];
@@ -162,6 +165,7 @@ class Game {
     const snap = $state.snapshot(h) as E.Hunt;
     const r = fn(h);
     if (!happened(r)) return r;
+    this.settle();
     this.undoStack = [...this.undoStack, snap];
     this.sel = [];
     this.endArmed = false;
@@ -178,6 +182,7 @@ class Game {
   toggleDie(i: number) {
     const h = this.hunt;
     if (!h || h.over || !h.dice[i] || h.dice[i].used) return;
+    this.settle();
     this.sel = this.sel.includes(i) ? this.sel.filter(x => x !== i) : [...this.sel, i];
     this.endArmed = false; // the "End turn anyway?" warning clears once you do something else (Nov 2026 playtest)
     sfx('dieTap');

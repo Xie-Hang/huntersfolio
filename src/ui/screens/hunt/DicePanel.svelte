@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import FaceMark from '../../parts/FaceMark.svelte';
   import { ROLL_MS, ROLL_STAGGER } from '../../game.svelte';
   import * as E from '../../../engine';
@@ -16,6 +17,9 @@
     return () => clearInterval(id);
   });
   const shown = (i: number, face: string) => flick[i] ?? face;
+  // pointing at a die (a real mouse move: the tumble slides dice under a still cursor) or at an action lands the dice
+  // pointing at an action (its dice lift) lands the dice straight away
+  $effect(() => { if (game.preview.length) untrack(() => game.settle()); });
   import Key from '../../parts/Key.svelte';
   import { input } from '../../pad.svelte';
   import { game } from '../../game.svelte';
@@ -49,6 +53,7 @@
           aria-label="{label(d.face)} die{d.charged && !d.used ? ', charged: attack with it or it goes off' : ''}{d.used ? `, used for ${d.used}` : ''}"
           disabled={!!d.used || over}
           onclick={() => game.toggleDie(i)}
+          onpointermove={(e) => (e.movementX || e.movementY) && game.settle()}
         >
           {#if shown(i, d.face) === 'C' || shown(i, d.face) === 'T'}<FaceMark c={shown(i, d.face)} />
           {:else}<span class="bl" aria-hidden="true"></span>{/if}<!-- a blank is an empty face, no word (Nov 2026) -->
