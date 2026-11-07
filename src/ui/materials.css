@@ -39,9 +39,10 @@ body{background:transparent}
 
 /* the moves are raised cards; gold is kept for what to do now (End turn, a selection, the tutorial), not every move you can afford */
 .gearpanel .move{background:var(--raise);border-color:var(--line-2);box-shadow:0 2px 0 rgba(0,0,0,.4)}
-.gearpanel .move.ready{border-color:var(--line-2);background:var(--raise)}
+.gearpanel .move.ready:not(.live){border-color:var(--line-2);background:var(--raise)}
+/* (a live Capture keeps its gold: this rule used to paint it dark under its dark text, Nov 2026) */
 .gearpanel .move.ready:hover{border-color:var(--gold);box-shadow:0 2px 0 rgba(0,0,0,.4),0 0 0 3px rgba(233,185,73,.14)}
-.gearpanel .move.no{background:rgba(32,26,21,.6);box-shadow:none;border-color:var(--line);opacity:.45}
+.gearpanel .move.no:not(.live){background:rgba(32,26,21,.6);box-shadow:none;border-color:var(--line);opacity:.45}
 .gearpanel .move.no .cd{filter:grayscale(1)}
 /* the dice you've selected make this move (Nov 2026) */
 .gearpanel .move.pick{border-color:var(--gold);box-shadow:0 2px 0 rgba(0,0,0,.4),0 0 0 3px rgba(233,185,73,.2)}

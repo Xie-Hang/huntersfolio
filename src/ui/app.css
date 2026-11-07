@@ -515,7 +515,9 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .move.capture.no{border-style:dashed;border-color:var(--line)}
 .move.capture.ready{border-style:solid;border-color:var(--gold)}
 .move.capture.live{background:var(--gold);border-color:var(--gold-hi);color:var(--ink);opacity:1;animation:capglow 1.6s ease-in-out 2}
-.move.capture.live .md,.move.capture.live .need{color:var(--ink)}
+.move.capture.live .md,.move.capture.live .need,.move.capture.live .need .x{color:var(--ink)}
+/* live, but the selected dice can't pay for it: still gold, a little quieter */
+.move.capture.live.no{opacity:.72}
 @keyframes capglow{50%{box-shadow:0 0 0 6px rgba(233,185,73,.25)}}
 .tele .tip.capture{border-color:var(--gold);color:var(--gold-hi)}
 .divider{display:flex;justify-content:space-between;gap:10px;padding:6px 0 4px;border-bottom:1px solid var(--line)}
