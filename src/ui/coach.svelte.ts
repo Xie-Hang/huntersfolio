@@ -25,6 +25,8 @@ export interface Tip {
   /** a guided step that only explains. Off the island the player clicks Next; on it (Nov 2026 playtest: no Got it
    *  buttons) the player selects the highlighted thing to move on */
   info?: boolean;
+  /** an island prompt with nothing to select: it gets a Got it button instead */
+  gotit?: boolean;
   /** the card's header (island prompts: what the prompt is about, not just "The Foothills") */
   head?: string;
   /** label for the Next button */
@@ -92,6 +94,13 @@ const ISLAND: Tip[] = [
     done: () => (hunt()?.turn ?? 1) > 1
   },
   {
+    // its next move, in the first hunt, at the start of turn 2: it has just hit you once, so the panel means something.
+    // A Got it button: the panel can't be selected (Mekkman, Nov 2026 playtest)
+    id: 'i-tele', guide: true, info: true, gotit: true, at: ['tele'], head: 'Its next move',
+    when: () => { const h = onIsland('scuttlehog'); return !!h && h.turn === 2 && unusedTurn(h) && !game.sel.length; },
+    text: () => 'Its next move and damage show here.'
+  },
+  {
     // the shortcut (Mekkman, Nov 2026): a move picks its own dice when none are selected. Turn 2, once the long way
     // (click a die, then the move) has been done
     id: 'i-quick', head: 'A shortcut', guide: true, learn: true, at: ['move'],
@@ -101,14 +110,10 @@ const ISLAND: Tip[] = [
     done: () => { const h = hunt(); return !!h && h.mid === 'scuttlehog' && ((h.turn === 2 && !unusedTurn(h)) || h.turn > 2); }
   },
   {
-    id: 'i-faces2', guide: true, info: true, at: ['dice'], head: 'New faces',
+    // only to read: a Got it button, not "select one" (Mekkman, Nov 2026)
+    id: 'i-faces2', guide: true, info: true, gotit: true, at: ['dice'], head: 'New faces',
     when: () => { const h = onIsland('snapclaw'); return !!h && h.turn === 1 && unusedTurn(h) && !game.sel.length; },
-    text: () => 'Claws and blanks join the Fangs. Select one.'
-  },
-  {
-    id: 'i-tele', guide: true, info: true, at: ['tele'], head: 'Its next move',
-    when: () => { const h = onIsland('snapclaw'); return !!h && h.turn === 1 && unusedTurn(h); },
-    text: () => 'Its next move shows here. Select it.'
+    text: () => 'Claws and blanks join the Fangs.'
   },
   {
     // several dice, one move, used that many times (Nov 2026 playtest)
@@ -168,9 +173,9 @@ const ISLAND: Tip[] = [
     done: () => { const h = hunt(); return !!h && E.currentWeapon(h).type === 'Blunt'; }
   },
   {
-    id: 'i-daze', head: 'Daze', guide: true, info: true, at: ['daze'],
+    id: 'i-daze', gotit: true, head: 'Daze', guide: true, info: true, at: ['daze'],
     when: () => { const h = onIsland('burrowmole'); return !!h && h.mon.daze > 0 && !h.mon.dazeLock && freeDice(h) > 0; },
-    text: () => 'Maul hits fill Daze. Full: it loses a turn.'
+    text: () => 'Maul hits fill Daze. Full Daze skips its turn.'
   },
   {
     id: 'i-pick', head: 'Reroll', guide: true, learn: true, at: ['die-blank'],
@@ -230,7 +235,7 @@ const ISLAND: Tip[] = [
     text: () => 'Lose, and carried items are gone. Select it.'
   },
   {
-    id: 'i-flow', head: 'Flow', guide: true, info: true, at: ['move'],
+    id: 'i-flow', gotit: true, head: 'Flow', guide: true, info: true, at: ['move'],
     when: () => { const h = onIsland('tuskling'); return !!h && E.islandStep(game.save) === 7 && h.turn === 1 && unusedTurn(h) && E.canUseMove(h, 0); },
     text: () => 'Moves tagged Flow give a reroll back.'
   },
@@ -247,7 +252,7 @@ const ISLAND: Tip[] = [
   },
   {
     // the item slot, said even if it hasn't been hit yet (Nov 2026 playtest: items went untaught)
-    id: 'i-item', head: 'Items', guide: true, info: true, at: ['item'],
+    id: 'i-item', gotit: true, head: 'Items', guide: true, info: true, at: ['item'],
     when: () => { const h = onIsland('tuskling'); return !!h && E.islandStep(game.save) === 7 && !!h.item && h.turn >= 2 && h.php >= h.pmax && unusedTurn(h); },
     text: () => 'Items cost no dice. Your salve heals 30.'
   },
@@ -284,7 +289,7 @@ const ISLAND: Tip[] = [
   },
   {
     // weakness and resistance, before the Forge asks you to track a Gale blade (Nov 2026 playtest: "what is Gale?")
-    id: 'i-elems', head: 'Elements', guide: true, info: true, at: ['elems'],
+    id: 'i-elems', gotit: true, head: 'Elements', guide: true, info: true, at: ['elems'],
     when: () => { const h = onIsland('gustmarmot'); return !!h && h.turn >= 2 && unusedTurn(h) && game.save.tips.includes('i-windup'); },
     text: () => { const M = E.MONSTERS.gustmarmot; return `Weak to ${M.weak}: more damage. Resists ${M.resist}: less.`; }
   },
@@ -295,10 +300,10 @@ const ISLAND: Tip[] = [
     text: () => 'Charged: double damage. Select a move.'
   },
   {
-    id: 'i-enraged', guide: true, info: true, at: ['tele'],
+    id: 'i-enraged', gotit: true, guide: true, info: true, at: ['tele'],
     when: () => { const h = onIsland('gustmarmot'); return !!h && h.mon.enraged && unusedTurn(h) && game.save.tips.includes('i-windup'); },
     head: 'Enraged',
-    text: () => 'Enraged: it hits harder. Select its move.'
+    text: () => 'Enraged: it hits harder.'
   },
   {
     id: 'i-track', head: 'Tracking', guide: true, learn: true, at: () => (game.view === 'hunt' ? ['to-forge'] : ['nav-forge']),

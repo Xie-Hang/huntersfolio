@@ -109,7 +109,7 @@
     </div>
     {#if !multi && !tip}<p class="say">{info.text}</p>{/if}
     {#if inc && !full}
-      {#if inc.net && !inc.noGuard}<div class="calc">Block to take less.</div>{:else if inc.noGuard && inc.net}<div class="calc"><span class="nores">Block can’t stop this one.</span></div>{/if}
+      {#if inc.net && !inc.noGuard}{#if shows(h, 'block')}<div class="calc">Block to take less.</div>{/if}{:else if inc.noGuard && inc.net}<div class="calc"><span class="nores">Block can’t stop this one.</span></div>{/if}
     {:else if inc && calcWorth}
       <div class="calc">
         {#if inc.elem === 0}<b>{inc.raw}</b> physical{#if inc.wearsResist} · <span class="nores">your armor's {E.monElem(h)} resist doesn't apply</span>{/if}

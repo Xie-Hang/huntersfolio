@@ -58,7 +58,8 @@ export const islandShop = (s: Save) => (islandStep(s) >= 14 ? ['salve', 'smoke',
 /** What a Foothills hunt shows, by the step it's hunted at: each hunt adds what it teaches. The town steps (2, 4, 6)
  *  show what the hunt before them did. */
 const SHOW: [number, string[]][] = [
-  [1, ['intent', 'block']],
+  [0, ['intent']], // its next move from the first hunt (Mekkman, Nov 2026); Block comes with the Rimekit
+  [1, ['block']],
   [3, ['parts', 'undo']],
   [5, ['swap', 'reroll', 'daze', 'rend']],
   [7, ['item', 'capture', 'flow']],
