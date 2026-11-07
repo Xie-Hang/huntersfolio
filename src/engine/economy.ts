@@ -10,6 +10,7 @@ import { islandDone, advanceIsland, islandStep, onExam, ISLAND_OPENS } from './i
 
 /* ---------- tuning constants ---------- */
 export const REWARD = { base: 100, perPart: 40, capture: 60 };
+export const FOOTHILLS_REWARD = { base: 60, perPart: 10, capture: 20 };
 export const RARE = { chance: 0.08, captureChance: 0.12, pityStep: 0.03, pityGuarantee: 11 };
 /** The monster a piece of gear is made from: the source of the first material in its recipe. Base gear (the
  *  starter blade, maul, bow and jerkin; coin-only recipes) counts as Gorehorn gear. */
@@ -351,7 +352,10 @@ export function settleHunt(s: Save, h: Hunt) {
     }
     // the Foothills' rare-drop lesson: the second Gustmarmot always drops its Gale Gland, cheeks broken or not
     if (!rare && islandStep(s) === 11 && h.mid === 'gustmarmot') { rare = true; mats[MD.rare] = (mats[MD.rare] ?? 0) + 1; }
-    const coin = REWARD.base + REWARD.perPart * h.stats.broken + (h.captured ? REWARD.capture : 0);
+    // the Foothills pay less (Mekkman, Nov 2026: the island left players with ~850 coin): enough for what the island
+    // asks you to make, with a little over, and not worth farming once you've left
+    const R = MD.island ? FOOTHILLS_REWARD : REWARD;
+    const coin = R.base + R.perPart * h.stats.broken + (h.captured ? R.capture : 0);
     s.coin += coin;
     for (const [k, v] of Object.entries(mats)) s.mats[k] = (s.mats[k] ?? 0) + v;
     if (h.item) s.items[h.item] = (s.items[h.item] ?? 0) + h.itemCharges;

@@ -42,6 +42,17 @@ const bestPart = (h: E.Hunt) => {
 
 /** the Foothills (the tutorial island, Nov 2026): one short prompt at a time, eight words or fewer, each pointing at
  *  the one thing to press. These are the only tips while the island is on; the Ridge's own tips come after. */
+/** a Foothills make you can't pay for yet: its prompt holds back (it would lock you on a greyed button) */
+const short = (k: E.RecipeKind, id: string) => { const r = E.recipeOf(game.save, k, id); return !!r.action && !!r.cost && !E.canPay(game.save, r.cost); };
+/** what the island's Forge step asks you to make next */
+const forgeNeed = (): [E.RecipeKind, string] | null => {
+  const s = game.save, st = E.islandStep(s);
+  if (st === 2) return ['w', 'blade'];
+  if (st === 8) return ['a', 'hidevest'];
+  if (st === 12) return !s.weapons.whistle ? ['w', 'whistle'] : !s.charms.clawcharm ? ['c', 'clawcharm'] : ['a', 'hidevest'];
+  return null;
+};
+const canMake = () => { const n = forgeNeed(); return !n || !short(...n); };
 const huntOn = () => game.view === 'hunt' && !!game.hunt && !game.hunt.over;
 const onIsland = (mid: string) => { const h = hunt(); return h && h.mid === mid ? h : null; };
 const ISLAND: Tip[] = [
@@ -104,7 +115,7 @@ const ISLAND: Tip[] = [
   },
   {
     id: 'i-make', guide: true, learn: true, at: ['forge-act'],
-    when: () => E.islandStep(game.save) === 2 && game.view === 'forge',
+    when: () => E.islandStep(game.save) === 2 && game.view === 'forge' && canMake(),
     text: () => 'Make the Hunter\'s Blade.',
     done: () => E.islandStep(game.save) >= 3
   },
@@ -203,7 +214,7 @@ const ISLAND: Tip[] = [
   },
   {
     id: 'i-vest2', guide: true, learn: true, at: () => (game.forgeTab === 'armor' ? ['forge-act'] : ['tab-armor']),
-    when: () => E.islandStep(game.save) === 8 && game.view === 'forge',
+    when: () => E.islandStep(game.save) === 8 && game.view === 'forge' && canMake(),
     text: () => (game.forgeTab === 'armor' ? 'Make the Hide Vest. You wear it.' : 'Click Armor.'),
     done: () => E.islandStep(game.save) >= 9
   },
@@ -251,21 +262,28 @@ const ISLAND: Tip[] = [
   },
   {
     id: 'i-whistle', guide: true, learn: true, at: () => (game.forgeTab !== 'weapons' ? ['tab-weapons'] : game.forgeSel !== 'whistle' ? ['row-whistle'] : ['forge-act']),
-    when: () => E.islandStep(game.save) === 12 && game.view === 'forge' && !game.save.weapons.whistle,
+    when: () => E.islandStep(game.save) === 12 && game.view === 'forge' && !game.save.weapons.whistle && canMake(),
     text: () => (game.forgeTab !== 'weapons' ? 'Click Weapons.' : game.forgeSel !== 'whistle' ? 'Click the Whistling Blade.' : 'Make the Whistling Blade.'),
     done: () => !!game.save.weapons.whistle
   },
   {
     id: 'i-charm', guide: true, learn: true, at: () => (game.forgeTab === 'charms' ? ['forge-act'] : ['tab-charms']),
-    when: () => E.islandStep(game.save) === 12 && game.view === 'forge' && !!game.save.weapons.whistle && !game.save.charms.clawcharm,
+    when: () => E.islandStep(game.save) === 12 && game.view === 'forge' && !!game.save.weapons.whistle && !game.save.charms.clawcharm && canMake(),
     text: () => (game.forgeTab === 'charms' ? 'A Claw Charm hits back when you block.' : 'Now a charm. Click Charms.'),
     done: () => !!game.save.charms.clawcharm
   },
   {
     id: 'i-reinforce', guide: true, learn: true, at: () => (game.forgeTab === 'armor' ? ['forge-act'] : ['tab-armor']),
-    when: () => E.islandStep(game.save) === 12 && game.view === 'forge' && !!game.save.weapons.whistle && !!game.save.charms.clawcharm,
+    when: () => E.islandStep(game.save) === 12 && game.view === 'forge' && !!game.save.weapons.whistle && !!game.save.charms.clawcharm && canMake(),
     text: () => (game.forgeTab === 'armor' ? 'Reinforce the vest. It gets tougher.' : 'Last: your vest. Click Armor.'),
     done: () => E.islandStep(game.save) >= 13
+  },
+  {
+    // the island pays little: someone who spent it all on salves can come up short at a make
+    id: 'i-short', info: true, at: ['forge-act'],
+    when: () => game.view === 'forge' && !canMake(),
+    text: () => 'Not enough coin. Sell spares or hunt again.',
+    next: 'Got it'
   },
   {
     id: 'i-shop2', guide: true, learn: true, at: () => (game.view === 'hunt' ? ['to-shop'] : ['nav-shop']),
