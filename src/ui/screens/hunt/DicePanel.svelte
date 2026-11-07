@@ -63,7 +63,7 @@
   </button>
     {#if shows(h, 'reroll') || shows(h, 'undo')}
     <div class="grp">
-      {#if shows(h, 'reroll')}<button class="btn quiet" class:rr={n > 0 && h.rerolls > 0 && !over} data-sound data-coach="reroll" data-key="r" disabled={!n || h.rerolls < 1 || over} onclick={() => game.reroll()}><Key k="R" pad="X" />{n > 0 && h.rerolls > 0 ? `Reroll ${n} ${n === 1 ? 'die' : 'dice'}` : 'Reroll'} · {h.rerolls} left</button>{/if}
+      {#if shows(h, 'reroll')}<button class="btn quiet" class:rr={n > 0 && h.rerolls > 0 && !over} data-sound data-coach="reroll" data-key="r" onmouseenter={() => (game.preview = [...game.sel])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = [...game.sel])} onblur={() => (game.preview = [])} disabled={!n || h.rerolls < 1 || over} onclick={() => game.reroll()}><Key k="R" pad="X" />{n > 0 && h.rerolls > 0 ? `Reroll ${n} ${n === 1 ? 'die' : 'dice'}` : 'Reroll'} · {h.rerolls} left</button>{/if}
       {#if shows(h, 'undo')}<button class="btn quiet" data-coach="undo" data-key="z" disabled={!game.undoStack.length || over} onclick={() => game.undo()}><Key k="Z" pad="LT" />Undo</button>{/if}
     </div>
     {/if}
