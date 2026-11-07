@@ -2,27 +2,30 @@ import type { DamageType, Move, WeaponDef } from '../types';
 import { MAX_TIER } from '../edition';
 
 /** Daze points per Blunt move. Fixed, so upgrades raise damage but not how often you stun. */
-export const DZ = { light: 10, medium: 20, strong: 35 };
+export const DZ = { light: 10, medium: 20, strong: 50 };
 
 const BLADE: Move[] = [
-  { name: 'Slash', need: 'C', dmg: 12, flow: true },
-  { name: 'Cleave', need: 'CT', dmg: 26 },
+  // Flow sits on the middle move (Mekkman, Nov 2026): useful, but a choice, not a free extra on every cheap swing
+  { name: 'Slash', need: 'C', dmg: 12 },
+  { name: 'Cleave', need: 'CT', dmg: 26, flow: true },
   { name: 'Rend', need: 'CCT', dmg: 56, part: 2 }
 ];
 const GALE: Move[] = [
-  { name: 'Gust Cut', need: 'T', dmg: 12, flow: true },
-  { name: 'Shear', need: 'TC', dmg: 26 },
+  { name: 'Gust Cut', need: 'T', dmg: 12 },
+  { name: 'Shear', need: 'TC', dmg: 26, flow: true },
   { name: 'Tempest', need: 'TTC', dmg: 56, part: 2 }
 ];
 const MAUL: Move[] = [
-  { name: 'Thump', need: 'C', dmg: 12, daze: DZ.light },
-  { name: 'Smash', need: 'CT', dmg: 28, part: 1.5, daze: DZ.medium },
+  // only the strongest move dazes (Mekkman, Nov 2026): Daze was the strongest of the three signatures
+  { name: 'Thump', need: 'C', dmg: 12 },
+  { name: 'Smash', need: 'CT', dmg: 28, part: 1.5 },
   { name: 'Skullcrack', need: 'CTT', dmg: 56, part: 2, daze: DZ.strong }
 ];
 const BOW: Move[] = [
   { name: 'Quick Shot', need: 'C', dmg: 12, expose: true },
-  { name: 'Volley', need: 'CC', dmg: 28, expose: true },
-  { name: 'Pinning Shot', need: 'CTT', dmg: 54, part: 1.5, pin: true, expose: true }
+  // only the cheap shot exposes (Mekkman, Nov 2026): a one-die setup that weaker players lean on
+  { name: 'Volley', need: 'CC', dmg: 28 },
+  { name: 'Pinning Shot', need: 'CTT', dmg: 54, part: 1.5, pin: true }
 ];
 
 const list: WeaponDef[] = [
@@ -153,7 +156,7 @@ export const TREES: { type: DamageType; nodes: [string, number][] }[] = (['Cut',
 });
 
 export const SIGNATURES: Record<DamageType, { tag: 'flow' | 'daze' | 'expose'; name: string; text: string }> = {
-  Cut: { tag: 'flow', name: 'Flow', text: 'Light moves add 1 to your rerolls left. The die itself is still spent.' },
-  Blunt: { tag: 'daze', name: 'Daze', text: 'Hits to the head part fill a daze meter. Full meter: the monster loses its action, then recovers for a turn.' },
-  Pierce: { tag: 'expose', name: 'Expose', text: 'Hits expose the part for 2 turns: every hit there, from either weapon, deals +15% and counts double toward breaking it.' }
+  Cut: { tag: 'flow', name: 'Flow', text: 'The middle move adds 1 to your rerolls left. Its dice are still spent.' },
+  Blunt: { tag: 'daze', name: 'Daze', text: 'The strongest move, on the head, fills a daze meter. Full meter: the monster loses its action, then recovers for a turn.' },
+  Pierce: { tag: 'expose', name: 'Expose', text: 'The light shot exposes the part for 2 turns: every hit there, from either weapon, deals +15% and counts double toward breaking it.' }
 };

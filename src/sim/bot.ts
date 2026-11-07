@@ -78,7 +78,8 @@ function evaluate(h: Hunt, plan: Omit<Plan, 'score'>, p: Policy): number | null 
   const risk = 1 + 3 * (1 - c.php / c.pmax);
   const burned = php0 - c.php;
   let score = dealt + 0.5 * partProg - risk * (taken + burned) + 0.3 * prevented + (plan.charge.length ? 30 : 0);
-  if (E.currentWeapon(c).moves[0].flow) score += 4 * plan.moves.filter(i => i === 0).length;
+  const fi = E.currentWeapon(c).moves.findIndex(m => m.flow);
+  if (fi >= 0) score += 4 * plan.moves.filter(i => i === fi).length;
   score -= risk * E.CHARGED_HIT * c.dice.filter(d => d.charged && (!d.used || d.used === 'Block')).length;
   if (plan.charge.length && taken > 0) return null; // any hit through breaks a charge
   if (c.php - taken <= 0) score -= 1000;

@@ -379,7 +379,7 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
     return { dmg: 0, broke: false };
   }
   let dmg = mv.dmg; const notes: string[] = [];
-  if (mv.flow && w.type === 'Cut' && charmFx(h) === 'lightCut') { dmg += LIGHT_CUT_BONUS; notes.push('Rime Charm +4'); }
+  if (mv.name === w.moves[0].name && w.type === 'Cut' && charmFx(h) === 'lightCut') { dmg += LIGHT_CUT_BONUS; notes.push('Rime Charm +4'); }
   const charged = h.chargeReady;
   if (h.chargeReady) { dmg *= 2; h.chargeReady = false; notes.push('charged ×2'); }
   if (h.whet) { dmg = Math.round(dmg * (1 + h.whet)); notes.push(`whetted +${Math.round(h.whet * 100)}%`); h.whet = 0; }

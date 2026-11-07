@@ -175,7 +175,7 @@ const ISLAND: Tip[] = [
   {
     id: 'i-daze', gotit: true, head: 'Daze', guide: true, info: true, at: ['daze'],
     when: () => { const h = onIsland('burrowmole'); return !!h && h.mon.daze > 0 && !h.mon.dazeLock && freeDice(h) > 0; },
-    text: () => 'Maul hits fill Daze. Full Daze skips its turn.'
+    text: () => 'Skullcrack fills Daze. Full Daze skips its turn.'
   },
   {
     id: 'i-pick', head: 'Reroll', guide: true, learn: true, at: ['die-blank'],
@@ -235,8 +235,8 @@ const ISLAND: Tip[] = [
     text: () => 'Lose, and carried items are gone. Select it.'
   },
   {
-    id: 'i-flow', gotit: true, head: 'Flow', guide: true, info: true, at: ['move'],
-    when: () => { const h = onIsland('tuskling'); return !!h && E.islandStep(game.save) === 7 && h.turn === 1 && unusedTurn(h) && E.canUseMove(h, 0); },
+    id: 'i-flow', gotit: true, head: 'Flow', guide: true, info: true, at: ['move-flow', 'move'],
+    when: () => { const h = onIsland('tuskling'); return !!h && E.islandStep(game.save) === 7 && h.turn === 1 && unusedTurn(h) && E.canUseMove(h, 1); },
     text: () => 'Moves tagged Flow give a reroll back.'
   },
   {
