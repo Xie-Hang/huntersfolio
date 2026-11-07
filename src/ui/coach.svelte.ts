@@ -110,7 +110,7 @@ const ISLAND: Tip[] = [
   {
     id: 'i-forge', guide: true, learn: true, at: () => (game.view === 'hunt' ? ['to-forge'] : ['nav-forge']),
     when: () => E.islandStep(game.save) === 2 && game.view !== 'forge' && !(game.view === 'hunt' && game.hunt && !game.hunt.over),
-    text: () => 'You have Shell. Make a blade.',
+    text: () => 'You have Kit Scale. Make a blade.',
     done: () => game.view === 'forge'
   },
   {
@@ -177,7 +177,7 @@ const ISLAND: Tip[] = [
   {
     id: 'i-sell', info: true, at: ['shop-sell'],
     when: () => E.islandStep(game.save) === 7 && game.view === 'shop' && (game.save.mats.tuft ?? 0) > 0,
-    text: () => 'Spare tufts sell for coin, on Sell.',
+    text: () => 'Spare down sells for coin, on Sell.',
     next: 'Got it'
   },
   // the second Tuskling is the hunt for armor: its hide makes the vest (Mekkman, Nov 2026: make it guided)

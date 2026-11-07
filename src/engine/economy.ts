@@ -19,7 +19,7 @@ export function gearSource(kind: 'w' | 'a', id: string): string {
   const c = (d as { cost?: Cost }).cost ?? (d as { craft?: Cost }).craft ?? {};
   // gear made in the Foothills reinforces with the island's own materials
   if (d?.foothills) { for (const k of Object.keys(c)) if (k !== 'coin') { const src = Object.values(MONSTERS).find(M => M.common === k || M.rare === k || M.parts.some(p => p.mat === k)); if (src) return src.id; } }
-  // otherwise the Foothills' materials don't count: the Hunter's Blade takes Crab Shell but reinforces with Gorehorn hide like before
+  // otherwise the Foothills' materials don't count: the Hunter's Blade takes Kit Scale but reinforces with Gorehorn hide like before
   for (const k of Object.keys(c)) if (k !== 'coin') { const src = Object.values(MONSTERS).find(M => M.tier >= 1 && (M.common === k || M.rare === k || M.parts.some(p => p.mat === k))); if (src) return src.id; }
   return 'gorehorn';
 }
