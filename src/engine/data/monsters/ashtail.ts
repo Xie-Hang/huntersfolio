@@ -81,7 +81,7 @@ export const ashtail: MonsterDef = {
 
   badges(h) {
     const m = h.mon;
-    return m.plating > 0 ? [{ key: 'scales', label: `Scales ×${m.plating}`, short: 'hits break scales, not HP', cls: 'hot', desc: `Each hit breaks cinder scales instead of dealing damage, and uses up a charge or whetstone bonus. Pierce clears two layers, Cut and Blunt one, and a Cut hit burns you ${scorch(m.enraged)}. A Frost hit quenches them all. A Firepot does nothing.` }] : [];
+    return m.plating > 0 ? [{ key: 'scales', label: `Scales ×${m.plating}`, short: 'takes hits, **Cut** burns you', cls: 'hot', desc: `Its burning scales take your hits before its HP does. **Pierce** breaks two layers, **Cut** and **Blunt** break one. **Cut** hits burn you for ${scorch(m.enraged)}. **Charge** and whetstone bonuses go into the scales. A **Frost** hit puts them all out.` }] : [];
   },
 
   tip(h, type) {

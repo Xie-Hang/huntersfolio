@@ -108,7 +108,7 @@ export const squallhorn: MonsterDef = {
   },
 
   badges(h) {
-    return h.mon.tailwind ? [{ key: 'tail', label: 'Tailwind', short: 'next charge ignores ½ block', cls: 'gale', desc: 'The wind is at its back: its next Cyclone Charge ignores half your block. Breaking the mane ends it.' }] : [];
+    return h.mon.tailwind ? [{ key: 'tail', label: 'Tailwind', short: '**Block** ½ on **Cyclone Charge**', cls: 'gale', desc: 'The wind is behind it. Your **Block** is ½ against its next **Cyclone Charge**. Breaking its mane ends it for good.' }] : [];
   },
 
   tip(h, type) {

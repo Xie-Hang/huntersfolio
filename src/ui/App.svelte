@@ -265,10 +265,10 @@
         <li>You carry two weapons. Swapping costs 1 die (a blank is fine). <strong>Avg</strong> is damage a turn with all 4 dice.</li>
       </ul></details>
       <details name="help"><summary>Monster states</summary><ul class="helplist">
-        <li><strong>Airborne:</strong> only Pierce reaches it. A Pinning Shot or a Weighted Net brings it down.</li>
-        <li><strong>Underground:</strong> only Blunt, at half damage. A 2-die Blunt move or Blast Powder drives it up.</li>
-        <li><strong>Ice plating:</strong> hits break layers before HP. Cut breaks 2, others 1, a Firepot all.</li>
-        <li><strong>Molten:</strong> Cut and Blunt hits burn you a little. Pierce is safe.</li>
+        <li><strong>Airborne:</strong> only <b>Pierce</b> reaches it. <b>Pinning Shot</b> or a <b>Weighted Net</b> brings it down.</li>
+        <li><strong>Underground:</strong> only <b>Blunt</b> reaches it, and some take ½. A heavy <b>Blunt</b> hit or <b>Blast Powder</b> forces it up.</li>
+        <li><strong>Ice plating:</strong> takes your hits before HP. Each hit breaks a layer, <b>Cut</b> breaks two, a <b>Firepot</b> all.</li>
+        <li><strong>Molten:</strong> <b>Cut</b> and <b>Blunt</b> hits burn you.</li>
       </ul></details>
       <details name="help"><summary>Gear</summary><ul class="helplist">
         <li>Armor sets your HP and Block. Resist armor cuts one element's attacks by 30%.</li>
@@ -276,7 +276,7 @@
         <li>Each reinforcement (+1 to +3) adds 5% damage, or 10 HP and 1 block to armor. Upgrades keep it.</li>
       </ul></details>
       <details name="help"><summary>Controls</summary><ul class="helplist">
-        <li><strong>Keys:</strong> <kbd>1</kbd>–<kbd>4</kbd> dice · <kbd>Q</kbd> <kbd>W</kbd> <kbd>E</kbd> moves · <kbd>G</kbd> block · <kbd>C</kbd> charge · <kbd>S</kbd> swap · <kbd>X</kbd> capture · <kbd>I</kbd> item · <kbd>R</kbd> reroll · <kbd>Space</kbd> end turn · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · <kbd>Esc</kbd> clear.</li>
+        <li><strong>Keys:</strong> <kbd>1</kbd>–<kbd>4</kbd> dice · <kbd>Q</kbd> <kbd>W</kbd> <kbd>E</kbd> moves · <kbd>A</kbd> block · <kbd>C</kbd> charge · <kbd>S</kbd> swap · <kbd>X</kbd> capture · <kbd>F</kbd> item · <kbd>R</kbd> reroll · <kbd>Space</kbd> end turn · <kbd>Z</kbd> undo · <kbd>Esc</kbd> clear.</li>
         <li><strong>Controller:</strong> d-pad moves, <kbd>A</kbd> selects, <kbd>B</kbd> back. In a hunt: <kbd>Y</kbd> end turn · <kbd>X</kbd> reroll · <kbd>LB</kbd> <kbd>RB</kbd> aim · <kbd>LT</kbd> undo · <kbd>RT</kbd> swap. Elsewhere <kbd>LB</kbd> <kbd>RB</kbd> switch screens. <kbd>Menu</kbd> settings, <kbd>View</kbd> this help.</li>
       </ul></details>
     </div>
