@@ -35,9 +35,9 @@ export const mistglass: MonsterDef = {
   intro: 'The mist thickens and catches the light. Something glassy steps out of it, and then there are three of it.',
   enrageText: 'Cracks of cold light race across its facets. The Mistglass is enraged!',
   parts: [
-    { id: 'tail', name: 'Tail Shards', eff: { Cut: 1, Blunt: 0.5, Pierce: 0 }, hint: 'Break them and its images fade sooner', mat: 'glasstail', hp: 180, brk: 'The tail shards shatter. Its images will fade sooner.' },
-    { id: 'facets', name: 'Facets', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'The daze part', mat: 'glassfacet', hp: 240, brk: 'Its facets crack and cloud over.' },
-    { id: 'eyes', name: 'Eyes', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Break them to stop the Freezing Mist', mat: 'glasseye', hp: 160, brk: 'Its eyes go dark. The mist stops freezing.' }
+    { id: 'tail', name: 'Tail Shards', eff: { Cut: 1, Blunt: 0.5, Pierce: 0 }, hint: 'Breaking them ends its images sooner', mat: 'glasstail', hp: 180, brk: 'The tail shards shatter. Its images will fade sooner.' },
+    { id: 'facets', name: 'Facets', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: '**Daze** part', mat: 'glassfacet', hp: 240, brk: 'Its facets crack and cloud over.' },
+    { id: 'eyes', name: 'Eyes', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Breaking them stops **Freezing Mist**', mat: 'glasseye', hp: 160, brk: 'Its eyes go dark. The mist stops freezing.' }
   ],
 
   intent(h, type): Intent {

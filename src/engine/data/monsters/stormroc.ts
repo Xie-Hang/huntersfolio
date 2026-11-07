@@ -40,9 +40,9 @@ export const stormroc: MonsterDef = {
   intro: 'The clouds over the spire start to turn. Something in them is turning too, and it has a crown of lightning.',
   enrageText: 'Thunder rolls without a flash. The Stormcrown Roc is enraged!',
   parts: [
-    { id: 'wings', name: 'Wings', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Break them and it has to land once more', mat: 'rocpinion', hp: 220, brk: 'A wing tears from root to tip!' },
-    { id: 'crown', name: 'Storm Crown', eff: { Cut: 0, Blunt: 0.5, Pierce: 1 }, hint: 'Pierce hits drain its storm. Melee reaches it only on the ground', mat: 'stormcrown', hp: 200, brk: 'The crown shatters in a shower of sparks. Its storm builds slower now.' },
-    { id: 'talons', name: 'Talons', eff: { Cut: 1, Blunt: 0.5, Pierce: 0.5 }, hint: 'Break to weaken its Rake and Dive', mat: 'roctalon', hp: 240, brk: 'Its talons crack. Its strikes lose their bite.' }
+    { id: 'wings', name: 'Wings', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Breaking them makes it land once more', mat: 'rocpinion', hp: 220, brk: 'A wing tears from root to tip!' },
+    { id: 'crown', name: 'Storm Crown', eff: { Cut: 0, Blunt: 0.5, Pierce: 1 }, hint: '**Pierce** hits drain its storm. **Cut** and **Blunt** reach it on the ground only', mat: 'stormcrown', hp: 200, brk: 'The crown shatters in a shower of sparks. Its storm builds slower now.' },
+    { id: 'talons', name: 'Talons', eff: { Cut: 1, Blunt: 0.5, Pierce: 0.5 }, hint: 'Breaking them weakens its rake and dive', mat: 'roctalon', hp: 240, brk: 'Its talons crack. Its strikes lose their bite.' }
   ],
 
   intent(h, type): Intent {

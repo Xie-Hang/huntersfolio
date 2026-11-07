@@ -40,9 +40,9 @@ export const monolith: MonsterDef = {
   intro: 'The ridge shrugs. What you took for a crag turns its head, and a crack of light opens in its chest.',
   enrageText: 'Rubble pours from its shoulders. The Monolith Warden is enraged!',
   parts: [
-    { id: 'plates', name: 'Stone Plates', eff: { Cut: 0.5, Blunt: 1, Pierce: 0 }, hint: 'Blunt cracks them best. Broken, they expose the core', mat: 'wardenplate', hp: 90, brk: 'The plates split and fall away. Its core blazes out!' },
-    { id: 'arms', name: 'Boulder Arms', eff: { Cut: 1, Blunt: 0.5, Pierce: 0.5 }, hint: 'Break to weaken its Boulder Toss', mat: 'wardenarm', hp: 220, brk: 'Its arm crumbles at the elbow. It can barely throw now.' },
-    { id: 'core', name: 'Core', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Only while exposed. Pierce deals double', mat: 'coreshard', hp: 180, brk: 'The core cracks. Light leaks from it like water.' }
+    { id: 'plates', name: 'Stone Plates', eff: { Cut: 0.5, Blunt: 1, Pierce: 0 }, hint: '**Blunt** breaks them best. Breaking them opens the core', mat: 'wardenplate', hp: 90, brk: 'The plates split and fall away. Its core blazes out!' },
+    { id: 'arms', name: 'Boulder Arms', eff: { Cut: 1, Blunt: 0.5, Pierce: 0.5 }, hint: 'Breaking them weakens **Boulder Toss**', mat: 'wardenarm', hp: 220, brk: 'Its arm crumbles at the elbow. It can barely throw now.' },
+    { id: 'core', name: 'Core', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Only while open. **Pierce** hits it for double', mat: 'coreshard', hp: 180, brk: 'The core cracks. Light leaks from it like water.' }
   ],
 
   intent(h, type): Intent {

@@ -33,9 +33,9 @@ export const bloodwhelk: MonsterDef = {
   intro: 'A dark shell slides out of the reeds on a trail of red slime.',
   enrageText: 'Its slime runs thick and dark. The Bloodwhelk is enraged!',
   parts: [
-    { id: 'gills', name: 'Gills', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Break them: it stops healing, and the slime can’t feed it', mat: 'bloodgill', hp: 210, brk: 'The gills tear and go grey. It can’t heal any more, and the slime can’t feed it.' },
-    { id: 'shell', name: 'Shell', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'The daze part. Break it to stop Shell Retreat', mat: 'bloodshell', hp: 360, brk: 'The shell cracks open. It has nowhere left to hide.' },
-    { id: 'foot', name: 'Foot', eff: { Cut: 1, Blunt: 0.5, Pierce: 0 }, hint: 'Break it to stop the Leeching Slime', mat: 'bloodfoot', hp: 300, brk: 'Its foot splits. The slime stops flowing.' }
+    { id: 'gills', name: 'Gills', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Breaking them stops all its healing', mat: 'bloodgill', hp: 210, brk: 'The gills tear and go grey. It can’t heal any more, and the slime can’t feed it.' },
+    { id: 'shell', name: 'Shell', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: '**Daze** part. Breaking it stops **Shell Retreat**', mat: 'bloodshell', hp: 360, brk: 'The shell cracks open. It has nowhere left to hide.' },
+    { id: 'foot', name: 'Foot', eff: { Cut: 1, Blunt: 0.5, Pierce: 0 }, hint: 'Breaking it stops **Leeching Slime**', mat: 'bloodfoot', hp: 300, brk: 'Its foot splits. The slime stops flowing.' }
   ],
 
   intent(h, type): Intent {

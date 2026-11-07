@@ -35,9 +35,9 @@ export const rimeshrike: MonsterDef = {
   intro: 'Hail rattles across the ridge. A pale shrike settles on a frozen boulder, feathers clinking like glass.',
   enrageText: 'Sleet whirls off its wings. The Rimeshrike is enraged!',
   parts: [
-    { id: 'wings', name: 'Wings', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Break to shorten its time in the air', mat: 'rimepinion', hp: 310, brk: 'A wing cracks! It can’t stay aloft for long now.' },
-    { id: 'talons', name: 'Talons', eff: { Cut: 1, Blunt: 0.5, Pierce: 0.5 }, hint: 'Break to weaken its rake and dive', mat: 'icetalon', hp: 360, brk: 'An icy talon shatters. Its strikes lose their bite.' },
-    { id: 'crest', name: 'Crest', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'Ground only. Break to end the Frost Shroud for good', mat: 'rimecrest', hp: 340, brk: 'The crest splits and the frost drains out of its feathers. No more shroud.' }
+    { id: 'wings', name: 'Wings', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Breaking them shortens its time in the air', mat: 'rimepinion', hp: 310, brk: 'A wing cracks! It can’t stay aloft for long now.' },
+    { id: 'talons', name: 'Talons', eff: { Cut: 1, Blunt: 0.5, Pierce: 0.5 }, hint: 'Breaking them weakens its rake and dive', mat: 'icetalon', hp: 360, brk: 'An icy talon shatters. Its strikes lose their bite.' },
+    { id: 'crest', name: 'Crest', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'On the ground only. Breaking it ends **Frost-shrouded** for good', mat: 'rimecrest', hp: 340, brk: 'The crest splits and the frost drains out of its feathers. No more shroud.' }
   ],
 
   intent(h, type): Intent {

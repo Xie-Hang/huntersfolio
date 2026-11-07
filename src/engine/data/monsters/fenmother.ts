@@ -37,9 +37,9 @@ export const fenmother: MonsterDef = {
   intro: 'The hot spring heaves. A toad the size of a hut rises out of the steam, gills fanning.',
   enrageText: 'It roars, and the spring boils over. The Fenmother is enraged!',
   parts: [
-    { id: 'sac', name: 'Throat Sac', eff: { Cut: 1, Blunt: 0, Pierce: 0.5 }, hint: 'Break it to stop the Swallow', mat: 'fensac', hp: 300, brk: 'The throat sac splits! It can’t swallow you any more.' },
-    { id: 'gills', name: 'Gills', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Break them to stop it healing', mat: 'fengill', hp: 260, brk: 'The gills tear and go grey. It can’t heal any more.' },
-    { id: 'head', name: 'Head', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: 'The daze part. A daze during the Gape stops the Swallow', mat: 'fenskull', hp: 320, brk: 'Its skull cracks. Its bellow turns to a wheeze.' }
+    { id: 'sac', name: 'Throat Sac', eff: { Cut: 1, Blunt: 0, Pierce: 0.5 }, hint: 'Breaking it stops **Swallow**', mat: 'fensac', hp: 300, brk: 'The throat sac splits! It can’t swallow you any more.' },
+    { id: 'gills', name: 'Gills', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Breaking them stops its healing', mat: 'fengill', hp: 260, brk: 'The gills tear and go grey. It can’t heal any more.' },
+    { id: 'head', name: 'Head', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: '**Daze** part. **Daze** here while it gapes stops the **Swallow**', mat: 'fenskull', hp: 320, brk: 'Its skull cracks. Its bellow turns to a wheeze.' }
   ],
 
   intent(h, type): Intent {

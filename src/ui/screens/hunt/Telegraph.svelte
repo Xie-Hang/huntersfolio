@@ -113,12 +113,12 @@
       {#if inc.net && !inc.noGuard}{#if shows(h, 'block')}<div class="calc"><b>Block</b> takes some off.</div>{/if}{:else if inc.noGuard && inc.net}<div class="calc"><span class="nores">Goes through <b>Block</b>.</span></div>{/if}
     {:else if inc && calcWorth}
       <div class="calc">
-        {#if inc.elem === 0}<b>{inc.raw}</b> physical{#if inc.wearsResist} · <span class="nores">your resist is <b>{E.monElem(h)}</b> only</span>{/if}
-        {:else if inc.phys === 0}<Elem e={E.monElem(h)} /><b>{inc.raw}</b> {E.monElem(h)}{#if inc.res} · your resist → <b>{inc.after}</b>{/if}
-        {:else}<b>{inc.phys}</b> physical + <Elem e={E.monElem(h)} /><b>{inc.elem}</b> {E.monElem(h)}{#if inc.res} · your resist → <b>{inc.after}</b>{/if}{/if}{#if inc.evade && !E.trapCatches(h.trapSet, h.intent)} · <b>Smoke</b>, it misses{:else if h.guard} · − <b>{inc.g}</b> block{inc.half ? ' (½)' : ''}{/if}{#if !inc.evade && inc.ward} · − <b>{inc.ward}</b> armor{/if}{#if !inc.evade && inc.net && inc.noGuard} · <span class="nores">through <b>Block</b></span>{:else if !inc.evade && inc.net && inc.half} · <span style="color:var(--muted)"><b>Block</b> is ½</span>{/if}
+        {#if inc.elem === 0}<b>{inc.raw}</b> physical{#if inc.wearsResist} <span class="nores">(resist is only for <b>{E.monElem(h)}</b>)</span>{/if}
+        {:else if inc.phys === 0}<Elem e={E.monElem(h)} />{E.monElem(h)} <b>{inc.raw}</b>{#if inc.res} – your resist → <b>{inc.after}</b>{/if}
+        {:else}<b>{inc.phys}</b> physical + <Elem e={E.monElem(h)} />{E.monElem(h)} <b>{inc.elem}</b>{#if inc.res} – your resist → <b>{inc.after}</b>{/if}{/if}{#if inc.evade && !E.trapCatches(h.trapSet, h.intent)} · <b>Smoke</b>, it misses{:else if h.guard} · − <b>{inc.g}</b> block{inc.half ? ' (½)' : ''}{/if}{#if !inc.evade && inc.ward} · − <b>{inc.ward}</b> armor{/if}{#if !inc.evade && inc.net && inc.noGuard}. <span class="nores">Goes through <b>Block</b></span>{:else if !inc.evade && inc.net && inc.half} · <span style="color:var(--muted)"><b>Block</b> is ½</span>{/if}
       </div>
     {/if}
-    {#if tp?.extra}<div class="calc rider">+<b>{tp.extra}</b> at turn end from <Rich text={tp.why.join(' and ')} /> · <span class="nores">through <b>Block</b></span></div>{/if}
+    {#if tp?.extra}<div class="calc rider">+<b>{tp.extra}</b> at turn end from <Rich text={tp.why.join(' and ')} />. <span class="nores">Goes through <b>Block</b></span></div>{/if}
     {#if E.trapCatches(h.trapSet, h.intent)}<div class="calc rider" style="color:var(--gold-hi)">Your {(E.ITEMS[h.item ?? '']?.name ?? 'trap')} catches it. No hit, and it loses {E.TRAP_HOLD[h.trapSet!]} turns{E.canCapture(h) ? '. It’s weak enough, so it’s captured' : ''}.</div>{:else if h.trapSet}<div class="calc rider"><span class="nores">Your {(E.ITEMS[h.item ?? '']?.name ?? 'trap')} is wasted on this move.</span></div>{/if}
     {#if info.note || info.steady || breaksCharge || breaksSnare}<div class="note"><Rich text={[info.note, info.steady && E.carries(h, 'Blunt') ? 'Goes through **Daze**' : null, breaksCharge ? 'This hit breaks your **Charge**' : null, breaksSnare ? 'This hit tears it free of your **Snare**' : null].filter(Boolean).join(' · ')} /></div>{/if}
     {#if tip}<div class="answer" class:counter={isCounter}><b>{isCounter ? 'Counter:' : 'Tip:'}</b> <Tagged text={tip} /></div>{/if}

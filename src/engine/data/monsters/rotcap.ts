@@ -41,9 +41,9 @@ export const rotcap: MonsterDef = {
   intro: 'The cave smells of wet earth and rot. Something heaves itself up out of the dark under a great pale cap.',
   enrageText: 'Its cap darkens and weeps spores. The Rotcap is enraged!',
   parts: [
-    { id: 'cap', name: 'Cap', eff: { Cut: 0.25, Blunt: 0, Pierce: 1 }, hint: 'Pop it while it swells. Break it to stop the Bloom', mat: 'capflesh', hp: 240, brk: 'The cap tears open and slumps. It can’t bloom any more.' },
-    { id: 'jaw', name: 'Jaw', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'The daze part', mat: 'rotjaw', hp: 260, brk: 'Its jaw cracks and hangs loose.' },
-    { id: 'legs', name: 'Root Legs', eff: { Cut: 1, Blunt: 0.5, Pierce: 0 }, hint: 'Break to weaken the Slam', mat: 'rootleg', hp: 200, brk: 'You hack through its root legs. It can’t throw its weight now.' }
+    { id: 'cap', name: 'Cap', eff: { Cut: 0.25, Blunt: 0, Pierce: 1 }, hint: 'A 2-dice **Pierce** move stops the burst while it swells. Breaking it stops **Bloom**', mat: 'capflesh', hp: 240, brk: 'The cap tears open and slumps. It can’t bloom any more.' },
+    { id: 'jaw', name: 'Jaw', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: '**Daze** part', mat: 'rotjaw', hp: 260, brk: 'Its jaw cracks and hangs loose.' },
+    { id: 'legs', name: 'Root Legs', eff: { Cut: 1, Blunt: 0.5, Pierce: 0 }, hint: 'Breaking them weakens **Slam**', mat: 'rootleg', hp: 200, brk: 'You hack through its root legs. It can’t throw its weight now.' }
   ],
 
   intent(h, type): Intent {
@@ -102,7 +102,7 @@ export const rotcap: MonsterDef = {
   },
 
   partNote(h, partId) {
-    return partId === 'cap' && !h.mon.parts.cap.broken && (h.intent === 'bloom' || h.intent === 'burst') ? { chip: 'Swollen', hint: 'A 2-dice Pierce hit here pops it before it bursts.' } : null;
+    return partId === 'cap' && !h.mon.parts.cap.broken && (h.intent === 'bloom' || h.intent === 'burst') ? { chip: 'Swollen', hint: 'A 2-dice **Pierce** move here stops the **Spore Burst**' } : null;
   },
   // no tip: the Bloom's telegraph already says how to pop it, and the cap is flagged on the parts row
   tip() { return null; }

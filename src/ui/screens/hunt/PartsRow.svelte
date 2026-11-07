@@ -4,6 +4,7 @@
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
   import { effCls, effWord, pct } from '../../fmt';
+  import Rich from '../../parts/Rich.svelte';
   const h = $derived(game.hunt!);
   const M = $derived(E.MONSTERS[h.mid]);
   const m = $derived(h.mon);
@@ -13,7 +14,7 @@
 </script>
 
 <section class="panel partspanel" aria-label="Parts" data-coach="parts">
-    <div class="ph"><span class="label aimword">Aim{input.mode === 'pad' ? ' · LB / RB' : ''}</span><span class="label aimhint">{#if tp}<b>{tp.name}:</b> {tn ? tn.hint : m.parts[tp.id].broken ? 'Broken. Hits here still damage it.' : tp.hint}{:else}{input.mode === 'pad' ? 'LB / RB or select a part to aim' : 'Select a part to aim at it'}{/if}</span></div>
+    <div class="ph"><span class="label aimword">Aim{input.mode === 'pad' ? ' · LB / RB' : ''}</span><span class="label aimhint">{#if tp}<b>{tp.name}:</b> <Rich text={tn ? tn.hint : m.parts[tp.id].broken ? 'Broken. It still takes hits here.' : tp.hint} />{:else}{input.mode === 'pad' ? 'LB / RB or select a part to aim' : 'Select a part to aim at it'}{/if}</span></div>
     <div class="parts row" class:four={M.parts.length >= 4} style="--n:{M.parts.length}">
       {#each M.parts as p (p.id)}
         {@const st = m.parts[p.id]}
@@ -25,7 +26,7 @@
           <span class="pline"><span class="nm" title={p.name}>{p.name}</span><span class="mono" style="color:{st.broken ? 'var(--ember-soft)' : 'var(--soft)'}">{st.broken ? (note ? '' : 'Broken') : `${st.hp} / ${st.max}`}</span></span>
           <span class="pline">
             {#if !st.broken}
-              {#if !reach}<span class="chip sm none">{m.under ? 'Underground' : m.air ? 'In the air' : 'Out of reach'}</span>
+              {#if !reach}<span class="chip sm none">{m.under ? 'Underground' : m.air ? 'Airborne' : 'Out of reach'}</span>
               {:else}<span class="chip sm {effCls(e)}">{effWord(e)}</span>{/if}
               {#if st.exposed > 0}<span class="chip sm exposed">Exposed · {st.exposed}</span>{/if}
             {/if}
@@ -33,7 +34,7 @@
           </span>
           <!-- the HP bar on its own line at the bottom, so every box's bar lines up (Mekkman, Nov 2026) -->
           {#if !st.broken}<span class="bar pbar"><i style="width:{pct(st.hp, st.max)}%;background:{on ? 'var(--gold)' : '#8c7a62'}"></i></span>{/if}
-          <span class="hint">{note ? note.hint : st.broken ? 'Hits here still damage it.' : p.hint}</span>
+          <span class="hint"><Rich text={note ? note.hint : st.broken ? 'It still takes hits here.' : p.hint} /></span>
         </button>
       {/each}
     </div>

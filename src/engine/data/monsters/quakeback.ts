@@ -36,9 +36,9 @@ export const quakeback: MonsterDef = {
   intro: 'The ridge shudders. A grey, rock-backed beast heaves itself out of a crack in the stone.',
   enrageText: 'The ground won’t stop shaking. The Quakeback is enraged!',
   parts: [
-    { id: 'plate', name: 'Head Plate', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'Break to weaken the Rockburst', mat: 'quakeplate', hp: 280, brk: 'The head plate cracks in two! Its Rockburst loses its force.' },
-    { id: 'claws', name: 'Digging Claws', eff: { Cut: 1, Blunt: 0.5, Pierce: 0 }, hint: 'Break and it can’t burrow any more', mat: 'quakeclaw', hp: 170, brk: 'Its digging claws shear off. It can’t get under the ground now.' },
-    { id: 'vents', name: 'Back Ridge', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Break to stop the Rockfall', mat: 'backridge', hp: 200, brk: 'The rock ridge on its back crumbles. No more rockslides.' }
+    { id: 'plate', name: 'Head Plate', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'Breaking it weakens **Rockburst**', mat: 'quakeplate', hp: 280, brk: 'The head plate cracks in two! Its Rockburst loses its force.' },
+    { id: 'claws', name: 'Digging Claws', eff: { Cut: 1, Blunt: 0.5, Pierce: 0 }, hint: 'Breaking them ends burrowing for good', mat: 'quakeclaw', hp: 170, brk: 'Its digging claws shear off. It can’t get under the ground now.' },
+    { id: 'vents', name: 'Back Ridge', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Breaking it stops **Rockfall**', mat: 'backridge', hp: 200, brk: 'The rock ridge on its back crumbles. No more rockslides.' }
   ],
 
   intent(h, type): Intent {

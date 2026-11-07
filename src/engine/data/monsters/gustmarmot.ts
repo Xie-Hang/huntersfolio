@@ -26,8 +26,8 @@ export const gustmarmot: MonsterDef = {
   intro: 'A Shrikelet hops onto a rock and spreads its wings. The grass flattens.',
   enrageText: 'It fluffs up, shrieking. The Shrikelet is enraged!',
   parts: [
-    { id: 'cheeks', name: 'Beak', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: 'Break it for a Gale Gland (rare)', mat: 'marmotfur', hp: 70, brk: 'Its beak chips with a squawk.' },
-    { id: 'fur', name: 'Down', eff: { Cut: 1, Blunt: 0.5, Pierce: 0.5 }, hint: 'Break it for its down', mat: 'marmotfur', hp: 80, brk: 'A clump of down tears away.' }
+    { id: 'cheeks', name: 'Beak', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: 'Breaking it can drop a Gale Gland (rare)', mat: 'marmotfur', hp: 70, brk: 'Its beak chips with a squawk.' },
+    { id: 'fur', name: 'Down', eff: { Cut: 1, Blunt: 0.5, Pierce: 0.5 }, hint: 'Breaking it drops its down', mat: 'marmotfur', hp: 80, brk: 'A clump of down tears away.' }
   ],
 
   intent(h, type): Intent {

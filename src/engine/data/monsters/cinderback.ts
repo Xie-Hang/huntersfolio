@@ -42,9 +42,9 @@ export const cinderback: MonsterDef = {
   intro: 'The ground splits with a hiss. The Cinderback heaves itself out of a seam of glowing rock.',
   enrageText: 'Its vents roar white-hot. The Cinderback is enraged!',
   parts: [
-    { id: 'plate', name: 'Head Plate', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'Break to weaken the Eruption', mat: 'slagplate', hp: 260, brk: 'The head plate cracks in two! Its eruptions lose their force.' },
-    { id: 'claws', name: 'Digging Claws', eff: { Cut: 1, Blunt: 0.5, Pierce: 0 }, hint: 'Break and it burrows less often', mat: 'digclaw', hp: 220, brk: 'A digging claw shears off. Digging is harder for it now.' },
-    { id: 'vents', name: 'Back Vents', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Break to stop the molten shell', mat: 'ventgland', hp: 160, brk: 'The vents collapse in a gout of ash. Its shell can’t melt any more.' }
+    { id: 'plate', name: 'Head Plate', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'Breaking it weakens **Eruption**', mat: 'slagplate', hp: 260, brk: 'The head plate cracks in two! Its eruptions lose their force.' },
+    { id: 'claws', name: 'Digging Claws', eff: { Cut: 1, Blunt: 0.5, Pierce: 0 }, hint: 'Breaking them makes it burrow less often', mat: 'digclaw', hp: 220, brk: 'A digging claw shears off. Digging is harder for it now.' },
+    { id: 'vents', name: 'Back Vents', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Breaking them stops the molten shell', mat: 'ventgland', hp: 160, brk: 'The vents collapse in a gout of ash. Its shell can’t melt any more.' }
   ],
 
   intent(h, type): Intent {

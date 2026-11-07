@@ -52,9 +52,9 @@ export const hollowfang: MonsterDef = {
   intro: 'Something drops from the cave roof without a sound and unfolds on the rock in front of you.',
   enrageText: 'It hisses, mouth wide. The Hollowfang is enraged!',
   parts: [
-    { id: 'fangs', name: 'Fangs', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'The daze part. Break and it can’t latch', mat: 'palefang', hp: 240, brk: 'Its fangs crack off. It can’t hold on to you now.' },
-    { id: 'sac', name: 'Throat Sac', eff: { Cut: 1, Blunt: 0, Pierce: 0.5 }, hint: 'Break it and it loses what it drank', mat: 'bloodsac', hp: 200, brk: 'The throat sac splits!' },
-    { id: 'wings', name: 'Wings', eff: { Cut: 0.5, Blunt: 0.5, Pierce: 1 }, hint: 'Break to weaken the bite', mat: 'palewing', hp: 200, brk: 'Its wing membranes tear. It can’t lunge as hard.' }
+    { id: 'fangs', name: 'Fangs', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: '**Daze** part. Breaking them ends **Latch On** for good', mat: 'palefang', hp: 240, brk: 'Its fangs crack off. It can’t hold on to you now.' },
+    { id: 'sac', name: 'Throat Sac', eff: { Cut: 1, Blunt: 0, Pierce: 0.5 }, hint: 'Breaking it makes it lose what it drained', mat: 'bloodsac', hp: 200, brk: 'The throat sac splits!' },
+    { id: 'wings', name: 'Wings', eff: { Cut: 0.5, Blunt: 0.5, Pierce: 1 }, hint: 'Breaking them weakens its bite', mat: 'palewing', hp: 200, brk: 'Its wing membranes tear. It can’t lunge as hard.' }
   ],
 
   intent(h, type): Intent {

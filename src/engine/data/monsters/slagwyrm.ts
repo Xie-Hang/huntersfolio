@@ -40,9 +40,9 @@ export const slagwyrm: MonsterDef = {
   intro: 'The scree at the foot of the spire is glowing. Then it lifts its head.',
   enrageText: 'Its armour runs like wax. The Slagwyrm is enraged!',
   parts: [
-    { id: 'spine', name: 'Spine Plates', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'The daze part. Break them and its armour soaks half as much', mat: 'slagspine', hp: 240, brk: 'Its spine plates crack apart. Its armour will never be as thick again.' },
-    { id: 'jaw', name: 'Jaw', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Break it to stop the spit burning you', mat: 'slagjaw', hp: 200, brk: 'Its jaw splits. The spit cools as it leaves.' },
-    { id: 'tail', name: 'Tail', eff: { Cut: 1, Blunt: 0.5, Pierce: 0 }, hint: 'Sever it to stop the Tail Lash', mat: 'slagtail', hp: 220, brk: 'The tail comes away in a gout of slag!' }
+    { id: 'spine', name: 'Spine Plates', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: '**Daze** part. Breaking them makes its armour take ½ as much', mat: 'slagspine', hp: 240, brk: 'Its spine plates crack apart. Its armour will never be as thick again.' },
+    { id: 'jaw', name: 'Jaw', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Breaking it stops the spit’s burn', mat: 'slagjaw', hp: 200, brk: 'Its jaw splits. The spit cools as it leaves.' },
+    { id: 'tail', name: 'Tail', eff: { Cut: 1, Blunt: 0.5, Pierce: 0 }, hint: 'Breaking it stops **Tail Lash**', mat: 'slagtail', hp: 220, brk: 'The tail comes away in a gout of slag!' }
   ],
 
   intent(h, type): Intent {

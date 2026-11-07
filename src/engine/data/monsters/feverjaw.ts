@@ -34,9 +34,9 @@ export const feverjaw: MonsterDef = {
   intro: 'The mud here is warm, and it stinks. A swollen, steaming jaw rises out of it.',
   enrageText: 'It belches a cloud of hot spores. The Feverjaw is enraged!',
   parts: [
-    { id: 'jaw', name: 'Jaw', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: 'The daze part. Daze it while it gapes', mat: 'fevermolar', hp: 360, brk: 'Its jaw cracks. The bite goes slack.' },
-    { id: 'sac', name: 'Throat Sac', eff: { Cut: 1, Blunt: 0, Pierce: 0.5 }, hint: 'Break it to stop the Swallow', mat: 'feversac', hp: 300, brk: 'The throat sac splits! It can’t swallow you any more.' },
-    { id: 'warts', name: 'Fever Warts', eff: { Cut: 0, Blunt: 0.5, Pierce: 1 }, hint: 'Break to stop the Spore Belch', mat: 'feverwart', hp: 280, brk: 'The swollen warts burst. No more spores.' }
+    { id: 'jaw', name: 'Jaw', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: '**Daze** part. **Daze** here while it gapes stops the **Swallow**', mat: 'fevermolar', hp: 360, brk: 'Its jaw cracks. The bite goes slack.' },
+    { id: 'sac', name: 'Throat Sac', eff: { Cut: 1, Blunt: 0, Pierce: 0.5 }, hint: 'Breaking it stops **Swallow**', mat: 'feversac', hp: 300, brk: 'The throat sac splits! It can’t swallow you any more.' },
+    { id: 'warts', name: 'Fever Warts', eff: { Cut: 0, Blunt: 0.5, Pierce: 1 }, hint: 'Breaking them stops **Spore Belch**', mat: 'feverwart', hp: 280, brk: 'The swollen warts burst. No more spores.' }
   ],
 
   intent(h, type): Intent {

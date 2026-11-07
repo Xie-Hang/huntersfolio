@@ -57,9 +57,9 @@ export const duskheron: MonsterDef = {
   intro: 'Two long necks lift out of the reeds at once. The Duskheron turns both heads toward you.',
   enrageText: 'Both heads scream at once. The Duskheron is enraged!',
   parts: [
-    { id: 'upper', name: 'Upper Head', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: 'Daze it to cancel its attack', mat: 'duskbeak', hp: 200, brk: 'The upper beak cracks. Its strikes go weak.' },
-    { id: 'lower', name: 'Lower Head', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: 'Daze it to cancel its attack', mat: 'duskcrest', hp: 200, brk: 'The lower beak cracks. Its strikes go weak.' },
-    { id: 'wings', name: 'Wings', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Break to stop the Twin Spear', mat: 'duskpinion', hp: 220, brk: 'Its wings tear. It can’t rear up any more.' }
+    { id: 'upper', name: 'Upper Head', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: '**Daze** here stops its attack', mat: 'duskbeak', hp: 200, brk: 'The upper beak cracks. Its strikes go weak.' },
+    { id: 'lower', name: 'Lower Head', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: '**Daze** here stops its attack', mat: 'duskcrest', hp: 200, brk: 'The lower beak cracks. Its strikes go weak.' },
+    { id: 'wings', name: 'Wings', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Breaking them stops **Twin Spear**', mat: 'duskpinion', hp: 220, brk: 'Its wings tear. It can’t rear up any more.' }
   ],
 
   intent(h, type): Intent {

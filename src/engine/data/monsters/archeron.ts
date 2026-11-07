@@ -38,9 +38,9 @@ export const archeron: MonsterDef = {
   intro: 'Ice creaks in the reeds. Two heads rise, and the air between them snaps with static.',
   enrageText: 'Sparks run up both necks. The Archeron is enraged!',
   parts: [
-    { id: 'upper', name: 'Upper Head', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: 'Daze it to cancel its strike. Break it and it can’t spark you', mat: 'archbeak', hp: 280, brk: 'The upper beak cracks. Its charge is gone.' },
-    { id: 'lower', name: 'Lower Head', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: 'Daze it to cancel its strike. Break it and it can’t spark you', mat: 'archcrest', hp: 280, brk: 'The lower beak cracks. Its charge is gone.' },
-    { id: 'wings', name: 'Wings', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Break to stop the Twin Spear', mat: 'archpinion', hp: 300, brk: 'Its wings tear. It can’t rear up any more.' }
+    { id: 'upper', name: 'Upper Head', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: '**Daze** here stops its strike. Breaking it ends its **Spark** for good', mat: 'archbeak', hp: 280, brk: 'The upper beak cracks. Its charge is gone.' },
+    { id: 'lower', name: 'Lower Head', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: '**Daze** here stops its strike. Breaking it ends its **Spark** for good', mat: 'archcrest', hp: 280, brk: 'The lower beak cracks. Its charge is gone.' },
+    { id: 'wings', name: 'Wings', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Breaking them stops **Twin Spear**', mat: 'archpinion', hp: 300, brk: 'Its wings tear. It can’t rear up any more.' }
   ],
 
   intent(h, type): Intent {

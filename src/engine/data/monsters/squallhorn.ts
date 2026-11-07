@@ -34,9 +34,9 @@ export const squallhorn: MonsterDef = {
   intro: 'The wind turns on the ridge. A Gorehorn with a mane like a storm cloud paws at the ash.',
   enrageText: 'The wind howls around it. The Squallhorn is enraged!',
   parts: [
-    { id: 'tusks', name: 'Tusks', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'Daze it here to scatter the wind. Break to weaken the charge', mat: 'galetusk', hp: 400, brk: 'A tusk snaps! Its charge will never hit as hard again.' },
-    { id: 'hide', name: 'Mane', eff: { Cut: 1, Blunt: 0, Pierce: 0.5 }, hint: 'Break to stop the Tailwind', mat: 'squallmane', hp: 350, brk: 'You shear through the mane. The wind can’t catch in it now.' },
-    { id: 'legs', name: 'Hind Legs', eff: { Cut: 0.5, Blunt: 0.5, Pierce: 1 }, hint: 'Break and it can only gather 2', mat: 'squallsinew', hp: 240, brk: 'Its hind leg buckles. It can’t brace to gather a full storm now.' }
+    { id: 'tusks', name: 'Tusks', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: '**Daze** here scatters its **Wind**. Breaking them weakens **Cyclone Charge**', mat: 'galetusk', hp: 400, brk: 'A tusk snaps! Its charge will never hit as hard again.' },
+    { id: 'hide', name: 'Mane', eff: { Cut: 1, Blunt: 0, Pierce: 0.5 }, hint: 'Breaking it stops **Tailwind**', mat: 'squallmane', hp: 350, brk: 'You shear through the mane. The wind can’t catch in it now.' },
+    { id: 'legs', name: 'Hind Legs', eff: { Cut: 0.5, Blunt: 0.5, Pierce: 1 }, hint: 'Breaking them caps its **Wind** at 2', mat: 'squallsinew', hp: 240, brk: 'Its hind leg buckles. It can’t brace to gather a full storm now.' }
   ],
 
   intent(h, type): Intent {

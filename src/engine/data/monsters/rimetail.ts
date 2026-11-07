@@ -35,9 +35,9 @@ export const rimetail: MonsterDef = {
   intro: 'Frost spreads across the rocks. The Rimetail slides out from behind a drift, plated in ice.',
   enrageText: 'Its breath turns to sleet. The Rimetail is enraged!',
   parts: [
-    { id: 'tail', name: 'Tail', eff: { Cut: 1, Blunt: 0, Pierce: 0.5 }, hint: 'Sever it to stop the Tail Sweep', mat: 'barbtail', hp: 220, brk: 'The tail parts in a spray of frost. It thrashes the stump.' },
-    { id: 'mantle', name: 'Ice Mantle', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'Break it and its plating grows back thinner', mat: 'mantleshard', hp: 240, brk: 'The ice mantle shatters! Its plating will grow back thin.' },
-    { id: 'jaw', name: 'Jaw', eff: { Cut: 0.5, Blunt: 0.5, Pierce: 1 }, hint: 'Break to weaken its Pounce', mat: 'frostfang', hp: 180, brk: 'A fang snaps off. Its bite loses its grip.' }
+    { id: 'tail', name: 'Tail', eff: { Cut: 1, Blunt: 0, Pierce: 0.5 }, hint: 'Breaking it stops **Tail Sweep**', mat: 'barbtail', hp: 220, brk: 'The tail parts in a spray of frost. It thrashes the stump.' },
+    { id: 'mantle', name: 'Ice Mantle', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'Breaking it makes its ice grow back thinner', mat: 'mantleshard', hp: 240, brk: 'The ice mantle shatters! Its plating will grow back thin.' },
+    { id: 'jaw', name: 'Jaw', eff: { Cut: 0.5, Blunt: 0.5, Pierce: 1 }, hint: 'Breaking it weakens **Pounce**', mat: 'frostfang', hp: 180, brk: 'A fang snaps off. Its bite loses its grip.' }
   ],
 
   intent(h, type): Intent {

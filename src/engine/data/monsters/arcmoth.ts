@@ -41,9 +41,9 @@ export const arcmoth: MonsterDef = {
   intro: 'Pale dust drifts down in the dark and snaps against your armour. Wings unfold above you.',
   enrageText: 'Its dust glows white. The Arcmoth is enraged!',
   parts: [
-    { id: 'wings', name: 'Wings', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Break and it can’t fly any more', mat: 'arcwing', hp: 200, brk: 'A wing tears through. It will never get off the ground again.' },
-    { id: 'feelers', name: 'Antennae', eff: { Cut: 1, Blunt: 0.5, Pierce: 0.5 }, hint: 'Break and only every other wingbeat sparks you', mat: 'arcfeeler', hp: 170, brk: 'Its antennae snap. The dust loses half its charge.' },
-    { id: 'thorax', name: 'Thorax', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'The daze part. Break to weaken your Discharge', mat: 'arcthorax', hp: 240, brk: 'The thorax plate cracks. The charge it stores leaks away.' }
+    { id: 'wings', name: 'Wings', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Breaking them keeps it on the ground for good', mat: 'arcwing', hp: 200, brk: 'A wing tears through. It will never get off the ground again.' },
+    { id: 'feelers', name: 'Antennae', eff: { Cut: 1, Blunt: 0.5, Pierce: 0.5 }, hint: 'Breaking them cuts its **Spark** to every other wingbeat', mat: 'arcfeeler', hp: 170, brk: 'Its antennae snap. The dust loses half its charge.' },
+    { id: 'thorax', name: 'Thorax', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: '**Daze** part. Breaking it weakens **Discharge**', mat: 'arcthorax', hp: 240, brk: 'The thorax plate cracks. The charge it stores leaks away.' }
   ],
 
   intent(h, type): Intent {

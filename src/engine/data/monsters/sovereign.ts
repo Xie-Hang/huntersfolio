@@ -71,10 +71,10 @@ export const sovereign: MonsterDef = {
   intro: 'The ground sags. Something enormous slides over the crater rim, tusks and wings and tail bobbing in its body like driftwood.',
   enrageText: 'It heaves and quickens. The Sovereign wakes!',
   parts: [
-    { id: 'tusks', name: 'Tusks', eff: { Cut: 0.5, Blunt: 0.5, Pierce: 1 }, hint: 'The Stone stance part. Break to end that stance for good', mat: 'sovtusk', hp: 340, brk: 'You tear the swallowed tusks out of it! No more Stone stance.' },
-    { id: 'wings', name: 'Wings', eff: { Cut: 0.5, Blunt: 1, Pierce: 0 }, hint: 'The Gale stance part, on the ground only. Break to end it', mat: 'sovwing', hp: 340, brk: 'The wings rip free of the slime! No more Gale stance.' },
-    { id: 'vents', name: 'Vents', eff: { Cut: 1, Blunt: 0, Pierce: 0.5 }, hint: 'The Ember stance part, on the surface only. Break to end it', mat: 'sovvent', hp: 340, brk: 'You cut the vents out of its back! No more Ember stance.' },
-    { id: 'tail', name: 'Tail', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'The Frost stance part. Break to end that stance for good', mat: 'sovtail', hp: 340, brk: 'The frozen tail shatters off! No more Frost stance.' }
+    { id: 'tusks', name: 'Tusks', eff: { Cut: 0.5, Blunt: 0.5, Pierce: 1 }, hint: '**Stone** stance part. Breaking it ends that stance for good', mat: 'sovtusk', hp: 340, brk: 'You tear the swallowed tusks out of it! No more Stone stance.' },
+    { id: 'wings', name: 'Wings', eff: { Cut: 0.5, Blunt: 1, Pierce: 0 }, hint: '**Gale** stance part, on the ground only. Breaking it ends that stance for good', mat: 'sovwing', hp: 340, brk: 'The wings rip free of the slime! No more Gale stance.' },
+    { id: 'vents', name: 'Vents', eff: { Cut: 1, Blunt: 0, Pierce: 0.5 }, hint: '**Ember** stance part, on the surface only. Breaking it ends that stance for good', mat: 'sovvent', hp: 340, brk: 'You cut the vents out of its back! No more Ember stance.' },
+    { id: 'tail', name: 'Tail', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: '**Frost** stance part. Breaking it ends that stance for good', mat: 'sovtail', hp: 340, brk: 'The frozen tail shatters off! No more Frost stance.' }
   ],
 
   intent(h, type): Intent {

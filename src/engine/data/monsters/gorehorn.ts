@@ -25,9 +25,9 @@ export const gorehorn: MonsterDef = {
   intro: 'The Gorehorn bursts out of the brush on Ashfall Ridge.',
   enrageText: 'It bellows and stamps. The Gorehorn is enraged!',
   parts: [
-    { id: 'tusks', name: 'Tusks', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'Break to weaken the Trampling Charge', mat: 'tusk', hp: 280, brk: 'A tusk splinters and falls! Its charge will never hit as hard again.' },
-    { id: 'hide', name: 'Hide', eff: { Cut: 1, Blunt: 0, Pierce: 0.5 }, hint: 'Break to stop the Mud Wallow', mat: 'pelt', hp: 240, brk: 'The hide tears open. Mud won’t protect it now.' },
-    { id: 'legs', name: 'Hind Legs', eff: { Cut: 0.5, Blunt: 0.5, Pierce: 1 }, hint: 'Break and it tires after every charge', mat: 'sinew', hp: 140, brk: 'Its hind leg buckles. It limps and tires quickly.' }
+    { id: 'tusks', name: 'Tusks', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'Breaking them weakens **Trampling Charge**', mat: 'tusk', hp: 280, brk: 'A tusk splinters and falls! Its charge will never hit as hard again.' },
+    { id: 'hide', name: 'Hide', eff: { Cut: 1, Blunt: 0, Pierce: 0.5 }, hint: 'Breaking it stops **Mud Wallow**', mat: 'pelt', hp: 240, brk: 'The hide tears open. Mud won’t protect it now.' },
+    { id: 'legs', name: 'Hind Legs', eff: { Cut: 0.5, Blunt: 0.5, Pierce: 1 }, hint: 'Breaking them makes it tire after every charge', mat: 'sinew', hp: 140, brk: 'Its hind leg buckles. It limps and tires quickly.' }
   ],
 
   intent(h, type): Intent {
@@ -94,7 +94,7 @@ export const gorehorn: MonsterDef = {
     return null;
   },
   partNote(h, partId) {
-    if (partId === 'hide' && h.intent === 'bristle' && !h.mon.stanceUsed && !h.mon.parts.hide.broken) return { chip: 'Hits back 20', hint: 'Bristling: your first hit here this turn is struck back at you for 20' };
+    if (partId === 'hide' && h.intent === 'bristle' && !h.mon.stanceUsed && !h.mon.parts.hide.broken) return { chip: 'Hits back 20', hint: 'Bristling. Your first hit here this turn hits you back for 20' };
     return null;
   },
   hitMod(h, partId, w) {

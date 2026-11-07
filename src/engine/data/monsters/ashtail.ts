@@ -39,9 +39,9 @@ export const ashtail: MonsterDef = {
   intro: 'Ash drifts up instead of down. The Ashtail slinks out of a smoking crack, its back glowing like coals.',
   enrageText: 'Its scales flare white. The Ashtail is enraged!',
   parts: [
-    { id: 'tail', name: 'Tail', eff: { Cut: 1, Blunt: 0, Pierce: 0.5 }, hint: 'Sever it to stop the Cinder Sweep', mat: 'emberbarb', hp: 250, brk: 'The tail parts in a shower of sparks. It thrashes the stump.' },
-    { id: 'mantle', name: 'Ember Mantle', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'Break it and its scales grow back thinner', mat: 'ashmantle', hp: 270, brk: 'The ember mantle cracks and dims! Its scales will grow back thin.' },
-    { id: 'jaw', name: 'Jaw', eff: { Cut: 0.5, Blunt: 0.5, Pierce: 1 }, hint: 'Break to weaken its Flare Pounce', mat: 'ashfang', hp: 205, brk: 'A glowing fang snaps off. Its bite loses its heat.' }
+    { id: 'tail', name: 'Tail', eff: { Cut: 1, Blunt: 0, Pierce: 0.5 }, hint: 'Breaking it stops **Cinder Sweep**', mat: 'emberbarb', hp: 250, brk: 'The tail parts in a shower of sparks. It thrashes the stump.' },
+    { id: 'mantle', name: 'Ember Mantle', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'Breaking it makes its scales grow back thinner', mat: 'ashmantle', hp: 270, brk: 'The ember mantle cracks and dims! Its scales will grow back thin.' },
+    { id: 'jaw', name: 'Jaw', eff: { Cut: 0.5, Blunt: 0.5, Pierce: 1 }, hint: 'Breaking it weakens **Flare Pounce**', mat: 'ashfang', hp: 205, brk: 'A glowing fang snaps off. Its bite loses its heat.' }
   ],
 
   intent(h, type): Intent {

@@ -26,8 +26,8 @@ export const tuskling: MonsterDef = {
   enrageText: 'It squeals and stamps.',
   // the tusks come first: the hunt opens aimed at the part a blade can't break, so aiming is the thing to learn
   parts: [
-    { id: 'tusks', name: 'Tusks', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'Break it for a Milk Tusk', mat: 'milktusk', hp: 60, brk: 'A little tusk snaps off!' },
-    { id: 'hide', name: 'Hide', eff: { Cut: 1, Blunt: 0, Pierce: 0.5 }, hint: 'Break it for its hide', mat: 'tuskhide', hp: 90, brk: 'Its hide tears. It drops a strip of it.' }
+    { id: 'tusks', name: 'Tusks', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'Breaking it drops a Milk Tusk', mat: 'milktusk', hp: 60, brk: 'A little tusk snaps off!' },
+    { id: 'hide', name: 'Hide', eff: { Cut: 1, Blunt: 0, Pierce: 0.5 }, hint: 'Breaking it drops its hide', mat: 'tuskhide', hp: 90, brk: 'Its hide tears. It drops a strip of it.' }
   ],
 
   intent(_h, type): Intent {

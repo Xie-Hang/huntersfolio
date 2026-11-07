@@ -17,7 +17,7 @@ export const effName = (e: number) => (e >= 1 ? 'Best' : e > 0 ? 'Half' : 'None'
  *  breaking the part only: hits still hurt the monster. */
 export const effWord = (e: number) => (e >= 1 ? 'Breaks more' : e > 0 ? 'Breaks less' : 'Can’t break');
 /** the weapon nouns the monster page's parts table uses as column heads */
-export const TYPE_NOUN: Record<string, string> = { Cut: 'Blade', Blunt: 'Maul', Pierce: 'Bow' };
+export const TYPE_NOUN: Record<string, string> = { Cut: 'Cut', Blunt: 'Blunt', Pierce: 'Pierce' };
 export const effCls = (e: number) => (e >= 1 ? 'best' : e > 0 ? 'half' : 'none');
 export const pct = (a: number, b: number) => Math.max(0, Math.min(100, Math.round((a / b) * 100)));
 

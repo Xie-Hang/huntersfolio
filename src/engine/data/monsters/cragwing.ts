@@ -45,9 +45,9 @@ export const cragwing: MonsterDef = {
   intro: 'Slate rattles down the scree. A drake with wings like split stone lands on the ridge and screams.',
   enrageText: 'The wind howls through its broken slates. The Cragwing is enraged!',
   parts: [
-    { id: 'wings', name: 'Wings', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Break them and it stays up only 1 turn', mat: 'cragpinion', hp: 240, brk: 'A slate wing cracks across! It can’t stay up for long now.' },
-    { id: 'horn', name: 'Digging Horn', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'The daze part. Break it and it can’t burrow', mat: 'craghorn', hp: 260, brk: 'The digging horn snaps! It can’t burrow any more.' },
-    { id: 'back', name: 'Slate Back', eff: { Cut: 1, Blunt: 0.5, Pierce: 0 }, hint: 'Break it and its slate plating can’t grow back', mat: 'cragslab', hp: 220, brk: 'The slates on its back shear away. Its plating won’t grow back.' }
+    { id: 'wings', name: 'Wings', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Breaking them keeps it airborne only 1 turn', mat: 'cragpinion', hp: 240, brk: 'A slate wing cracks across! It can’t stay up for long now.' },
+    { id: 'horn', name: 'Digging Horn', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: '**Daze** part. Breaking it ends burrowing for good', mat: 'craghorn', hp: 260, brk: 'The digging horn snaps! It can’t burrow any more.' },
+    { id: 'back', name: 'Slate Back', eff: { Cut: 1, Blunt: 0.5, Pierce: 0 }, hint: 'Breaking it ends its slate for good', mat: 'cragslab', hp: 220, brk: 'The slates on its back shear away. Its plating won’t grow back.' }
   ],
 
   intent(h, type): Intent {
@@ -115,7 +115,7 @@ export const cragwing: MonsterDef = {
     return null;
   },
   partNote(h, partId) {
-    if (h.intent === 'brace' && (partId === 'horn' || partId === 'back') && !h.mon.parts[partId].broken) return { chip: 'Braced ½', hint: 'Behind its slate: hits here deal half this turn' };
+    if (h.intent === 'brace' && (partId === 'horn' || partId === 'back') && !h.mon.parts[partId].broken) return { chip: 'Braced ½', hint: 'Behind its slate, it takes ½ here this turn' };
     return null;
   },
   onHit(h, mv, w) {

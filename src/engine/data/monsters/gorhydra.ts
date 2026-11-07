@@ -63,9 +63,9 @@ export const gorhydra: MonsterDef = {
   intro: 'Three shapes rise out of the frozen tarn, then lean together. They share one body.',
   enrageText: 'All three heads scream. The Gorhydra is enraged!',
   parts: [
-    { id: 'left', name: 'Left Head', eff: { Cut: 1, Blunt: 0.5, Pierce: 0.5 }, hint: 'Cut it off, then seal the stump (Cut or Ember)', mat: 'hydrafang', hp: 130, brk: 'The left head comes off!' },
-    { id: 'middle', name: 'Middle Head', eff: { Cut: 1, Blunt: 0.5, Pierce: 0.5 }, hint: 'Its Crush hits hardest. Seal the stump once it’s off', mat: 'hydracrown', hp: 160, brk: 'The middle head comes off!' },
-    { id: 'right', name: 'Right Head', eff: { Cut: 1, Blunt: 0.5, Pierce: 0.5 }, hint: 'Cut it off, then seal the stump (Cut or Ember)', mat: 'hydrahorn', hp: 130, brk: 'The right head comes off!' }
+    { id: 'left', name: 'Left Head', eff: { Cut: 1, Blunt: 0.5, Pierce: 0.5 }, hint: '**Cut** it off, then seal the stump with **Cut** or **Ember**', mat: 'hydrafang', hp: 130, brk: 'The left head comes off!' },
+    { id: 'middle', name: 'Middle Head', eff: { Cut: 1, Blunt: 0.5, Pierce: 0.5 }, hint: '**Crush** hits hardest. **Cut** it off, then seal the stump', mat: 'hydracrown', hp: 160, brk: 'The middle head comes off!' },
+    { id: 'right', name: 'Right Head', eff: { Cut: 1, Blunt: 0.5, Pierce: 0.5 }, hint: '**Cut** it off, then seal the stump with **Cut** or **Ember**', mat: 'hydrahorn', hp: 130, brk: 'The right head comes off!' }
   ],
 
   intent(h, type): Intent {
@@ -164,8 +164,8 @@ export const gorhydra: MonsterDef = {
   },
 
   partNote(h, partId) {
-    if (sealed(h, partId)) return { chip: 'Sealed', hint: 'Gone for good. Hits here still damage it.' };
-    if (stumped(h, partId)) { const t = h.mon.stump![partId]; return { chip: `Stump · regrows in ${t}`, hint: 'Seal it now: hit it with Cut or Ember.' }; }
+    if (sealed(h, partId)) return { chip: 'Sealed', hint: 'Gone for good. It still takes hits here.' };
+    if (stumped(h, partId)) { const t = h.mon.stump![partId]; return { chip: `Stump · regrows in ${t}`, hint: '**Cut** or **Ember** here seals it.' }; }
     return null;
   },
 

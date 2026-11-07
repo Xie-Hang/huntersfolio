@@ -34,9 +34,9 @@ export const bogjaw: MonsterDef = {
   intro: 'The mire bubbles. Two eyes rise from the mud, then a mouth wide enough to swallow you.',
   enrageText: 'It bellows, and the whole bog shakes. The Bogjaw is enraged!',
   parts: [
-    { id: 'jaw', name: 'Jaw', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: 'The daze part. Daze it while it gapes', mat: 'bogmolar', hp: 260, brk: 'Its jaw cracks. The bite goes slack.' },
-    { id: 'sac', name: 'Throat Sac', eff: { Cut: 1, Blunt: 0, Pierce: 0.5 }, hint: 'Break it to stop the Swallow', mat: 'throatsac', hp: 220, brk: 'The throat sac splits! It can’t swallow you any more.' },
-    { id: 'warts', name: 'Stone Warts', eff: { Cut: 0, Blunt: 0.5, Pierce: 1 }, hint: 'Break to weaken its Body Slam', mat: 'wartstone', hp: 200, brk: 'The stone warts crack off its back. Its slams lose their weight.' }
+    { id: 'jaw', name: 'Jaw', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: '**Daze** part. **Daze** here while it gapes stops the **Swallow**', mat: 'bogmolar', hp: 260, brk: 'Its jaw cracks. The bite goes slack.' },
+    { id: 'sac', name: 'Throat Sac', eff: { Cut: 1, Blunt: 0, Pierce: 0.5 }, hint: 'Breaking it stops **Swallow**', mat: 'throatsac', hp: 220, brk: 'The throat sac splits! It can’t swallow you any more.' },
+    { id: 'warts', name: 'Stone Warts', eff: { Cut: 0, Blunt: 0.5, Pierce: 1 }, hint: 'Breaking them weakens **Body Slam**', mat: 'wartstone', hp: 200, brk: 'The stone warts crack off its back. Its slams lose their weight.' }
   ],
 
   intent(h, type): Intent {

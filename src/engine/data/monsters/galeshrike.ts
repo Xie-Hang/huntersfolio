@@ -39,9 +39,9 @@ export const galeshrike: MonsterDef = {
   intro: 'A shriek splits the wind. The Galeshrike drops onto a ridge-top boulder.',
   enrageText: 'Its feathers bristle with static. The Galeshrike is enraged!',
   parts: [
-    { id: 'wings', name: 'Wings', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Break to shorten its time in the air', mat: 'pinion', hp: 200, brk: 'A wing tears! It can’t stay aloft for long now.' },
-    { id: 'talons', name: 'Talons', eff: { Cut: 1, Blunt: 0.5, Pierce: 0.5 }, hint: 'Break to weaken its rake and dive', mat: 'talon', hp: 240, brk: 'A talon snaps clean off. Its strikes lose their bite.' },
-    { id: 'crest', name: 'Crest', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'Only reachable while it’s on the ground', mat: 'crest', hp: 220, brk: 'The storm crest cracks and the wind around it falters.' }
+    { id: 'wings', name: 'Wings', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Breaking them shortens its time in the air', mat: 'pinion', hp: 200, brk: 'A wing tears! It can’t stay aloft for long now.' },
+    { id: 'talons', name: 'Talons', eff: { Cut: 1, Blunt: 0.5, Pierce: 0.5 }, hint: 'Breaking them weakens its rake and dive', mat: 'talon', hp: 240, brk: 'A talon snaps clean off. Its strikes lose their bite.' },
+    { id: 'crest', name: 'Crest', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'On the ground only', mat: 'crest', hp: 220, brk: 'The storm crest cracks and the wind around it falters.' }
   ],
 
   intent(h, type): Intent {
