@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Rich from '../../parts/Rich.svelte';
   import WeaponArt from '../../parts/WeaponArt.svelte';
   import Icon from '../../parts/Icon.svelte';
   // Four slots; tapping one swaps the slots for a picker list (sortable, filterable, with deltas).
@@ -77,9 +78,9 @@
   {@const best = bestParts(mon, w.type)}
   {#if M.elemOf}{#if w.elem}<span class="neutral">Hits its {w.elem === 'Stone' ? 'Ember' : w.elem === 'Gale' ? 'Stone' : w.elem === 'Ember' ? 'Frost' : 'Gale'} stance's weakness</span>{/if}{:else if m > 1}<span class="good">Hits weakness</span>{:else if m < 1}<span class="bad">Resisted</span>{/if}
   {#if best.length}{m !== 1 ? ' · ' : ''}<span class="best">Breaks more: {best.join(', ')}</span>{/if}
-  {#if M.flier}{' · '}{#if w.type === 'Pierce'}<span class="good">Reaches it in the air</span>{:else}<span class="bad">Can’t reach it in the air</span>{/if}{/if}
-  {#if M.plated}{@const n = M.plateBreak?.(w) ?? (w.type === 'Cut' ? 2 : 1)}{@const word = M.plateWord === 'scale' ? 'scales' : (M.plateWord ?? 'ice')}{' · '}{#if n >= M.plated}<span class="good">Clears its {word} in one hit</span>{:else}<span class="bad">Takes {Math.ceil(M.plated / n)} hits to clear its {word}</span>{/if}{#if M.plateHot && w.type === 'Cut'}{' · '}<span class="bad">Hot scales burn your hand</span>{/if}{/if}
-  {#if M.id === 'rimeshrike' && w.type === 'Pierce'}{' · '}<span class="bad">Glances off its shroud on the ground</span>{/if}
+  {#if M.flier}{' · '}{#if w.type === 'Pierce'}<span class="good">Reaches it airborne</span>{:else}<span class="bad">Can’t reach it airborne</span>{/if}{/if}
+  {#if M.plated}{@const n = M.plateBreak?.(w) ?? (w.type === 'Cut' ? 2 : 1)}{@const word = M.plateWord === 'scale' ? 'scales' : (M.plateWord ?? 'ice')}{' · '}{#if n >= M.plated}<span class="good">Clears its {word} in one hit</span>{:else}<span class="bad">Takes {Math.ceil(M.plated / n)} hits to clear its {word}</span>{/if}{#if M.plateHot && w.type === 'Cut'}{' · '}<span class="bad">Cut hits burn you</span>{/if}{/if}
+  {#if M.id === 'rimeshrike' && w.type === 'Pierce'}{' · '}<span class="bad">Misses its shroud on the ground</span>{/if}
   {#if M.burrower}{' · '}{#if w.type === 'Blunt'}<span class="good">Reaches it underground</span>{:else}<span class="bad">Can’t reach it underground</span>{/if}{/if}
 {/snippet}
 
@@ -88,7 +89,7 @@
   {#if a.infectLess && M.inflicts === 'Infect'}<span class="good">Shorter infections</span>{' · '}{/if}
   {#if (a.sparkLess || a.chargeProof) && M.inflicts === 'Spark'}<span class="good">{a.chargeProof && M.id === 'archeron' ? 'Your dice can’t be charged' : 'Weaker Discharge'}</span>{' · '}{/if}
   {#if a.latchMax && M.id === 'hollowfang'}<span class="good">Shorter latches</span>{' · '}{/if}
-  {#if a.leechProof && M.id === 'bloodwhelk'}<span class="good">The slime can’t drink from you</span>{' · '}{/if}
+  {#if a.leechProof && M.id === 'bloodwhelk'}<span class="good">The slime can’t drain you</span>{' · '}{/if}
   {#if a.adaptive}<span class="good">Resists whatever element it attacks with −30%</span>
   {:else if !a.resist}<span class="neutral">No resistance</span>
   {:else if M.elemOf}<span class="neutral">Resists its {a.resist} stance's attacks</span>
@@ -317,12 +318,12 @@
               <span>
                 <span class="nm"><Icon id={k} />{it.name}{#if k === L.item}<span class="badge">Equipped</span>{/if}</span>
                 <span class="ty">{it.desc}</span>
-                {#if it.effect === 'net'}<span class="note">{#if M.flier}<span class="good">Grounds the {M.short}</span>{:else}<span class="bad">Only works on fliers</span>{/if}</span>{/if}
-                {#if it.effect === 'thaw'}<span class="note">{#if M.plated && M.plateHot}<span class="bad">Does nothing to burning scales</span>{:else if M.plated}<span class="good">{M.plateWord ? `Cracks the ${M.short}’s ${M.plateWord}` : `Melts the ${M.short}’s ice`}</span>{:else}<span class="bad">Only works on plated monsters</span>{/if}</span>{/if}
+                {#if it.effect === 'net'}<span class="note">{#if M.flier}<span class="good">Grounds the {M.short}</span>{:else}<span class="bad">Fliers only</span>{/if}</span>{/if}
+                {#if it.effect === 'thaw'}<span class="note">{#if M.plated && M.plateHot}<span class="bad">Scales already burning</span>{:else if M.plated}<span class="good">{M.plateWord ? `Cracks the ${M.short}’s ${M.plateWord}` : `Melts the ${M.short}’s ice`}</span>{:else}<span class="bad">Plated monsters only</span>{/if}</span>{/if}
                 {#if it.effect === 'cureInfect'}<span class="note">{#if M.inflicts === 'Infect'}<span class="good">Cures the {M.short}’s infection</span>{:else}<span class="bad">It doesn’t infect</span>{/if}</span>{/if}
                 {#if it.effect === 'cureSpark'}<span class="note">{#if M.inflicts === 'Spark'}<span class="good">Clears the {M.short}’s spark</span>{:else}<span class="bad">It doesn’t spark</span>{/if}</span>{/if}
                 {#if it.effect === 'trapRush' || it.effect === 'trapLand'}{@const mv = E.trapMoves(M.id)[it.effect]}<span class="note">{#if mv.length}<span class="good">Catches its {mv.join(', ')}</span>{:else}<span class="bad">The {M.short} has no move this catches</span>{/if}</span>{/if}
-                {#if it.effect === 'blast'}<span class="note">{#if M.burrower}<span class="good">Forces the {M.short} up</span>{:else}<span class="bad">Only works on burrowers</span>{/if}</span>{/if}
+                {#if it.effect === 'blast'}<span class="note">{#if M.burrower}<span class="good">Forces the {M.short} up</span>{:else}<span class="bad">Burrowers only</span>{/if}</span>{/if}
               </span>
               <span class="num">{Math.min(have, it.max)}</span><span class="num">{have}</span>
             </button>
@@ -338,7 +339,7 @@
       <span class="ital">{E.unlockHint(M.id)} to unlock it.</span>
       <button class="btn primary" disabled>Locked</button>
     {:else}
-      <span class="ital">{isl ? (need === 2 && nWeapons < 2 ? 'Take the maul too.' : '') : nWeapons === 2 ? (full() ? 'Swap weapons mid-hunt for 1 die.' : '') : 'Choose two weapons to bring.'}</span>
+      <span class="ital"><Rich text={isl ? (need === 2 && nWeapons < 2 ? 'Take the maul too.' : '') : nWeapons === 2 ? (full() ? '**Swap** weapons mid-hunt for 1 die.' : '') : 'Choose two weapons to bring.'} /></span>
       <button class="btn primary" data-sound data-coach="begin" disabled={nWeapons !== need} onclick={() => game.begin(coach.scriptFirstHunt())}>Hunt the {M.short}</button>
     {/if}
   </div>

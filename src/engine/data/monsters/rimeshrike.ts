@@ -100,8 +100,8 @@ export const rimeshrike: MonsterDef = {
   },
   cantHitReason(h) {
     return h.mon.air
-      ? 'It’s in the air: only Pierce (a bow) reaches it. Swap to a bow, throw a Net, or block until it comes down.'
-      : 'Frost-shrouded: arrows glance off its iced feathers. Only Cut and Blunt reach it until the ice thaws.';
+      ? 'It’s airborne. **Pierce** only.'
+      : 'It’s **Frost-shrouded**. **Cut** and **Blunt** only.';
   },
 
   reachable(h, partId, w) {

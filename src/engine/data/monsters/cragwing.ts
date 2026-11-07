@@ -108,7 +108,7 @@ export const cragwing: MonsterDef = {
 
   // In the air only Pierce reaches it; under the scree only Blunt (for half damage)
   canHit(h, w) { return h.mon.air ? w.type === 'Pierce' : h.mon.under ? w.type === 'Blunt' : true; },
-  cantHitReason(h) { return h.mon.air ? 'It’s in the air: only Pierce (a bow) reaches it. Swap to a bow, throw a Net, or block for the dive.' : 'Under the scree: only Blunt reaches it.'; },
+  cantHitReason(h) { return h.mon.air ? 'It’s airborne. **Pierce** only.' : 'It’s under the scree. **Blunt** only.'; },
   hitMod(h, partId) {
     if (h.mon.under) return { mult: 0.5, note: 'through the scree ½' };
     if (h.intent === 'brace' && (partId === 'horn' || partId === 'back')) return { mult: 0.5, note: 'braced ½' };

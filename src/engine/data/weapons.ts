@@ -187,8 +187,9 @@ export const TREES: { type: DamageType; nodes: [string, number][] }[] = (['Cut',
   return { type, nodes };
 });
 
-export const SIGNATURES: Record<DamageType, { tag: 'flow' | 'daze' | 'expose'; name: string; text: string }> = {
-  Cut: { tag: 'flow', name: 'Flow', text: 'The middle move adds 1 to your rerolls left, once a turn. Its dice are still spent.' },
-  Blunt: { tag: 'daze', name: 'Daze', text: 'The strongest move, on the head, fills a daze meter. Full meter: the monster loses its action, then recovers for a turn.' },
-  Pierce: { tag: 'expose', name: 'Expose', text: 'The light shot exposes the part for 2 turns: every hit there, from either weapon, deals +20% and counts double toward breaking it.' }
+/** text: the tip on a move that carries it; about: the tip on the weapon as a whole (Forge, Loadout) */
+export const SIGNATURES: Record<DamageType, { tag: 'flow' | 'daze' | 'expose'; name: string; text: string; about: string }> = {
+  Cut: { tag: 'flow', name: 'Flow', text: 'This move gives +1 **Reroll**, once a turn.\nIts dice are still spent.', about: 'Its **Flow** moves give +1 **Reroll**, once a turn.\nTheir dice are still spent.' },
+  Blunt: { tag: 'daze', name: 'Daze', text: 'On its **Daze** part, this move fills the **Daze** meter.\nA full meter makes it lose its turn, then it recovers for a turn.', about: 'Its **Daze** moves fill the **Daze** meter on the monster’s **Daze** part.\nA full meter makes it lose its turn, then it recovers for a turn.' },
+  Pierce: { tag: 'expose', name: 'Expose', text: 'This move **Exposes** the part for 2 turns.\nEvery hit there, from either weapon, is +20% and counts double toward breaking it.', about: 'Its **Expose** moves **Expose** the part for 2 turns.\nEvery hit there, from either weapon, is +20% and counts double toward breaking it.' }
 };

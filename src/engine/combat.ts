@@ -210,30 +210,30 @@ export const freeDice = (h: Hunt) => h.dice.map((d, i) => (d.used ? -1 : i)).fil
  *  the telegraph is what it does AFTER your turn, so it was still on the ground. Say so on the button. */
 /** itemBlockReason, in about 30 characters, for the item button; the full reason goes in its tip (Nov 2026) */
 export const ITEM_SHORT: Record<string, string> = {
-  'Set: it springs when you end your turn': 'Set ✓',
-  'One item per turn: used this turn': 'Used this turn',
-  'Only works while it flies. It takes off after this turn: throw it next turn': 'Throw it next turn',
-  'Only works while it flies, and it’s on the ground now': 'Only while it flies',
-  'Only works while it’s underground. It digs in after this turn: throw it next turn': 'Throw it next turn',
-  'Only works while it’s underground': 'Only while it’s underground',
-  'Its scales are already burning: a Firepot does nothing': 'Does nothing: already burning',
-  'Only works while it has plating (ice or slate)': 'Only while it has ice or slate',
-  'Only works while you’re infected': 'Only while you’re infected',
-  'Only works with Spark pips on you or charged dice': 'Only with Spark on you',
+  'Set. It springs at the end of your turn.': 'Set ✓',
+  'One item a turn. Used this turn.': 'Used this turn',
+  'Works only while it’s airborne. It takes off after this turn.': 'Throw it next turn',
+  'Works only while it’s airborne.': 'Airborne only',
+  'Works only while it’s underground. It digs in after this turn.': 'Throw it next turn',
+  'Works only while it’s underground.': 'Underground only',
+  'Its scales are already burning.': 'Scales already burning',
+  'Works only on ice or slate.': 'Ice or slate only',
+  'Works only with **Infect** on you.': 'With Infect on you only',
+  'Works only with **Spark** on you or charged dice.': 'With Spark on you only',
 };
 export function itemBlockReason(h: Hunt): string | null {
   if (!h.item || h.over || itemUsable(h)) return null;
   const fx0 = ITEMS[h.item].effect;
-  if ((fx0 === 'trapRush' || fx0 === 'trapLand') && h.trapSet) return 'Set: it springs when you end your turn';
-  if (h.itemUsed) return 'One item per turn: used this turn';
+  if ((fx0 === 'trapRush' || fx0 === 'trapLand') && h.trapSet) return 'Set. It springs at the end of your turn.';
+  if (h.itemUsed) return 'One item a turn. Used this turn.';
   if (h.itemCharges < 1) return 'None left';
   const fx = ITEMS[h.item].effect, next = h.intent;
-  if (fx === 'net') return next === 'takeoff' ? 'Only works while it flies. It takes off after this turn: throw it next turn' : 'Only works while it flies, and it’s on the ground now';
-  if (fx === 'blast') return next === 'burrow' ? 'Only works while it’s underground. It digs in after this turn: throw it next turn' : 'Only works while it’s underground';
-  if (fx === 'thaw') return def(h).plateHot ? 'Its scales are already burning: a Firepot does nothing' : 'Only works while it has plating (ice or slate)';
-  if (fx === 'cureInfect') return 'Only works while you’re infected';
-  if (fx === 'cureSpark') return 'Only works with Spark pips on you or charged dice';
-  if (fx === 'trapRush' || fx === 'trapLand') return h.trapSet ? 'Set: it springs when you end your turn' : 'It’s already held';
+  if (fx === 'net') return next === 'takeoff' ? 'Works only while it’s airborne. It takes off after this turn.' : 'Works only while it’s airborne.';
+  if (fx === 'blast') return next === 'burrow' ? 'Works only while it’s underground. It digs in after this turn.' : 'Works only while it’s underground.';
+  if (fx === 'thaw') return def(h).plateHot ? 'Its scales are already burning.' : 'Works only on ice or slate.';
+  if (fx === 'cureInfect') return 'Works only with **Infect** on you.';
+  if (fx === 'cureSpark') return 'Works only with **Spark** on you or charged dice.';
+  if (fx === 'trapRush' || fx === 'trapLand') return h.trapSet ? 'Set. It springs at the end of your turn.' : 'It’s already held.';
   return null;
 }
 export function itemUsable(h: Hunt): boolean {

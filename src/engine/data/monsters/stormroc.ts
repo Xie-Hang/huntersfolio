@@ -132,7 +132,7 @@ export const stormroc: MonsterDef = {
   // In the air only Pierce reaches it (playtest, Nov 2026: a tester asked how a sword hits a bird in the sky;
   // it used to be half damage). Down on the ground, or low after a swoop, every weapon works.
   canHit(h, w) { return !h.mon.air || w.type === 'Pierce'; },
-  cantHitReason() { return 'It\u2019s in the air: only Pierce (a bow) reaches it. Swap to a bow, throw a Net, or block until it comes down.'; },
+  cantHitReason() { return 'It’s airborne. **Pierce** only.'; },
 
   reachable(h, partId, w) {
     return !(partId === 'crown' && h.mon.air && w.type !== 'Pierce');

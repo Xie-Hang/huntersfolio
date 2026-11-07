@@ -90,7 +90,7 @@ describe('Galeshrike', () => {
     h.mon.air = true; h.intent = 'gust'; h.target = 'crest';
     h.dice = [{ face: 'C', used: null }, { face: 'B', used: null }, { face: 'B', used: null }, { face: 'B', used: null }];
     expect(E.useMove(h, 0)).toBeNull(); // the blade can't reach it
-    expect(E.cantHitReason(h, E.currentWeapon(h))).toMatch(/only Pierce/);
+    expect(E.cantHitReason(h, E.currentWeapon(h))).toMatch(/\*\*Pierce\*\* only/);
     expect(h.mon.parts.crest.hp).toBe(h.mon.parts.crest.max);
     expect(E.useItem(h)).toBe(true);
     expect(h.mon.air).toBe(false);

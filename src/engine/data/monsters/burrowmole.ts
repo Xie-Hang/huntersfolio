@@ -52,7 +52,7 @@ export const burrowmole: MonsterDef = {
     return null;
   },
   canHit(h, w) { return !h.mon.under || w.type === 'Blunt'; },
-  cantHitReason() { return 'Underground: only a maul reaches it.'; },
+  cantHitReason() { return 'It’s underground. **Blunt** only.'; },
   onHit(h, _mv, w) {
     if (h.mon.under && w.type === 'Blunt') { h.mon.under = false; h.intent = 'stunned'; return 'Your maul shakes the ground. It pops up, stunned!'; }
     return null;

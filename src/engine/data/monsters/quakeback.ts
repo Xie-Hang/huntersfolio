@@ -98,7 +98,7 @@ export const quakeback: MonsterDef = {
   },
 
   canHit(h, w) { return !h.mon.under || w.type === 'Blunt'; },
-  cantHitReason() { return 'Underground: only Blunt reaches it.'; },
+  cantHitReason() { return 'It’s underground. **Blunt** only.'; },
   hitMod(h) { return h.mon.under ? { mult: 0.5, note: 'through the ground ½' } : null; },
   onHit(h, mv, w) {
     // deeper than the Cinderback: only the heaviest Blunt move (3 dice) drives it up

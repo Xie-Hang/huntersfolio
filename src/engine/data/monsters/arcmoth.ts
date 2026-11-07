@@ -94,7 +94,7 @@ export const arcmoth: MonsterDef = {
   },
 
   canHit(h, w) { return !h.mon.air || w.type === 'Pierce'; },
-  cantHitReason() { return 'It’s in the air: only Pierce (a bow) reaches it. Swap to a bow, throw a Net, or block until it dives.'; },
+  cantHitReason() { return 'It’s airborne. **Pierce** only.'; },
   onPin(h) { if (h.mon.air) { groundFlier(h); return 'Pin: the arrow pins a wing. It comes fluttering down!'; } return null; },
 
   tip(h) {
