@@ -22,6 +22,8 @@
   const el = $derived(E.elemsNow(h.mid, h));
   /** The monster's condition, each with what it does and how to answer it (playtest: players saw "Enraged" or
    *  "Ice plating" with no idea what it meant). Hover, or move a controller's focus onto it, to read. */
+  /** a caption as the tip's header: first letter capitalised (8 Nov 2026, Mekkman: the caption moved off the tag into the tip) */
+  const cap1 = (t: string) => t.replace(/[a-z]/i, c => c.toUpperCase());
   const statuses = $derived.by(() => {
     const out: { key: string; label: string; short: string; cls: string; desc: string }[] = [];
     // (statuses for things not taught yet stay hidden on the island: Enraged, Capturable. Nov 2026 playtest)
@@ -29,21 +31,21 @@
     // Text rules (8 Nov 2026, with Mekkman): the caption says what the monster is doing in the shared word list
     // (takes, burns you, drains, through Block, X only, loses N turns); the tip says what's happening and what ends it,
     // no play advice and no negatives. **Game terms** render bold.
-    if (m.enraged && shows(h, 'enraged')) out.push({ key: 'enr', label: 'Enraged', short: 'hits harder', cls: 'hot', desc: 'Below half HP it gets angry. It hits harder, and some of its moves change.' });
-    if (mud) out.push({ key: 'mud', label: 'Mud-caked', short: `hide takes ½ · ${tn(m.wallow)}`, cls: 'mud', desc: 'Mud covers its hide, so the hide takes ½ until the mud dries. **Pierce** goes through mud.' });
-    if (h.intent === 'trapped') out.push({ key: 'trap', label: 'Trapped', short: `loses ${tn(m.trapped ?? 1)}`, cls: 'gold', desc: 'It’s caught in your trap and loses its turns while it’s held. A **Snare** set now always closes.' });
-    if (m.air) out.push({ key: 'air', label: 'Airborne', short: '**Pierce** only', cls: 'gale', desc: `It’s flying, so only **Pierce** reaches it.${isFlier ? ' **Pinning Shot** or a **Weighted Net** brings it down.' : ''}` });
+    if (m.enraged && shows(h, 'enraged')) out.push({ key: 'enr', label: 'Enraged', short: 'hits harder', cls: 'hot', desc: 'Below half HP it gets angry.\nIt hits harder, and some of its moves change.' });
+    if (mud) out.push({ key: 'mud', label: 'Mud-caked', short: `hide takes ½ · ${tn(m.wallow)}`, cls: 'mud', desc: 'Mud covers its hide, so the hide takes ½ until the mud dries.\n**Pierce** goes through mud.' });
+    if (h.intent === 'trapped') out.push({ key: 'trap', label: 'Trapped', short: `loses ${tn(m.trapped ?? 1)}`, cls: 'gold', desc: 'It’s caught in your trap and loses its turns while it’s held.\nA **Snare** set now always closes.' });
+    if (m.air) out.push({ key: 'air', label: 'Airborne', short: '**Pierce** only', cls: 'gale', desc: `It’s flying, so only **Pierce** reaches it.${isFlier ? '\n**Pinning Shot** or a **Weighted Net** brings it down.' : ''}` });
     if (m.under) { const half = M.hitMod?.(h, h.target, E.currentWeapon(h))?.mult === 0.5;
-      out.push({ key: 'under', label: 'Underground', short: half ? '**Blunt** only, takes ½' : '**Blunt** only', cls: 'mud', desc: `It’s dug in. Only **Blunt** reaches it${half ? ', and it takes ½' : ''}. A heavy **Blunt** hit or **Blast Powder** forces it up, dazed, and cancels its next move.` }); }
+      out.push({ key: 'under', label: 'Underground', short: half ? '**Blunt** only, takes ½' : '**Blunt** only', cls: 'mud', desc: `It’s dug in. Only **Blunt** reaches it${half ? ', and it takes ½' : ''}.\nA heavy **Blunt** hit or **Blast Powder** forces it up, dazed, and stops its next move.` }); }
     // every plated monster gets the badge but the Ashtail, whose burning scales have their own (Nov 2026 bug hunt: the Cragwing's slate had none)
-    if (m.plating > 0 && !M.plateHot) { const pw = M.plateWord ?? 'ice'; out.push({ key: 'ice', label: `${pw[0].toUpperCase() + pw.slice(1)} ×${m.plating}`, short: 'takes hits before HP', cls: 'ice', desc: `The ${pw} takes your hits before its HP does. Each hit breaks a layer, and **Cut** breaks two. **Charge** and whetstone bonuses go into the ${pw}. A **Firepot** ${pw === 'ice' ? 'melts' : 'cracks'} it all.` }); }
+    if (m.plating > 0 && !M.plateHot) { const pw = M.plateWord ?? 'ice'; out.push({ key: 'ice', label: `${pw[0].toUpperCase() + pw.slice(1)} ×${m.plating}`, short: 'takes hits before HP', cls: 'ice', desc: `The ${pw} takes your hits before its HP does. Each hit breaks a layer, and **Cut** breaks two.\n**Charge** and whetstone bonuses go into the ${pw}.\nA **Firepot** ${pw === 'ice' ? 'melts' : 'cracks'} it all.` }); }
     if (m.molten > 0) out.push({ key: 'molt', label: 'Molten', short: `**Cut**/**Blunt** burn you ${m.enraged ? 8 : 5} · ${tn(m.molten)}`, cls: 'hot', desc: `Its shell is red-hot. Every **Cut** or **Blunt** hit burns you for ${m.enraged ? 8 : 5} until it cools.` });
     if ((m.shell ?? 0) > 0) out.push({ key: 'shell', label: 'In its shell', short: 'takes ½ until it acts', cls: 'stone', desc: 'It’s in its shell and takes ½ from your hits until its next action.' });
-    if ((m.slime ?? 0) > 0 && M.inflicts !== 'Drain') out.push({ key: 'slime', label: 'Slime', short: `burns you · ${tn(m.slime!)}`, cls: 'hot', desc: 'The slime burns you a little at the end of each turn. Breaking its foot ends it for good.' });
-    if ((m.mirage ?? 0) > 0 && M.id !== 'fenmother') out.push({ key: 'mir', label: 'Images', short: `1st hit only · ${tn(m.mirage!)}`, cls: 'ice', desc: `Mirror images surround it. Only your first hit each turn lands, and later hits break an image.${(m.hits ?? 0) > 0 ? ' Your hit this turn has landed.' : ''}` });
+    if ((m.slime ?? 0) > 0 && M.inflicts !== 'Drain') out.push({ key: 'slime', label: 'Slime', short: `burns you · ${tn(m.slime!)}`, cls: 'hot', desc: 'The slime burns you a little at the end of each turn.\nBreaking its foot ends it for good.' });
+    if ((m.mirage ?? 0) > 0 && M.id !== 'fenmother') out.push({ key: 'mir', label: 'Images', short: `1st hit only · ${tn(m.mirage!)}`, cls: 'ice', desc: `Mirror images surround it. Only your first hit each turn lands, and later hits break an image.${(m.hits ?? 0) > 0 ? '\nYour hit this turn has landed.' : ''}` });
     if ((m.infected ?? 0) > 0) out.push({ key: 'inf', label: 'Infected', short: `takes ${m.infectDmg} a turn · ${tn(m.infected!)}`, cls: 'inf', desc: 'Your weapon’s infection has taken hold. It takes this much at the end of each turn until the infection wears off.' });
     out.push(...(M.badges?.(h) ?? []));
-    if (E.canCapture(h) && shows(h, 'capture')) out.push({ key: 'cap', label: 'Capturable', short: h.snareSet ? '**Snare** closes at turn end' : h.snares ? `ready to **Snare** · ${h.snares} left` : 'no **Snares** left', cls: 'gold', desc: `It’s weak enough to catch. Set a **Snare** with 2 dice. It closes at the end of your turn, unless it hits you for ${E.CHARGE_BREAK} or more. A capture gives double part materials.` });
+    if (E.canCapture(h) && shows(h, 'capture')) out.push({ key: 'cap', label: 'Capturable', short: h.snareSet ? '**Snare** closes at turn end' : h.snares ? `ready to **Snare** · ${h.snares} left` : 'no **Snares** left', cls: 'gold', desc: `It’s weak enough to catch. Set a **Snare** with 2 dice.\nIt closes at the end of your turn, unless it hits you for ${E.CHARGE_BREAK} or more.\nA capture gives double part materials.` });
     return out;
   });
   // A status arriving mid-hunt gets a moment on the stage, not just a tag (Nov 2026 playtest: Enraged went unnoticed):
@@ -112,8 +114,8 @@
           {#if statuses.length}
             <div class="conds" aria-label="Its condition">
               {#each statuses as st (st.key)}
-                <button type="button" class="cond {st.cls}" aria-describedby="{uid}-{st.key}"><b>{st.label}</b><span class="shw"><span class="sh"><Rich text={st.short} /></span><span class="i" aria-hidden="true">i</span></span>
-                <span class="stip" id="{uid}-{st.key}" role="tooltip"><Rich text={st.desc} /></span>
+                <button type="button" class="cond {st.cls}" aria-describedby="{uid}-{st.key}"><b>{st.label}</b><span class="i" aria-hidden="true">i</span>
+                <span class="stip" id="{uid}-{st.key}" role="tooltip"><strong class="sth"><Rich text={cap1(st.short)} /></strong>{#each st.desc.split('\n') as para}<span class="stp"><Rich text={para} /></span>{/each}</span>
                 </button>
               {/each}
             </div>
@@ -143,17 +145,18 @@
   .conds { flex: 0 1 auto; display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; align-items: center; margin-left: auto; }
   .cond { all: unset; pointer-events: auto; position: relative; box-sizing: border-box; cursor: help; display: inline-flex; align-items: baseline; gap: 6px; padding: 4px 8px; border-radius: 3px; background: var(--c, var(--bone)); color: var(--ink); font-family: var(--f-body); font-size: var(--fs-sm); line-height: 1.2; box-shadow: 0 2px 0 rgba(0, 0, 0, .45), 0 0 0 1px rgba(0, 0, 0, .35); }
   .cond b { font-weight: 700; text-transform: uppercase; letter-spacing: .04em; font-size: 14px; }
-  .cond .sh { font-weight: 500; font-size: 13px; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-  .cond { max-width: 100%; white-space: nowrap; flex-wrap: wrap; row-gap: 2px; }
+  .cond { max-width: 100%; white-space: nowrap; }
   /* the caption and its i travel together: in a narrow column the caption drops under the name as one piece (8 Nov 2026) */
-  .cond .shw { display: inline-flex; align-items: baseline; gap: 6px; min-width: 0; max-width: 100%; }
+  .stip .sth { display: block; font-weight: 700; color: var(--gold-hi); margin-bottom: 6px; }
+  .stip .stp { display: block; }
+  .stip .stp + .stp { margin-top: 6px; }
   .platecol .metarow > * { min-width: 0; max-width: 100%; }
   .cond b { flex: none; }
   .cond .i { flex: none; align-self: center; width: 15px; height: 15px; font-size: 0; background-color: currentColor; -webkit-mask: var(--icon-i) center/contain no-repeat; mask: var(--icon-i) center/contain no-repeat; opacity: .85; }
   .cond:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 2px; }
   .cond.inf { --c: #9fc062; } .cond.hot { --c: #e8773a; } .cond.ice { --c: #b9d3f0; } .cond.gale { --c: #8fc3c9; } .cond.mud { --c: #b49a74; } .cond.stone { --c: #c9b89c; } .cond.gold { --c: #e9b949; } .cond.ember { --c: #e0915f; }
   .cond.hot b { color: #2a1206; }
-  .stip { position: absolute; right: 0; top: calc(100% + 8px); z-index: 40; width: 280px; padding: 10px 12px; border: 1px solid var(--gold); border-radius: 4px; background: var(--raise); color: var(--fg); font-size: var(--fs-sm); font-weight: 400; line-height: 1.45; text-align: left; text-transform: none; letter-spacing: 0; white-space: normal; box-shadow: 0 8px 24px rgba(0, 0, 0, .5); opacity: 0; visibility: hidden; transform: translateY(-4px); transition: opacity .12s, transform .12s, visibility .12s; pointer-events: none; }
+  .stip { position: absolute; right: 0; top: calc(100% + 8px); z-index: 40; width: 300px; padding: 10px 12px; border: 1px solid var(--gold); border-radius: 4px; background: var(--raise); color: var(--fg); font-size: var(--fs-sm); font-weight: 400; line-height: 1.45; text-align: left; text-transform: none; letter-spacing: 0; white-space: normal; box-shadow: 0 8px 24px rgba(0, 0, 0, .5); opacity: 0; visibility: hidden; transform: translateY(-4px); transition: opacity .12s, transform .12s, visibility .12s; pointer-events: none; }
   .cond:hover .stip, .cond:focus-visible .stip, .cond:focus .stip { opacity: 1; visibility: visible; transform: none; }
   @media (prefers-reduced-motion: reduce) { .stip { transition: none; } }
   .metarow { display: flex; gap: 10px 18px; align-items: flex-end; flex-wrap: wrap; }

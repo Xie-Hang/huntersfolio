@@ -115,7 +115,7 @@ export const rimeshrike: MonsterDef = {
 
   badges(h) {
     const s = h.mon.shroud ?? 0;
-    return s > 0 ? [{ key: 'shroud', label: 'Frost-shrouded', short: `**Cut**/**Blunt** only · ${s} action${s > 1 ? 's' : ''}`, cls: 'ice', desc: 'Ice covers its feathers. Only **Cut** and **Blunt** reach it. The ice melts after it acts twice on the ground. Breaking its crest ends it for good.' }] : [];
+    return s > 0 ? [{ key: 'shroud', label: 'Frost-shrouded', short: `**Cut**/**Blunt** only · ${s} action${s > 1 ? 's' : ''}`, cls: 'ice', desc: 'Ice covers its feathers. Only **Cut** and **Blunt** reach it.\nThe ice melts after it acts twice on the ground.\nBreaking its crest ends it for good.' }] : [];
   },
 
   tip(h, type) {
