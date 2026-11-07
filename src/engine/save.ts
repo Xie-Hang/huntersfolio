@@ -112,7 +112,7 @@ export function loadSave(raw: unknown): Save {
   };
   // A hunt takes two weapons; only a damaged save can have fewer, so give back the starter pair.
   // (the Foothills start with one weapon, the Training Blade)
-  if (Object.keys(out.weapons).length < 2 && !(typeof out.island === 'number' && out.island < 8)) out.weapons = { ...base.weapons, ...out.weapons };
+  if (Object.keys(out.weapons).length < 2 && !(typeof out.island === 'number' && out.island < 16)) out.weapons = { ...base.weapons, ...out.weapons };
   if (!Object.keys(out.armors).length) out.armors = base.armors;
   if (!MONSTERS[out.loadout.target]) out.loadout.target = 'gorehorn';
   if (!Array.isArray(out.loadout.weapons)) out.loadout.weapons = [...base.loadout.weapons];

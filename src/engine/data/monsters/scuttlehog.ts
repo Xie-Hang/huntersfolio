@@ -26,7 +26,7 @@ export const scuttlehog: MonsterDef = {
   parts: [{ id: 'body', name: 'Body', eff: { Cut: 1, Blunt: 1, Pierce: 1 }, hint: '', mat: 'tuft', hp: 9999, brk: '' }],
 
   intent(_h, type): Intent {
-    if (type === 'nudge') return { name: 'Nudge', text: 'It trots at you, snout first.', dmg: 6, threat: 1 };
+    if (type === 'nudge') return { name: 'Nudge', text: 'It trots at you, snout first.', dmg: 10, threat: 1 };
     return { name: '…', text: '', dmg: 0, threat: 0 };
   },
   next() { return 'nudge'; },

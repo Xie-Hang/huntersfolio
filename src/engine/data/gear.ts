@@ -3,6 +3,8 @@ import { MAX_TIER } from '../edition';
 const inEdition = <T extends { tier?: number }>(x: T) => (x.tier ?? 1) <= MAX_TIER;
 
 const armors: ArmorDef[] = [
+  // the Foothills (the tutorial island, Nov 2026): the first armor you make
+  { id: 'hidevest', tier: 0.5, foothills: true, name: 'Tuskling Hide Vest', hp: 200, guard: 9, rerolls: 3, resist: null, perk: 'Sturdier than the jerkin: 200 HP and Block 9 a die.', craft: { coin: 60, tuskhide: 2 } },
   { id: 'jerkin', name: 'Leather Jerkin', hp: 180, guard: 8, rerolls: 3, resist: null, perk: 'Start each hunt with 3 rerolls instead of 2.', craft: { coin: 80 } },
   { id: 'vest', name: 'Bristlehide Vest', hp: 200, guard: 8, rerolls: 2, resist: 'Stone', perk: 'Resists Stone (−30%). Blank dice block for 2.5× instead of 1.5×.', blankx2: true, craft: { coin: 300, pelt: 2, hide: 3 } },
   { id: 'coat', name: 'Galeweave Coat', hp: 170, guard: 7, rerolls: 2, resist: 'Gale', perk: 'Resists Gale (−30%). Breaking a part heals 25 and gives a reroll.', breakHeal: true, craft: { coin: 250, pinion: 2, plume: 3 } },
@@ -57,6 +59,8 @@ export const ITEMS: Record<string, ItemDef> = Object.fromEntries(items.filter(in
 
 /** One charm per monster: a single small perk that deepens a playstyle. Crafted, never reinforced. */
 const charms: CharmDef[] = [
+  // the Foothills' charm (Mekkman, Nov 2026: 'deal small damage when you block')
+  { id: 'clawcharm', tier: 0.5, foothills: true, name: 'Claw Charm', src: 'Burrowmole', perk: 'When you Block, you hit back for 3 a die.', effect: 'blockBite', craft: { coin: 60, moleclaw: 2 } },
   { id: 'tuskcharm', name: 'Tusk Charm', src: 'Gorehorn', perk: 'When you daze the monster, you heal 20.', effect: 'dazeHeal', craft: { coin: 150, tusk: 1, hide: 2 } },
   { id: 'plumecharm', name: 'Plume Charm', src: 'Galeshrike', perk: 'The hit that exposes a part gets Expose’s bonus too.', effect: 'exposeSelf', craft: { coin: 150, pinion: 1, plume: 2 } },
   { id: 'kilncharm', name: 'Kiln Charm', src: 'Cinderback', perk: 'Charge costs 1 die instead of 2.', effect: 'charge1', craft: { coin: 150, ventgland: 1, cinderscale: 2 } },
@@ -100,6 +104,8 @@ const mats: MaterialDef[] = [
   { id: 'tuskhide', base: 'Tuskling Hide', src: 'Tuskling', sell: 10, how: 'Every Tuskling hunt, or break its hide' },
   { id: 'milktusk', base: 'Milk Tusk', src: 'Tuskling', sell: 20, how: 'Break the Tuskling\u2019s tusks (a maul)' },
   { id: 'moleclaw', base: 'Mole Claw', src: 'Burrowmole', sell: 10, how: 'Every Burrowmole hunt' },
+  { id: 'marmotfur', base: 'Marmot Fur', src: 'Gustmarmot', sell: 10, how: 'Every Gustmarmot hunt' },
+  { id: 'galegland', base: 'Gale Gland', src: 'Gustmarmot', sell: 40, how: 'Rare: break the Gustmarmot\u2019s cheeks (always, the first time you need one)' },
   { id: 'hide', base: 'Hide', src: 'Gorehorn', sell: 20, how: 'Every Gorehorn hunt' },
   { id: 'tusk', base: 'Tusk', src: 'Gorehorn', sell: 60, how: 'Break the Gorehorn’s tusks (Blunt best)' },
   { id: 'pelt', base: 'Bristled Pelt', src: 'Gorehorn', sell: 60, how: 'Break the Gorehorn’s hide (Cut best)' },

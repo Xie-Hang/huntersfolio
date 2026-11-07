@@ -28,9 +28,9 @@ export const burrowmole: MonsterDef = {
 
   intent(h, type): Intent {
     switch (type) {
-      case 'scratch': return { name: 'Scratch', text: 'It rakes at you with its claws.', dmg: 10, threat: 1 };
+      case 'scratch': return { name: 'Scratch', text: 'It rakes at you with its claws.', dmg: 14, threat: 1 };
       case 'dig': return { name: 'Digging', text: 'It tears into the trail.', dmg: 0, threat: 0, note: 'After your turn it’s underground: only a maul reaches it' };
-      case 'bite': return { name: 'Tunnel Bite', text: 'The ground bulges under your feet.', dmg: 14, threat: 2, note: 'Hit it with a maul to drive it up' };
+      case 'bite': return { name: 'Tunnel Bite', text: 'The ground bulges under your feet.', dmg: 24, threat: 2, note: 'Hit it with a maul to drive it up' };
       case 'stunned': return { name: 'Stunned', text: 'It blinks in the daylight.', dmg: 0, threat: 0, note: 'Its bite is lost' };
       case 'dazed': return { name: 'Dazed', text: 'It wobbles, dizzy.', dmg: 0, threat: 0, note: 'Its action is lost' };
     }

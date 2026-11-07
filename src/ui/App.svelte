@@ -59,6 +59,7 @@
   const sub = $derived.by(() => {
     const v = game.view, h = game.hunt;
     // in a hunt, where you are: the monster and the turn are in the health bar (Nov 2026)
+    if (v === 'hunt' && h?.exam) return `The Foothills · Promotion hunt${game.newerSave ? ' · Not saving' : ''}`;
     if (v === 'hunt' && h) return `${(E.TIERS[E.MONSTERS[h.mid].tier] ?? E.MONSTERS[h.mid].short).replace(/^Tier [\d.]+ · /, '')}${game.newerSave ? ' · Not saving' : ''}`;
     const label = NAV.find(n => n[0] === v)?.[1] ?? '';
     return `${label} · Hunts ${game.save.hunts}${game.newerSave ? ' · Not saving' : ''}`;

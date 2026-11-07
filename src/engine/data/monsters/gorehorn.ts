@@ -54,7 +54,7 @@ export const gorehorn: MonsterDef = {
     const m = h.mon;
     if (prev === 'windup') return 'charge';
     if (m.exhausted) { m.exhausted = false; return 'exhausted'; }
-    const early = (h.lesson ?? 99) < 4; // the first hunts: no mud, no stance (one thing at a time)
+    const early = (h.lesson ?? 99) < 4 || !!h.exam; // the first hunts: no mud, no stance (one thing at a time)
     if (!early && !m.usedWallow && !m.parts.hide.broken && m.hp < m.max * 0.7) { m.usedWallow = true; return 'wallow'; }
     if (!m.usedRoot && m.hp < m.max * 0.3) { m.usedRoot = true; return 'root'; }
     let t = ['jab', 'bristle', 'jab', 'windup'][m.seq % 4]; m.seq++;

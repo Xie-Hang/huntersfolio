@@ -18,9 +18,9 @@
 
   // only items for monsters you can hunt (Nov 2026 text audit: rank F saw the Mirewood's cures)
   const reach = $derived(Math.max(1, ...Object.values(E.MONSTERS).filter(M => E.isUnlocked(s, M.id)).map(M => M.tier)));
-  // the Foothills (the tutorial island): the Shop sells only the salve, and there's nothing to craft yet
+  // the Foothills (the tutorial island): the Shop sells the salve, then the smoke pouch and whetstone (step 14); nothing to craft yet
   const isl = $derived(!E.islandDone(s));
-  const buyRows = $derived(Object.values(E.ITEMS).filter(it => it.price && (isl ? it.id === 'salve' : full() || (it.tier ?? 1) <= reach)));
+  const buyRows = $derived(Object.values(E.ITEMS).filter(it => it.price && (isl ? E.islandShop(s).includes(it.id) : full() || (it.tier ?? 1) <= reach)));
   const craftRows = $derived(Object.values(E.ITEMS).filter(it => it.craft));
   const sellRows = $derived(
     Object.values(E.MATERIALS).filter(m => (s.mats[m.id] ?? 0) > 0).map(m => {

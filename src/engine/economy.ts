@@ -6,7 +6,7 @@ import { MONSTERS } from './data/monsters';
 import { nextRandom } from './rng';
 import { settleBounty } from './bounty';
 import { rankAtLeast, hunterRank } from './rank';
-import { islandDone, advanceIsland } from './island';
+import { islandDone, advanceIsland, islandStep, onExam, ISLAND_OPENS } from './island';
 
 /* ---------- tuning constants ---------- */
 export const REWARD = { base: 100, perPart: 40, capture: 60 };
@@ -16,7 +16,9 @@ export const RARE = { chance: 0.08, captureChance: 0.12, pityStep: 0.03, pityGua
 export function gearSource(kind: 'w' | 'a', id: string): string {
   const d = kind === 'w' ? WEAPONS[id] : ARMORS[id];
   const c = (d as { cost?: Cost }).cost ?? (d as { craft?: Cost }).craft ?? {};
-  // the Foothills' materials don't count: the Hunter's Blade takes Crab Shell but reinforces with Gorehorn hide like before
+  // gear made in the Foothills reinforces with the island's own materials
+  if (d?.foothills) { for (const k of Object.keys(c)) if (k !== 'coin') { const src = Object.values(MONSTERS).find(M => M.common === k || M.rare === k || M.parts.some(p => p.mat === k)); if (src) return src.id; } }
+  // otherwise the Foothills' materials don't count: the Hunter's Blade takes Crab Shell but reinforces with Gorehorn hide like before
   for (const k of Object.keys(c)) if (k !== 'coin') { const src = Object.values(MONSTERS).find(M => M.tier >= 1 && (M.common === k || M.rare === k || M.parts.some(p => p.mat === k))); if (src) return src.id; }
   return 'gorehorn';
 }
@@ -193,7 +195,7 @@ export function forgeDo(s: Save, kind: RecipeKind, id: string): string | null {
     if (r.action === 'reinforce') { s.armors[id].lv++; msg = `${ARMORS[id].name} reinforced to +${s.armors[id].lv}.`; }
   }
   if (s.tracked === `${kind}:${id}` && r.action !== 'reinforce') s.tracked = null;
-  if (kind === 'w' && r.action === 'craft') advanceIsland(s, { made: id });
+  advanceIsland(s, r.action === 'reinforce' ? { reinforced: id } : { made: id });
   return msg;
 }
 
@@ -287,8 +289,12 @@ export function isUnlocked(s: Save, id: string): boolean {
   // a promotion hunt counts as passed once you hold its rank (older saves earn their rank from their records)
   const met = (r: string) => (s.record[r]?.wins ?? 0) > 0 || (!!MONSTERS[r]?.promotion && rankAtLeast(s, MONSTERS[r].promotion!));
   if ((s.record[id]?.hunts ?? 0) > 0) return true;
-  // the Ridge and everything past it wait for the Foothills (the tutorial island)
-  if ((MONSTERS[id]?.tier ?? 1) >= 1 && !islandDone(s)) return false;
+  // the Foothills (the tutorial island): its monsters open one step at a time, the Gorehorn for the exam, and the
+  // Ridge and everything past it wait until it's done
+  if (!islandDone(s)) {
+    if (id in ISLAND_OPENS) return islandStep(s) >= ISLAND_OPENS[id];
+    return false;
+  }
   return reqs.every(met);
 }
 
@@ -335,18 +341,24 @@ export function settleHunt(s: Save, h: Hunt) {
     const mats: Record<string, number> = { [MD.common]: h.captured ? 3 : 2 };
     for (const p of MD.parts) if (h.mon.parts[p.id].broken || (h.mon.parts[p.id].cracks ?? 0) > 0) mats[p.mat] = (mats[p.mat] ?? 0) + mult;
     let rare = false;
-    if (h.mon.parts[MD.rarePart].broken) {
+    // (the first Gustmarmot never drops it: the gland is the second one's lesson, after you've tracked the blade)
+    const holdRare = h.mid === 'gustmarmot' && islandStep(s) < 11;
+    if (h.mon.parts[MD.rarePart].broken && !holdRare) {
       const pity = s.pity[MD.rare] ?? 0;
       const chance = Math.min(1, (h.captured ? RARE.captureChance : RARE.chance) + RARE.pityStep * pity);
-      if (pity >= RARE.pityGuarantee || nextRandom(h) < chance) { rare = true; mats[MD.rare] = 1; s.pity[MD.rare] = 0; }
+      if (pity >= RARE.pityGuarantee || nextRandom(h) < chance) { rare = true; mats[MD.rare] = (mats[MD.rare] ?? 0) + 1; s.pity[MD.rare] = 0; }
       else s.pity[MD.rare] = pity + 1;
     }
+    // the Foothills' rare-drop lesson: the second Gustmarmot always drops its Gale Gland, cheeks broken or not
+    if (!rare && islandStep(s) === 11 && h.mid === 'gustmarmot') { rare = true; mats[MD.rare] = (mats[MD.rare] ?? 0) + 1; }
     const coin = REWARD.base + REWARD.perPart * h.stats.broken + (h.captured ? REWARD.capture : 0);
     s.coin += coin;
     for (const [k, v] of Object.entries(mats)) s.mats[k] = (s.mats[k] ?? 0) + v;
     if (h.item) s.items[h.item] = (s.items[h.item] ?? 0) + h.itemCharges;
     h.reward = { coin, mats, rare, returned: h.item ? h.itemCharges : 0, lost: 0, unlocked: lockedBefore.filter(id => isUnlocked(s, id)) };
     const rankNow = hunterRank(s); if (rankNow !== rankBefore) h.reward.rankUp = rankNow;
+    // the Foothills' promotion hunt: winning it makes you a Hunter (rank F)
+    if (onExam(s) && h.mid === 'gorehorn') h.reward.rankUp = 'F';
     advanceIsland(s, { won: h.mid });
   } else {
     // A failed hunt keeps the materials of the parts you broke (one each; no coin, no carve, no rare, and the

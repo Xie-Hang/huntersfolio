@@ -26,8 +26,8 @@ export const snapclaw: MonsterDef = {
   parts: [{ id: 'body', name: 'Shell', eff: { Cut: 1, Blunt: 1, Pierce: 1 }, hint: '', mat: 'shell', hp: 9999, brk: '' }],
 
   intent(_h, type): Intent {
-    if (type === 'click') return { name: 'Click', text: 'It clicks its claws at you.', dmg: 5, threat: 1 };
-    if (type === 'pinch') return { name: 'Pinch', text: 'Its big claw creaks open.', dmg: 20, threat: 2 };
+    if (type === 'click') return { name: 'Click', text: 'It clicks its claws at you.', dmg: 8, threat: 1 };
+    if (type === 'pinch') return { name: 'Pinch', text: 'Its big claw creaks open.', dmg: 36, threat: 2 };
     return { name: '…', text: '', dmg: 0, threat: 0 };
   },
   next(h) { const t = ['click', 'click', 'pinch'][h.mon.seq % 3]; h.mon.seq++; return t; },

@@ -27,6 +27,9 @@ const BOW: Move[] = [
 
 const list: WeaponDef[] = [
   // the Foothills' first weapon (the tutorial island, Nov 2026): one move, no Flow. Never made at the Forge.
+  // the Foothills' last weapon (tracked at step 10, made at step 12): the Hunter's Blade's moves, with Gale.
+  // The Gorehorn (the island's exam) is weak to Gale.
+  { id: 'whistle', tier: 0.5, foothills: true, name: 'Whistling Blade', type: 'Cut', elem: 'Gale', kind: 'Longsword', note: 'Hums when you swing it.', moves: BLADE, mult: 1, craft: { coin: 120, marmotfur: 2, galegland: 1 } },
   { id: 'training', name: 'Training Blade', type: 'Cut', elem: null, kind: 'Practice sword', note: 'Blunt-tipped, for learning on.', moves: [{ name: 'Slash', need: 'C', dmg: 12 }], mult: 1, starter: true },
   { id: 'blade', name: "Hunter's Blade", type: 'Cut', elem: null, kind: 'Longsword', note: 'Plain steel. Never wrong, never the best.', moves: BLADE, mult: 1, craft: { coin: 100, shell: 2 } },
   { id: 'saber', name: 'Bristle Saber', type: 'Cut', elem: null, kind: 'Longsword', note: 'Edged with Gorehorn bristles. Bites deeper.', moves: BLADE, mult: 1.2, from: 'blade', cost: { coin: 300, pelt: 2, hide: 3 } },
@@ -142,7 +145,7 @@ export const WEAPONS: Record<string, WeaponDef> = Object.fromEntries(list.filter
  *  edition shows up (a hand-kept list once left the Mirewood weapons out of the Forge). Children follow their
  *  parent, in the order they're listed above. */
 export const TREES: { type: DamageType; nodes: [string, number][] }[] = (['Cut', 'Blunt', 'Pierce'] as DamageType[]).map(type => {
-  const ws = Object.values(WEAPONS).filter(w => w.type === type && !w.starter);
+  const ws = Object.values(WEAPONS).filter(w => w.type === type && !w.starter && !w.foothills);
   const nodes: [string, number][] = [];
   const walk = (id: string, depth: number) => { nodes.push([id, depth]); for (const c of ws) if (c.from === id) walk(c.id, depth + 1); };
   for (const w of ws) if (!w.from || !WEAPONS[w.from]) walk(w.id, 0);

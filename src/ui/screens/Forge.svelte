@@ -12,7 +12,8 @@
   import { full, detail } from '../detail.svelte';
 
   type Tab = 'weapons' | 'armor' | 'charms';
-  let tab = $state<Tab>('weapons');
+  // the tab and the selected recipe live on `game` so the Foothills' prompts can point at the right thing
+  const tab = $derived<Tab>(game.forgeTab);
   let ftype = $state<'All' | E.DamageType>('All');
   let readyOnly = $state(false);
   let chosen = $state<Record<Tab, string | null>>({ weapons: null, armor: null, charms: null });
@@ -24,10 +25,15 @@
 
   // the Foothills (the tutorial island): the Forge holds one recipe, the Hunter's Blade, and nothing else yet
   const isl = $derived(!E.islandDone(game.save));
+  /** the island's Forge grows tabs once it holds armor (step 8) */
+  const isTabs = $derived(isl && E.islandForge(s).a.length > 0);
   const groups = $derived.by(() => {
-    if (isl) return [{ group: 'Cut', sig: null, rows: [{ id: 'blade', depth: 0 }], folded: 0 }];
+    if (isl) { const ids = E.islandForge(s)[kind]; return ids.length ? [{ group: 'The Foothills', sig: null, rows: ids.map(id => ({ id, depth: 0 })), folded: 0 }] : []; }
+    // the Foothills' own blades (the Whistling Blade) sit outside the upgrade lines, in a group of their own
+    const foot = Object.values(E.WEAPONS).filter(w => w.foothills && (ftype === 'All' || w.type === ftype)).map(w => ({ id: w.id, depth: 0 }));
     const raw = tab === 'weapons'
-      ? E.TREES.filter(t => ftype === 'All' || t.type === ftype).map(t => ({ group: t.type as string, sig: E.SIGNATURES[t.type], rows: t.nodes.map(([id, depth]) => ({ id, depth })) }))
+      ? [...E.TREES.filter(t => ftype === 'All' || t.type === ftype).map(t => ({ group: t.type as string, sig: E.SIGNATURES[t.type], rows: t.nodes.map(([id, depth]) => ({ id, depth })) })),
+         ...(foot.length ? [{ group: 'The Foothills', sig: null, rows: foot }] : [])]
       // armor and charms: grouped by the region they come from, shown as a grid of tiles (Mekkman, Nov 2026)
       : byRegion(Object.values(tab === 'armor' ? E.ARMORS : E.CHARMS));
     return raw
@@ -59,7 +65,9 @@
     return out.sort((a, b) => +(a.group === 'Bounty board') - +(b.group === 'Bounty board'));
   }
   const visible = $derived(groups.flatMap(g => g.rows.map(r => r.id)));
-  const sel = $derived(visible.includes(chosen[tab] ?? '') ? chosen[tab] : visible[0] ?? null);
+  // (on the island the newest recipe is the one to look at)
+  const sel = $derived(visible.includes(chosen[tab] ?? '') ? chosen[tab] : (isl ? visible[visible.length - 1] : visible[0]) ?? null);
+  $effect(() => { game.forgeSel = sel; });
 
   const lvHere = (id: string) => (kind === 'w' ? E.lvOf(s.weapons, id) : kind === 'a' ? E.lvOf(s.armors, id) : 0);
   /** Level a weapon would have: its own if owned, else the level it inherits from its parent. */
@@ -74,21 +82,24 @@
     if (!sel) return;
     const tk = `${kind}:${sel}`;
     s.tracked = s.tracked === tk ? null : tk;
+    if (s.tracked) E.advanceIsland(s, { tracked: tk }); // the Foothills: tracking the Whistling Blade
     game.persist();
     toast = s.tracked ? 'Tracking: its materials are flagged on the Hunt Board and in the Shop.' : 'Stopped tracking.';
   }
-  function setTab(t: Tab) { tab = t; toast = ''; }
+  function setTab(t: Tab) { game.forgeTab = t; toast = ''; }
 </script>
 
 <div class="forgegrid" class:wide={tab !== 'weapons'}>
   <section class="panel forgepanel" aria-label="Forge">
     <div class="ph"><h2>The Forge</h2><span class="label">{E.trackedLine(s)}</span></div>
-    {#if !isl}
+    {#if !isl || isTabs}
     <div class="tabs" role="tablist">
-      <button role="tab" aria-selected={tab === 'weapons'} onclick={() => setTab('weapons')}>Weapons</button>
-      <button role="tab" aria-selected={tab === 'armor'} onclick={() => setTab('armor')}>Armor</button>
-      <button role="tab" aria-selected={tab === 'charms'} onclick={() => setTab('charms')}>Charms</button>
+      <button role="tab" data-coach="tab-weapons" aria-selected={tab === 'weapons'} onclick={() => setTab('weapons')}>Weapons</button>
+      <button role="tab" data-coach="tab-armor" aria-selected={tab === 'armor'} onclick={() => setTab('armor')}>Armor</button>
+      {#if !isl || E.islandForge(s).c.length}<button role="tab" data-coach="tab-charms" aria-selected={tab === 'charms'} onclick={() => setTab('charms')}>Charms</button>{/if}
     </div>
+    {/if}
+    {#if !isl}
     <div class="pickbar">
       <div class="filters">
         {#if tab === 'weapons'}
@@ -109,7 +120,7 @@
               {@const d = E.gearDef(kind, r.id)}
               {@const st = E.recipeState(s, kind, r.id)}
               {@const lv = lvHere(r.id)}
-              <button class="ftile" aria-current={sel === r.id} onclick={() => pick(r.id)}>
+              <button class="ftile" data-coach="row-{r.id}" aria-current={sel === r.id} onclick={() => pick(r.id)}>
                 <span class="ft-nm">{#if kind === 'c'}<Icon id={r.id} size={20} />{/if}<span class="nm">{d.name}</span>{#if lv}<span class="lv">+{lv}</span>{/if}</span>
                 {#if kind === 'a'}
                   {@const a = s.armors[r.id] ? E.ownedArmor(s, r.id) : E.ARMORS[r.id]}
@@ -127,7 +138,7 @@
           {@const d = E.gearDef(kind, r.id)}
           {@const st = E.recipeState(s, kind, r.id)}
           {@const lv = lvHere(r.id)}
-          <button class="fnode d{r.depth}" aria-current={sel === r.id} onclick={() => pick(r.id)}>
+          <button class="fnode d{r.depth}" data-coach="row-{r.id}" aria-current={sel === r.id} onclick={() => pick(r.id)}>
             <span class="nmwrap">
               {#if r.depth}<span class="ind">└</span>{/if}<span class="nm"><WeaponArt id={r.id} size={26} />{d.name}{#if lv}{' '}<span class="lv">+{lv}</span>{/if}</span>
               {#if s.tracked === `${kind}:${r.id}`}<span class="tracked-pin">● Tracked</span>{/if}
@@ -216,7 +227,7 @@
           {:else if owned}
             <span class="pl">{kind === 'c' ? 'Owned. Equip it at the Hunt Board.' : 'Fully reinforced.'}</span>
           {/if}
-          {#if r.cost && (r.action || r.locked) && !(kind === 'c' && E.CHARMS[sel].bounties) && !isl}
+          {#if r.cost && (r.action || r.locked) && !(kind === 'c' && E.CHARMS[sel].bounties) && (!isl || E.islandStep(s) >= 10)}
             <button class="btn quiet" data-coach="track" aria-pressed={s.tracked === tk} onclick={track}>{s.tracked === tk ? 'Untrack' : 'Track'}</button>
           {/if}
           {#if r.action === 'upgrade'}

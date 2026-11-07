@@ -100,6 +100,22 @@ async function forgeAll(p: Page) {
       console.log(`island: salve bought, step=${E.islandStep(s)}`);
       await p.click('[data-coach="nav-board"]');
     }
+    // slice 3's town steps, by the UI: the vest, tracking, the three makes, the Shop's new stock
+    const TOWN: Record<number, string[]> = {
+      8: ['nav-forge', 'tab-armor', 'forge-act'],
+      10: ['nav-forge', 'tab-weapons', 'row-whistle', 'track'],
+      12: ['nav-forge', 'tab-weapons', 'row-whistle', 'forge-act', 'tab-charms', 'forge-act', 'tab-armor', 'forge-act'],
+      14: ['nav-shop']
+    };
+    while (s && !E.islandDone(s) && TOWN[E.islandStep(s)]) {
+      const st = E.islandStep(s);
+      for (const c of TOWN[st]) { await p.click(`[data-coach="${c}"]`); await p.waitForTimeout(120); }
+      await check(p, `island town ${st}`);
+      s = await getJSON(p, SAVE) as E.Save;
+      console.log(`island: town step ${st} done, step=${E.islandStep(s)}`);
+      if (E.islandStep(s) === st) { note(`island town step ${st} did not advance`); break; }
+      await p.click('[data-coach="nav-board"]');
+    }
     if (s && E.islandDone(s)) {
       const beaten = (id: string) => (s.record[id]?.wins ?? 0) > 0;
       if (t1.every(beaten) && endSeenAt) break;

@@ -4,6 +4,7 @@ import { scuttlehog } from './scuttlehog';
 import { snapclaw } from './snapclaw';
 import { tuskling } from './tuskling';
 import { burrowmole } from './burrowmole';
+import { gustmarmot } from './gustmarmot';
 import { galeshrike } from './galeshrike';
 import { cinderback } from './cinderback';
 import { rimetail } from './rimetail';
@@ -56,7 +57,7 @@ for (const [M, t] of [[monolith, TIER3_TUNE.monolith], [stormroc, TIER3_TUNE.sto
 // Tier 2.4 = the rank E → D promotion (the Fenmother): it opens the Stormspire.
 // Tier 1.5 = the rank F → E promotion hunt (the Cragwing, Nov 2026): it opens the Mirewood and ends the demo.
 // Tier 0.5 = the Foothills (the tutorial island, Nov 2026): below the Ridge, before rank F.
-export const ALL_MONSTERS: Record<string, MonsterDef> = { scuttlehog, snapclaw, tuskling, burrowmole, gorehorn, galeshrike, cinderback, rimetail, cragwing, bogjaw, duskheron, emberwhelk, mistglass, fenmother, rotcap, arcmoth, hollowfang, squallhorn, rimeshrike, quakeback, ashtail, monolith, stormroc, slagwyrm, gorhydra, feverjaw, archeron, bloodwhelk, sovereign };
+export const ALL_MONSTERS: Record<string, MonsterDef> = { scuttlehog, snapclaw, tuskling, burrowmole, gustmarmot, gorehorn, galeshrike, cinderback, rimetail, cragwing, bogjaw, duskheron, emberwhelk, mistglass, fenmother, rotcap, arcmoth, hollowfang, squallhorn, rimeshrike, quakeback, ashtail, monolith, stormroc, slagwyrm, gorhydra, feverjaw, archeron, bloodwhelk, sovereign };
 export const MONSTERS: Record<string, MonsterDef> = Object.fromEntries(Object.entries(ALL_MONSTERS).filter(([, M]) => M.tier <= MAX_TIER));
 const builtIn = (t: number) => Object.values(MONSTERS).filter(M => M.tier === t).length;
 

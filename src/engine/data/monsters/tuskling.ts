@@ -31,8 +31,8 @@ export const tuskling: MonsterDef = {
 
   intent(_h, type): Intent {
     switch (type) {
-      case 'jab': return { name: 'Jab', text: 'It lowers its little tusks.', dmg: 10, threat: 1 };
-      case 'bite': return { name: 'Bite', text: 'It opens its jaws wide.', dmg: 18, threat: 2 };
+      case 'jab': return { name: 'Jab', text: 'It lowers its little tusks.', dmg: 14, threat: 1 };
+      case 'bite': return { name: 'Bite', text: 'It opens its jaws wide.', dmg: 28, threat: 2 };
       case 'tired': return { name: 'Tired', text: 'It stands still, sides heaving.', dmg: 0, threat: 0, note: 'It’s weak and still' };
       case 'dazed': return { name: 'Dazed', text: 'It wobbles on its feet.', dmg: 0, threat: 0, note: 'Its action is lost' };
     }

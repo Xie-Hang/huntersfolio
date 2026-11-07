@@ -86,11 +86,15 @@ class Game {
   /* ---------- town ---------- */
   /** the Shop tab to open on the next visit (the sell prompts send players straight to Sell) */
   shopTab = $state<'buy' | 'craft' | 'sell'>('buy');
+  /** the Forge's tab and selected recipe (kept here for the Foothills' prompts) */
+  forgeTab = $state<'weapons' | 'armor' | 'charms'>('weapons');
+  forgeSel = $state<string | null>(null);
   go(v: View, shopTab?: 'buy' | 'craft' | 'sell') {
     if (this.inHunt) return;
     E.fixLoadout(this.save);
     if (shopTab) this.shopTab = shopTab;
     if (v === 'board') this.boardMon = false;
+    if (v === 'shop' && E.advanceIsland(this.save, { shop: true })) this.persist(); // the Foothills: visit the Shop before the exam
     this.view = v;
   }
   /** a monster's page on the Hunt Board: its entry and your loadout for it */
@@ -113,7 +117,7 @@ class Game {
     // Foothills hunts name what they show themselves (MonsterDef.island) and don't count toward the Ridge's layers.
     const isl = !!E.MONSTERS[L.target]?.island, prior = E.ISLAND_MONSTERS.reduce((n, id) => n + (this.save.record[id]?.hunts ?? 0), 0);
     const ridgeHunts = this.save.hunts - prior;
-    const lesson = isl || settings.prefs.showAll || ridgeHunts >= 3 ? undefined : ridgeHunts + 1;
+    const lesson = isl || !E.islandDone(this.save) || settings.prefs.showAll || ridgeHunts >= 3 ? undefined : ridgeHunts + 1;
     this.hunt = E.startHunt(this.save, E.randomSeed(), scripted ? E.TUTORIAL_SCRIPT : undefined, lesson);
     this.rerollLesson(true);
     PL.huntBegin(this.hunt, this.save);
@@ -201,7 +205,7 @@ class Game {
   private diceFor(a: E.DiceAction): number[] { return this.sel.length || !this.hunt ? this.sel : E.autoDice(this.hunt, a) ?? []; }
   guard() { if (!shows(this.hunt, 'block')) return; const d = this.diceFor('guard'); if (this.act(h => E.guard(h, d), ok => ok)) sfx('guard'); }
   // actions a layer hasn't shown yet are off for keys and pads too
-  charge() { if (!shows(this.hunt, 'all')) return; const d = this.diceFor('charge'); if (this.act(h => E.charge(h, d), ok => ok)) sfx('charge'); }
+  charge() { if (!shows(this.hunt, 'charge')) return; const d = this.diceFor('charge'); if (this.act(h => E.charge(h, d), ok => ok)) sfx('charge'); }
   swap() { if (!shows(this.hunt, 'swap')) return; const d = this.diceFor('swap'); if (this.act(h => E.swap(h, d), ok => ok)) sfx('swap'); }
   capture() {
     if (!shows(this.hunt, 'capture')) return;

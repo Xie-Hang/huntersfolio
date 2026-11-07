@@ -81,6 +81,15 @@
               <span class="st" class:new={!r.wins}>{r.wins ? `Hunted ×${r.wins}` : 'Not yet hunted'}</span>
             </button>
           {/each}
+          {#if E.onExam(game.save)}
+            <!-- the island's last step: the Gorehorn, as the promotion hunt -->
+            <button class="mcard exam" aria-current={game.save.loadout.target === 'gorehorn'} data-id="gorehorn" aria-label="Gorehorn" onclick={() => game.openMonster('gorehorn')}>
+              <span class="mthumb" aria-hidden="true"><Plate mon="gorehorn" /></span>
+              <span class="nm">{E.MONSTERS.gorehorn.short}</span>
+              <span class="meta"><span>Promotion hunt</span></span>
+              <span class="st new">Win to become a Hunter</span>
+            </button>
+          {/if}
         </div>
         {#if isl && foothills.length > footOpen.length}<p class="rankfold" style="padding-left:2px">{foothills.length - footOpen.length} more in the Foothills</p>{/if}
       </div>

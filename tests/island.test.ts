@@ -63,9 +63,40 @@ describe('the Foothills', () => {
     expect(s.loadout.item).toBe('salve');
     expect(s.items.snare).toBeGreaterThanOrEqual(1);
     win(s, 'tuskling');
-    expect(E.islandDone(s)).toBe(true);
-    expect(s.loadout.weapons).toEqual(['blade', 'maul']);
+    expect(s.island).toBe(8);
+    expect(E.islandDone(s)).toBe(false);
+    expect(E.isUnlocked(s, 'gorehorn')).toBe(false);
+    // slice 3: the vest, the Gustmarmot twice (tracking between), the three makes, the Snapclaw, the Shop, the exam
+    expect(E.islandForge(s).a).toEqual(['hidevest']);
+    expect(E.forgeDo(s, 'a', 'hidevest')).toBeTruthy();
+    expect(s.island).toBe(9);
+    expect(s.loadout.armor).toBe('hidevest');
+    expect(E.isUnlocked(s, 'gustmarmot')).toBe(true);
+    win(s, 'gustmarmot');
+    expect(s.island).toBe(10);
+    expect(s.mats.galegland ?? 0).toBe(0);
+    expect(E.advanceIsland(s, { tracked: 'w:whistle' })).toBe(true);
+    win(s, 'gustmarmot');
+    expect(s.island).toBe(12);
+    expect(s.mats.galegland).toBe(1); // the rare drop, guaranteed this once
+    expect(E.forgeDo(s, 'w', 'whistle')).toBeTruthy();
+    expect(E.forgeDo(s, 'c', 'clawcharm')).toBeTruthy();
+    expect(s.island).toBe(12);
+    expect(E.forgeDo(s, 'a', 'hidevest')).toBeTruthy(); // reinforce to +1
+    expect(s.island).toBe(13);
+    expect(s.loadout).toMatchObject({ weapons: ['whistle', 'maul'], charm: 'clawcharm', target: 'snapclaw' });
+    win(s, 'snapclaw');
+    expect(s.island).toBe(14);
+    expect(E.islandShop(s)).toContain('smoke');
+    expect(E.advanceIsland(s, { shop: true })).toBe(true);
+    expect(E.onExam(s)).toBe(true);
     expect(E.isUnlocked(s, 'gorehorn')).toBe(true);
+    s.loadout.target = 'gorehorn';
+    expect(E.startHunt(s, 3).exam).toBe(true);
+    const h = win(s, 'gorehorn');
+    expect(h.reward?.rankUp).toBe('F');
+    expect(E.islandDone(s)).toBe(true);
+    expect(s.loadout.weapons).toEqual(['whistle', 'maul']);
   });
   it('each hunt shows what the island has taught by then', () => {
     const s = E.newPlayerSave();

@@ -98,7 +98,7 @@
     <span><span class="mn"><Key k="G" />Block</span><span class="md">{selGuard ? `Blocks ${selGuard} with the selected dice` : auto.guard?.length ? `${usesLine(auto.guard)}: blocks ${auto.guard.reduce((a, i) => a + E.guardOf(h, i), 0)}` : `${h.arm.guard} a die · ${Math.round(h.arm.guard * (h.arm.blankx2 ? E.VEST_BLANK_GUARD : E.BLANK_GUARD))} a blank`}</span></span><span class="need dice"><CostDie c="any" /></span>
   </button>
   {/if}
-  {#if full}
+  {#if shows(h, 'charge')}
   <button class="move dash {cOk ? 'ready' : 'no'}" data-coach="charge" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
     <span><span class="mn"><Key k="C" />Charge</span><span class="md">{chargeRisk ? `The −${inc?.net} coming would break it: block it under ${E.CHARGE_BREAK} first` : `Next hit ×2 · breaks at ${E.CHARGE_BREAK}+`}{!chargeRisk && auto.charge ? ` · ${usesLine(auto.charge)}` : ''}</span></span><span class="need dice"><CostDie c="any" /><span class="x">×{cd}</span></span>
   </button>

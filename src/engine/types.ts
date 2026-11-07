@@ -25,6 +25,8 @@ export interface Move {
 }
 
 export interface WeaponDef {
+  /** made in the Foothills (the tutorial island): its own group at the Forge */
+  foothills?: boolean;
   /** a starting weapon you're given, never made (the Foothills' Training Blade): kept out of the Forge */
   starter?: boolean;
   /** monster tier it comes from (default 1); gear above the edition's top tier isn't in that build */
@@ -51,6 +53,8 @@ export interface WeaponDef {
 }
 
 export interface ArmorDef {
+  /** made in the Foothills (the tutorial island) */
+  foothills?: boolean;
   /** monster tier it comes from (default 1); gear above the edition's top tier isn't in that build */
   tier?: number;
   id: string;
@@ -119,8 +123,10 @@ export interface ItemDef {
   pouch?: boolean;
 }
 
-export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet' | 'airPierce' | 'bigHeal' | 'sealHeal' | 'chargeDaze' | 'groundHit' | 'breakFree' | 'pierceStrip' | 'breakWhet' | 'landWhet' | 'firstHit' | 'infectBuild' | 'sparkBuild' | 'drainUp' | 'infectLong' | 'sparkBig' | 'drainTol';
+export type CharmEffect = 'blockBite' | 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet' | 'airPierce' | 'bigHeal' | 'sealHeal' | 'chargeDaze' | 'groundHit' | 'breakFree' | 'pierceStrip' | 'breakWhet' | 'landWhet' | 'firstHit' | 'infectBuild' | 'sparkBuild' | 'drainUp' | 'infectLong' | 'sparkBig' | 'drainTol';
 export interface CharmDef {
+  /** made in the Foothills (the tutorial island) */
+  foothills?: boolean;
   /** monster tier it comes from (default 1); gear above the edition's top tier isn't in that build */
   tier?: number;
   id: string;
@@ -352,6 +358,8 @@ export interface Hunt {
   /** which layer of the hunt screen this hunt teaches (1 = the first hunt: basics only). Unset = everything.
    *  Monsters keep their extra moves (stances, mud) for later layers (Nov 2026 playtest: "overwhelming"). */
   lesson?: number;
+  /** the Foothills' promotion hunt (the Gorehorn before you're a Hunter): it fights without mud or stance */
+  exam?: boolean;
   /** a Foothills hunt: dice rolled, the faces they can show, and what the hunt screen shows (MonsterDef.island) */
   ndice?: number;
   faces?: Face[];
