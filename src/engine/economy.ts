@@ -156,8 +156,8 @@ export function recipeState(s: Save, kind: RecipeKind, id: string): RecipeState 
   const ready = !!r.cost && canPay(s, r.cost);
   if (owned) return ready ? { cls: 'ready', text: 'Owned · reinforce ready' } : { cls: 'owned', text: 'Owned' };
   if (ready) return { cls: 'ready', text: 'Ready' };
-  const miss = missingCount(s, r.cost);
-  return { cls: 'short', text: miss ? `Need ${miss} more` : 'Need coin' };
+  // no "Need N more": a count didn't say what was missing, and the cost list beside it does (Nov 2026 playtest)
+  return { cls: 'short', text: '' };
 }
 
 /** Gear whose materials all come from monsters you've hunted, or that you own (Nov 2026 text audit: the Forge listed

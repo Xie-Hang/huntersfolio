@@ -126,7 +126,7 @@
                 {:else}
                   <span class="ft-stats"><span>{E.CHARMS[r.id].bounties ? `${E.CHARMS[r.id].bounties} bounties` : E.CHARMS[r.id].src}</span></span>
                 {/if}
-                <span class="st {st.cls}"><i></i>{st.text}</span>
+                {#if st.text}<span class="st {st.cls}"><i></i>{st.text}</span>{/if}
                 {#if s.tracked === `${kind}:${r.id}`}<span class="tracked-pin">● Tracked</span>{/if}
               </button>
             {/each}
@@ -140,7 +140,7 @@
             <span class="nmwrap">
               {#if r.depth}<span class="ind">└</span>{/if}<span class="nm"><WeaponArt id={r.id} size={26} />{d.name}{#if lv}{' '}<span class="lv">+{lv}</span>{/if}</span>
               {#if s.tracked === `${kind}:${r.id}`}<span class="tracked-pin">● Tracked</span>{/if}
-              <span class="st {st.cls}"><i></i>{st.text}</span>
+              {#if st.text}<span class="st {st.cls}"><i></i>{st.text}</span>{/if}
             </span>
             <span class="avg">{E.avgDmg(E.movesAt(r.id, wLevel(r.id)))}</span>
           </button>
@@ -165,7 +165,7 @@
       {@const tk = `${kind}:${sel}`}
       <div class="fdetail">
         <!-- 1. What is it, and what state is it in -->
-        <div class="fd-head"><h2>{#if kind === 'w'}<WeaponArt id={sel} size={56} />{/if}{name}{#if lv}{' '}<span class="lv">+{lv}</span>{/if}</h2><span class="st {st.cls}"><i></i>{st.text}</span></div>
+        <div class="fd-head"><h2>{#if kind === 'w'}<WeaponArt id={sel} size={56} />{/if}{name}{#if lv}{' '}<span class="lv">+{lv}</span>{/if}</h2>{#if st.text}<span class="st {st.cls}"><i></i>{st.text}</span>{/if}</div>
 
         {#if kind === 'w'}
           {@const d = E.WEAPONS[sel]}
