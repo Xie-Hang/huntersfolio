@@ -99,6 +99,13 @@ const ISLAND: Tip[] = [
     done: () => hunt()?.target === 'hide'
   },
   {
+    // the shortcut (Mekkman, Nov 2026): a move picks its own dice when none are selected
+    id: 'i-quick', guide: true, learn: true, at: ['move'],
+    when: () => { const h = onIsland('tuskling'); return !!h && E.islandStep(game.save) === 3 && game.save.tips.includes('i-aim') && unusedTurn(h) && !game.sel.length && E.currentWeapon(h).moves.some((_, i) => E.canUseMove(h, i)); },
+    text: () => 'Shortcut: tap a move. It picks the dice.',
+    done: () => { const h = hunt(); return !!h && !unusedTurn(h); }
+  },
+  {
     id: 'i-maul', guide: true, info: true, at: ['slot-w1'],
     when: () => game.view === 'board' && E.islandStep(game.save) === 4 && !(game.hunt && !game.hunt.over),
     text: () => 'A gift from the lodge: a maul. Carry both.',
@@ -148,7 +155,7 @@ const ISLAND: Tip[] = [
   },
   {
     id: 'i-snare', guide: true, learn: true, at: ['capture'],
-    when: () => { const h = onIsland('tuskling'); return !!h && E.canCapture(h) && E.captureReady(h) && !h.snareSet; },
+    when: () => { const h = onIsland('tuskling'); return !!h && E.canCapture(h) && E.captureReady(h) && !h.snareSet && freeDice(h) >= 2; },
     text: () => 'It\u2019s weak. Set a Snare to catch it.',
     done: () => !!hunt()?.snareSet || !!game.hunt?.captured
   },

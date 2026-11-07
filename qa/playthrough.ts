@@ -77,6 +77,8 @@ async function forgeAll(p: Page) {
   p.on('pageerror', e => note(`page error: ${e.message}`));
   p.on('console', m => { if (m.type() === 'error') note(`console error: ${m.text()}`); });
   await p.goto(URL); await p.waitForTimeout(500);
+  // the bot plays by keys: tutorial prompts lock everything but their target, so they're off for it
+  await p.evaluate(() => localStorage.setItem('huntersfolio-settings', JSON.stringify({ tips: false }))); await p.reload(); await p.waitForTimeout(300);
   const t1 = ['gorehorn', 'galeshrike', 'cinderback', 'rimetail', 'cragwing']; // the Cragwing promotion ends the demo (Nov 2026)
   const COUNTER: Record<string, string> = { galeshrike: 'net', cinderback: 'blast', rimetail: 'firepot' };
   let streak = 0, endSeenAt = 0; const allTimes: number[] = [], mem: number[] = [];

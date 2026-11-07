@@ -7,6 +7,7 @@
 // Using a pad switches the UI to controller hints (data-input="pad" on <html>); the mouse or keyboard switches back.
 import * as E from '../engine';
 import { game } from './game.svelte';
+import { tutorialLock } from './lock.svelte';
 
 export const input = $state({ mode: 'mouse' as 'mouse' | 'pad' });
 
@@ -129,6 +130,8 @@ function press(btn: number) {
   if ((btn === B.LEFT || btn === B.RIGHT) && adjust(btn === B.RIGHT ? 1 : -1)) return;
   if (btn === B.LEFT) return nav(-1, 0);
   if (btn === B.RIGHT) return nav(1, 0);
+  // a guided tutorial step: only A on the thing it points at (and D-pad moves) until it's done
+  if (tutorialLock.on && btn !== B.UP && btn !== B.DOWN && btn !== B.LEFT && btn !== B.RIGHT) return;
   if (btn === B.MENU) return document.querySelector<HTMLElement>('.iconbtn[aria-label="Settings"]')?.click();
   if (btn === B.VIEW) return document.querySelector<HTMLElement>('.iconbtn[aria-label="How to play"]')?.click();
   if (hunting) {

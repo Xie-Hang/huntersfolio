@@ -4,6 +4,7 @@
   import { coach } from '../coach.svelte';
   import { padWords } from '../pad.svelte';
   import { game } from '../game.svelte';
+  import { tutorialLock } from '../lock.svelte';
 
   const GAP = 12, W = 320, EDGE = 12;
   let cardH = $state(0);
@@ -14,13 +15,47 @@
 
   $effect(() => { coach.sync(); });
 
+  /** fully shown: not hidden, and not still fading in (a result card's buttons fade in line by line; the tip used to
+   *  arrive before its button did) */
+  function settled(el: HTMLElement) {
+    if (!el.getClientRects().length) return false;
+    for (let n: HTMLElement | null = el; n && n !== document.body; n = n.parentElement) {
+      const cs = getComputedStyle(n);
+      if (cs.visibility === 'hidden' || parseFloat(cs.opacity) < 0.98 || (cs.transform !== 'none' && n.getAnimations?.().some(a => a.playState === 'running'))) return false;
+    }
+    return true;
+  }
   function anchor(): HTMLElement | null {
     for (const key of coach.current?.at ?? []) {
       const el = document.querySelector<HTMLElement>(`[data-coach="${key}"]`);
-      if (el && el.getClientRects().length) return el;
+      if (el && settled(el)) return el;
     }
     return null;
   }
+  /** a guided step waits for its target: the card shows once the thing it points at is there */
+  let ready = $state(false);
+  let cardEl = $state<HTMLElement>();
+
+  // Lock everything but the target and the card while a guided step is up (pointer, touch and keys, in the capture
+  // phase so the game's own handlers never see them). Info steps lock too: Next, or Skip tutorial, moves on.
+  $effect(() => {
+    const t = coach.current;
+    const on = !!t?.guide && ready;
+    tutorialLock.on = on;
+    if (!on) return;
+    const allowed = (n: EventTarget | null) => {
+      if (!(n instanceof Node)) return false;
+      if (cardEl?.contains(n)) return true;
+      const el = anchor();
+      return !!el && el.contains(n);
+    };
+    const block = (e: Event) => { if (!allowed(e.target)) { e.preventDefault(); e.stopImmediatePropagation(); } };
+    const keys = (e: KeyboardEvent) => { if (e.key === 'Tab' || e.key === 'Shift') return; if (!allowed(document.activeElement)) { e.preventDefault(); e.stopImmediatePropagation(); } };
+    const evs = ['pointerdown', 'mousedown', 'click', 'touchstart', 'dblclick'] as const;
+    for (const ev of evs) window.addEventListener(ev, block, true);
+    window.addEventListener('keydown', keys, true);
+    return () => { for (const ev of evs) window.removeEventListener(ev, block, true); window.removeEventListener('keydown', keys, true); tutorialLock.on = false; };
+  });
 
   /** CSS zoom (the browser stand-in for Interface size) scales fixed positions too; work in unzoomed px. */
   const zoom = () => parseFloat(document.documentElement.style.zoom) || 1;
@@ -31,7 +66,8 @@
 
   function place() {
     const z = zoom(), el = anchor(), vw = window.innerWidth / z, vh = window.innerHeight / z, ch = cardH || 120, cw = Math.min(W, vw - EDGE * 2);
-    if (!el) { ring = null; arrow = null; pos = { x: (vw - cw) / 2, y: vh - ch - 24 }; return; }
+    if (!el) { ring = null; arrow = null; ready = !coach.current?.guide; pos = { x: (vw - cw) / 2, y: vh - ch - 24 }; return; }
+    ready = true;
     const r = rectOf(el);
     ring = { x: r.left - 4, y: r.top - 4, w: r.width + 8, h: r.height + 8 };
     const clampX = (x: number) => Math.max(EDGE, Math.min(vw - cw - EDGE, x));
@@ -68,10 +104,10 @@
   });
 </script>
 
-{#if coach.current}
+{#if coach.current && (ready || !coach.current.guide)}
   {@const t = coach.current}
   {#if ring}<div class="coach-ring" class:guide={t.guide} style="left:{ring.x}px;top:{ring.y}px;width:{ring.w}px;height:{ring.h}px" aria-hidden="true"></div>{/if}
-  <div class="coach" class:guide={t.guide} role="status" aria-live="polite" bind:clientHeight={cardH} style="left:{pos.x}px;top:{pos.y}px;width:min({W}px, calc(100vw - {EDGE * 2}px))">
+  <div class="coach" class:guide={t.guide} role="status" aria-live="polite" bind:this={cardEl} bind:clientHeight={cardH} style="left:{pos.x}px;top:{pos.y}px;width:min({W}px, calc(100vw - {EDGE * 2}px))">
     {#if arrow}<span class="coach-arrow {arrow.side}" style="{arrow.side === 'up' || arrow.side === 'down' ? 'left' : 'top'}:{arrow.at}px" aria-hidden="true"></span>{/if}
     <span class="coach-head">{t.id.startsWith('i-') ? 'The Foothills' : t.guide ? (game.inHunt ? (!game.save.hunts || game.hunt?.lesson === 1 ? 'Your first hunt' : game.hunt?.lesson ? 'New this hunt' : 'Tutorial') : 'Getting started') : t.text().startsWith('New:') ? 'New this hunt' : 'Tip'}</span>
     <p>{padWords(t.text())}</p>
