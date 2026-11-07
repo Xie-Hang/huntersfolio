@@ -9,6 +9,7 @@
   type Tab = 'buy' | 'craft' | 'sell';
   let tab = $state<Tab>(game.shopTab);
   game.shopTab = 'buy';
+  game.shopOpenTab = tab;
   let toast = $state('');
   let qty = $state<Record<string, number>>({});
   const s = $derived(game.save);
@@ -34,7 +35,7 @@
     const msg = game.town(fn, 'coin');
     if (msg) { toast = msg; if (resetKey) qty[resetKey] = 1; }
   }
-  function setTab(t: Tab) { tab = t; toast = ''; }
+  function setTab(t: Tab) { tab = t; game.shopOpenTab = t; toast = ''; }
 </script>
 
 {#snippet stepper(key: string, max: number)}
@@ -60,7 +61,6 @@
          its controls at the bottom, so cards in a row line up whatever the description length. -->
     {#if tab === 'sell' && sellRows.length}
       <div class="sellbar">
-        <span class="md">Surplus = what no recipe you can still make needs.</span>
         <button class="btn quiet" data-sound disabled={!surplusCoin} onclick={() => run(sv => E.sellSurplus(sv))}>Sell surplus · {surplusCoin} coin</button>
       </div>
     {/if}
@@ -96,7 +96,7 @@
             {:else if r.uses.length}<p class="warn">Keep {r.keep} for {r.uses.slice(0, 2).join(', ')}{r.uses.length > 2 ? ` +${r.uses.length - 2} more` : ''}</p>
             {:else}<p class="md">No recipe you can still make needs it.</p>{/if}
             <div class="sc-ctl">{@render stepper(key, r.have)}</div>
-            <button class="btn sc-go" data-sound onclick={() => run(sv => E.sellMat(sv, r.m.id, q), key)}>Sell {q} · {r.m.sell * q} coin</button>
+            <button class="btn sc-go" data-sound data-coach={!r.tn && !r.uses.length ? 'sell-spare' : undefined} onclick={() => { run(sv => E.sellMat(sv, r.m.id, q), key); game.sold++; }}>Sell {q} · {r.m.sell * q} coin</button>
           </article>
         {/each}
       {/if}

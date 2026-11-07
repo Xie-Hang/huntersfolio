@@ -23,7 +23,8 @@
    *  "Ice plating" with no idea what it meant). Hover, or move a controller's focus onto it, to read. */
   const statuses = $derived.by(() => {
     const out: { key: string; label: string; short: string; cls: string; desc: string }[] = [];
-    if (m.enraged) out.push({ key: 'enr', label: 'Enraged', short: 'hits harder', cls: 'hot', desc: 'Below half HP it fights harder for the rest of the hunt: its attacks hit harder and some of its moves change. Read its next move every turn.' });
+    // (statuses for things not taught yet stay hidden on the island: Enraged, Capturable. Nov 2026 playtest)
+    if (m.enraged && shows(h, 'enraged')) out.push({ key: 'enr', label: 'Enraged', short: 'hits harder', cls: 'hot', desc: 'Below half HP it fights harder for the rest of the hunt: its attacks hit harder and some of its moves change. Read its next move every turn.' });
     if (mud) out.push({ key: 'mud', label: 'Mud-caked', short: `hide takes ½ · ${m.wallow} turn${m.wallow > 1 ? 's' : ''}`, cls: 'mud', desc: 'Mud halves damage to its hide until it dries. Aim at another part meanwhile, or use Pierce, which ignores the mud.' });
     if (h.intent === 'trapped') out.push({ key: 'trap', label: 'Trapped', short: `held · ${m.trapped ?? 1} turn${(m.trapped ?? 1) > 1 ? 's' : ''}`, cls: 'gold', desc: 'Caught in your trap: it loses its actions while it’s held. A snare set now can’t be torn free.' });
     if (m.air) out.push({ key: 'air', label: 'Airborne', short: 'only bows reach it', cls: 'gale', desc: `In the air, only Pierce (a bow) can hit it${isFlier ? '. Pinning Shot or a Weighted Net brings it down' : ''}. Otherwise block until it comes down: when it lands, every weapon reaches it. It can't be captured in the air.` });
@@ -36,8 +37,23 @@
     if ((m.mirage ?? 0) > 0 && M.id !== 'fenmother') out.push({ key: 'mir', label: 'Images', short: `only your 1st hit lands · ${m.mirage} turn${m.mirage! > 1 ? 's' : ''}`, cls: 'ice', desc: `Mirror images surround it: only your first hit each turn lands; later hits shatter an image. Make that first hit count (charge it). ${(m.hits ?? 0) > 0 ? 'You have already landed this turn\'s hit.' : ''}` });
     if ((m.infected ?? 0) > 0) out.push({ key: 'inf', label: 'Infected', short: `−${m.infectDmg} · ${m.infected} turn${m.infected! > 1 ? 's' : ''}`, cls: 'inf', desc: 'Your Infect weapon filled its meter: it takes this much at the end of each turn until the infection runs out.' });
     out.push(...(M.badges?.(h) ?? []));
-    if (E.canCapture(h)) out.push({ key: 'cap', label: 'Capturable', short: h.snareSet ? 'snare set' : h.snares ? `set a Snare · ${h.snares} carried` : 'no Snare carried', cls: 'gold', desc: `At ${Math.round(E.CAPTURE_AT * 100)}% HP or less it can be captured: set a Snare (2 dice). It closes when you end your turn unless its move hits you for ${E.CHARGE_BREAK} or more. Double part materials.` });
+    if (E.canCapture(h) && shows(h, 'capture')) out.push({ key: 'cap', label: 'Capturable', short: h.snareSet ? 'snare set' : h.snares ? `set a Snare · ${h.snares} carried` : 'no Snare carried', cls: 'gold', desc: `At ${Math.round(E.CAPTURE_AT * 100)}% HP or less it can be captured: set a Snare (2 dice). It closes when you end your turn unless its move hits you for ${E.CHARGE_BREAK} or more. Double part materials.` });
     return out;
+  });
+  // A status arriving mid-hunt gets a moment on the stage, not just a tag (Nov 2026 playtest: Enraged went unnoticed):
+  // its name across the picture for a couple of seconds, and Enraged shakes the stage. Once per status per hunt.
+  let seenSt = new Set<string>(), seenFor = '', banner = $state<{ label: string; short: string; cls: string; n: number } | null>(null), bn = 0;
+  let bannerTimer: ReturnType<typeof setTimeout> | undefined;
+  $effect(() => {
+    const list = statuses, id = `${h.mid}:${game.save.hunts}`;
+    if (id !== seenFor) { seenFor = id; seenSt = new Set(list.map(s => s.key)); return; }
+    for (const st of list) if (!seenSt.has(st.key)) {
+      seenSt.add(st.key);
+      if (h.over) continue;
+      banner = { label: st.label, short: st.short, cls: st.cls, n: ++bn };
+      if (st.key === 'enr') game.shakes.mon++;
+      clearTimeout(bannerTimer); bannerTimer = setTimeout(() => (banner = null), 2400);
+    }
   });
   const TONE = { gold: 'var(--gold-hi)', ember: 'var(--ember-soft)', ice: '#b9d3f0', gale: '#8fc3c9', stone: '#c9b89c' } as const;
 </script>
@@ -50,7 +66,7 @@
       <!-- the picture, then the monster's meters and condition under it: the telegraph beside sets the height, and this
            used to be a full-width row below both (Nov 2026: the hunt screen didn't fit a Steam Deck) -->
       <div class="platecol">
-        <div class="plate" style="position:relative"><Plate mon={h.mid} hunt={h.intent === 'trapped' ? { ...h, intent: 'dazed' } : h} scene />{#if h.over}<span class="stamp {h.over === 'win' ? (h.captured ? 'captured' : 'slain') : 'failed'}" aria-hidden="true">{h.over === 'win' ? (h.captured ? 'Captured' : 'Slain') : 'Escaped'}</span>{/if}</div>
+        <div class="plate" style="position:relative"><Plate mon={h.mid} hunt={h.intent === 'trapped' ? { ...h, intent: 'dazed' } : h} scene />{#if h.over}<span class="stamp {h.over === 'win' ? (h.captured ? 'captured' : 'slain') : 'failed'}" aria-hidden="true">{h.over === 'win' ? (h.captured ? 'Captured' : 'Slain') : 'Escaped'}</span>{/if}{#key banner?.n}{#if banner}<div class="stbanner {banner.cls}" role="status"><b>{banner.label}</b><span>{banner.short}</span></div>{/if}{/key}</div>
         <!-- meters and condition badges only matter mid-fight: gone on the result card (Mekkman, Nov 2026) -->
         {#if !h.over}
         <div class="metarow">
@@ -108,6 +124,15 @@
 </section>
 
 <style>
+  /* a status arriving: its name across the picture, then gone */
+  .stbanner { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 22px; background: rgba(20, 15, 11, .88); border: 2px solid currentColor; border-radius: 4px; color: var(--gold-hi); pointer-events: none; animation: stb 2.4s ease forwards; z-index: 3; white-space: nowrap; }
+  .stbanner b { font-size: 28px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+  .stbanner span { font-size: 14px; color: var(--fg); }
+  .stbanner.hot { color: var(--ember); box-shadow: 0 0 40px rgba(232, 119, 58, .45); }
+  .stbanner.gale { color: #8fc3c9; } .stbanner.ice { color: #b9d3f0; } .stbanner.mud, .stbanner.stone { color: #c9b89c; }
+  @keyframes stb { 0% { opacity: 0; transform: translate(-50%, -50%) scale(1.4); } 12% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 80% { opacity: 1; } 100% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .stbanner { animation: stbfade 2.4s linear forwards; } @keyframes stbfade { 0%, 80% { opacity: 1; } 100% { opacity: 0; } } }
+
   /* condition badges under the picture (not over it: the art stays clear): solid, named, the effect always visible */
   .conds { flex: 0 1 auto; display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; align-items: center; margin-left: auto; }
   .cond { all: unset; pointer-events: auto; position: relative; box-sizing: border-box; cursor: help; display: inline-flex; align-items: baseline; gap: 6px; padding: 4px 8px; border-radius: 3px; background: var(--c, var(--bone)); color: var(--ink); font-family: var(--f-body); font-size: var(--fs-sm); line-height: 1.2; box-shadow: 0 2px 0 rgba(0, 0, 0, .45), 0 0 0 1px rgba(0, 0, 0, .35); }

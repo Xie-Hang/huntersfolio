@@ -29,13 +29,11 @@
   const isTabs = $derived(isl && E.islandForge(s).a.length > 0);
   const groups = $derived.by(() => {
     if (isl) { const ids = E.islandForge(s)[kind]; return ids.length ? [{ group: 'The Foothills', sig: null, rows: ids.map(id => ({ id, depth: 0 })), folded: 0 }] : []; }
-    // the Foothills' own blades (the Whistling Blade) sit outside the upgrade lines, in a group of their own
-    const foot = Object.values(E.WEAPONS).filter(w => w.foothills && (ftype === 'All' || w.type === ftype)).map(w => ({ id: w.id, depth: 0 }));
+    // (the Foothills' own gear isn't listed after the island: it's made there only, Nov 2026)
     const raw = tab === 'weapons'
-      ? [...E.TREES.filter(t => ftype === 'All' || t.type === ftype).map(t => ({ group: t.type as string, sig: E.SIGNATURES[t.type], rows: t.nodes.map(([id, depth]) => ({ id, depth })) })),
-         ...(foot.length ? [{ group: 'The Foothills', sig: null, rows: foot }] : [])]
+      ? [...E.TREES.filter(t => ftype === 'All' || t.type === ftype).map(t => ({ group: t.type as string, sig: E.SIGNATURES[t.type], rows: t.nodes.map(([id, depth]) => ({ id, depth })) }))]
       // armor and charms: grouped by the region they come from, shown as a grid of tiles (Mekkman, Nov 2026)
-      : byRegion(Object.values(tab === 'armor' ? E.ARMORS : E.CHARMS));
+      : byRegion(Object.values(tab === 'armor' ? E.ARMORS : E.CHARMS).filter(g => !g.foothills));
     return raw
       .map(g => ({ ...g, rows: g.rows.filter(r => !readyOnly || E.recipeState(s, kind, r.id).cls === 'ready') }))
       .map(g => fold(g))

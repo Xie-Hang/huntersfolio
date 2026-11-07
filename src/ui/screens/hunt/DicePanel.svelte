@@ -20,6 +20,7 @@
       <div class="diebox">
         <button
           class="die"
+          class:lift={game.preview.includes(i)}
           data-key={String(i + 1)}
           data-coach={d.face === 'B' && !d.used ? 'die-blank' : undefined}
           class:blank={d.face === 'B'}

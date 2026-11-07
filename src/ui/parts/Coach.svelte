@@ -53,9 +53,15 @@
       // the target as last placed (not re-checked here: a hover or press animation must not make it unclickable)
       return !!target && target.isConnected && target.contains(n);
     };
-    const block = (e: Event) => { if (!allowed(e.target)) { e.preventDefault(); e.stopImmediatePropagation(); } };
+    // an island prompt that only explains has no button (Nov 2026 playtest): selecting the highlighted thing moves on
+    const ack = !!t?.info && t.id.startsWith('i-');
+    const done = () => { if (ack) setTimeout(() => { if (coach.current === t) coach.dismiss(); }, 0); };
+    const block = (e: Event) => {
+      if (!allowed(e.target)) { e.preventDefault(); e.stopImmediatePropagation(); return; }
+      if (e.type === 'click' && !cardEl?.contains(e.target as Node)) done();
+    };
     // a key passes when it's focus on the target, or the shortcut for the target (1 for the first die, Q for a move…)
-    const keys = (e: KeyboardEvent) => { if (e.key === 'Tab' || e.key === 'Shift') return; if (!allowed(document.activeElement) && !keyAllowed(keyName(e))) { e.preventDefault(); e.stopImmediatePropagation(); } };
+    const keys = (e: KeyboardEvent) => { if (e.key === 'Tab' || e.key === 'Shift') return; const k = keyName(e); if (keyAllowed(k) || (allowed(document.activeElement) && (e.key === 'Enter' || e.key === ' '))) { done(); return; } if (!allowed(document.activeElement)) { e.preventDefault(); e.stopImmediatePropagation(); } };
     setLockAllows(el => allowed(el));
     const evs = ['pointerdown', 'mousedown', 'click', 'touchstart', 'dblclick'] as const;
     for (const ev of evs) window.addEventListener(ev, block, true);
@@ -118,12 +124,12 @@
   {#if ring}<div class="coach-ring" class:guide={t.guide} style="left:{ring.x}px;top:{ring.y}px;width:{ring.w}px;height:{ring.h}px" aria-hidden="true"></div>{/if}
   <div class="coach" class:guide={t.guide} role="status" aria-live="polite" bind:this={cardEl} bind:clientHeight={cardH} style="left:{pos.x}px;top:{pos.y}px;width:min({W}px, calc(100vw - {EDGE * 2}px))">
     {#if arrow}<span class="coach-arrow {arrow.side}" style="{arrow.side === 'up' || arrow.side === 'down' ? 'left' : 'top'}:{arrow.at}px" aria-hidden="true"></span>{/if}
-    <span class="coach-head">{t.id.startsWith('i-') ? 'The Foothills' : t.guide ? (game.inHunt ? (!game.save.hunts || game.hunt?.lesson === 1 ? 'Your first hunt' : game.hunt?.lesson ? 'New this hunt' : 'Tutorial') : 'Getting started') : t.text().startsWith('New:') ? 'New this hunt' : 'Tip'}</span>
+    <span class="coach-head">{t.id.startsWith('i-') ? (t.head ?? 'The Foothills') : t.guide ? (game.inHunt ? (!game.save.hunts || game.hunt?.lesson === 1 ? 'Your first hunt' : game.hunt?.lesson ? 'New this hunt' : 'Tutorial') : 'Getting started') : t.text().startsWith('New:') ? 'New this hunt' : 'Tip'}</span>
     <p>{padWords(t.text())}</p>
     <div class="coach-acts">
       <button class="coach-skip" onclick={() => coach.skipAll(!!t.guide)}>{t.guide ? 'Skip tutorial' : 'Skip tips'}</button>
       {#if !t.guide}<button class="btn quiet" onclick={() => coach.dismiss()}>Got it</button>
-      {:else if t.info}<button class="btn primary" onclick={() => coach.dismiss()}>{t.next ?? 'Next'}</button>
+      {:else if t.info && !t.id.startsWith('i-')}<button class="btn primary" onclick={() => coach.dismiss()}>{t.next ?? 'Next'}</button>
       {/if}<!-- no "Do it to continue" line: a playtester clicked it, thinking it was the button (Nov 2026) -->
     </div>
   </div>

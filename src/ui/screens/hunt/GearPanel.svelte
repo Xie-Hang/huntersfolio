@@ -41,7 +41,6 @@
 
   /** with nothing selected, the dice each action would take on its own (blanks first; see E.autoDice) */
   const auto = $derived({ guard: n ? null : E.autoDice(h, 'guard'), charge: n ? null : E.autoDice(h, 'charge'), swap: n ? null : E.autoDice(h, 'swap'), capture: n ? null : E.autoDice(h, 'capture') });
-  const usesLine = (d: number[] | null) => !d ? '' : !d.length ? '' : d.every(i => h.dice[i].face === 'B') ? `Uses ${d.length === 1 ? 'your blank' : `${d.length} blanks`}` : `Uses your last ${d.length === 1 ? 'die' : `${d.length} dice`}`;
   const gOk = $derived(!over && (n >= 1 || !!auto.guard?.length));
   const cd = $derived(E.chargeDice(h));
   const cOk = $derived(!over && !h.chargePending && (n === cd || (n === 0 && !!auto.charge)));
@@ -85,7 +84,7 @@
     {@const reps = ok ? E.repeatCount(h, i, game.sel) : 0}
     {@const marks = needMarks(mv.need, freeFaces)}
     {@const miss = marks.filter(x => !x.have).map(x => (x.c === 'C' ? 'fang' : 'claw'))}
-    <button class="move {ok ? 'ready' : 'no'}" class:pick={ok && (reps > 0 || picks(mv.need))} data-coach={i === bestReady ? 'move' : undefined} data-key={MOVE_KEYS[i]?.toLowerCase()} aria-disabled={!ok} onclick={() => ok && game.move(i)}>
+    <button class="move {ok ? 'ready' : 'no'}" class:pick={ok && (reps > 0 || picks(mv.need))} onmouseenter={() => (game.preview = ok ? (reps > 0 ? [...game.sel] : E.pickDice(h, mv.need, game.sel) ?? []) : [])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = ok ? (reps > 0 ? [...game.sel] : E.pickDice(h, mv.need, game.sel) ?? []) : [])} onblur={() => (game.preview = [])} data-coach={i === bestReady ? 'move' : undefined} data-key={MOVE_KEYS[i]?.toLowerCase()} aria-disabled={!ok} onclick={() => ok && game.move(i)}>
       <span>
         <span class="mn"><Key k={MOVE_KEYS[i]} />{mv.name}{#if reps > 1}<span class="reps"> ×{reps}</span>{/if}{#if mv.flow && shows(h, 'flow')}<span class="tag flow" use:detail={E.SIGNATURES.Cut.text}>Flow</span>{/if}{#if mv.daze && shows(h, 'daze')}<span class="tag daze" use:detail={E.SIGNATURES.Blunt.text}>Daze</span>{/if}{#if full && mv.expose}<span class="tag expose" use:detail={E.SIGNATURES.Pierce.text}>Expose</span>{/if}{#if !over && tipText?.includes(mv.name)}<span class="tag counter">Counter</span>{/if}</span>
         <span class="md">{#if iceNow}{iceLine}{:else}{shownDmg(mv.dmg)} damage{reps > 1 ? ' each' : ''}{halfAir ? ', halved in the air' : ''}{exposedNow ? ', exposed' : ''}{shows(h, 'rend') && shows(h, 'parts') && mv.part ? ` · ×${mv.part} toward breaks` : ''}{shows(h, 'daze') && mv.daze ? ` · Daze +${mv.daze}` : ''}{shows(h, 'flow') && mv.flow ? ' · +1 reroll' : ''}{/if}</span>
@@ -96,24 +95,24 @@
   {/each}
 
   {#if shows(h, 'block')}
-  <button class="move dash {gOk ? 'ready' : 'no'}" class:pick={gOk && n > 0} class:keepmd={!shows(h, 'all')} data-coach="guard" data-key="a" aria-disabled={!gOk} onclick={() => gOk && game.guard()}>
-    <span><span class="mn"><Key k="A" />Block</span><span class="md">{E.intentInfo(h).noGuard && E.intentInfo(h).dmg > 0 ? `Can’t stop the ${E.intentInfo(h).name}` : selGuard ? `Blocks ${selGuard} with the selected dice` : auto.guard?.length ? `${usesLine(auto.guard)}: blocks ${auto.guard.reduce((a, i) => a + E.guardOf(h, i), 0)}` : `${h.arm.guard} a die · ${Math.round(h.arm.guard * (h.arm.blankx2 ? E.VEST_BLANK_GUARD : E.BLANK_GUARD))} a blank`}</span></span><span class="need dice"><CostDie c="any" /></span>
+  <button class="move dash {gOk ? 'ready' : 'no'}" class:pick={gOk && n > 0} class:keepmd={!shows(h, 'all')} onmouseenter={() => (game.preview = n ? [...game.sel] : auto.guard ?? [])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = n ? [...game.sel] : auto.guard ?? [])} onblur={() => (game.preview = [])} data-coach="guard" data-key="a" aria-disabled={!gOk} onclick={() => gOk && game.guard()}>
+    <span><span class="mn"><Key k="A" />Block</span><span class="md">{E.intentInfo(h).noGuard && E.intentInfo(h).dmg > 0 ? `Can’t stop the ${E.intentInfo(h).name}` : selGuard ? `Blocks ${selGuard} with the selected dice` : auto.guard?.length ? `Blocks ${auto.guard.reduce((a, i) => a + E.guardOf(h, i), 0)}` : `${h.arm.guard} a die · ${Math.round(h.arm.guard * (h.arm.blankx2 ? E.VEST_BLANK_GUARD : E.BLANK_GUARD))} a blank`}</span></span><span class="need dice"><CostDie c="any" /></span>
   </button>
   {/if}
   {#if shows(h, 'charge')}
-  <button class="move dash {cOk ? 'ready' : 'no'}" data-coach="charge" data-key="c" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
-    <span><span class="mn"><Key k="C" />Charge</span><span class="md">{chargeRisk ? `The −${inc?.net} coming would break it: block it under ${E.CHARGE_BREAK} first` : `Next hit ×2 · breaks at ${E.CHARGE_BREAK}+`}{!chargeRisk && auto.charge ? ` · ${usesLine(auto.charge)}` : ''}</span></span><span class="need dice"><CostDie c="any" /><span class="x">×{cd}</span></span>
+  <button class="move dash {cOk ? 'ready' : 'no'}" onmouseenter={() => (game.preview = n ? [...game.sel] : auto.charge ?? [])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = n ? [...game.sel] : auto.charge ?? [])} onblur={() => (game.preview = [])} data-coach="charge" data-key="c" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
+    <span><span class="mn"><Key k="C" />Charge</span><span class="md">{chargeRisk ? `The −${inc?.net} coming would break it: block it under ${E.CHARGE_BREAK} first` : `Next hit ×2 · breaks at ${E.CHARGE_BREAK}+`}</span></span><span class="need dice"><CostDie c="any" /><span class="x">×{cd}</span></span>
   </button>
   {/if}
   {#if shows(h, 'swap')}
-  <button class="move dash {sOk ? 'ready' : 'no'}" data-coach="swap" data-key="s" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
-    <span><span class="mn"><Key k="S" pad="RT" /><WeaponArt id={other.id} size={22} />Swap to {other.name}{#if swapCounter}<span class="tag counter">Counter</span>{/if}</span><span class="md">{#if buried}Buried by the rockslide: no swapping this turn{:else}{other.type} · <Elem e={markOf(other)} />{elemLabel(other)}{auto.swap?.length ? ` · ${usesLine(auto.swap)}` : ''}{/if}</span></span><span class="need dice">{#if E.freeSwap(h)}Free{:else}<CostDie c="any" />{/if}</span>
+  <button class="move dash {sOk ? 'ready' : 'no'}" onmouseenter={() => (game.preview = n ? [...game.sel] : auto.swap ?? [])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = n ? [...game.sel] : auto.swap ?? [])} onblur={() => (game.preview = [])} data-coach="swap" data-key="s" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
+    <span><span class="mn"><Key k="S" pad="RT" /><WeaponArt id={other.id} size={22} />Swap to {other.name}{#if swapCounter}<span class="tag counter">Counter</span>{/if}</span><span class="md">{#if buried}Buried by the rockslide: no swapping this turn{:else}{other.type} · <Elem e={markOf(other)} />{elemLabel(other)}{/if}</span></span><span class="need dice">{#if E.freeSwap(h)}Free{:else}<CostDie c="any" />{/if}</span>
   </button>
   {/if}
   <!-- With everything on it's always shown, so players learn it exists before it's available. In the second and third
        hunts it appears only once the monster is weak enough (it's the escape from a hunt going badly). -->
   {#if full || (shows(h, 'capture') && capLive)}
-  <button data-coach="capture" data-key="x" class="move capture {capLive && E.captureReady(h) ? 'live' : ''} {capOk ? 'ready' : 'no'}" aria-disabled={!capOk} onclick={() => capOk && game.capture()}>
+  <button onmouseenter={() => (game.preview = n ? [...game.sel] : auto.capture ?? [])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = n ? [...game.sel] : auto.capture ?? [])} onblur={() => (game.preview = [])} data-coach="capture" data-key="x" class="move capture {capLive && E.captureReady(h) ? 'live' : ''} {capOk ? 'ready' : 'no'}" aria-disabled={!capOk} onclick={() => capOk && game.capture()}>
     <span>
       <span class="mn"><Key k="X" />Capture</span>
       <span class="md">
@@ -121,7 +120,7 @@
         {:else if !capLive}At {capAt} HP · {h.snares ? `${h.snares} Snare${h.snares > 1 ? 's' : ''}` : 'no Snares'}
         {:else if !h.snares}You have no Snare left. Buy them in the Shop
         {:else if E.captureBlocked(h)}{h.mon.air ? 'Bring it down first' : h.mon.under ? 'Drive it to the surface first' : 'It can’t be snared right now'}
-        {:else if n === 0 && auto.capture}{usesLine(auto.capture)}. Holds unless its move hits you for {E.CHARGE_BREAK}+ · {h.snares} Snare{h.snares > 1 ? 's' : ''}
+        {:else if n === 0 && auto.capture}Holds unless its move hits you for {E.CHARGE_BREAK}+ · {h.snares} Snare{h.snares > 1 ? 's' : ''}
         {:else if n !== 2}Select 2 dice. Holds unless its move hits you for {E.CHARGE_BREAK}+ · {h.snares} Snare{h.snares > 1 ? 's' : ''}
         {:else}Holds unless its move hits you for {E.CHARGE_BREAK}+. Double part materials{/if}
       </span>

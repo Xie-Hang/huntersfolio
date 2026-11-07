@@ -88,6 +88,11 @@ class Game {
   shopTab = $state<'buy' | 'craft' | 'sell'>('buy');
   /** the Forge's tab and selected recipe (kept here for the Foothills' prompts) */
   forgeTab = $state<'weapons' | 'armor' | 'charms'>('weapons');
+  /** the Shop's open tab, and materials sold this session (the Foothills' selling lesson) */
+  shopOpenTab = $state<'buy' | 'craft' | 'sell'>('buy');
+  sold = $state(0);
+  /** the dice the action under the pointer or focus would use: they lift in the tray (Nov 2026 playtest: no more "Uses …" text) */
+  preview = $state<number[]>([]);
   forgeSel = $state<string | null>(null);
   go(v: View, shopTab?: 'buy' | 'craft' | 'sell') {
     if (this.inHunt) return;
@@ -153,6 +158,7 @@ class Game {
     this.undoStack = [...this.undoStack, snap];
     this.sel = [];
     this.endArmed = false;
+    this.preview = [];
     this.after();
     return r;
   }
@@ -166,6 +172,7 @@ class Game {
     const h = this.hunt;
     if (!h || h.over || !h.dice[i] || h.dice[i].used) return;
     this.sel = this.sel.includes(i) ? this.sel.filter(x => x !== i) : [...this.sel, i];
+    this.endArmed = false; // the "End turn anyway?" warning clears once you do something else (Nov 2026 playtest)
     sfx('dieTap');
   }
   target(part: string) {
@@ -245,7 +252,7 @@ class Game {
     // lesson on turn 3 (Nov 2026 playtest: teach using several dice for the same move on the second monster)
     if (start && h && h.mid === 'snapclaw' && E.islandStep(this.save) === 1 && !seen('i-twice2')) {
       const f: E.Face[] = ['C', 'T', 'B']; h.dice.forEach((d, i) => { d.face = f[i] ?? d.face; });
-      h.script = h.script ?? []; h.script[1] = ['C', 'C', 'T'];
+      h.script = h.script ?? []; h.script[1] = ['C', 'C', 'C']; // three Fangs: Slash ×3 reads as one per Fang
     }
     if (!h || h.over || h.mid !== 'burrowmole' || E.islandStep(this.save) !== 5) return;
     if (start && !seen('i-pick')) { const f: E.Face[] = ['C', 'B', 'T', 'C']; h.dice.forEach((d, i) => { d.face = f[i] ?? d.face; }); }
@@ -291,7 +298,7 @@ class Game {
   endTurn() {
     const h = this.hunt;
     if (!h || h.over) return;
-    this.endArmed = false;
+    this.endArmed = false; this.preview = [];
     PL.turnEnd(h);
     if (E.intentInfo(h).dmg > 0) { this.pulse.actIntent = h.intent; this.pulse.act++; }
     // everything you lost this end of turn, not only the attack: a Spark going off or slime used to land with no number

@@ -14,8 +14,6 @@
   import { full } from '../detail.svelte';
 
   let filter = $state<'All' | E.Element>('All');
-  const known = Object.keys(E.MONSTERS).length;
-  const total = known + E.UNKNOWN.reduce((n, u) => n + u.n, 0);
   const M = $derived(E.MONSTERS[game.save.loadout.target]);
 
   // grouped by Hunter Rank (Nov 2026): each rank's main region, its optional regions, and the promotion hunt that
@@ -70,7 +68,7 @@
 {#snippet foot()}
   {#if footOpen.length}
       <div class="ranksec" class:current={isl}>
-        <h3 class="rankhead"><span>The Foothills</span><span class="label rs">{isl ? 'Where you learn' : 'Done'}</span></h3>
+        <h3 class="rankhead"><span>The Foothills</span>{#if !isl}<span class="label rs">Done</span>{/if}</h3>
         <div class="mgrid">
           {#each footOpen as N (N.id)}
             {@const r = record(game.save, N.id)}
@@ -91,7 +89,7 @@
             </button>
           {/if}
         </div>
-        {#if isl && foothills.length > footOpen.length}<p class="rankfold" style="padding-left:2px">{foothills.length - footOpen.length} more in the Foothills</p>{/if}
+        {#if isl && foothills.length > footOpen.length}<p class="rankfold" style="padding-left:2px">{foothills.length - footOpen.length} more {foothills.length - footOpen.length === 1 ? 'monster' : 'monsters'} to meet in the Foothills</p>{/if}
       </div>
     {/if}
 {/snippet}
@@ -111,11 +109,10 @@
   <section class="panel boardpanel" aria-label="Monsters">
     <div class="ph">
       <h2>Choose a monster</h2>
-      <span class="label">{known} of {total} sighted</span>
     </div>
     {#if isl}{@render foot()}{/if}
     {#if isl}
-      <p class="rankfold" style="padding-left:2px">Ashfall Ridge · after the Foothills</p>
+      <!-- (no Ashfall Ridge line while on the island: Nov 2026 playtest) -->
     {:else}
     <div class="filters" aria-label="Filter by element">
       {#each ['All', ...ELEMS] as f}
