@@ -25,27 +25,27 @@
   /** a caption as the tip's header: first letter capitalised (8 Nov 2026, Mekkman: the caption moved off the tag into the tip) */
   const cap1 = (t: string) => t.replace(/[a-z]/i, c => c.toUpperCase());
   const statuses = $derived.by(() => {
-    const out: { key: string; label: string; short: string; cls: string; desc: string }[] = [];
+    const out: { key: string; label: string; short: string; cls: string; desc: string; n?: number }[] = [];
     // (statuses for things not taught yet stay hidden on the island: Enraged, Capturable. Nov 2026 playtest)
     const tn = (n: number, w = 'turn') => `${n} ${w}${n > 1 ? 's' : ''}`;
     // Text rules (8 Nov 2026, with Mekkman): the caption says what the monster is doing in the shared word list
     // (takes, burns you, drains, through Block, X only, loses N turns); the tip says what's happening and what ends it,
     // no play advice and no negatives. **Game terms** render bold.
-    if (m.enraged && shows(h, 'enraged')) out.push({ key: 'enr', label: 'Enraged', short: 'hits harder', cls: 'hot', desc: 'Below half HP it gets angry.\nIt hits harder, and some of its moves change.' });
-    if (mud) out.push({ key: 'mud', label: 'Mud-caked', short: `hide takes ½ · ${tn(m.wallow)}`, cls: 'mud', desc: 'Mud covers its hide, so the hide takes ½ until the mud dries.\n**Pierce** goes through mud.' });
-    if (h.intent === 'trapped') out.push({ key: 'trap', label: 'Trapped', short: `loses ${tn(m.trapped ?? 1)}`, cls: 'gold', desc: 'It’s caught in your trap and loses its turns while it’s held.\nA **Snare** set now always closes.' });
-    if (m.air) out.push({ key: 'air', label: 'Airborne', short: '**Pierce** only', cls: 'gale', desc: `It’s flying, so only **Pierce** reaches it.${isFlier ? '\n**Pinning Shot** or a **Weighted Net** brings it down.' : ''}` });
+    if (m.enraged && shows(h, 'enraged')) out.push({ key: 'enr', label: 'Enraged', short: 'hits harder', cls: 'hot', desc: 'Below half HP it gets angry.\nSome of its moves change too.' });
+    if (mud) out.push({ key: 'mud', n: m.wallow, label: 'Mud-caked', short: `hide takes ½ · ${tn(m.wallow)}`, cls: 'mud', desc: 'Mud covers its hide until it dries.\n**Pierce** goes through mud.' });
+    if (h.intent === 'trapped') out.push({ key: 'trap', n: m.trapped ?? 1, label: 'Trapped', short: `loses ${tn(m.trapped ?? 1)}`, cls: 'gold', desc: 'It’s caught in your trap.\nA **Snare** set now always closes.' });
+    if (m.air) out.push({ key: 'air', label: 'Airborne', short: '**Pierce** only', cls: 'gale', desc: `It’s flying.${isFlier ? '\n**Pinning Shot** or a **Weighted Net** brings it down.' : ''}` });
     if (m.under) { const half = M.hitMod?.(h, h.target, E.currentWeapon(h))?.mult === 0.5;
-      out.push({ key: 'under', label: 'Underground', short: half ? '**Blunt** only, takes ½' : '**Blunt** only', cls: 'mud', desc: `It’s dug in. Only **Blunt** reaches it${half ? ', and it takes ½' : ''}.\nA heavy **Blunt** hit or **Blast Powder** forces it up, dazed, and stops its next move.` }); }
+      out.push({ key: 'under', label: 'Underground', short: half ? '**Blunt** only, takes ½' : '**Blunt** only', cls: 'mud', desc: `It’s dug in.\nA heavy **Blunt** hit or **Blast Powder** forces it up, dazed, and stops its next move.` }); }
     // every plated monster gets the badge but the Ashtail, whose burning scales have their own (Nov 2026 bug hunt: the Cragwing's slate had none)
-    if (m.plating > 0 && !M.plateHot) { const pw = M.plateWord ?? 'ice'; out.push({ key: 'ice', label: `${pw[0].toUpperCase() + pw.slice(1)} ×${m.plating}`, short: 'takes hits before HP', cls: 'ice', desc: `The ${pw} takes your hits before its HP does. Each hit breaks a layer, and **Cut** breaks two.\n**Charge** and whetstone bonuses go into the ${pw}.\nA **Firepot** ${pw === 'ice' ? 'melts' : 'cracks'} it all.` }); }
-    if (m.molten > 0) out.push({ key: 'molt', label: 'Molten', short: `**Cut**/**Blunt** burn you ${m.enraged ? 8 : 5} · ${tn(m.molten)}`, cls: 'hot', desc: `Its shell is red-hot. Every **Cut** or **Blunt** hit burns you for ${m.enraged ? 8 : 5} until it cools.` });
-    if ((m.shell ?? 0) > 0) out.push({ key: 'shell', label: 'In its shell', short: 'takes ½ until it acts', cls: 'stone', desc: 'It’s in its shell and takes ½ from your hits until its next action.' });
-    if ((m.slime ?? 0) > 0 && M.inflicts !== 'Drain') out.push({ key: 'slime', label: 'Slime', short: `burns you · ${tn(m.slime!)}`, cls: 'hot', desc: 'The slime burns you a little at the end of each turn.\nBreaking its foot ends it for good.' });
-    if ((m.mirage ?? 0) > 0 && M.id !== 'fenmother') out.push({ key: 'mir', label: 'Images', short: `1st hit only · ${tn(m.mirage!)}`, cls: 'ice', desc: `Mirror images surround it. Only your first hit each turn lands, and later hits break an image.${(m.hits ?? 0) > 0 ? '\nYour hit this turn has landed.' : ''}` });
-    if ((m.infected ?? 0) > 0) out.push({ key: 'inf', label: 'Infected', short: `takes ${m.infectDmg} a turn · ${tn(m.infected!)}`, cls: 'inf', desc: 'Your weapon’s infection has taken hold. It takes this much at the end of each turn until the infection wears off.' });
+    if (m.plating > 0 && !M.plateHot) { const pw = M.plateWord ?? 'ice'; out.push({ key: 'ice', label: `${pw[0].toUpperCase() + pw.slice(1)} ×${m.plating}`, short: 'takes hits before HP', cls: 'ice', desc: `Each hit breaks a layer of ${pw}, and **Cut** breaks two.\n**Charge** and whetstone bonuses go into the ${pw}.\nA **Firepot** ${pw === 'ice' ? 'melts' : 'cracks'} it all.` }); }
+    if (m.molten > 0) out.push({ key: 'molt', n: m.molten, label: 'Molten', short: `**Cut**/**Blunt** burn you ${m.enraged ? 8 : 5} · ${tn(m.molten)}`, cls: 'hot', desc: 'Its shell is red-hot until it cools.' });
+    if ((m.shell ?? 0) > 0) out.push({ key: 'shell', label: 'In its shell', short: 'takes ½ until it acts', cls: 'stone', desc: 'It’s pulled into its shell.' });
+    if ((m.slime ?? 0) > 0 && M.inflicts !== 'Drain') out.push({ key: 'slime', n: m.slime, label: 'Slime', short: `burns you · ${tn(m.slime!)}`, cls: 'hot', desc: 'A little, at the end of each turn.\nBreaking its foot ends it for good.' });
+    if ((m.mirage ?? 0) > 0 && M.id !== 'fenmother') out.push({ key: 'mir', n: m.mirage, label: 'Images', short: `1st hit only · ${tn(m.mirage!)}`, cls: 'ice', desc: `Mirror images surround it. Your later hits each turn break an image.${(m.hits ?? 0) > 0 ? '\nYour hit this turn has landed.' : ''}` });
+    if ((m.infected ?? 0) > 0) out.push({ key: 'inf', n: m.infected, label: 'Infected', short: `takes ${m.infectDmg} a turn · ${tn(m.infected!)}`, cls: 'inf', desc: 'Your weapon’s **Infect** has taken hold. It ticks at the end of each turn.' });
     out.push(...(M.badges?.(h) ?? []));
-    if (E.canCapture(h) && shows(h, 'capture')) out.push({ key: 'cap', label: 'Capturable', short: h.snareSet ? '**Snare** closes at turn end' : h.snares ? `ready to **Snare** · ${h.snares} left` : 'no **Snares** left', cls: 'gold', desc: `It’s weak enough to catch. Set a **Snare** with 2 dice.\nIt closes at the end of your turn, unless it hits you for ${E.CHARGE_BREAK} or more.\nA capture gives double part materials.` });
+    if (E.canCapture(h) && shows(h, 'capture')) out.push({ key: 'cap', n: h.snareSet ? undefined : h.snares, label: 'Capturable', short: h.snareSet ? '**Snare** closes at turn end' : h.snares ? `ready to **Snare** · ${h.snares} left` : 'no **Snares** left', cls: 'gold', desc: `It’s weak enough to catch. Set a **Snare** with 2 dice.\nIt closes at the end of your turn, unless it hits you for ${E.CHARGE_BREAK} or more.\nA capture gives double part materials.` });
     return out;
   });
   // A status arriving mid-hunt gets a moment on the stage, not just a tag (Nov 2026 playtest: Enraged went unnoticed):
@@ -114,7 +114,7 @@
           {#if statuses.length}
             <div class="conds" aria-label="Its condition">
               {#each statuses as st (st.key)}
-                <button type="button" class="cond {st.cls}" aria-describedby="{uid}-{st.key}"><b>{st.label}</b><span class="i" aria-hidden="true">i</span>
+                <button type="button" class="cond {st.cls}" aria-describedby="{uid}-{st.key}"><b>{st.label}</b>{#if st.n}<span class="cnt" aria-label="{st.n} left">{st.n}</span><span class="pips" aria-hidden="true">{#each Array(Math.min(st.n, 5)) as _}<i></i>{/each}</span>{/if}<span class="i" aria-hidden="true">i</span>
                 <span class="stip" id="{uid}-{st.key}" role="tooltip"><strong class="sth"><Rich text={cap1(st.short)} /></strong>{#each st.desc.split('\n') as para}<span class="stp"><Rich text={para} /></span>{/each}</span>
                 </button>
               {/each}
@@ -149,6 +149,11 @@
   /* the caption and its i travel together: in a narrow column the caption drops under the name as one piece (8 Nov 2026) */
   .stip .sth { display: block; font-weight: 700; color: var(--gold-hi); margin-bottom: 6px; }
   .stip .stp { display: block; }
+  /* how many turns (or Snares) are left, on the tag itself (8 Nov 2026) */
+  .cond .cnt { font-weight: 700; font-size: 14px; padding-left: 7px; border-left: 1.5px solid rgba(0, 0, 0, .3); font-variant-numeric: tabular-nums; }
+  .cond .pips { display: none; gap: 3px; align-self: center; } .cond .pips i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .8; }
+  :global(.cnt-pips) .cond .cnt { display: none; } :global(.cnt-pips) .cond .pips { display: inline-flex; }
+  :global(.cnt-none) .cond .cnt, :global(.cnt-none) .cond .pips { display: none; }
   .stip .stp + .stp { margin-top: 6px; }
   .platecol .metarow > * { min-width: 0; max-width: 100%; }
   .cond b { flex: none; }

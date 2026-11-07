@@ -419,7 +419,7 @@ export interface MonsterDef {
    *  resistance follow the element wheel (WEAK_OF / RESIST_OF) */
   elemOf?(h: Hunt): Element;
   /** extra condition badges on the monster panel */
-  badges?(h: Hunt): { key: string; label: string; short: string; cls: string; desc: string }[];
+  badges?(h: Hunt): { key: string; label: string; short: string; cls: string; desc: string; n?: number }[];
   /** names of its elemental attacks (Nov 2026: only these carry its element; the rest are physical, so resist
    *  armor answers the big elemental moves without making the whole fight trivial) */
   elemental?: string[];
