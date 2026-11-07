@@ -31,6 +31,7 @@ export const mistglass: MonsterDef = {
   rarePart: 'eyes',
   rare: 'mirrorheart',
   habits: 'A fox of living glass that walks in its own mist. It splits into mirror images: while they stand, only your first hit each turn finds the real one. Make that hit count. Charge, then strike.',
+  enragedHabit: 'On their last turn its mirror images burst outward at you: the Shatter. Block it, then every hit lands again.',
   intro: 'The mist thickens and catches the light. Something glassy steps out of it, and then there are three of it.',
   enrageText: 'Cracks of cold light race across its facets. The Mistglass is enraged!',
   parts: [
@@ -46,6 +47,8 @@ export const mistglass: MonsterDef = {
       case 'mist': return { name: 'Freezing Mist', text: 'It breathes out a cloud of freezing mist.', dmg: enr ? 20 : 16, threat: 1, note: 'Freezes one of your dice next turn' };
       case 'split': return { name: 'Split', text: 'It shivers and splits into mirror images.', dmg: 0, threat: 0, note: `For ${splitTurns(h)} turns, only your first hit each turn lands` };
       case 'pounce': return { name: 'Pounce', text: 'All the images leap at once. One of them is real!', dmg: enr ? 64 : 54, threat: 3, steady: true };
+      // enraged (Nov 2026): on their last turn the images burst outward in a storm of glass, ending early
+      case 'shatter': return { name: 'Shatter', text: 'Every image cracks at once and flies apart at you!', dmg: 44, threat: 3, isNew: !m.newSeen, note: 'Block it. The images are gone after it, so every hit lands again' };
       case 'dazed': return { name: 'Dazed', text: 'Its facets flicker. The images waver.', dmg: 0, threat: 0, note: 'Its action is lost' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
@@ -57,6 +60,8 @@ export const mistglass: MonsterDef = {
     const since = h.turn - (m.lastChain ?? 0);
     const images = (m.mirage ?? 0) > 0;
     const pounced = (h.mon.recent ?? []).slice(-3).includes('pounce');
+    // enraged: on the images' last turn they shatter outward instead of fading
+    if (m.enraged && m.mirage === 1 && prev !== 'pounce') return remember(h, 'shatter');
     const pick = choose(h, [
       ['rake', 3],
       ['mist', m.parts.eyes.broken ? 0 : 2],
@@ -70,7 +75,8 @@ export const mistglass: MonsterDef = {
   resolve(h, type, landed) {
     const m = h.mon, lines: string[] = [];
     m.hits = 0;
-    if ((m.mirage ?? 0) > 0) { m.mirage!--; if (!m.mirage) lines.push('The images fade back into the mist.'); }
+    if ((m.mirage ?? 0) > 0 && type !== 'shatter') { m.mirage!--; if (!m.mirage) lines.push('The images fade back into the mist.'); }
+    if (type === 'shatter') { m.newSeen = true; if (m.mirage) { m.mirage = 0; lines.push('The images are gone, scattered across the ground.'); } }
     if (type === 'split') { m.mirage = splitTurns(h); lines.push(`Mirror images surround you. For ${m.mirage} turns, only your first hit each turn lands.`); }
     if (type === 'mist' && landed) { m.frost = 1; lines.push('Frost creeps over one of your dice.'); }
     if (type === 'dazed') lines.push('It shakes the light out of its facets.');

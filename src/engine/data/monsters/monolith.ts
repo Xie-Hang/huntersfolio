@@ -36,6 +36,7 @@ export const monolith: MonsterDef = {
   rarePart: 'core',
   rare: 'wardencore',
   habits: 'A hunched colossus that walks on its knuckles, plated in slabs of mountain. Its plates turn aside most of every blow; a hammer cracks them, and then its core shows through the crack, for a little while. Bring a hammer and a bow, and know when to swap.',
+  enragedHabit: 'Every other quake comes twice: a smaller Aftershock straight after.',
   intro: 'The ridge shrugs. What you took for a crag turns its head, and a crack of light opens in its chest.',
   enrageText: 'Rubble pours from its shoulders. The Monolith Warden is enraged!',
   parts: [
@@ -51,6 +52,8 @@ export const monolith: MonsterDef = {
       case 'toss': return { name: 'Boulder Toss', text: 'It tears a boulder from its own arm and hurls it.', dmg: m.parts.arms.broken ? 26 : enr ? 46 : 40, threat: m.parts.arms.broken ? 2 : 3 };
       case 'rumble': return { name: 'Rumble', text: 'It plants both fists. The ground starts to shake.', dmg: 0, threat: 0, note: 'Quake next turn. Daze it to stop it' };
       case 'quake': return { name: 'Quake', text: 'It brings the mountain down on you!', dmg: enr ? 70 : 62, threat: 4 };
+      // enraged (Nov 2026): its quake turned up, a second, smaller quake straight after the first
+      case 'aftershock': return { name: 'Aftershock', text: 'The ground heaves again before it has settled!', dmg: enr ? 28 : 24, threat: 3, isNew: !m.newSeen, note: 'A second quake right after the first. Block it, or daze it to stop it' };
       case 'reform': return { name: 'Reform', text: 'Stone slides back over the glowing core.', dmg: 0, threat: 0, note: 'Its plates come back. Last turn to hit the core' };
       case 'dazed': return { name: 'Dazed', text: 'It sways, grinding, light flickering in its chest.', dmg: 0, threat: 0, note: 'Its action is lost' };
     }
@@ -60,6 +63,8 @@ export const monolith: MonsterDef = {
   next(h, prev) {
     const m = h.mon;
     if (prev === 'rumble') { m.lastChain = h.turn; return remember(h, 'quake'); }
+    // every other quake once enraged
+    if (prev === 'quake' && m.enraged && !((m.extra ??= {}).after = 1 - (m.extra.after ?? 0))) return remember(h, 'aftershock');
     if (prev === null) return remember(h, 'sweep');
     if ((m.core ?? 0) > 0) { m.core!--; if (m.core === 0) return remember(h, 'reform'); }
     // a daze can eat the Reform turn: the plates still come back on its next action
@@ -78,6 +83,7 @@ export const monolith: MonsterDef = {
       P.broken = false; P.hp = Math.ceil(P.max * REFORM_AT); m.core = 0;
       return 'Its plates grind back into place.';
     }
+    if (type === 'aftershock') { m.newSeen = true; return null; }
     if (type === 'dazed') return 'It shakes the daze off with a sound like a rockslide.';
     return null;
   },

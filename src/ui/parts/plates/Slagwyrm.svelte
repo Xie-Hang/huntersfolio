@@ -22,7 +22,7 @@
   const shattered = $derived((m?.shatter ?? 0) > 0);
   const melt = $derived(!!m?.melt);
   const pose = $derived(
-    hunt?.over === 'win' ? 'down' : intent === 'dazed' ? 'dazed' : intent === 'bite' ? 'bite' : intent === 'spit' ? 'spit' :
+    hunt?.over === 'win' ? 'down' : intent === 'dazed' ? 'dazed' : intent === 'bite' ? 'bite' : intent === 'spit' || intent === 'rain' ? 'spit' :
     intent === 'lash' ? 'lash' : intent === 'stoke' ? 'stoke' : intent === 'eruption' ? 'erupt' : intent === 'quenched' ? 'quenched' : 'idle');
   const part = (id: string) => (hunt ? { on: hunt.target === id && !hunt.over, broke: !!m?.parts[id]?.broken } : { on: false, broke: false });
   const spine = $derived(part('spine')), jaw = $derived(part('jaw')), tail = $derived(part('tail'));

@@ -30,6 +30,7 @@ export const feverjaw: MonsterDef = {
   rarePart: 'warts',
   rare: 'feverstone',
   habits: 'A Bogjaw gone feverish, steaming in the warm mud. Its gut is rotten: being swallowed infects you, and every turn inside keeps the infection going after you get out. It belches spores, too. Cut your way out fast, or break its throat sac.',
+  enragedHabit: 'Its belches become Spore Bursts that keep you infected for five turns.',
   intro: 'The mud here is warm, and it stinks. A swollen, steaming jaw rises out of it.',
   enrageText: 'It belches a cloud of hot spores. The Feverjaw is enraged!',
   parts: [
@@ -40,6 +41,8 @@ export const feverjaw: MonsterDef = {
 
   intent(h, type): Intent {
     const enr = h.mon.enraged;
+    // enraged (Nov 2026): its belch turned up, a cloud that keeps you infected longer
+    if (type === 'burst') return { name: 'Spore Burst', text: 'Every wart bursts at once in a hot, choking cloud.', dmg: enr ? 28 : 24, threat: 2, isNew: !h.mon.newSeen, note: 'If it hits, you’re infected for 5 turns. Break its warts to stop the belching' };
     if (type === 'belch') return { name: 'Spore Belch', text: 'Its warts swell, and it belches a hot cloud of spores at you.', dmg: enr ? 28 : 22, threat: 1, note: 'If it hits, you’re infected for 3 turns' };
     const r = bogjaw.intent.call(this, h, type);
     const out = r.dmg ? { ...r, dmg: Math.round(r.dmg * HIT) } : r;
@@ -54,12 +57,15 @@ export const feverjaw: MonsterDef = {
     if (prev === 'gape') { m.lastChain = h.turn; return remember(h, m.parts.sac.broken ? 'snap' : 'swallow'); }
     if (prev === null) return remember(h, 'belch');
     const sinceGape = h.turn - (m.lastChain ?? -GAPE_EVERY);
-    return remember(h, choose(h, [['lash', 2], ['slam', 2], ['belch', m.parts.warts.broken ? 0 : 2], ['gape', sinceGape >= GAPE_EVERY ? 3 : 0]], threat));
+    const pick = choose(h, [['lash', 2], ['slam', 2], ['belch', m.parts.warts.broken ? 0 : 2], ['gape', sinceGape >= GAPE_EVERY ? 3 : 0]], threat);
+    // enraged: its belches become Spore Bursts (never two in a row)
+    return remember(h, pick === 'belch' && m.enraged && prev !== 'burst' ? 'burst' : pick);
   },
 
   resolve(h, type, landed) {
     const enr = h.mon.enraged;
     if (type === 'belch') return landed ? infectPlayer(h, 3, enr ? 12 : 10) : null;
+    if (type === 'burst') { h.mon.newSeen = true; return landed ? infectPlayer(h, 5, enr ? 12 : 10) : null; }
     if (type === 'digest') return infectPlayer(h, 2, enr ? 14 : 12);
     const line = bogjaw.resolve.call(this, h, type, landed);
     if (type === 'swallow' && landed) return `${line} ${infectPlayer(h, 3, enr ? 14 : 12) ?? ''}`.trim();

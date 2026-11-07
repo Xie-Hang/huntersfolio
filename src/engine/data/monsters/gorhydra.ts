@@ -59,6 +59,7 @@ export const gorhydra: MonsterDef = {
   rarePart: 'middle',
   rare: 'hydraheart',
   habits: 'A three-headed frost serpent. Every head strikes on its own, so you face three attacks a turn. Cut one off and the stump grows a new head in two turns, unless you seal it with a blade, or with fire. Hurt badly, it regrows in one.',
+  enragedHabit: 'Every third turn its heads breathe together, a Frost Chain that freezes two of your dice.',
   intro: 'Three shapes rise out of the frozen tarn, then lean together. They share one body.',
   enrageText: 'All three heads scream. The Gorhydra is enraged!',
   parts: [
@@ -70,6 +71,8 @@ export const gorhydra: MonsterDef = {
   intent(h, type): Intent {
     if (type === 'slam') return { name: 'Tail Slam', text: 'Headless, it thrashes its tail at you.', dmg: h.mon.enraged ? 34 : 28, threat: 2 };
     if (type === 'dazed') return { name: 'Dazed', text: 'All three heads sway.', dmg: 0, threat: 0, note: 'Its action is lost' };
+    // enraged (Nov 2026): its Frost Breath turned up, every head breathing at once
+    if (type === 'chain') { const n = live(h).length, d = 16 * n; return { name: 'Frost Chain', text: 'Every head draws breath at once. The air goes white.', dmg: d, elemDmg: d, threat: band(d), isNew: !h.mon.newSeen, note: `Freezes ${Math.min(2, n)} of your dice next turn. Each head you cut off is one breath less` }; }
     const acts = parse(type);
     if (!acts) return { name: '…', text: '', dmg: 0, threat: 0 };
     const parts = HYDRA_HEADS.filter(x => !h.mon.parts[x].broken && !sealed(h, x)).map(x => headAct(h, x, reeling(h, x) ? 'reel' : acts[x]));
@@ -87,6 +90,8 @@ export const gorhydra: MonsterDef = {
     if (prev === null) return remember(h, 'left:bite|middle:snap|right:bite');
     const heads = live(h);
     if (!heads.length) return remember(h, 'slam');
+    // enraged: every third turn, with two heads or more, they all breathe together
+    if (m.enraged && heads.length >= 2 && prev !== 'chain' && ((m.extra ??= {}).hc = (m.extra.hc ?? 0) + 1) % 3 === 0) return remember(h, 'chain');
     const pool: [string, number][] = [];
     for (const l of ['bite', 'breath'] as Act[]) for (const mid of ['crush', 'snap'] as Act[]) for (const r of ['bite', 'breath'] as Act[]) {
       if (l === 'breath' && r === 'breath') continue;
@@ -97,6 +102,7 @@ export const gorhydra: MonsterDef = {
 
   resolve(h, type, landed) {
     const m = h.mon, lines: string[] = [], acts = parse(type);
+    if (type === 'chain') { m.newSeen = true; if (landed) { m.frost = Math.min(2, live(h).length); lines.push('Frost locks over your dice.'); } }
     if (acts && landed && HYDRA_HEADS.some(x => acts[x] === 'breath' && !reeling(h, x) && live(h).includes(x as never)) ) { m.frost = 1; lines.push('Frost creeps over one of your dice.'); }
     // stumps count down, then regrow
     for (const x of HYDRA_HEADS) {

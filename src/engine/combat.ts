@@ -179,7 +179,7 @@ export function stanceHurt(h: Hunt, n: number, line: string) {
 /* ---------- traps (prototype, Nov 2026) ---------- */
 /** what each trap catches, by the monster's move: ground rushes, and moves that land on you (dives, bursts up) */
 export const TRAP_CATCH: Record<'trapRush' | 'trapLand', string[]> = {
-  trapRush: ['charge', 'mudcharge', 'lunge', 'pounce', 'swallow', 'cyclone'],
+  trapRush: ['charge', 'mudcharge', 'lunge', 'pounce', 'swallow', 'gulp', 'cyclone'],
   trapLand: ['dive', 'dive2', 'erupt', 'spray', 'rockburst']
 };
 /** monster actions a sprung trap holds it for (tunable: the sim tests 1 and 2) */

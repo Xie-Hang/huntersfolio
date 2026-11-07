@@ -29,7 +29,7 @@
     hunt?.over === 'win' ? 'down' :
     intent === 'dazed' ? 'dazed' : intent === 'gorged' || intent === 'torn' || intent === 'crashed' ? 'slump' :
     intent === 'plunge' ? 'dive' : air ? 'air' : intent === 'takeoff' ? 'takeoff' :
-    latched || intent === 'drink' ? 'drink' : intent === 'latch' || intent === 'exsang' ? 'latch' : 'idle');
+    latched || intent === 'drink' ? 'drink' : intent === 'latch' || intent === 'exsang' || intent === 'frenzy' ? 'latch' : 'idle');
   const part = (id: string) => (hunt ? { on: hunt.target === id && !hunt.over, broke: !!m?.parts[id]?.broken } : { on: false, broke: false });
   const fangs = $derived(part('fangs')), sac = $derived(part('sac')), wings = $derived(part('wings'));
   // the sac swells with what it has drunk this latch

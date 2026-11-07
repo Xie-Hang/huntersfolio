@@ -32,6 +32,7 @@ export const quakeback: MonsterDef = {
   rarePart: 'plate',
   rare: 'quakeheart',
   habits: 'A Cinderback gone cold and hard. It burrows, then shakes the ground from below: each tremor knocks one of your dice loose. Underground only Blunt reaches it. With its digging claws broken it can’t burrow at all.',
+  enragedHabit: 'Its last tremor underground is a Great Tremor: two dice shaken loose.',
   intro: 'The ridge shudders. A grey, rock-backed beast heaves itself out of a crack in the stone.',
   enrageText: 'The ground won’t stop shaking. The Quakeback is enraged!',
   parts: [
@@ -47,6 +48,8 @@ export const quakeback: MonsterDef = {
       case 'rockfall': return { name: 'Rockfall', text: 'It hunches and shrugs its back ridge: the slope above you starts to slide!', dmg: enr ? 68 : 58, threat: enr ? 4 : 3, note: 'Break the back ridge to stop this' };
       case 'burrow': return { name: 'Burrowing', text: 'It claws into the ground and vanishes in a burst of grit.', dmg: 0, threat: 0, note: 'Still on the surface now: hit it while you can. After your turn it\'s underground' };
       case 'tremor': return { name: 'Tremor', text: 'The ground bucks under your feet.', dmg: enr ? 50 : 42, threat: 2, note: h.arm.steadyfoot ? 'Your boots hold: no die shaken loose' : 'A die is shaken loose next turn' };
+      // enraged (Nov 2026): its tremor turned up, two dice knocked loose
+      case 'quake': return { name: 'Great Tremor', text: 'The whole slope lurches under you.', dmg: enr ? 50 : 42, threat: 3, isNew: !m.newSeen, note: h.arm.steadyfoot ? 'Your boots hold: no dice shaken loose' : 'Two dice are shaken loose next turn. A 3-dice Blunt move drives it up first' };
       case 'rockburst': return { name: 'Rockburst', text: 'The ground splits open beneath you. It’s coming up!', dmg: Math.round((enr ? 96 : 84) * (pb ? 0.75 : 1)), threat: enr ? 4 : 3, note: 'Drive it up with a 3-dice Blunt move to cancel' };
       case 'settle': return { name: 'Settling', text: 'It shakes the dust off its back.', dmg: 0, threat: 0, note: 'A free turn to attack' };
       case 'unearthed': return { name: 'Driven up', text: 'It bursts out of the ground, dazed and blinking.', dmg: 0, threat: 0, note: 'Its action is lost' };
@@ -59,7 +62,7 @@ export const quakeback: MonsterDef = {
     const m = h.mon;
     if (prev === 'burrow') return 'tremor';
     // still underground after anything (a daze included: Nov 2026 bug hunt), it keeps to its tremors and bursts up
-    if (m.under) return m.charges < TREMORS ? 'tremor' : 'rockburst';
+    if (m.under) return m.charges < TREMORS ? (m.enraged && m.charges === TREMORS - 1 ? 'quake' : 'tremor') : 'rockburst';
     if (prev === 'rockburst') return 'settle';
     const cycle = m.parts.claws.broken ? ['swipe', 'rockfall', 'swipe', 'swipe', 'swipe'] : ['swipe', 'rockfall', 'swipe', 'swipe', 'burrow'];
     let t = cycle[m.seq % cycle.length]; m.seq++;
@@ -74,6 +77,10 @@ export const quakeback: MonsterDef = {
       case 'tremor':
         m.charges++;
         if (landed && !h.arm.steadyfoot) { m.shake = 1; return 'A die is shaken loose.'; }
+        return null;
+      case 'quake':
+        m.charges++; m.newSeen = true;
+        if (landed && !h.arm.steadyfoot) { m.shake = 2; return 'Two dice are shaken loose.'; }
         return null;
       case 'rockburst': m.under = false; m.charges = 0; return null;
       case 'settle': return 'It plants itself on the surface.';

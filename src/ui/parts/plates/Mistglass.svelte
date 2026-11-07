@@ -24,7 +24,7 @@
   const intent = $derived(hunt && !hunt.over ? hunt.intent : '');
   const images = $derived((m?.mirage ?? 0) > 0 || intent === 'split' || intent === 'pounce');
   const pose = $derived(
-    hunt?.over === 'win' ? 'down' : intent === 'dazed' ? 'dazed' : intent === 'pounce' ? 'pounce' : intent === 'split' ? 'split' :
+    hunt?.over === 'win' ? 'down' : intent === 'dazed' ? 'dazed' : intent === 'pounce' || intent === 'shatter' ? 'pounce' : intent === 'split' ? 'split' :
     intent === 'mist' ? 'mist' : intent === 'rake' ? 'rake' : 'idle');
   const part = (id: string) => (hunt ? { on: hunt.target === id && !hunt.over, broke: !!m?.parts[id]?.broken } : { on: false, broke: false });
   const tail = $derived(part('tail')), facets = $derived(part('facets')), eyes = $derived(part('eyes'));

@@ -33,6 +33,7 @@ export const fenmother: MonsterDef = {
   rarePart: 'head',
   rare: 'fenpearl',
   habits: 'The test of every Mirewood lesson. It swallows you whole (cut your way out, or break its throat sac), its gills heal it every turn (break them), a blow to its head while it gapes stops the swallow, and at half HP its steam rises: then only your first hit each turn lands. Two weapons can’t answer all of it. Choose.',
+  enragedHabit: 'Sinks into the spring and raises a Steam Cloud: for 2 turns only your first hit each turn lands.',
   intro: 'The hot spring heaves. A toad the size of a hut rises out of the steam, gills fanning.',
   enrageText: 'It roars, and the spring boils over. The Fenmother is enraged!',
   parts: [
@@ -50,7 +51,7 @@ export const fenmother: MonsterDef = {
       case 'swallow': return { name: 'Swallow', text: 'It lunges to swallow you whole!', dmg: enr ? 48 : 40, threat: 3, note: 'Two of your dice get stuck inside until you cut free' };
       case 'snap': return { name: 'Snap', text: 'It snaps its torn throat shut on empty steam.', dmg: enr ? 34 : 28, threat: 2 };
       case 'digest': return { name: 'Digest', text: 'You’re inside, in the heat. The walls squeeze.', dmg: enr ? 20 : 16, threat: 1, note: `Cut your way out: ${Math.max(0, m.gutHp ?? 0)} left (Cut counts double, Blunt half)` };
-      case 'steam': return { name: 'Steam Cloud', text: 'It sinks into the spring and the steam rolls over everything.', dmg: 0, threat: 0, note: 'For 2 turns, only your first hit each turn lands' };
+      case 'steam': return { name: 'Steam Cloud', text: 'It sinks into the spring and the steam rolls over everything.', dmg: 0, threat: 0, isNew: !m.newSeen, note: 'For 2 turns, only your first hit each turn lands' };
       case 'dazed': return { name: 'Dazed', text: 'It sways, eyes rolling, steam leaking from its jaws.', dmg: 0, threat: 0, note: 'Its action is lost' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
@@ -81,7 +82,7 @@ export const fenmother: MonsterDef = {
       if (!landed) lines.push('Its jaws close on smoke. You slip away.');
       else { swallowPlayer(h, 2); lines.push('It swallows you whole! Two of your dice are stuck inside. Cut your way out.'); }
     }
-    if (type === 'steam') { m.mirage = 2; m.lastSplit = h.turn; lines.push('Steam rolls over the spring. For 2 turns, only your first hit each turn lands.'); }
+    if (type === 'steam') { m.newSeen = true; m.mirage = 2; m.lastSplit = h.turn; lines.push('Steam rolls over the spring. For 2 turns, only your first hit each turn lands.'); }
     if (!m.parts.gills.broken && m.hp > 0) {
       const heal = Math.min(m.enraged ? HEAL_ENR : HEAL, m.max - m.hp);
       if (heal > 0) { m.hp += heal; lines.push(`Its gills fan the steam. It heals ${heal}.`); }

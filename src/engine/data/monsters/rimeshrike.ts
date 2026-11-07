@@ -31,6 +31,7 @@ export const rimeshrike: MonsterDef = {
   rarePart: 'crest',
   rare: 'haileye',
   habits: 'A Galeshrike iced over from crest to tail. In the air only bows reach it. When it dives and lands, ice locks over its feathers for two of its actions and arrows glance off: only Cut and Blunt reach it then.',
+  enragedHabit: 'On the ground under its ice, it sheds a Frost Flare and the ice grows back: arrows glance off for longer.',
   intro: 'Hail rattles across the ridge. A pale shrike settles on a frozen boulder, feathers clinking like glass.',
   enrageText: 'Sleet whirls off its wings. The Rimeshrike is enraged!',
   parts: [
@@ -47,6 +48,8 @@ export const rimeshrike: MonsterDef = {
       case 'gust': return { name: 'Hail Buffet', text: 'It beats its wings and drives a sheet of hail at you.', dmg: enr ? 48 : 39, threat: 2, halfGuard: true, note: 'Ignores half your guard' };
       case 'circle': return { name: 'Circling high', text: 'It climbs into a wide circle, frost trailing from its wings.', dmg: 0, threat: 0, note: 'Dives next turn' };
       case 'dive': return { name: 'Frost Dive', text: 'It folds its wings and drops, wrapped in freezing air!', dmg: tb ? (enr ? 88 : 78) : (enr ? 112 : 100), threat: enr ? 4 : 3, note: m.parts.crest.broken ? 'Then it’s stuck for a turn' : 'Then it’s stuck, and shrouded in ice' };
+      // enraged (Nov 2026): its ice shroud turned up, shed as shards and grown back thicker
+      case 'flare': return { name: 'Frost Flare', text: 'It shrugs, and ice shards burst off its feathers.', dmg: 30, threat: 2, isNew: !m.newSeen, note: 'Its ice regrows and it stays down a turn longer: arrows glance off. Cut and Blunt still reach it' };
       case 'stuck': return { name: 'Beak stuck', text: 'Its beak is buried in the frozen ground. It thrashes to pull free.', dmg: 0, threat: 0, note: 'Grounded' };
       case 'crashed': return { name: 'Brought down', text: 'It crashes to the ground in a spray of ice.', dmg: 0, threat: 0, note: 'Grounded, no shroud. Its action is lost' };
       case 'dazed': return { name: 'Dazed', text: 'It reels, eyes unfocused, swaying on its feet.', dmg: 0, threat: 0, note: 'Its action is lost' };
@@ -58,8 +61,11 @@ export const rimeshrike: MonsterDef = {
     const m = h.mon;
     if (prev === 'circle') return 'dive';
     if (prev === 'dive') return 'stuck';
+    if (prev === 'flare') return 'rake'; // it stays down under the fresh ice a turn longer
     if (m.air) { if (m.airLeft > 1) { m.airLeft--; return 'gust'; } return 'circle'; }
-    const t = ['rake', 'takeoff'][m.seq % 2]; m.seq++; return t;
+    let t = ['rake', 'takeoff'][m.seq % 2]; m.seq++;
+    if (t === 'rake' && m.enraged && (m.shroud ?? 0) > 0 && !m.parts.crest.broken) t = 'flare';
+    return t;
   },
 
   resolve(h, type) {
@@ -75,6 +81,7 @@ export const rimeshrike: MonsterDef = {
         return null;
       case 'stuck': return 'It wrenches its beak free.' + thaw();
       case 'rake': { const t = thaw(); return t ? t.trim() : null; }
+      case 'flare': m.newSeen = true; m.shroud = SHROUD_TURNS; return 'Fresh ice locks over its feathers.';
       case 'crashed': return 'It scrambles back to its feet.' + thaw();
       case 'dazed': return 'It shakes its head, slowly coming back to its senses.' + thaw();
     }

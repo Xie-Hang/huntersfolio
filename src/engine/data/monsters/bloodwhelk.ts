@@ -29,6 +29,7 @@ export const bloodwhelk: MonsterDef = {
   rarePart: 'shell',
   rare: 'heartpearl',
   habits: 'An Emberwhelk whose fire has gone out and whose slime has turned red. The slime clings and drinks: for a few turns it takes HP from you, past your block, and heals the snail. Its gills heal it too. Break the gills and it can’t keep anything it takes.',
+  enragedHabit: 'Its slime comes as a Blood Tide that drinks from you for longer.',
   intro: 'A dark shell slides out of the reeds on a trail of red slime.',
   enrageText: 'Its slime runs thick and dark. The Bloodwhelk is enraged!',
   parts: [
@@ -41,13 +42,25 @@ export const bloodwhelk: MonsterDef = {
     const r = emberwhelk.intent.call(this, h, type);
     const out = r.dmg ? { ...r, dmg: Math.round(r.dmg * HIT) } : r;
     if (type === 'spit') return { ...out, name: 'Spit Grit', text: 'It hawks a gob of grit and red slime.' };
+    // enraged (Nov 2026): its slime turned up, a tide that drinks for longer
+    if (type === 'tide') { const s = emberwhelk.intent.call(this, h, 'slime'); return { name: 'Blood Tide', text: 'A wave of red slime rolls over you.', dmg: Math.round(s.dmg * HIT), threat: 2, isNew: !h.mon.newSeen, note: h.arm.leechProof ? 'Your armor keeps the slime off' : `Then it drinks ${LEECH_TURNS + 2} turns, past your block. Broken gills: it can’t heal from it` }; }
     if (type === 'slime') return { ...out, name: 'Leeching Slime', text: 'It surges forward on a wave of red slime.', note: h.arm.leechProof ? 'Your armor keeps the slime off' : `Then it drinks ${LEECH_TURNS} turns, past your block` };
     return out;
   },
 
+  // its own turn order is the Emberwhelk's, except that enraged, its slime comes as a Blood Tide (never two in a row)
+  next(h, prev) {
+    const BASE = ['spit', 'slime', 'retreat', 'rear', 'lunge', 'dazed'];
+    let t = emberwhelk.next.call(this, h, prev);
+    if (!BASE.includes(t)) t = 'spit'; // (only the Emberwhelk's own moves: any newer ones of its are its own)
+    return t === 'slime' && h.mon.enraged && prev !== 'tide' ? 'tide' : t;
+  },
+
   resolve(h, type, landed) {
     const m = h.mon, lines: string[] = [];
-    if (type === 'slime' && landed && !h.arm.leechProof) { m.slime = LEECH_TURNS; (h.feats ??= []).includes('leeched') || h.feats.push('leeched'); lines.push('Red slime clings to you.'); }
+    if (type === 'tide') m.newSeen = true;
+    if (type === 'tide' && landed && !h.arm.leechProof) { m.slime = LEECH_TURNS + 2; (h.feats ??= []).includes('leeched') || h.feats.push('leeched'); lines.push('Red slime washes over you and clings.'); }
+    else if (type === 'slime' && landed && !h.arm.leechProof) { m.slime = LEECH_TURNS; (h.feats ??= []).includes('leeched') || h.feats.push('leeched'); lines.push('Red slime clings to you.'); }
     else if ((m.slime ?? 0) > 0) {
       // the slime drinks; it never knocks you out on its own. Broken gills: it still stings, but feeds nothing back
       const take = Math.min(m.enraged ? 16 : 12, h.php - 1);

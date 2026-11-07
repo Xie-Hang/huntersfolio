@@ -22,7 +22,7 @@
   const inside = $derived((m?.gut ?? 0) > 0);
   const pose = $derived(
     hunt?.over === 'win' ? 'down' :
-    intent === 'dazed' ? 'dazed' : intent === 'swallow' ? 'swallow' : intent === 'gape' ? 'gape' :
+    intent === 'dazed' ? 'dazed' : intent === 'swallow' || intent === 'gulp' ? 'swallow' : intent === 'gape' ? 'gape' :
     inside || intent === 'digest' ? 'digest' : intent === 'lash' ? 'lash' : intent === 'slam' || intent === 'snap' ? 'slam' : 'idle');
   const part = (id: string) => (hunt ? { on: hunt.target === id && !hunt.over, broke: !!m?.parts[id]?.broken } : { on: false, broke: false });
   const jaw = $derived(part('jaw')), sac = $derived(part('sac')), warts = $derived(part('warts'));

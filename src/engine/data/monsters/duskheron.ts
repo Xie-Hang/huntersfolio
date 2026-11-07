@@ -53,6 +53,7 @@ export const duskheron: MonsterDef = {
   rarePart: 'wings',
   rare: 'twilightquill',
   habits: 'Wades the shallows on stilt legs, two necks rising from one body. Each head strikes on its own, so you face two attacks a turn. Every few turns both heads rear up together for a Twin Spear. A heavy blow to a head sets it reeling.',
+  enragedHabit: 'Both necks swing in from either side at once: the Scissor Strike halves your block.',
   intro: 'Two long necks lift out of the reeds at once. The Duskheron turns both heads toward you.',
   enrageText: 'Both heads scream at once. The Duskheron is enraged!',
   parts: [
@@ -67,6 +68,11 @@ export const duskheron: MonsterDef = {
     if (type === 'twin') {
       const live = HEADS.filter(x => !reeling(h, x)), each = enr ? 50 : 42;
       return { name: 'Twin Spear', text: live.length === 2 ? 'Both heads drive down at once!' : live.length ? 'The head still standing drives down!' : 'Both heads sway, dazed.', dmg: each * live.length, threat: band(each * live.length), halfGuard };
+    }
+    // enraged (Nov 2026): both heads cross from either side at once, half your block slips between them
+    if (type === 'scissor') {
+      const live = HEADS.filter(x => !reeling(h, x)), each = 30;
+      return { name: 'Scissor Strike', text: live.length === 2 ? 'Both necks swing in from either side at once!' : 'The head still standing swings in alone.', dmg: each * live.length, threat: band(each * live.length), halfGuard: true, isNew: !m.newSeen, note: 'Your block counts half. Daze a head to stop its half' };
     }
     if (type === 'dazed') return { name: 'Dazed', text: 'Both heads sway, eyes unfocused.', dmg: 0, threat: 0, note: 'Its action is lost' };
     const acts = parse(type);
@@ -86,6 +92,9 @@ export const duskheron: MonsterDef = {
     if (prev === 'rear') { m.lastChain = h.turn; return remember(h, 'twin'); }
     if (prev === null) return remember(h, 'upper:peck|lower:peck');
     const since = h.turn - (m.lastChain ?? -REAR_EVERY);
+    // enraged: a Scissor Strike every few turns, never right after the Twin Spear
+    const x = (m.extra ??= {});
+    if (m.enraged && prev !== 'twin' && h.turn - (x.scissorAt ?? -99) >= 4) { x.scissorAt = h.turn; return remember(h, 'scissor'); }
     const W: [Act, number][] = [['peck', 3], ['thrust', 2], ['screech', 1]];
     const pool: [string, number][] = [];
     for (const [a, wa] of W) for (const [b, wb] of W) {
@@ -99,6 +108,7 @@ export const duskheron: MonsterDef = {
   resolve(h, type) {
     const m = h.mon, acts = parse(type);
     if (acts && HEADS.some(x => acts[x] === 'screech' && !reeling(h, x))) m.screech = 2; // lasts through its next action
+    if (type === 'scissor') m.newSeen = true;
     if (type === 'dazed') return 'Both heads shake off the daze.';
     return null;
   },

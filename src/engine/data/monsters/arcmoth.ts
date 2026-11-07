@@ -37,6 +37,7 @@ export const arcmoth: MonsterDef = {
   rarePart: 'thorax',
   rare: 'sparkgland',
   habits: 'A moth as wide as a wagon, its dust crackling. Each wingbeat leaves a Spark pip on you; at 3 the charge goes off through you and block can’t stop it. Any Blunt move grounds a pip. In the air only bows reach it.',
+  enragedHabit: 'The first wingbeat of each flight is a Static Surge: two Spark pips at once.',
   intro: 'Pale dust drifts down in the dark and snaps against your armour. Wings unfold above you.',
   enrageText: 'Its dust glows white. The Arcmoth is enraged!',
   parts: [
@@ -52,6 +53,8 @@ export const arcmoth: MonsterDef = {
       case 'dust': return { name: 'Dust Cloud', text: 'It shakes its torn wings and the dust pours off it.', dmg: enr ? 14 : 10, threat: 1, note: spark ? 'If it hits: a Spark pip on you' : 'The dust is dead this time' };
       case 'takeoff': return { name: 'Taking off', text: 'Its wings snap open.', dmg: 0, threat: 0, note: `Still on the ground now. After your turn it’s airborne for ${MOTH_AIR} wingbeats: only bows reach it then` };
       case 'beat': return { name: 'Wingbeat', text: 'It hangs above you, fanning dust down.', dmg: enr ? 20 : 16, threat: 1, note: spark ? 'If it hits: a Spark pip on you' : 'The dust is dead this time' };
+      // enraged (Nov 2026): the first wingbeat of each flight is a Static Surge: two Spark pips at once
+      case 'surge': return { name: 'Static Surge', text: 'Its wings flare white and the dust crackles down in a sheet.', dmg: enr ? 20 : 16, threat: 2, isNew: !m.newSeen, note: 'If it hits: two Spark pips on you. A Blunt move grounds one; bows bring it down' };
       case 'dive': return { name: 'Static Dive', text: 'It folds and drops, crackling!', dmg: enr ? 72 : 62, threat: enr ? 4 : 3, note: 'Then it’s on the ground' };
       case 'settle': return { name: 'Settled', text: 'It sits stunned on the cave floor, wings spread.', dmg: 0, threat: 0, note: 'On the ground: a free turn' };
       case 'crashed': return { name: 'Brought down', text: 'It flutters to the ground, tangled.', dmg: 0, threat: 0, note: 'On the ground. Its action is lost' };
@@ -63,7 +66,7 @@ export const arcmoth: MonsterDef = {
   next(h, prev) {
     const m = h.mon;
     if (prev === 'dive') return 'settle';
-    if (m.air) { if (m.airLeft > 0) { m.airLeft--; return 'beat'; } return 'dive'; }
+    if (m.air) { if (m.airLeft > 0) { m.airLeft--; if (m.enraged && !m.extra?.surged) { (m.extra ??= {}).surged = 1; return 'surge'; } return 'beat'; } return 'dive'; }
     if (m.parts.wings.broken) { const t = ['rake', 'dust'][m.seq % 2]; m.seq++; return t; }
     const t = ['rake', 'takeoff'][m.seq % 2]; m.seq++; return t;
   },
@@ -71,7 +74,8 @@ export const arcmoth: MonsterDef = {
   resolve(h, type, landed) {
     const m = h.mon, base = m.enraged ? 75 : 65;
     switch (type) {
-      case 'takeoff': m.air = true; m.airLeft = MOTH_AIR; return 'It lifts into the dark. It’s airborne!';
+      case 'takeoff': m.air = true; m.airLeft = MOTH_AIR; if (m.extra) m.extra.surged = 0; return 'It lifts into the dark. It’s airborne!';
+      case 'surge': { m.newSeen = true; m.charges++; return landed ? sparkPlayer(h, 2, mothHit(h, base)) : null; }
       case 'beat': case 'dust': case 'rake': {
         const spark = !m.parts.feelers.broken || m.charges % 2 === 0; m.charges++;
         return landed && spark ? sparkPlayer(h, 1, mothHit(h, base)) : null;

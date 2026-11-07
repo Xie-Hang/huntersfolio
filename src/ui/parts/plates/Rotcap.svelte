@@ -26,7 +26,7 @@
   const pose = $derived(
     hunt?.over === 'win' ? 'down' :
     intent === 'dazed' ? 'dazed' : intent === 'popped' || intent === 'wilt' ? 'wilt' : intent === 'burst' ? 'burst' :
-    intent === 'bloom' ? 'bloom' : intent === 'puff' ? 'puff' : 'idle');
+    intent === 'bloom' ? 'bloom' : intent === 'puff' || intent === 'storm' ? 'puff' : 'idle');
   const part = (id: string) => (hunt ? { on: hunt.target === id && !hunt.over, broke: !!m?.parts[id]?.broken } : { on: false, broke: false });
   const cap = $derived(part('cap')), jaw = $derived(part('jaw')), legs = $derived(part('legs'));
   const enraged = $derived(!!m?.enraged);

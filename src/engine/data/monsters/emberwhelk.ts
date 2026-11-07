@@ -31,6 +31,7 @@ export const emberwhelk: MonsterDef = {
   rarePart: 'shell',
   rare: 'emberpearl',
   habits: 'A snail the size of a cart, its shell glowing like a forge. Frilled gills behind its head heal it every turn, so a long fight is a losing one. Break the gills first. It pulls into its shell when hurt, and its slime burns.',
+  enragedHabit: 'Fans its gills open and heals a big chunk after your turn: the Gill Bloom. Broken gills stop it.',
   intro: 'Steam rises from the bog. A glowing shell slides out of the mist on a trail of hissing slime.',
   enrageText: 'Its shell flares white-hot. The Emberwhelk is enraged!',
   parts: [
@@ -47,6 +48,8 @@ export const emberwhelk: MonsterDef = {
       case 'retreat': return { name: 'Shell Retreat', text: 'It pulls back into its shell, hissing.', dmg: 0, threat: 0, note: 'Your hits deal half until it comes out. It heals 30' };
       case 'rear': return { name: 'Rears Back', text: 'It rears up, shell tilted forward like a battering ram.', dmg: 0, threat: 0, note: 'Shell Lunge next turn' };
       case 'lunge': return { name: 'Shell Lunge', text: 'It throws the whole molten shell at you!', dmg: enr ? 66 : 56, threat: 3 };
+      // enraged (Nov 2026): its gills open wide and it heals a big chunk after your turn (on top of the usual flare)
+      case 'bloom': return { name: 'Gill Bloom', text: 'Its gills fan open, glowing white-hot.', dmg: 0, threat: 0, isNew: !m.newSeen, note: 'It heals 40 after your turn. Break the gills, or daze it, to stop it' };
       case 'dazed': return { name: 'Dazed', text: 'It sways, its eye stalks drooping.', dmg: 0, threat: 0, note: 'Its action is lost' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
@@ -57,6 +60,9 @@ export const emberwhelk: MonsterDef = {
     if ((m.shell ?? 0) > 0 && prev !== 'retreat') m.shell = 0; // it comes back out after one of your turns
     if (prev === 'rear') { m.lastChain = h.turn; return remember(h, 'lunge'); }
     if (prev === null) return remember(h, 'spit');
+    // enraged: a Gill Bloom every few turns while the gills hold
+    const x = (m.extra ??= {});
+    if (m.enraged && !m.parts.gills.broken && prev !== 'retreat' && prev !== 'bloom' && h.turn - (x.bloomAt ?? -99) >= 4) { x.bloomAt = h.turn; return remember(h, 'bloom'); }
     const since = h.turn - (m.lastChain ?? -REAR_EVERY);
     const hurt = m.hp < m.max * 0.7;
     return remember(h, choose(h, [
@@ -76,6 +82,7 @@ export const emberwhelk: MonsterDef = {
       if (burn > 0) { h.php -= burn; h.stats.taken += burn; lines.push(`The slime burns you for ${burn}.`); }
       m.slime!--;
     }
+    if (type === 'bloom') { m.newSeen = true; if (!m.parts.gills.broken && m.hp > 0) { const heal = Math.min(40, m.max - m.hp); m.hp += heal; lines.push(`Its gills bloom. It heals ${heal}.`); } }
     if (type === 'retreat') { m.shell = 1; const heal = Math.min(30, m.max - m.hp); m.hp += heal; lines.push(`It heals ${heal} inside its shell.`); }
     if (!m.parts.gills.broken && m.hp > 0) {
       const heal = Math.min(m.enraged ? 22 : 15, m.max - m.hp);

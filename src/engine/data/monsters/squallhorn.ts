@@ -30,6 +30,7 @@ export const squallhorn: MonsterDef = {
   rarePart: 'tusks',
   rare: 'galeheart',
   habits: 'A Gorehorn that gathers the wind before it charges, a little more each turn, and lets go when it’s full. Dazing it scatters the wind. With its hind legs broken it can’t gather as much.',
+  enragedHabit: 'Every other jab is a Squall Jab that gathers wind as it lands.',
   intro: 'The wind turns on the ridge. A Gorehorn with a mane like a storm cloud paws at the ash.',
   enrageText: 'The wind howls around it. The Squallhorn is enraged!',
   parts: [
@@ -51,6 +52,8 @@ export const squallhorn: MonsterDef = {
         const dmg = Math.round(base * (tb ? 0.75 : 1));
         return { name: 'Cyclone Charge', text: 'It lets go of the storm and comes at you inside it!', dmg, threat: enr ? 4 : 3, halfGuard: !!m.tailwind, note: m.tailwind ? 'Tailwind: ignores half your guard' : undefined };
       }
+      // enraged (Nov 2026): its wind turned up, a jab that gathers the storm as it lands
+      case 'squall': return { name: 'Squall Jab', text: 'It hooks a tusk at you, and the wind rises with it.', dmg: enr ? 42 : 32, threat: 2, isNew: !m.newSeen, note: `Gathers a pip of wind too (${Math.min(cap, w + 1)} of ${cap}). Daze it to scatter the wind` };
       case 'tailwind': return { name: 'Tailwind', text: 'It turns its mane into the wind and lets it fill.', dmg: 0, threat: 0, note: 'Its next charge ignores half your block' };
       case 'winded': return { name: 'Winded', text: 'The storm drops away. It stands blowing, sides heaving.', dmg: 0, threat: 0, note: 'A free turn to attack' };
       case 'pinned': return { name: 'Pinned', text: 'An arrow through the foreleg breaks its stance. Some of the wind slips away.', dmg: 0, threat: 0, note: 'A pip of wind lost' };
@@ -65,7 +68,9 @@ export const squallhorn: MonsterDef = {
     if (!m.usedWallow && !m.parts.hide.broken && m.hp < m.max * 0.7 && w === 0) { m.usedWallow = true; return 'tailwind'; }
     if (w >= windCap(h)) return 'cyclone';
     if (w > 0) return 'gather';
-    const t = ['jab', 'gather'][m.seq % 2]; m.seq++; return t;
+    let t = ['jab', 'gather'][m.seq % 2]; m.seq++;
+    if (t === 'jab' && m.enraged) { const x = (m.extra ??= {}); x.sq = ((x.sq ?? 0) + 1) % 2; if (x.sq) t = 'squall'; }
+    return t;
   },
 
   resolve(h, type) {
@@ -74,6 +79,7 @@ export const squallhorn: MonsterDef = {
       case 'gather': { const w = m.wind ?? 0; m.wind = Math.min(cap, w + (m.enraged && w === 0 ? 2 : 1)); return `The wind gathers: ${m.wind} of ${cap}.`; }
       case 'cyclone': m.wind = 0; m.tailwind = false; return null;
       case 'tailwind': m.tailwind = true; return 'The wind is at its back.';
+      case 'squall': m.newSeen = true; m.wind = Math.min(cap, (m.wind ?? 0) + 1); return `The wind gathers: ${m.wind} of ${cap}.`;
       case 'winded': return 'It gets its breath back.';
       case 'pinned': return 'It shakes the arrow loose.';
       case 'dazed':

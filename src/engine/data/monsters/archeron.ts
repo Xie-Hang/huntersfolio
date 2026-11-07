@@ -34,6 +34,7 @@ export const archeron: MonsterDef = {
   rarePart: 'wings',
   rare: 'stormquill',
   habits: 'A Duskheron from the frozen pools, both heads crackling. A spear that lands leaves Spark on you; at 3 it goes off, and block can’t stop it. Its cry charges your dice: a charged die can only attack. Daze a head and its strike carries nothing.',
+  enragedHabit: 'Both heads cry together, a Static Field that charges three of your dice.',
   intro: 'Ice creaks in the reeds. Two heads rise, and the air between them snaps with static.',
   enrageText: 'Sparks run up both necks. The Archeron is enraged!',
   parts: [
@@ -45,6 +46,8 @@ export const archeron: MonsterDef = {
   intent(h, type): Intent {
     const r = duskheron.intent.call(this, h, type), acts = parse(type);
     const out = r.dmg ? { ...r, dmg: Math.round(r.dmg * HIT) } : { ...r };
+    // enraged (Nov 2026): its cry turned up, a field that charges three of your dice
+    if (type === 'field') return { name: 'Static Field', text: 'Both heads cry out together. The air crackles around your hands.', dmg: 18, threat: 1, isNew: !h.mon.newSeen, note: h.arm.chargeProof ? 'Your armor keeps the charge off' : 'Charges 3 of your dice next turn: a charged die can only attack, so spend them on hits' };
     if (type === 'twin') return { ...out, note: 'Each head that lands leaves a Spark pip on you' };
     if (!acts) return out;
     const cry = live(h, acts, 'screech') > 0 && !h.arm.chargeProof, thrusts = live(h, acts, 'thrust');
@@ -62,6 +65,7 @@ export const archeron: MonsterDef = {
     const pool: [string, number][] = [];
     for (const [a, wa] of W) for (const [b, wb] of W) if (!(a === 'screech' && b === 'screech')) pool.push([`upper:${a}|lower:${b}`, wa * wb]);
     if (!m.parts.wings.broken && since >= REAR_EVERY) pool.push(['rear', 6]);
+    if (m.enraged && prev !== 'field') pool.push(['field', 3]);
     return remember(h, choose(h, pool, a => this.intent(h, a).threat));
   },
 
@@ -74,6 +78,7 @@ export const archeron: MonsterDef = {
       if (landed && thrusts) lines.push(sparkPlayer(h, thrusts, sparkHit(h)));
       if (live(h, acts, 'screech') && !h.arm.chargeProof) { h.mon.charge = CRY_DICE; lines.push(`The cry charges ${CRY_DICE} of your dice.`); }
     }
+    if (type === 'field') { h.mon.newSeen = true; if (!h.arm.chargeProof) { h.mon.charge = 3; lines.push('The field charges 3 of your dice.'); } }
     if (type === 'dazed') lines.push('Both heads shake off the daze.');
     return lines.join(' ') || null;
   },

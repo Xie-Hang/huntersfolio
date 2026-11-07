@@ -30,6 +30,7 @@ export const bogjaw: MonsterDef = {
   rarePart: 'warts',
   rare: 'mirestone',
   habits: 'Lies half-sunk in the mire with its mouth open. Every few turns it gapes wide and swallows its prey whole: two of your dice are stuck inside until you cut your way out. A heavy blow to the jaw while it gapes makes it choke on the swallow.',
+  enragedHabit: 'Once a hunt it swallows you deep: the Deep Gulp is deeper: more cutting to escape.',
   intro: 'The mire bubbles. Two eyes rise from the mud, then a mouth wide enough to swallow you.',
   enrageText: 'It bellows, and the whole bog shakes. The Bogjaw is enraged!',
   parts: [
@@ -45,6 +46,8 @@ export const bogjaw: MonsterDef = {
       case 'slam': return { name: 'Body Slam', text: 'It heaves its bulk out of the mire to crush you.', dmg: warts ? (enr ? 48 : 38) : (enr ? 78 : 64), threat: 2 };
       case 'gape': return { name: 'Gape', text: 'It opens its jaws impossibly wide. The mire drains into its throat.', dmg: 0, threat: 0, note: sac ? 'A Snap is coming next turn' : 'Swallows you next turn. Daze the jaw to stop it' };
       case 'swallow': return { name: 'Swallow', text: 'It lunges, jaws wide open, to swallow you whole!', dmg: jaw ? (enr ? 28 : 22) : (enr ? 42 : 36), threat: 3, note: 'Two of your dice get stuck inside until you cut free' };
+      // enraged (Nov 2026): once a hunt it swallows you deeper: a fifth more to cut through
+      case 'gulp': return { name: 'Deep Gulp', text: 'It lunges, throat bulging, to swallow you whole and deep!', dmg: jaw ? 28 : 42, threat: 3, isNew: !m.newSeen, note: 'Two of your dice stuck, and deeper: more cutting to get out. Daze the jaw or break the throat sac to stop it' };
       case 'snap': return { name: 'Snap', text: 'It lunges and snaps its torn throat shut on empty air.', dmg: enr ? 30 : 24, threat: 2 };
       case 'digest': return { name: 'Digest', text: 'You’re inside. The walls of its gut squeeze.', dmg: enr ? 18 : 14, threat: 1, note: `Cut your way out: ${Math.max(0, m.gutHp ?? 0)} left (Cut counts double, Blunt half)` };
       case 'dazed': return { name: 'Dazed', text: 'It sways, jaw hanging, eyes rolling.', dmg: 0, threat: 0, note: 'Its action is lost' };
@@ -55,7 +58,13 @@ export const bogjaw: MonsterDef = {
   next(h, prev) {
     const m = h.mon, threat = (a: string) => this.intent(h, a).threat;
     if ((m.gut ?? 0) > 0) return remember(h, 'digest');
-    if (prev === 'gape') { m.lastChain = h.turn; return remember(h, m.parts.sac.broken ? 'snap' : 'swallow'); }
+    if (prev === 'gape') {
+      m.lastChain = h.turn;
+      if (m.parts.sac.broken) return remember(h, 'snap');
+      const x = (m.extra ??= {});
+      if (m.enraged && !x.gulps) { x.gulps = 1; return remember(h, 'gulp'); } // once a hunt
+      return remember(h, 'swallow');
+    }
     if (prev === null) return remember(h, 'lash');
     const sinceGape = h.turn - (m.lastChain ?? -GAPE_EVERY);
     return remember(h, choose(h, [['lash', 3], ['slam', 2], ['gape', sinceGape >= GAPE_EVERY ? 3 : 0]], threat));
@@ -64,7 +73,7 @@ export const bogjaw: MonsterDef = {
   // Nov 2026 bug hunt: breaking the sac on the Swallow turn logged "it can't swallow you any more", then swallowed
   // you. The telegraph changes on the spot instead, so what's on screen is what happens.
   onBreak(h, partId) {
-    if (partId === 'sac' && h.intent === 'swallow') { h.intent = 'snap'; return 'With its sac torn, the lunge can only snap shut.'; }
+    if (partId === 'sac' && (h.intent === 'swallow' || h.intent === 'gulp')) { h.intent = 'snap'; return 'With its sac torn, the lunge can only snap shut.'; }
     return null;
   },
 
@@ -74,6 +83,13 @@ export const bogjaw: MonsterDef = {
         if (!landed) return 'Its jaws close on smoke. You slip away.';
         swallowPlayer(h, 2);
         return 'It swallows you whole! Two of your dice are stuck inside. Cut your way out.';
+      case 'gulp':
+        h.mon.newSeen = true;
+        if (!landed) return 'Its jaws close on smoke. You slip away.';
+        // two dice inside as usual (three left one die, often no move to cut with: unfair), but deeper: a fifth more
+        // as much cutting to get out
+        swallowPlayer(h, 2); h.mon.gutHp = Math.round((h.mon.gutHp ?? 0) * 1.2);
+        return 'It gulps you down deep! Two of your dice are stuck inside, and it’s a long way out. Cut your way out.';
       case 'gape': return null;
       case 'dazed': return 'It shakes the mud from its head.';
     }

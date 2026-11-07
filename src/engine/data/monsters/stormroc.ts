@@ -36,6 +36,7 @@ export const stormroc: MonsterDef = {
   rarePart: 'crown',
   rare: 'stormheart',
   habits: 'A storm bird the size of a barn. It fights from the air and lands only after a dive. Lightning gathers in its crown every turn until it breaks as a Thunderhead; arrows into the crown bleed the storm away. Hurt badly, it takes to the sky for good.',
+  enragedHabit: 'Once, it can’t hold the storm in: halfway to a Thunderhead, its crown flashes early as a Crown Flash.',
   intro: 'The clouds over the spire start to turn. Something in them is turning too, and it has a crown of lightning.',
   enrageText: 'Thunder rolls without a flash. The Stormcrown Roc is enraged!',
   parts: [
@@ -54,6 +55,8 @@ export const stormroc: MonsterDef = {
       case 'dive': return { name: 'Stoop Dive', text: 'It folds its wings and falls on you like a thunderbolt!', dmg: tb ? 40 : enr ? 60 : 52, threat: 3, halfGuard: half, note: 'Then it lands for a turn' };
       case 'perched': return { name: 'Landed', text: 'It lands hard, spent, and shakes the rain from its wings.', dmg: 0, threat: 0, note: 'Grounded for a turn: full damage, and every weapon reaches the crown' };
       case 'thunder': { const d = enr ? 78 : 70; return { name: 'Thunderhead', text: 'Its crown blazes white. Lightning is coming down!', dmg: rod ? Math.round(d / 2) : d, threat: 4, halfGuard: half, steady: true, note: carries(h, 'Pierce') ? 'A Pierce hit on the crown snuffs it out' : undefined }; }
+      // enraged (Nov 2026): it can't hold the storm in; its crown flashes early, smaller, and the storm starts over
+      case 'flash': { const d = enr ? 38 : 34; return { name: 'Crown Flash', text: 'Its crown flares too soon. Lightning forks down at you!', dmg: rod ? Math.round(d / 2) : d, threat: 3, halfGuard: half, isNew: !m.newSeen, note: carries(h, 'Pierce') ? 'An early Thunderhead. A Pierce hit on the crown snuffs it out' : 'An early Thunderhead: block it. It empties the storm' }; }
       case 'gutter': return { name: 'Storm snuffed', text: 'The light in its crown gutters and goes out.', dmg: 0, threat: 0, note: 'Its Thunderhead is lost' };
       case 'crashed': return { name: 'Brought down', text: 'It crashes into the rocks in a tangle of wings.', dmg: 0, threat: 0, note: 'Grounded for a turn. Its action is lost' };
       case 'dazed': return { name: 'Dazed', text: 'It reels, its crown flickering.', dmg: 0, threat: 0, note: 'Its action is lost' };
@@ -65,8 +68,10 @@ export const stormroc: MonsterDef = {
     const m = h.mon;
     if (m.screech) m.screech--;
     if ((m.storm ?? 0) >= STORM_MAX && prev !== 'thunder') return remember(h, 'thunder');
+    // enraged: halfway to a Thunderhead, it may flash early (once per storm)
+    if (m.enraged && (m.storm ?? 0) >= 2 && prev !== 'flash' && prev !== 'thunder' && !m.extra?.flashed) { (m.extra ??= {}).flashed = 1; return remember(h, 'flash'); }
     // it lands after a dive, and after every Thunderhead it has to land to recover (melee's window)
-    if (prev === 'dive' || prev === 'thunder') { m.air = false; m.airLeft = 0; return remember(h, 'perched'); }
+    if (prev === 'dive' || prev === 'thunder' || prev === 'flash') { m.air = false; m.airLeft = 0; return remember(h, 'perched'); }
     if (prev === null) return remember(h, 'rake');
     if (m.skyLock) return remember(h, choose(h, [['rake', 3], ['buffet', 2]], a => this.intent(h, a).threat));
     if (m.air) {
@@ -83,7 +88,7 @@ export const stormroc: MonsterDef = {
     const m = h.mon, lines: string[] = [];
     // phase 2: a swoop leaves it low for one of your turns; it climbs again on its next action
     if (m.skyLock && !m.air && type !== 'crashed' && type !== 'perched') m.air = true;
-    if (type === 'thunder') { m.storm = 0; m.stormFull = false; }
+    if (type === 'thunder' || type === 'flash') { m.storm = 0; m.stormFull = false; if (type === 'flash') m.newSeen = true; } // (one Crown Flash a hunt)
     else if (type !== 'dazed' && type !== 'gutter' && type !== 'crashed') {
       // the storm builds every turn; a broken crown builds it every other turn
       m.stormTick = (m.stormTick ?? 0) + 1;
@@ -107,7 +112,7 @@ export const stormroc: MonsterDef = {
     if (h.target !== 'crown' || w.type !== 'Pierce' || !(m.storm ?? 0)) return null;
     m.storm!--;
     if (m.storm === 0 && m.stormFull) { m.stormFull = false; if (!(h.feats ??= []).includes('stormdrain')) h.feats.push('stormdrain'); }
-    if (h.intent === 'thunder') { h.intent = 'gutter'; return 'The arrow grounds the storm. Its Thunderhead fizzles out!'; }
+    if (h.intent === 'thunder' || h.intent === 'flash') { h.intent = 'gutter'; return 'The arrow grounds the storm. Its Thunderhead fizzles out!'; }
     return `The arrow bleeds the storm from its crown (${m.storm} / ${STORM_MAX}).`;
   },
 

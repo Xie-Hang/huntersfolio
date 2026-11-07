@@ -67,6 +67,7 @@ export const sovereign: MonsterDef = {
   rarePart: 'tusks',
   rare: 'sovheart',
   habits: 'A vast slime wearing parts of the monsters it swallowed. It fights in four stances (Stone, Gale, Ember, Frost), each using one of those parts and fighting like that monster, and it shifts into a new one at random, a turn after it warns you. Its weakness changes with the stance. Tear a part out and that stance is gone for good.',
+  enragedHabit: 'Each change of stance becomes a Lurching Shift that crashes into you as it changes.',
   intro: 'The ground sags. Something enormous slides over the crater rim, tusks and wings and tail bobbing in its body like driftwood.',
   enrageText: 'It heaves and quickens. The Sovereign wakes!',
   parts: [
@@ -80,7 +81,9 @@ export const sovereign: MonsterDef = {
     const m = h.mon, enr = m.enraged, k = enr ? 1.15 : 1, d = (n: number) => Math.round(n * k);
     const into = m.nextStance ? NAME[m.nextStance] : '';
     switch (type) {
-      case 'shift': return { name: `Shifting to ${into}`, text: m.nextStance === 'bare' ? 'It churns, but nothing it swallowed answers any more.' : 'It churns as a new shape rises through it.', dmg: d(24), threat: 1, note: m.nextStance === 'bare' ? 'After your turn it fights with what is left' : `After your turn: ${into} stance, weak to ${({ stone: 'Gale', gale: 'Frost', ember: 'Stone', frost: 'Ember', bare: '' } as const)[m.nextStance!]}` };
+      // enraged (Nov 2026): its stance change turned up: it crashes into you as it changes shape
+      case 'shift': if (enr && m.nextStance !== 'bare') return { name: `Lurching Shift to ${into}`, text: 'It heaves into its new shape and crashes into you as it changes.', dmg: d(30), threat: 2, isNew: !m.newSeen, note: `Block it. After your turn: ${into} stance, weak to ${({ stone: 'Gale', gale: 'Frost', ember: 'Stone', frost: 'Ember', bare: '' } as const)[m.nextStance!]}` };
+        return { name: `Shifting to ${into}`, text: m.nextStance === 'bare' ? 'It churns, but nothing it swallowed answers any more.' : 'It churns as a new shape rises through it.', dmg: d(24), threat: 1, note: m.nextStance === 'bare' ? 'After your turn it fights with what is left' : `After your turn: ${into} stance, weak to ${({ stone: 'Gale', gale: 'Frost', ember: 'Stone', frost: 'Ember', bare: '' } as const)[m.nextStance!]}` };
       case 'slam': return { name: 'Body Slam', text: 'It rears up and falls on you.', dmg: d(34), threat: 2 };
       case 'windup': return { name: 'Lowering its tusks', text: 'Rock crusts over it as the tusks swing forward.', dmg: 0, threat: 0, note: 'Charges next turn' };
       case 'charge': return { name: 'Sovereign Charge', text: 'The whole mass comes at you behind the tusks!', dmg: d(90), threat: 4 };
@@ -135,7 +138,7 @@ export const sovereign: MonsterDef = {
     if (type === 'unearthed') skip(['erupt']);
     switch (type) {
       // a new stance starts clean: what the old one was doing (flying, burrowing, ice) ends with it
-      case 'shift': m.air = false; m.airLeft = 0; m.under = false; m.plating = 0; return `It shifts into its ${NAME[m.nextStance ?? 'bare']} stance.`;
+      case 'shift': if (m.enraged) m.newSeen = true; m.air = false; m.airLeft = 0; m.under = false; m.plating = 0; return `It shifts into its ${NAME[m.nextStance ?? 'bare']} stance.`;
       case 'windup': return 'It braces to charge.';
       case 'takeoff': m.air = true; m.airLeft = 2; return 'It lifts into the air!';
       case 'dive': m.air = false; m.airLeft = 0; return 'It lands with a wet crash.';

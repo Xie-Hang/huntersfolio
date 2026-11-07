@@ -48,6 +48,7 @@ export const hollowfang: MonsterDef = {
   rarePart: 'fangs',
   rare: 'bloodpearl',
   habits: 'A pale, eyeless thing, half bat and half leech. It latches on and drinks, and heals what it takes. Block can’t stop a latch drinking. A blade move of 2 or more dice tears it off; with its fangs broken it can’t latch at all.',
+  enragedHabit: 'Every other bite is a Blood Frenzy that heals it for half what it takes. Block starves it.',
   intro: 'Something drops from the cave roof without a sound and unfolds on the rock in front of you.',
   enrageText: 'It hisses, mouth wide. The Hollowfang is enraged!',
   parts: [
@@ -62,6 +63,8 @@ export const hollowfang: MonsterDef = {
       case 'bite': return { name: 'Cold Bite', text: 'It lunges, all teeth.', dmg: Math.round((enr ? 38 : 30) * (wb ? 0.75 : 1)), threat: 1 };
       case 'latch': return { name: 'Latch On', text: 'It gathers itself to leap onto you.', dmg: enr ? 26 : 20, threat: 2, note: `If it lands, it drinks for ${Math.min(LATCH_TURNS, h.arm.latchMax ?? LATCH_TURNS)} turns. A 2-dice Cut move tears it off` };
       case 'drink': return { name: 'Drinking', text: 'It’s clamped on, drinking.', dmg: enr ? 34 : 30, threat: 2, noGuard: true, note: `It heals what it drinks · ${m.latch} turn${(m.latch ?? 0) > 1 ? 's' : ''} left. A 2-dice Cut move tears it off` };
+      // enraged (Nov 2026): its drinking turned up, a bite that feeds it too; Block works (it isn't latched)
+      case 'frenzy': return { name: 'Blood Frenzy', text: 'It lunges, jaws wide, already drinking.', dmg: Math.round((enr ? 38 : 30) * (wb ? 0.75 : 1)), threat: 2, isNew: !m.newSeen, note: 'It heals half what it takes from you. Block to starve it' };
       case 'gorged': return { name: 'Gorged', text: 'It sprawls on the rock, bloated.', dmg: 0, threat: 0, note: 'A free turn to attack' };
       case 'torn': return { name: 'Torn off', text: 'It flops on the rock, winded.', dmg: 0, threat: 0, note: 'Its action is lost' };
       case 'dazed': return { name: 'Dazed', text: 'It twitches, mouth working at nothing.', dmg: 0, threat: 0, note: 'Its action is lost' };
@@ -75,6 +78,7 @@ export const hollowfang: MonsterDef = {
     if (prev === 'drink') return 'gorged';
     let t = ['bite', 'latch'][m.seq % 2]; m.seq++;
     if (t === 'latch' && m.parts.fangs.broken) t = 'bite';
+    if (t === 'bite' && m.enraged) { const x = (m.extra ??= {}); x.fr = ((x.fr ?? 0) + 1) % 2; if (x.fr) { x.tk = h.stats.taken; t = 'frenzy'; } }
     return t;
   },
 
@@ -83,6 +87,7 @@ export const hollowfang: MonsterDef = {
     switch (type) {
       case 'latch': return landed ? latchPlayer(h, LATCH_TURNS) : null;
       case 'drink': return landed ? drink(h, intentDmg(h)) : (m.latch = 0, 'It loses its grip.');
+      case 'frenzy': { m.newSeen = true; const took = Math.max(0, h.stats.taken - (m.extra?.tk ?? h.stats.taken)), heal = Math.min(Math.floor(took / 2), m.max - m.hp); m.hp += heal; return heal ? `It feeds as it bites: +${heal}.` : null; }
       case 'gorged': m.drank = 0; return 'It stirs, heavy.';
       case 'torn': m.drank = 0; return 'It rights itself.';
       case 'dazed': return 'It shakes its head.';

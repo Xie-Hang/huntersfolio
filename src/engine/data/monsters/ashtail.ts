@@ -35,6 +35,7 @@ export const ashtail: MonsterDef = {
   rarePart: 'mantle',
   rare: 'ashheart',
   habits: 'Wears glowing cinder scales across its back. Every hit breaks scales before it can do damage: Pierce clears two layers, anything else one, and a Cut through hot scales burns you. A Frost hit quenches them all at once. It rekindles them every few turns.',
+  enragedHabit: 'Its second pounce becomes a Flare-up: it flings its own burning scales at you, leaving its back thinner.',
   intro: 'Ash drifts up instead of down. The Ashtail slinks out of a smoking crack, its back glowing like coals.',
   enrageText: 'Its scales flare white. The Ashtail is enraged!',
   parts: [
@@ -50,6 +51,8 @@ export const ashtail: MonsterDef = {
       case 'sweep': return tb
         ? { name: 'Stump Swipe', text: 'It swings round, lashing out with the stump of its tail.', dmg: enr ? 34 : 27, threat: 1 }
         : { name: 'Cinder Sweep', text: 'It coils its glowing tail behind it, low to the ground.', dmg: enr ? 69 : 59, threat: enr ? 4 : 3, note: 'Sever the tail to stop this' };
+      // enraged (Nov 2026): its cinder scales turned up, flung at you and grown straight back
+      case 'flare': return { name: 'Flare-up', text: 'It shakes its back and burning scales spray across you.', dmg: enr ? 30 : 24, threat: 2, isNew: !m.newSeen, note: 'It throws off a layer of its own scales doing it: hit hard after' };
       case 'kindle': return { name: 'Kindle', text: 'It goes still. Its back glows brighter as new scales flare up.', dmg: 0, threat: 0, note: `Regrows ${layers(h)} layers of cinder scales` };
       case 'dazed': return { name: 'Dazed', text: 'It reels, eyes unfocused, swaying on its feet.', dmg: 0, threat: 0, note: 'Its action is lost' };
     }
@@ -58,13 +61,16 @@ export const ashtail: MonsterDef = {
 
   next(h) {
     const m = h.mon;
-    const t = ['pounce', 'pounce', 'sweep', 'kindle'][m.seq % 4]; m.seq++; return t;
+    let t = ['pounce', 'pounce', 'sweep', 'kindle'][m.seq % 4]; m.seq++;
+    if (t === 'pounce' && m.enraged && m.seq % 4 === 2) t = 'flare'; // enraged: the second pounce
+    return t;
   },
 
   resolve(h, type) {
     const m = h.mon;
     switch (type) {
       case 'kindle': m.plating = layers(h); return `The scales flare back: ${m.plating} layers.`;
+      case 'flare': m.newSeen = true; m.plating = Math.max(0, (m.plating ?? 0) - 1); return m.plating ? `It sheds a layer of scales: ${m.plating} left.` : 'Its back is bare of scales.';
       case 'dazed': return 'It shakes its head, slowly coming back to its senses.';
     }
     return null;

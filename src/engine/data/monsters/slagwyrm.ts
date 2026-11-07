@@ -36,6 +36,7 @@ export const slagwyrm: MonsterDef = {
   rarePart: 'spine',
   rare: 'slagheart',
   habits: 'A serpent of cooling slag. Its molten armour swallows the first blows each turn and reforms as fast as you chip it. One heavy hammer blow shatters it outright. Hurt badly, it melts down: no more armour, but it burns whatever touches it.',
+  enragedHabit: 'Its spit becomes Slag Rain: a shower of slag that burns you a turn longer.',
   intro: 'The scree at the foot of the spire is glowing. Then it lifts its head.',
   enrageText: 'Its armour runs like wax. The Slagwyrm is enraged!',
   parts: [
@@ -49,6 +50,8 @@ export const slagwyrm: MonsterDef = {
     switch (type) {
       case 'bite': return { name: 'Bite', text: 'It strikes with a mouth full of embers.', dmg: enr ? 26 : 22, threat: 2 };
       case 'spit': return { name: 'Magma Spit', text: 'It hawks a gob of molten rock.', dmg: enr ? 20 : 16, threat: 1, note: m.parts.jaw.broken ? undefined : `Then it burns you for ${SPIT_TURNS} turns` };
+      // enraged (Nov 2026): its spit turned up, a shower of slag that burns a turn longer, broken jaw or not
+      case 'rain': return { name: 'Slag Rain', text: 'It rears and sprays molten slag across the ground.', dmg: 24, threat: 2, isNew: !m.newSeen, note: `Then it burns you for ${SPIT_TURNS + 1} turns. Burn-proof armour halves the burn` };
       case 'lash': return { name: 'Tail Lash', text: 'Its tail whips round, trailing slag.', dmg: enr ? 30 : 26, threat: 2 };
       case 'stoke': return { name: 'Stoke', text: 'It coils and glows brighter and brighter.', dmg: 0, threat: 0, note: 'Armour doubles, then Eruption. Shatter it to stop it' };
       case 'eruption': return { name: 'Eruption', text: 'It bursts open in a fountain of fire!', dmg: enr ? 66 : 60, threat: 4, steady: true, note: 'Shatter its armour to quench it' };
@@ -70,18 +73,21 @@ export const slagwyrm: MonsterDef = {
       ['stoke', since >= STOKE_EVERY ? 6 : 0]
     ], a => this.intent(h, a).threat);
     if (pick === 'stoke') m.lastChain = h.turn;
+    // enraged: its spits become Slag Rain (never two in a row)
+    if (pick === 'spit' && m.enraged && prev !== 'rain') return remember(h, 'rain');
     return remember(h, pick);
   },
 
   resolve(h, type, landed) {
     const m = h.mon, lines: string[] = [];
     // the burn from an earlier spit
-    if ((m.slime ?? 0) > 0 && type !== 'spit') {
+    if ((m.slime ?? 0) > 0 && type !== 'spit' && type !== 'rain') {
       const b = Math.min(h.arm.burnproof ? BURN / 2 : BURN, h.php - 1);
       if (b > 0) { h.php -= b; h.stats.taken += b; lines.push(`The magma burns you for ${b}.`); }
       m.slime!--;
     }
     if (type === 'spit' && landed && !m.parts.jaw.broken) { m.slime = SPIT_TURNS; lines.push('Molten rock clings to you.'); }
+    if (type === 'rain') { m.newSeen = true; if (landed) { m.slime = SPIT_TURNS + 1; lines.push('Slag clings to you, burning.'); } }
     m.stoked = type === 'stoke';
     if ((m.shatter ?? 0) > 0) { m.shatter!--; if (!m.shatter && !m.melt) lines.push('Its armour flows back together.'); }
     if (armourUp(h)) m.armour = soakMax(h);

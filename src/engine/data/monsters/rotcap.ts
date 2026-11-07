@@ -37,6 +37,7 @@ export const rotcap: MonsterDef = {
   rarePart: 'cap',
   rare: 'sporeheart',
   habits: 'A squat cave beast under a fungus cap the size of a cart. Its spores infect you: a few HP every turn until it clears or you cure it. Every few turns the cap swells, then bursts. A solid arrow into the swollen cap pops it first.',
+  enragedHabit: 'Its spore puff becomes a Spore Storm: infected for 5 turns, and harder.',
   intro: 'The cave smells of wet earth and rot. Something heaves itself up out of the dark under a great pale cap.',
   enrageText: 'Its cap darkens and weeps spores. The Rotcap is enraged!',
   parts: [
@@ -50,6 +51,8 @@ export const rotcap: MonsterDef = {
     switch (type) {
       case 'slam': return { name: 'Cap Slam', text: 'It rears up and brings the whole cap down on you.', dmg: Math.round((enr ? 30 : 24) * (lb ? 0.7 : 1)), threat: 1 };
       case 'puff': return { name: 'Spore Puff', text: 'It shudders, and a cloud of spores rolls out from under the cap.', dmg: enr ? 18 : 14, threat: 1, note: 'If it hits, you’re infected for 3 turns' };
+      // enraged (Nov 2026): its spore puff turned up, a thick cloud that infects for longer and harder
+      case 'storm': return { name: 'Spore Storm', text: 'The cap heaves, and spores pour out in a choking cloud.', dmg: 20, threat: 2, isNew: !m.newSeen, note: 'If it hits, you’re infected for 5 turns. Cure it, or smoke to dodge it' };
       case 'bloom': return { name: 'Bloom', text: 'The cap swells and splits along its gills.', dmg: 0, threat: 0, note: `It heals ${ROT_BLOOM_HEAL}, then bursts${b + 1 < BLOOM_TURNS ? ' after next turn' : ' next turn'}. A 2-dice Pierce hit on the cap pops it` };
       case 'burst': return { name: 'Spore Burst', text: 'The cap is fit to burst!', dmg: enr ? 82 : 72, threat: enr ? 4 : 3, halfGuard: true, note: 'Half your block, then infected 4 turns. A 2-dice Pierce hit on the cap pops it' };
       case 'wilt': return { name: 'Wilting', text: 'The cap sags, emptied.', dmg: 0, threat: 0, note: 'A free turn to attack' };
@@ -66,6 +69,7 @@ export const rotcap: MonsterDef = {
     if (prev === 'burst') return 'wilt';
     let t = ['slam', 'puff', 'bloom'][m.seq % 3]; m.seq++;
     if (t === 'bloom' && m.parts.cap.broken) t = 'puff';
+    if (t === 'puff' && m.enraged) t = 'storm';
     return t;
   },
 
@@ -73,6 +77,7 @@ export const rotcap: MonsterDef = {
     const m = h.mon;
     switch (type) {
       case 'puff': return landed ? infectPlayer(h, 3, m.enraged ? 10 : 8) : null;
+      case 'storm': m.newSeen = true; return landed ? infectPlayer(h, 5, 12) : null;
       case 'bloom': { m.bloom = (m.bloom ?? 0) + 1; const heal = Math.min(ROT_BLOOM_HEAL, m.max - m.hp); m.hp += heal; return heal ? `The swelling cap feeds it: +${heal}.` : null; }
       case 'burst': m.bloom = 0; return landed ? infectPlayer(h, 4, m.enraged ? 14 : 12) : null;
       case 'wilt': return 'It straightens, slowly.';

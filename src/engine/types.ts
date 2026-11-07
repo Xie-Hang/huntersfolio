@@ -205,6 +205,8 @@ export interface MonsterState {
   sprayNext?: boolean;
   /** Cragwing: buried by its Rockslide, you can't Swap this turn */
   slide?: number;
+  /** small per-monster counters for enraged moves (Nov 2026), so a monster file needs no new shared field */
+  extra?: Record<string, number>;
   /** turns it's still held by a trap */
   trapped?: number;
   hp: number;

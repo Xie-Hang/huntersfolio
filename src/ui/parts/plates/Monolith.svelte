@@ -23,7 +23,7 @@
   const intent = $derived(hunt && !hunt.over ? hunt.intent : '');
   const exposed = $derived(!!m && ((m.core ?? 0) > 0 || intent === 'reform'));
   const pose = $derived(
-    hunt?.over === 'win' ? 'down' : intent === 'dazed' ? 'dazed' : intent === 'rumble' || intent === 'quake' ? 'rumble' :
+    hunt?.over === 'win' ? 'down' : intent === 'dazed' ? 'dazed' : intent === 'rumble' || intent === 'quake' || intent === 'aftershock' ? 'rumble' :
     intent === 'toss' ? 'toss' : intent === 'sweep' ? 'sweep' : intent === 'reform' ? 'reform' : 'idle');
   const part = (id: string) => (hunt ? { on: hunt.target === id && !hunt.over, broke: !!m?.parts[id]?.broken } : { on: false, broke: false });
   const plates = $derived(part('plates')), arms = $derived(part('arms')), core = $derived(part('core'));
@@ -31,7 +31,7 @@
 
   let rig: SVGGElement;
   const SLAM: Keyframe[] = [{ transform: 'translateY(0)' }, { transform: 'translateY(-24px) scaleY(1.04)', offset: 0.35 }, { transform: 'translateY(8px) scaleY(.94)', offset: 0.6 }, { transform: 'translateY(0)' }];
-  oneShots(() => rig, () => hunt, i => (i === 'quake' || i === 'rumble' ? SLAM : LUNGE));
+  oneShots(() => rig, () => hunt, i => (i === 'quake' || i === 'aftershock' || i === 'rumble' ? SLAM : LUNGE));
 </script>
 
 <svg class="wc mw pose-{pose}" class:exposed class:crumble class:static={!hunt} viewBox="60 40 940 520" role="img" aria-label="Engraving of the Monolith Warden, a stone colossus{exposed ? ', its core exposed' : ''}">

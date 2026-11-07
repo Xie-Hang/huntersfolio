@@ -27,7 +27,7 @@
   const air = $derived(!!m?.air);
   const storm = $derived(m?.storm ?? 0);
   const pose = $derived(
-    hunt?.over === 'win' ? 'down' : intent === 'dazed' ? 'dazed' : intent === 'thunder' ? 'thunder' : intent === 'dive' ? 'dive' :
+    hunt?.over === 'win' ? 'down' : intent === 'dazed' ? 'dazed' : intent === 'thunder' || intent === 'flash' ? 'thunder' : intent === 'dive' ? 'dive' :
     intent === 'perched' || intent === 'crashed' ? 'landed' : intent === 'takeoff' ? 'takeoff' : 'idle');
   const part = (id: string) => (hunt ? { on: hunt.target === id && !hunt.over, broke: !!m?.parts[id]?.broken } : { on: false, broke: false });
   const wings = $derived(part('wings')), crown = $derived(part('crown')), talons = $derived(part('talons'));

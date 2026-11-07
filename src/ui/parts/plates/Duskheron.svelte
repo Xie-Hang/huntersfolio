@@ -22,12 +22,12 @@
   const intent = $derived(hunt && !hunt.over ? hunt.intent : '');
   const acts = $derived.by(() => {
     const out: Record<string, string> = { upper: 'idle', lower: 'idle' };
-    if (intent === 'rear' || intent === 'twin') { out.upper = out.lower = 'rear'; }
+    if (intent === 'rear' || intent === 'twin' || intent === 'scissor') { out.upper = out.lower = 'rear'; }
     else if (intent.includes(':')) for (const p of intent.split('|')) { const [k, v] = p.split(':'); out[k] = v; }
     for (const k of ['upper', 'lower']) if ((m?.reel?.[k] ?? 0) > 0) out[k] = 'reel';
     return out;
   });
-  const pose = $derived(hunt?.over === 'win' ? 'down' : intent === 'dazed' ? 'dazed' : intent === 'rear' || intent === 'twin' ? 'rear' : 'idle');
+  const pose = $derived(hunt?.over === 'win' ? 'down' : intent === 'dazed' ? 'dazed' : intent === 'rear' || intent === 'twin' || intent === 'scissor' ? 'rear' : 'idle');
   const part = (id: string) => (hunt ? { on: hunt.target === id && !hunt.over, broke: !!m?.parts[id]?.broken } : { on: false, broke: false });
   const up = $derived(part('upper')), lo = $derived(part('lower')), wings = $derived(part('wings'));
   const enraged = $derived(!!m?.enraged);
