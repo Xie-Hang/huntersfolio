@@ -101,7 +101,7 @@
   {/if}
   {#if shows(h, 'charge')}
   <button class="move dash {cOk ? 'ready' : 'no'}" onmouseenter={() => (game.preview = n ? [...game.sel] : auto.charge ?? [])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = n ? [...game.sel] : auto.charge ?? [])} onblur={() => (game.preview = [])} data-coach="charge" data-key="c" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
-    <span><span class="mn"><Key k="C" />Charge</span><span class="md">{chargeRisk ? `The −${inc?.net} coming would break it: block all of it first` : `Next hit ×2 · any hit breaks it`}</span></span><span class="need dice"><CostDie c="any" /><span class="x">×{cd}</span></span>
+    <span><span class="mn"><Key k="C" />Charge</span><span class="md">{chargeRisk ? `The −${inc?.net} coming would break it: block all of it first` : `Next hit ×2 · any hit breaks it`}</span></span><span class="need dice"><span class="x">{cd}×</span><CostDie c="any" /></span>
   </button>
   {/if}
   {#if shows(h, 'swap')}
@@ -125,7 +125,7 @@
         {:else}Holds unless its move hits you for {E.CHARGE_BREAK}+. Double part materials{/if}
       </span>
     </span>
-    <span class="need dice"><CostDie c="any" /><span class="x">×2</span></span>
+    <span class="need dice"><span class="x">2×</span><CostDie c="any" /></span>
   </button>
   {/if}
 

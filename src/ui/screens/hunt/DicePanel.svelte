@@ -25,6 +25,7 @@
   import { input } from '../../pad.svelte';
   import { game } from '../../game.svelte';
   import { shows } from '../../reveal';
+  let { part = 'all', rerollBelow = false }: { part?: 'all' | 'dice' | 'end'; rerollBelow?: boolean } = $props();
   const h = $derived(game.hunt!);
   const over = $derived(!!h.over);
   const n = $derived(game.sel.length);
@@ -32,9 +33,7 @@
   const label = (f: string) => (f === 'C' ? 'Fang' : f === 'T' ? 'Claw' : 'Blank');
 </script>
 
-<section class="panel" aria-label="Your dice">
-  <div class="ph dph"><span class="label">Your dice · turn {h.turn}</span><span class="label">{input.mode === 'pad' ? 'Select any dice (A), then pick a move, or reroll them' : 'Select any dice, then pick a move, or reroll them'}</span></div>
-  <div class="diceline">
+{#snippet trayS()}
   <div class="tray" data-coach="dice">
     {#each h.dice as d, i}
       {@const sel = game.sel.includes(i)}
@@ -68,19 +67,51 @@
       </div>
     {/each}
   </div>
-  <div class="acts">
+{/snippet}
+{#snippet endS()}
   <button class="btn primary endbtn" class:armed={game.endArmed} data-sound data-coach="end" data-key="space" disabled={over} onclick={() => game.requestEnd()}>
     <Key k="Space" pad="Y" />{#if game.endArmed}<span class="et">End turn anyway?<small>{spare} {spare === 1 ? 'die' : 'dice'} unspent · press again</small></span>{:else if spare}<span class="et">End turn<small>{spare} {spare === 1 ? 'die' : 'dice'} unspent</small></span>{:else}End turn{/if}
   </button>
+{/snippet}
+{#snippet rerollS()}
+      {#if shows(h, 'reroll')}<button class="btn quiet" class:rr={n > 0 && h.rerolls > 0 && !over} data-sound data-coach="reroll" data-key="r" onmouseenter={() => (game.preview = [...game.sel])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = [...game.sel])} onblur={() => (game.preview = [])} disabled={!n || h.rerolls < 1 || over} onclick={() => game.reroll()}><Key k="R" pad="X" />{n > 0 && h.rerolls > 0 ? `Reroll ${n} ${n === 1 ? 'die' : 'dice'}` : 'Reroll'} · {h.rerolls} left</button>{/if}
+{/snippet}
+{#snippet undoS()}
+      {#if shows(h, 'undo')}<button class="btn quiet" data-coach="undo" data-key="z" disabled={!game.undoStack.length || over} onclick={() => game.undo()}><Key k="Z" pad="LT" />Undo</button>{/if}
+{/snippet}
+
+{#if part === 'all'}
+<section class="panel" aria-label="Your dice">
+  <div class="ph dph"><span class="label">Your dice · turn {h.turn}</span><span class="label">{input.mode === 'pad' ? 'Select any dice (A), then pick a move, or reroll them' : 'Select any dice, then pick a move, or reroll them'}</span></div>
+  <div class="diceline">
+  {@render trayS()}
+  <div class="acts">
+  {@render endS()}
     {#if shows(h, 'reroll') || shows(h, 'undo')}
     <div class="grp">
-      {#if shows(h, 'reroll')}<button class="btn quiet" class:rr={n > 0 && h.rerolls > 0 && !over} data-sound data-coach="reroll" data-key="r" onmouseenter={() => (game.preview = [...game.sel])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = [...game.sel])} onblur={() => (game.preview = [])} disabled={!n || h.rerolls < 1 || over} onclick={() => game.reroll()}><Key k="R" pad="X" />{n > 0 && h.rerolls > 0 ? `Reroll ${n} ${n === 1 ? 'die' : 'dice'}` : 'Reroll'} · {h.rerolls} left</button>{/if}
-      {#if shows(h, 'undo')}<button class="btn quiet" data-coach="undo" data-key="z" disabled={!game.undoStack.length || over} onclick={() => game.undo()}><Key k="Z" pad="LT" />Undo</button>{/if}
+{@render rerollS()}
+{@render undoS()}
     </div>
     {/if}
   </div>
   </div>
 </section>
+{:else if part === 'dice'}
+<!-- layout drafts (Nov 2026): the dice and Reroll on top of the player's side, where a turn starts -->
+<section class="panel dtop" class:below={rerollBelow} aria-label="Your dice">
+  <div class="ph dph"><span class="label">Your dice · turn {h.turn}</span><span class="label">{input.mode === 'pad' ? 'Select any dice (A), then pick a move, or reroll them' : 'Select any dice, then pick a move, or reroll them'}</span></div>
+  <div class="diceline">
+  {@render trayS()}
+  {#if shows(h, 'reroll')}<div class="rrwrap">{@render rerollS()}</div>{/if}
+  </div>
+</section>
+{:else}
+<!-- ...and Undo and End turn at the bottom, where it ends -->
+<section class="panel dend" aria-label="End your turn">
+  {#if shows(h, 'undo')}<div class="unwrap">{@render undoS()}</div>{/if}
+  {@render endS()}
+</section>
+{/if}
 
 <style>
   /* Glarewing: a charged die can only attack (guarding with it, or leaving it, sets it off) */
@@ -95,4 +126,12 @@
   .acts { flex: 1 0 230px; max-width: 300px; display: flex; flex-direction: column; gap: 8px; align-items: stretch; }
   .acts .grp { display: flex; gap: 8px; }
   .acts .grp .btn { flex: 1; white-space: nowrap; }
+  .dtop .rrwrap { flex: 1 0 160px; max-width: 240px; display: flex; }
+  .dtop .rrwrap :global(.btn) { flex: 1; min-height: 52px; }
+  .dtop.below .diceline { flex-direction: column; align-items: stretch; }
+  .dtop.below .rrwrap { max-width: none; flex: 1 1 auto; }
+  .dend { display: flex; flex-direction: row; gap: 10px; align-items: stretch; padding: 12px 16px; }
+  .dend .unwrap { display: flex; }
+  .dend .unwrap :global(.btn) { min-height: 52px; }
+  .dend :global(.endbtn) { flex: 1; }
 </style>

@@ -698,15 +698,28 @@ html[data-input="pad"] body{cursor:none}
 .grid.hunt.lay{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 .grid.hunt.lay.done{grid-template-columns:minmax(0,1fr)!important}
 .lay .mcol,.lay .pcol{display:flex;flex-direction:column;gap:12px;min-width:0}
-.lay-a .stage .stagebody,.lay-b .stage .stagebody,.lay-c .stage .stagebody{grid-template-columns:minmax(0,1fr)}
+.lay .stage .stagebody{grid-template-columns:minmax(0,1fr)}
 .lay .stage .platecol{flex-direction:row;align-items:flex-start}
 .lay .stage .platecol > .plate{flex:1 1 60%}
 .lay .stage .platecol > .metarow{flex:0 1 40%;min-width:0}
 .lay .stage .platecol > .metarow:empty{display:none}
 .lay .diceline .tray{gap:10px}
 .lay-a .gearpanel .move{min-height:44px;padding-block:6px}
-.lay-b .gearpanel,.lay-c .gearpanel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-auto-flow:row dense;column-gap:10px;align-items:start}
-.lay-b .gearpanel > *,.lay-c .gearpanel > *{grid-column:1 / -1}
-.lay-b .gearpanel > .move:not(.dash):not(.capture):not(.pocket),.lay-c .gearpanel > .move:not(.dash):not(.capture):not(.pocket){grid-column:1}
-.lay-b .gearpanel > .move.dash,.lay-b .gearpanel > .move.capture,.lay-b .gearpanel > .move.pocket,.lay-c .gearpanel > .move.dash,.lay-c .gearpanel > .move.capture,.lay-c .gearpanel > .move.pocket{grid-column:2}
-.lay-b .gearpanel > .divider,.lay-c .gearpanel > .divider{grid-column:2}
+.lay-b .gearpanel,.lay-c .gearpanel,.lay-d .gearpanel,.lay-e .gearpanel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-auto-flow:row dense;column-gap:10px;align-items:start}
+.lay-b .gearpanel > *,.lay-c .gearpanel > *,.lay-d .gearpanel > *,.lay-e .gearpanel > *{grid-column:1 / -1}
+.lay-b .gearpanel > .move:not(.dash):not(.capture):not(.pocket),.lay-c .gearpanel > .move:not(.dash):not(.capture):not(.pocket),.lay-d .gearpanel > .move:not(.dash):not(.capture):not(.pocket),.lay-e .gearpanel > .move:not(.dash):not(.capture):not(.pocket){grid-column:1}
+.lay-d .gearpanel > .move.dash,.lay-d .gearpanel > .move.capture,.lay-d .gearpanel > .move.pocket,.lay-e .gearpanel > .move.dash,.lay-e .gearpanel > .move.capture,.lay-e .gearpanel > .move.pocket,.lay-b .gearpanel > .move.dash,.lay-b .gearpanel > .move.capture,.lay-b .gearpanel > .move.pocket,.lay-c .gearpanel > .move.dash,.lay-c .gearpanel > .move.capture,.lay-c .gearpanel > .move.pocket{grid-column:2}
+.lay-b .gearpanel > .divider,.lay-c .gearpanel > .divider,.lay-d .gearpanel > .divider,.lay-e .gearpanel > .divider{grid-column:2}
+.lay-d .gearpanel .move,.lay-e .gearpanel .move{min-height:46px;padding-block:6px}
+.lay-d .gearpanel,.lay-e .gearpanel{row-gap:6px;padding-block:10px}
+.lay-e .dtop .rrwrap :global(.btn),.lay-e .dtop .rrwrap .btn{min-height:40px}
+.lay .dend{padding:10px 14px}
+/* the item sits under the moves, so both columns are four rows (Nov 2026 drafts) */
+.lay-d .gearpanel > .move.pocket,.lay-d .gearpanel > .divider,.lay-e .gearpanel > .move.pocket,.lay-e .gearpanel > .divider{grid-column:1}
+.lay-d .gearpanel .move .md,.lay-e .gearpanel .move .md{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lay-d .gearpanel .move > span:first-child,.lay-e .gearpanel .move > span:first-child{min-width:0}
+.lay-e .dtop .die{width:68px;height:68px;--s:68px}
+.lay-e .dtop .die svg{width:32px;height:32px}
+.lay-e .dtop .diceline{gap:8px}
+.lay-e .dtop{padding-block:10px}
+.lay-e .dtop .tray{gap:12px}
