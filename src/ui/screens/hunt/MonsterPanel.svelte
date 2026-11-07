@@ -45,7 +45,7 @@
     if ((m.mirage ?? 0) > 0 && M.id !== 'fenmother') out.push({ key: 'mir', n: m.mirage, label: 'Images', short: `1st hit only · ${tn(m.mirage!)}`, cls: 'ice', desc: `Mirror images surround it. Your later hits each turn break an image.${(m.hits ?? 0) > 0 ? '\nYour hit this turn has landed.' : ''}` });
     if ((m.infected ?? 0) > 0) out.push({ key: 'inf', n: m.infected, label: 'Infected', short: `takes ${m.infectDmg} a turn · ${tn(m.infected!)}`, cls: 'inf', desc: 'Your weapon’s **Infect** has taken hold. It ticks at the end of each turn.' });
     out.push(...(M.badges?.(h) ?? []));
-    if (E.canCapture(h) && shows(h, 'capture')) out.push({ key: 'cap', n: h.snareSet ? undefined : h.snares, label: 'Capturable', short: h.snareSet ? '**Snare** closes at turn end' : h.snares ? `ready to **Snare** · ${h.snares} left` : 'no **Snares** left', cls: 'gold', desc: `It’s weak enough to catch. Set a **Snare** with 2 dice.\nIt closes at the end of your turn, unless it hits you for ${E.CHARGE_BREAK} or more.\nA capture gives double part materials.` });
+    if (E.canCapture(h) && shows(h, 'capture')) out.push({ key: 'cap', label: 'Capturable', short: h.snareSet ? '**Snare** closes at turn end' : h.snares ? `ready to **Snare** · ${h.snares} left` : 'no **Snares** left', cls: 'gold', desc: `It’s weak enough to catch. Set a **Snare** with 2 dice.\nIt closes at the end of your turn, unless it hits you for ${E.CHARGE_BREAK} or more.\nA capture gives double part materials.` });
     return out;
   });
   // A status arriving mid-hunt gets a moment on the stage, not just a tag (Nov 2026 playtest: Enraged went unnoticed):
@@ -114,7 +114,7 @@
           {#if statuses.length}
             <div class="conds" aria-label="Its condition">
               {#each statuses as st (st.key)}
-                <button type="button" class="cond {st.cls}" aria-describedby="{uid}-{st.key}"><b>{st.label}</b>{#if st.n}<span class="cnt" aria-label="{st.n} left">{st.n}</span><span class="pips" aria-hidden="true">{#each Array(Math.min(st.n, 5)) as _}<i></i>{/each}</span>{/if}<span class="i" aria-hidden="true">i</span>
+                <button type="button" class="cond {st.cls}" aria-describedby="{uid}-{st.key}"><b>{st.label}</b>{#if st.n}<span class="cnt" aria-label="{st.n} turns left">{st.n}</span>{/if}<span class="i" aria-hidden="true">i</span>
                 <span class="stip" id="{uid}-{st.key}" role="tooltip"><strong class="sth"><Rich text={cap1(st.short)} /></strong>{#each st.desc.split('\n') as para}<span class="stp"><Rich text={para} /></span>{/each}</span>
                 </button>
               {/each}
@@ -149,11 +149,8 @@
   /* the caption and its i travel together: in a narrow column the caption drops under the name as one piece (8 Nov 2026) */
   .stip .sth { display: block; font-weight: 700; color: var(--gold-hi); margin-bottom: 6px; }
   .stip .stp { display: block; }
-  /* how many turns (or Snares) are left, on the tag itself (8 Nov 2026) */
+  /* how many turns are left, on the tag itself (8 Nov 2026) */
   .cond .cnt { font-weight: 700; font-size: 14px; padding-left: 7px; border-left: 1.5px solid rgba(0, 0, 0, .3); font-variant-numeric: tabular-nums; }
-  .cond .pips { display: none; gap: 3px; align-self: center; } .cond .pips i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .8; }
-  :global(.cnt-pips) .cond .cnt { display: none; } :global(.cnt-pips) .cond .pips { display: inline-flex; }
-  :global(.cnt-none) .cond .cnt, :global(.cnt-none) .cond .pips { display: none; }
   .stip .stp + .stp { margin-top: 6px; }
   .platecol .metarow > * { min-width: 0; max-width: 100%; }
   .cond b { flex: none; }
