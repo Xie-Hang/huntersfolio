@@ -72,7 +72,9 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .grid.hunt.done{grid-template-columns:minmax(0,1fr)!important}
 .hunttip{border-color:var(--line-2);background:var(--raise)}
 .hunttip p{margin:0;font-size:var(--fs-md);line-height:1.4}
-.stage .plate{display:flex;align-items:center}
+/* the art fills its frame (capped so it does not grow tall) and sits in the middle: it used to shrink to 300px on the left (Nov 2026 playtest, wide screen) */
+.stage .plate{display:flex;align-items:center;justify-content:center}
+.stage .plate .plate-stage{width:100%;max-width:460px}
 .stage .tele{margin:0;padding:12px 14px}
 .parts.row{flex-direction:row;flex-wrap:wrap}
 .parts.row{align-items:flex-start}
