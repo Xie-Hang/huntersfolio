@@ -179,8 +179,8 @@ export function stanceHurt(h: Hunt, n: number, line: string) {
 /* ---------- traps (prototype, Nov 2026) ---------- */
 /** what each trap catches, by the monster's move: ground rushes, and moves that land on you (dives, bursts up) */
 export const TRAP_CATCH: Record<'trapRush' | 'trapLand', string[]> = {
-  trapRush: ['charge', 'lunge', 'pounce', 'swallow', 'cyclone'],
-  trapLand: ['dive', 'erupt', 'rockburst']
+  trapRush: ['charge', 'mudcharge', 'lunge', 'pounce', 'swallow', 'cyclone'],
+  trapLand: ['dive', 'dive2', 'erupt', 'spray', 'rockburst']
 };
 /** monster actions a sprung trap holds it for (tunable: the sim tests 1 and 2) */
 export const TRAP_HOLD: Record<'trapRush' | 'trapLand', number> = { trapRush: 2, trapLand: 2 };
@@ -528,8 +528,10 @@ export function autoDice(h: Hunt, action: DiceAction): number[] | null {
   if (blanks.length >= n) return blanks.slice(0, n);
   return free.length === n ? free : null;
 }
+/** the Cragwing's Rockslide buried your footing: no Swap this turn */
+export const swapBuried = (h: Hunt) => (h.mon.slide ?? 0) > 0;
 export function swap(h: Hunt, idx: number[]): boolean {
-  const sel = freeOnly(h, idx); if (h.over) return false;
+  const sel = freeOnly(h, idx); if (h.over || swapBuried(h)) return false;
   // a free swap (armor perk) never costs a die, even with dice selected (Nov 2026 bug hunt: the button said Free, then spent one)
   if (freeSwap(h)) { if (h.arm.quickswap && !h.freeSwapUsed) h.freeSwapUsed = true; else h.swapOnceUsed = true; }
   else if (sel.length !== 1) return false;
@@ -588,6 +590,7 @@ export interface TurnResult { taken: number }
 export function endTurn(h: Hunt): TurnResult {
   if (h.over) return { taken: 0 };
   const type = h.intent, info = intentInfo(h), m = h.mon, MD = def(h);
+  m.slide = 0; // a Rockslide buries you for the one turn after it
   const mark = h.logSeq ?? 0, dealt = h.stats.dealt - (h.dealtAtTurnStart ?? 0);
   let taken = 0, landed = false;
   const live = h.dice.filter(d => d.charged && !d.used).length;

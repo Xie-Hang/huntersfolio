@@ -24,7 +24,7 @@
   const molten = $derived((m?.molten ?? 0) > 0);
   const pose = $derived(
     hunt?.over === 'win' ? 'down' :
-    intent === 'erupt' ? 'erupt' : under ? 'under' :
+    intent === 'erupt' || intent === 'spray' ? 'erupt' : under ? 'under' :
     intent === 'dazed' || intent === 'unearthed' ? 'dazed' : intent === 'burrow' ? 'dig' : intent === 'swipe' ? 'rear' :
     intent === 'venting' ? 'vent' : 'idle');
   const part = (id: string) => (hunt ? { on: hunt.target === id && !hunt.over, broke: !!m?.parts[id]?.broken } : { on: false, broke: false });
@@ -33,7 +33,7 @@
 
   let rig: SVGGElement;
   const BURST: Keyframe[] = [{ transform: 'translateY(0) scale(1)' }, { transform: 'translateY(-110px) scale(1.08)', offset: 0.4 }, { transform: 'translateY(0) scale(1)' }];
-  oneShots(() => rig, () => hunt, i => (i === 'erupt' ? BURST : LUNGE));
+  oneShots(() => rig, () => hunt, i => (i === 'erupt' || i === 'spray' ? BURST : LUNGE));
 </script>
 
 <svg class="wc cb pose-{pose}" class:static={!hunt} class:molten viewBox="60 40 940 520" role="img" aria-label="Engraving of the Cinderback, a magma burrower{under ? ', underground' : ''}{molten ? ', its shell molten' : ''}">

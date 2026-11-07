@@ -37,7 +37,7 @@
   const layers = $derived(hunt ? (m?.plating ?? 0) : 2);
   const pose = $derived(
     hunt?.over === 'win' ? 'down' :
-    intent === 'dazed' ? 'dazed' : intent === 'pounce' ? 'crouch' : intent === 'sweep' ? 'coil' : intent === 'rimecoat' ? 'frost' : 'idle');
+    intent === 'dazed' ? 'dazed' : intent === 'pounce' ? 'crouch' : intent === 'sweep' ? 'coil' : intent === 'rimecoat' || intent === 'frostlock' ? 'frost' : 'idle');
   const part = (id: string) => (hunt ? { on: hunt.target === id && !hunt.over, broke: !!m?.parts[id]?.broken } : { on: false, broke: false });
   const tail = $derived(part('tail')), mantle = $derived(part('mantle')), jaw = $derived(part('jaw'));
   const enraged = $derived(!!m?.enraged);

@@ -28,7 +28,7 @@
   const pose = $derived(
     hunt?.over === 'win' ? 'down' :
     intent === 'dazed' ? 'dazed' : intent === 'crashed' || intent === 'pinned' ? 'crashed' : intent === 'stuck' ? 'stuck' :
-    intent === 'dive' ? 'dive' : intent === 'circle' ? 'circle' : air ? 'air' : intent === 'takeoff' ? 'takeoff' : 'idle');
+    intent === 'dive' || intent === 'dive2' ? 'dive' : intent === 'circle' ? 'circle' : air ? 'air' : intent === 'takeoff' ? 'takeoff' : 'idle');
   const part = (id: string) => (hunt ? { on: hunt.target === id && !hunt.over, broke: !!m?.parts[id]?.broken } : { on: false, broke: false });
   const wings = $derived(part('wings')), talons = $derived(part('talons')), crest = $derived(part('crest'));
   const enraged = $derived(!!m?.enraged);
@@ -37,7 +37,7 @@
   // a dive lands down and forward; a rake is the usual lunge
   const DIVE: Keyframe[] = [{ transform: 'translate(0,0)' }, { transform: 'translate(-60px,-40px) scale(1.05)', offset: 0.25 }, { transform: 'translate(-200px,150px) skewX(-12deg)', offset: 0.55 }, { transform: 'translate(0,0)' }];
   const GUST: Keyframe[] = [{ transform: 'translateX(0)' }, { transform: 'translateX(30px) scale(1.06)', offset: 0.3 }, { transform: 'translateX(-60px)', offset: 0.6 }, { transform: 'translateX(0)' }];
-  oneShots(() => rig, () => hunt, i => (i === 'dive' ? DIVE : i === 'gust' ? GUST : LUNGE));
+  oneShots(() => rig, () => hunt, i => (i === 'dive' || i === 'dive2' ? DIVE : i === 'gust' ? GUST : LUNGE));
 </script>
 
 <svg class="wc gs pose-{pose}" class:static={!hunt} class:aloft={air || pose === 'dive' || pose === 'circle'} viewBox="60 40 940 520" role="img" aria-label="Engraving of the Galeshrike, a storm raptor{air ? ', in flight' : ''}">

@@ -180,6 +180,8 @@ export interface Intent {
   elemDmg?: number;
   /** guard can't block any of it (a latch drinking) */
   noGuard?: boolean;
+  /** the monster's enraged move, the first time it comes this hunt: the telegraph marks it "New move" */
+  isNew?: boolean;
 }
 
 export type Tone = '' | 'gold' | 'ember' | 'daze';
@@ -195,6 +197,14 @@ export interface MonsterState {
   stanceUsed?: boolean;
   /** the Cinderpup (id burrowmole, the Foothills) has dug in at least once this hunt */
   dug?: boolean;
+  /** its enraged move (Nov 2026: each Ridge monster unlocks one when enraged) has been seen this hunt */
+  newSeen?: boolean;
+  /** Galeshrike: the second dive of a Twin Dive is still to come this climb */
+  twin?: boolean;
+  /** Cinderback: its next time under it sprays magma instead of erupting */
+  sprayNext?: boolean;
+  /** Cragwing: buried by its Rockslide, you can't Swap this turn */
+  slide?: number;
   /** turns it's still held by a trap */
   trapped?: number;
   hp: number;
@@ -422,6 +432,8 @@ export interface MonsterDef {
   rarePart: string;
   rare: string;
   habits: string;
+  /** what it starts doing once enraged (its own mechanic turned up, Nov 2026); shown in the bestiary */
+  enragedHabit?: string;
   intro: string;
   enrageText: string;
   parts: PartDef[];

@@ -102,7 +102,7 @@
     </div>
     <div class="nextline">
       {#if multi}<h3 class="mvname multi">{#each info.name.split(' + ') as n, i}{#if i}<span class="sep" aria-hidden="true">&nbsp;·&nbsp;</span>{/if}<span>{n}</span>{/each}</h3>
-      {:else}<h3 class="mvname">{info.name}</h3>{/if}
+      {:else}<h3 class="mvname">{info.name}{#if info.isNew}<span class="newmove">New move</span>{/if}</h3>{/if}
       {#if inc || tp?.extra}
         {#if total}<span class="big" aria-label="{total} damage to you this turn">−{total}</span>{:else}<span class="big safe">{E.trapCatches(h.trapSet, h.intent) ? 'Trapped' : inc?.evade ? 'Dodged' : 'Blocked'}</span>{/if}
       {/if}
@@ -136,6 +136,8 @@
 </Modal>
 
 <style>
+  /* an enraged monster's new move, the first time it comes */
+  .newmove { display: inline-block; margin-left: 10px; padding: 2px 8px; vertical-align: middle; font-size: 12px; font-weight: 600; letter-spacing: .04em; color: var(--ember); border: 1.5px solid var(--ember); border-radius: 3px; }
   .recap { display: flex; gap: 6px 12px; align-items: baseline; flex-wrap: wrap; padding-top: 8px; border-top: 1px solid var(--line); font-size: var(--fs-sm); color: var(--soft); }
   .recap .rt { flex: 1 1 200px; min-width: 0; }
   .recap b { color: var(--fg); font-weight: 600; }

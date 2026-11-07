@@ -162,7 +162,7 @@ export function playTurn(h: Hunt, p: Policy) {
     if (fx === 'heal30' && h.php < h.pmax * 0.55) E.useItem(h);
     else if (fx === 'net' && (h.intent === 'gust' || h.intent === 'circle')) E.useItem(h);
     else if (fx === 'thaw' && h.mon.plating >= 2) E.useItem(h);
-    else if (fx === 'blast' && h.intent === 'erupt' && !E.canHit(h, E.currentWeapon(h))) E.useItem(h);
+    else if (fx === 'blast' && (h.intent === 'erupt' || h.intent === 'spray') && !E.canHit(h, E.currentWeapon(h))) E.useItem(h);
     else if (fx === 'smoke' && inc >= 40) E.useItem(h);
     else if (fx === 'cureInfect' && (h.mon.pInf ?? 0) >= 2) E.useItem(h);
     else if ((fx === 'trapRush' || fx === 'trapLand') && E.trapCatches(fx, h.intent)) E.useItem(h);

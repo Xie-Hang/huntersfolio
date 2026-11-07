@@ -34,7 +34,7 @@
   <!-- the Foothills (the tutorial island): no elements or parts to read yet, just what it does and what it drops -->
   <div class="recline" aria-label="Your record">Hunted <b>{r.hunts}</b> · Won <b>{r.wins}</b></div>
   <dl class="facts">
-    <dt>Habits</dt><dd>{M.habits}</dd>
+    <dt>Habits</dt><dd>{M.habits}</dd>{#if M.enragedHabit}<dt>When enraged</dt><dd>{M.enragedHabit}</dd>{/if}
     <dt>Drops</dt><dd><span class="dropone"><Icon id={M.common} size={16} />{mname(M.common)}{#if have(M.common)} <b>×{have(M.common)}</b>{/if}</span>, every win</dd>
   </dl>
   {:else}
@@ -77,7 +77,7 @@
     </div>
   {:else}
     <div role="tabpanel" id="mp-habits" aria-labelledby="mt-habits"><dl class="facts">
-      <dt>Habits</dt><dd>{M.habits}</dd>
+      <dt>Habits</dt><dd>{M.habits}</dd>{#if M.enragedHabit}<dt>When enraged</dt><dd>{M.enragedHabit}</dd>{/if}
       {#if M.elemOf}<dt>Stances</dt><dd>Stone (weak to Gale), Gale (weak to Frost), Ember (weak to Stone), Frost (weak to Ember). Each stance's big attack is of that element: Sovereign Charge, Wing Dive, Caldera Eruption, Glacier Sweep.</dd>
       {:else if M.elemental?.length}<dt>{M.elem} attacks</dt><dd>{M.elemental.join(', ')}. Its other attacks are physical: armor that resists {M.elem} only cuts these.</dd>{/if}
       <dt>Reward</dt><dd><b>{E.REWARD.base} coin</b>, +{E.REWARD.perPart} per part broken, +{E.REWARD.capture} for a capture.</dd>

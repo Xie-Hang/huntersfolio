@@ -38,6 +38,7 @@ export const cinderback: MonsterDef = {
   rarePart: 'plate',
   rare: 'kilnheart',
   habits: 'Burrows every few turns, then erupts beneath you. Underground, only Blunt weapons reach it, and a heavy Blunt hit drives it back up. After erupting, its shell is molten for two turns and burns anyone who strikes it up close.',
+  enragedHabit: 'Every other time it digs in, it sprays magma up through the ground: Block can’t stop it, a heavy Blunt hit cancels it.',
   intro: 'The ground splits with a hiss. The Cinderback heaves itself out of a seam of glowing rock.',
   enrageText: 'Its vents roar white-hot. The Cinderback is enraged!',
   parts: [
@@ -52,6 +53,9 @@ export const cinderback: MonsterDef = {
       case 'swipe': return { name: enr ? 'Raking Swipes' : 'Claw Swipe', text: enr ? 'It rears up, claws glowing, and slashes twice.' : 'It scrapes forward, claws dragging sparks from the rock.', dmg: enr ? 34 : 26, threat: enr ? 2 : 1 };
       case 'burrow': return { name: 'Burrowing', text: 'It tears into the ground and vanishes in a spray of hot grit.', dmg: 0, threat: 0, note: 'Still on the surface now: hit it while you can. After your turn it\'s underground, then erupts' };
       case 'erupt': return { name: 'Eruption', text: 'The ground under your feet glows and bulges. Something is coming up!', dmg: pb ? (enr ? 60 : 48) : (enr ? 80 : 64), threat: enr ? 4 : 3, note: m.parts.vents.broken ? 'Drive it up with a heavy Blunt hit to cancel' : 'Drive it up to cancel. Then its shell is molten for 2 turns' };
+      // enraged (Nov 2026): every other time under, it sprays magma up through the cracks: Block can't stop it, but a
+      // heavy Blunt hit drives it up and cancels it like an eruption
+      case 'spray': return { name: 'Magma Spray', text: 'Molten rock jets up through every crack around you!', dmg: 42, threat: 3, noGuard: true, isNew: !m.newSeen, note: 'A heavy Blunt hit drives it up and cancels it' };
       case 'venting': return { name: 'Venting', text: 'It squats on the surface, steam pouring from its back.', dmg: 0, threat: 0, note: 'A free turn. Mind the molten shell' };
       case 'unearthed': return { name: 'Driven up', text: 'It bursts out of the ground, dazed and blinking.', dmg: 0, threat: 0, note: 'Eruption cancelled. Its action is lost' };
       case 'dazed': return { name: 'Dazed', text: 'It reels, eyes unfocused, swaying on its claws.', dmg: 0, threat: 0, note: 'Its action is lost' };
@@ -62,8 +66,8 @@ export const cinderback: MonsterDef = {
   next(h, prev) {
     const m = h.mon;
     // still underground after anything (a daze included: Nov 2026 bug hunt), it comes up next
-    if (prev === 'burrow' || m.under) return 'erupt';
-    if (prev === 'erupt') return 'venting';
+    if (prev === 'burrow' || m.under) { if (m.enraged && m.sprayNext !== false) { m.sprayNext = false; return 'spray'; } m.sprayNext = true; return 'erupt'; }
+    if (prev === 'erupt' || prev === 'spray') return 'venting';
     // m.seq counts swipes since the last burrow, so breaking the claws mid-cycle never makes it burrow early
     const swipes = m.parts.claws.broken ? 3 : 2;
     if (m.seq >= swipes) { m.seq = 0; return 'burrow'; }
@@ -79,6 +83,7 @@ export const cinderback: MonsterDef = {
         // +1 because the shared end-of-turn tick runs right after this
         if (!m.parts.vents.broken) { m.molten = MOLTEN_TURNS + 1; return 'Its shell glows molten.'; }
         return null;
+      case 'spray': m.under = false; m.newSeen = true; return 'It heaves up out of the steaming ground.';
       case 'venting': return 'It shakes off the last of the steam.';
       case 'unearthed': return 'It shakes the grit from its plate.';
       case 'dazed': return 'It shakes its head, slowly coming back to its senses.';
@@ -105,7 +110,7 @@ export const cinderback: MonsterDef = {
   tip(h, type) {
     const m = h.mon;
     if (m.under) {
-      if (carries(h, 'Blunt')) return `${dazeTag} Smash or Skullcrack drives it up and cancels the eruption (${carryingName(h, 'Blunt')}).`;
+      if (carries(h, 'Blunt')) return `${dazeTag} Smash or Skullcrack drives it up and cancels the ${type === 'spray' ? 'spray' : 'eruption'} (${carryingName(h, 'Blunt')}).`;
       if (h.item && h.itemCharges > 0 && h.item === 'blast') return 'Throw the Blast Powder to force it up.';
       return 'Only Blunt reaches it underground. Block for the eruption.';
     }

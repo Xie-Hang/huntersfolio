@@ -41,6 +41,7 @@ export const cragwing: MonsterDef = {
   rarePart: 'horn',
   rare: 'cragheart',
   habits: 'The test of every Ashfall Ridge lesson. It winds up a charge, takes to the air (only bows reach it), burrows into the scree (only mauls reach it, and a heavy blow drives it up) and wears slate plating that a blade clears in one hit. It never flies and burrows back to back.',
+  enragedHabit: 'Kicks the scree down at you: after its Rockslide you can’t Swap for a turn.',
   intro: 'Slate rattles down the scree. A drake with wings like split stone lands on the ridge and screams.',
   enrageText: 'The wind howls through its broken slates. The Cragwing is enraged!',
   parts: [
@@ -53,6 +54,8 @@ export const cragwing: MonsterDef = {
     const m = h.mon, enr = m.enraged;
     switch (type) {
       case 'brace': return { name: 'Slate Brace', text: 'It hunkers down behind its slate, wings held wide, and butts at you.', dmg: 20, threat: 1, note: 'Hits on its Horn and Back deal half this turn. Its Wings are exposed' };
+      // enraged (Nov 2026): loose slate down the slope; it buries your footing, so no Swap the turn after
+      case 'rockslide': return { name: 'Rockslide', text: 'It kicks the scree loose. Slate pours down the slope at you!', dmg: enr ? 34 : 28, threat: 2, isNew: !m.newSeen, note: 'Buries your footing: no Swap next turn. Swap now if you need to' };
       case 'lash': return { name: 'Tail Lash', text: 'It swings round, its tail scattering loose slate.', dmg: enr ? 34 : 28, threat: 1 };
       case 'windup': return { name: 'Winding up', text: 'It drops its horned head and scrapes the scree, gathering itself.', dmg: 0, threat: 0, note: 'Shale Charge next turn: block for it' };
       case 'charge': return { name: 'Shale Charge', text: 'It hurls itself down the slope, horn first!', dmg: enr ? 84 : 70, threat: enr ? 4 : 3 };
@@ -76,6 +79,7 @@ export const cragwing: MonsterDef = {
     if (prev === 'dive') return 'perched';
     if (m.air) { if (m.airLeft > 1) { m.airLeft--; return 'gust'; } return 'dive'; }
     let t: string = CYCLE[m.seq % CYCLE.length]; m.seq++;
+    if (m.enraged && t === 'lash') t = 'rockslide'; // enraged: its tail lash brings the slope down
     if (t === 'burrow' && m.parts.horn.broken) t = 'lash';
     // bracing opens its wings for this one turn (exposure ticks down after its move)
     if (t === 'brace' && !m.parts.wings.broken) m.parts.wings.exposed = Math.max(m.parts.wings.exposed, 1);
@@ -88,6 +92,7 @@ export const cragwing: MonsterDef = {
       case 'takeoff': m.air = true; m.airLeft = airTurns(h); return 'It rides the wind. It’s airborne!';
       case 'dive': m.air = false; m.airLeft = 0; return null;
       case 'perched': return 'It shakes out its wings.';
+      case 'rockslide': m.slide = 1; m.newSeen = true; return 'Slate buries your footing: no swapping this turn.';
       case 'brace': return 'It rises out of its brace.';
       case 'burrow': m.under = true; return 'It’s under the scree.';
       case 'rockburst':

@@ -45,7 +45,8 @@
   const gOk = $derived(!over && (n >= 1 || !!auto.guard?.length));
   const cd = $derived(E.chargeDice(h));
   const cOk = $derived(!over && !h.chargePending && (n === cd || (n === 0 && !!auto.charge)));
-  const sOk = $derived(!over && (n === 1 || (n === 0 && !!auto.swap)));
+  const buried = $derived(E.swapBuried(h));
+  const sOk = $derived(!over && !buried && (n === 1 || (n === 0 && !!auto.swap)));
   const capLive = $derived(!over && E.canCapture(h));
   const capOk = $derived(capLive && E.captureReady(h) && (n === 2 || (n === 0 && !!auto.capture)));
   const capAt = $derived(Math.floor(h.mon.max * E.CAPTURE_AT));
@@ -96,7 +97,7 @@
 
   {#if shows(h, 'block')}
   <button class="move dash {gOk ? 'ready' : 'no'}" class:pick={gOk && n > 0} class:keepmd={!shows(h, 'all')} data-coach="guard" data-key="a" aria-disabled={!gOk} onclick={() => gOk && game.guard()}>
-    <span><span class="mn"><Key k="A" />Block</span><span class="md">{selGuard ? `Blocks ${selGuard} with the selected dice` : auto.guard?.length ? `${usesLine(auto.guard)}: blocks ${auto.guard.reduce((a, i) => a + E.guardOf(h, i), 0)}` : `${h.arm.guard} a die · ${Math.round(h.arm.guard * (h.arm.blankx2 ? E.VEST_BLANK_GUARD : E.BLANK_GUARD))} a blank`}</span></span><span class="need dice"><CostDie c="any" /></span>
+    <span><span class="mn"><Key k="A" />Block</span><span class="md">{E.intentInfo(h).noGuard && E.intentInfo(h).dmg > 0 ? `Can’t stop the ${E.intentInfo(h).name}` : selGuard ? `Blocks ${selGuard} with the selected dice` : auto.guard?.length ? `${usesLine(auto.guard)}: blocks ${auto.guard.reduce((a, i) => a + E.guardOf(h, i), 0)}` : `${h.arm.guard} a die · ${Math.round(h.arm.guard * (h.arm.blankx2 ? E.VEST_BLANK_GUARD : E.BLANK_GUARD))} a blank`}</span></span><span class="need dice"><CostDie c="any" /></span>
   </button>
   {/if}
   {#if shows(h, 'charge')}
@@ -106,7 +107,7 @@
   {/if}
   {#if shows(h, 'swap')}
   <button class="move dash {sOk ? 'ready' : 'no'}" data-coach="swap" data-key="s" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
-    <span><span class="mn"><Key k="S" pad="RT" /><WeaponArt id={other.id} size={22} />Swap to {other.name}{#if swapCounter}<span class="tag counter">Counter</span>{/if}</span><span class="md">{other.type} · <Elem e={markOf(other)} />{elemLabel(other)}{auto.swap?.length ? ` · ${usesLine(auto.swap)}` : ''}</span></span><span class="need dice">{#if E.freeSwap(h)}Free{:else}<CostDie c="any" />{/if}</span>
+    <span><span class="mn"><Key k="S" pad="RT" /><WeaponArt id={other.id} size={22} />Swap to {other.name}{#if swapCounter}<span class="tag counter">Counter</span>{/if}</span><span class="md">{#if buried}Buried by the rockslide: no swapping this turn{:else}{other.type} · <Elem e={markOf(other)} />{elemLabel(other)}{auto.swap?.length ? ` · ${usesLine(auto.swap)}` : ''}{/if}</span></span><span class="need dice">{#if E.freeSwap(h)}Free{:else}<CostDie c="any" />{/if}</span>
   </button>
   {/if}
   <!-- With everything on it's always shown, so players learn it exists before it's available. In the second and third

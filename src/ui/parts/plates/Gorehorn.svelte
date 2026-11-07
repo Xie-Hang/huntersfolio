@@ -33,7 +33,7 @@
   const intent = $derived(hunt && !hunt.over ? hunt.intent : '');
   const pose = $derived(
     hunt?.over === 'win' ? 'down' :
-    intent === 'windup' ? 'windup' : intent === 'charge' ? 'tense' : intent === 'dazed' || intent === 'pinned' ? 'dazed' :
+    intent === 'windup' ? 'windup' : intent === 'charge' || intent === 'mudcharge' ? 'tense' : intent === 'dazed' || intent === 'pinned' ? 'dazed' :
     intent === 'exhausted' ? 'tired' : intent === 'root' ? 'root' : 'idle');
   const part = (id: string) => (hunt ? { on: hunt.target === id && !hunt.over, broke: !!m?.parts[id]?.broken } : { on: false, broke: false });
   const tusks = $derived(part('tusks')), hide = $derived(part('hide')), legs = $derived(part('legs'));

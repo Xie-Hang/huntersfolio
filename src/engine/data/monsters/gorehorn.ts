@@ -11,7 +11,7 @@ export const gorehorn: MonsterDef = {
   kind: 'Ridge boar',
   elem: 'Stone',
   // its elemental attacks: only these are reduced by armor that resists Stone; the rest are physical
-  elemental: ['Trampling Charge', 'Stumbling Rush'],
+  elemental: ['Trampling Charge', 'Stumbling Rush', 'Mud Charge'],
   weak: 'Gale',
   resist: 'Ember',
   hp: 360,
@@ -21,6 +21,7 @@ export const gorehorn: MonsterDef = {
   rarePart: 'tusks',
   rare: 'heartstone',
   habits: 'Winds up before every charge. Wallows in mud when hurt, which halves damage to its hide.',
+  enragedHabit: 'Charges straight out of the mud with no wind-up: the Mud Charge.',
   intro: 'The Gorehorn bursts out of the brush on Ashfall Ridge.',
   enrageText: 'It bellows and stamps. The Gorehorn is enraged!',
   parts: [
@@ -39,6 +40,10 @@ export const gorehorn: MonsterDef = {
       case 'charge': return tb
         ? { name: 'Stumbling Rush', text: 'It lurches forward on broken tusks.', dmg: enr ? 40 : 32, threat: 2 }
         : { name: 'Trampling Charge', text: 'It thunders forward, tusks first!', dmg: enr ? 85 : 70, threat: enr ? 4 : 3 };
+      // enraged (Nov 2026): a charge with no wind-up turn; you still see it coming this turn
+      case 'mudcharge': return tb
+        ? { name: 'Mud Charge', text: 'It slews out of the mud on broken tusks.', dmg: 30, threat: 2, isNew: !m.newSeen }
+        : { name: 'Mud Charge', text: 'It bursts out of the mud, tusks first, with no wind-up!', dmg: 56, threat: 3, isNew: !m.newSeen, note: 'No wind-up turn: block it now' };
       case 'wallow': return { name: 'Mud Wallow', text: 'It rolls in the wet earth, caking its hide in mud.', dmg: 0, threat: 0, note: 'Hide takes half damage for 2 turns' };
       case 'root': return { name: 'Root for Food', text: 'It noses the ground, distracted by roots.', dmg: 0, threat: 0, note: 'Heals 25. A free turn to attack' };
       case 'exhausted': return { name: 'Exhausted', text: 'It staggers, sides heaving.', dmg: 0, threat: 0, note: 'Wide open' };
@@ -59,6 +64,8 @@ export const gorehorn: MonsterDef = {
     if (!m.usedRoot && m.hp < m.max * 0.3) { m.usedRoot = true; return 'root'; }
     let t = ['jab', 'bristle', 'jab', 'windup'][m.seq % 4]; m.seq++;
     if (t === 'bristle' && (m.parts.hide.broken || early)) t = 'jab';
+    // enraged (not in the exam): the second jab of each round becomes a Mud Charge
+    if (m.enraged && !h.exam && t === 'jab' && m.seq % 4 === 3) t = 'mudcharge';
     return t;
   },
 
@@ -70,6 +77,7 @@ export const gorehorn: MonsterDef = {
       case 'bristle': m.stanceUsed = false; return 'Its bristles lie flat again.';
       case 'windup': return 'It gathers itself to charge.';
       case 'exhausted': return 'It catches its breath.';
+      case 'mudcharge': m.newSeen = true; return null;
       case 'pinned': return 'It shakes the arrow loose, snorting.';
       case 'dazed': return 'It shakes its head, slowly coming back to its senses.';
       case 'charge':

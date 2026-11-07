@@ -12,6 +12,7 @@ export function airTurns(h: { mon: { enraged: boolean; parts: Record<string, { b
 function ground(h: Parameters<MonsterDef['resolve']>[0]) {
   h.mon.air = false;
   h.mon.airLeft = 0;
+  h.mon.twin = false;
   h.intent = 'crashed';
 }
 
@@ -34,6 +35,7 @@ export const galeshrike: MonsterDef = {
   rarePart: 'crest',
   rare: 'tempesteye',
   habits: 'Takes to the air every few turns. In the air only Pierce (bows) can hit it. It circles before every dive, then sits stuck for a turn.',
+  enragedHabit: 'Pulls out of its dive and drops again: the Twin Dive.',
   intro: 'A shriek splits the wind. The Galeshrike drops onto a ridge-top boulder.',
   enrageText: 'Its feathers bristle with static. The Galeshrike is enraged!',
   parts: [
@@ -50,6 +52,8 @@ export const galeshrike: MonsterDef = {
       case 'gust': return { name: enr ? 'Gale Storm' : 'Gust Buffet', text: enr ? 'It hammers the air with both wings, again and again.' : 'It beats its wings hard, driving a wall of wind at you.', dmg: enr ? 38 : 28, threat: enr ? 2 : 1, halfGuard: true, note: 'Ignores half your guard' };
       case 'circle': return { name: 'Circling high', text: 'It climbs into a wide circle overhead, watching you.', dmg: 0, threat: 0, note: 'Dives next turn' };
       case 'dive': return { name: 'Plunging Dive', text: 'It folds its wings and drops like a stone!', dmg: tb ? (enr ? 70 : 60) : (enr ? 95 : 80), threat: enr ? 4 : 3, note: 'Then it’s stuck for a turn' };
+      // enraged (Nov 2026): it pulls out of the dive and drops again, from low: a second dive, still airborne
+      case 'dive2': return { name: 'Twin Dive', text: 'It pulls up, wheels and drops again!', dmg: tb ? 40 : 55, threat: 3, isNew: !m.newSeen, note: 'Airborne still: only bows reach it. Then it’s stuck for a turn' };
       case 'stuck': return { name: 'Beak stuck', text: 'Its beak is buried in the earth. It thrashes to pull free.', dmg: 0, threat: 0, note: 'Grounded. The crest is exposed' };
       case 'crashed': return { name: 'Brought down', text: 'It crashes to the ground in a tangle of feathers.', dmg: 0, threat: 0, note: 'Grounded. Its action is lost' };
       case 'feint': return { name: 'Feint', text: 'It hops sideways, wings half open, snapping at you as it goes.', dmg: 18, threat: 1, note: 'It sidesteps your first Cut or Blunt hit this turn (the dice are still spent). Pierce isn’t dodged' };
@@ -61,7 +65,8 @@ export const galeshrike: MonsterDef = {
   next(h, prev) {
     const m = h.mon;
     if (prev === 'circle') return 'dive';
-    if (prev === 'dive') return 'stuck';
+    if (prev === 'dive' && m.twin) return 'dive2';
+    if (prev === 'dive' || prev === 'dive2') return 'stuck';
     if (m.air) { if (m.airLeft > 1) { m.airLeft--; return 'gust'; } return 'circle'; }
     const t = ['rake', 'feint', 'takeoff'][m.seq % 3]; m.seq++; return t;
   },
@@ -74,13 +79,14 @@ export const galeshrike: MonsterDef = {
   resolve(h, type) {
     const m = h.mon;
     switch (type) {
-      case 'takeoff': m.air = true; m.airLeft = airTurns(h); return 'It climbs into the wind. It’s airborne!';
+      case 'takeoff': m.air = true; m.airLeft = airTurns(h); m.twin = m.enraged; return 'It climbs into the wind. It’s airborne!';
       case 'circle': return 'It wheels overhead, lining up a dive.';
       case 'stuck': return 'It wrenches its beak free.';
       case 'feint': h.mon.stanceUsed = false; return 'It settles, wary.';
       case 'crashed': return 'It scrambles back to its feet.';
       case 'dazed': return 'It shakes its head, slowly coming back to its senses.';
-      case 'dive': m.air = false; m.airLeft = 0; return null;
+      case 'dive': if (m.twin) return 'It pulls up out of the dive!'; m.air = false; m.airLeft = 0; return null;
+      case 'dive2': m.twin = false; m.newSeen = true; m.air = false; m.airLeft = 0; return null;
     }
     return null;
   },
