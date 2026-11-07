@@ -224,8 +224,11 @@ class Game {
     if (ok) sfx('item');
     if (ok && this.hunt && this.hunt.php > before) this.float('player', `+${this.hunt.php - before}`, 'heal');
   }
+  /** how many times Undo has been used this session (the Foothills' Undo step waits for one) */
+  undos = $state(0);
   undo() {
     if (!this.hunt || this.hunt.over || !this.undoStack.length || !shows(this.hunt, 'undo')) return;
+    this.undos++;
     this.hunt = this.undoStack[this.undoStack.length - 1];
     this.undoStack = this.undoStack.slice(0, -1);
     this.sel = [];

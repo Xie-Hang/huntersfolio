@@ -34,6 +34,7 @@
   }
   /** a guided step waits for its target: the card shows once the thing it points at is there */
   let ready = $state(false);
+  let target: HTMLElement | null = null;
   let cardEl = $state<HTMLElement>();
 
   // Lock everything but the target and the card while a guided step is up (pointer, touch and keys, in the capture
@@ -46,8 +47,8 @@
     const allowed = (n: EventTarget | null) => {
       if (!(n instanceof Node)) return false;
       if (cardEl?.contains(n)) return true;
-      const el = anchor();
-      return !!el && el.contains(n);
+      // the target as last placed (not re-checked here: a hover or press animation must not make it unclickable)
+      return !!target && target.isConnected && target.contains(n);
     };
     const block = (e: Event) => { if (!allowed(e.target)) { e.preventDefault(); e.stopImmediatePropagation(); } };
     const keys = (e: KeyboardEvent) => { if (e.key === 'Tab' || e.key === 'Shift') return; if (!allowed(document.activeElement)) { e.preventDefault(); e.stopImmediatePropagation(); } };
@@ -66,6 +67,9 @@
 
   function place() {
     const z = zoom(), el = anchor(), vw = window.innerWidth / z, vh = window.innerHeight / z, ch = cardH || 120, cw = Math.min(W, vw - EDGE * 2);
+    // keep the last good target while it's still on the page (it can be mid-animation for a moment)
+    if (!el && target?.isConnected && ready && coach.current?.at.some(k => target!.dataset.coach === k)) return;
+    target = el;
     if (!el) { ring = null; arrow = null; ready = !coach.current?.guide; pos = { x: (vw - cw) / 2, y: vh - ch - 24 }; return; }
     ready = true;
     const r = rectOf(el);

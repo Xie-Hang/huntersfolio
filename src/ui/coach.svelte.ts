@@ -46,19 +46,19 @@ const ISLAND: Tip[] = [
   {
     id: 'i-begin', guide: true, learn: true, at: ['begin'],
     when: () => game.view === 'board' && !game.hunt && E.islandStep(game.save) === 0,
-    text: () => 'Your first hunt: a Scuttlehog. Tap Hunt.',
+    text: () => 'Your first hunt: a Scuttlehog. Click Hunt.',
     done: () => game.view === 'hunt'
   },
   {
     id: 'i-die', guide: true, learn: true, at: ['dice'],
     when: () => { const h = onIsland('scuttlehog'); return !!h && h.turn === 1 && unusedTurn(h) && !game.sel.length; },
-    text: () => 'Tap a die.',
+    text: () => 'Click a die.',
     done: () => game.sel.length > 0 || !!hunt()?.dice.some(d => d.used)
   },
   {
     id: 'i-move', guide: true, learn: true, at: ['move'],
     when: () => { const h = onIsland('scuttlehog'); return !!h && h.turn === 1 && game.sel.length > 0 && unusedTurn(h); },
-    text: () => 'Now tap Slash.',
+    text: () => 'Now click Slash.',
     done: () => !!hunt()?.dice.some(d => d.used)
   },
   {
@@ -66,6 +66,14 @@ const ISLAND: Tip[] = [
     when: () => { const h = onIsland('scuttlehog'); return !!h && h.turn === 1 && freeDice(h) === 0; },
     text: () => 'Dice spent. End your turn.',
     done: () => (hunt()?.turn ?? 1) > 1
+  },
+  {
+    // the shortcut (Mekkman, Nov 2026): a move picks its own dice when none are selected. Turn 2, once the long way
+    // (click a die, then the move) has been done
+    id: 'i-quick', guide: true, learn: true, at: ['move'],
+    when: () => { const h = onIsland('scuttlehog'); return !!h && h.turn === 2 && unusedTurn(h) && !game.sel.length; },
+    text: () => 'Shortcut: click Slash. It picks the die.',
+    done: () => { const h = hunt(); return !!h && (!unusedTurn(h) || h.turn > 2); }
   },
   {
     id: 'i-tele', guide: true, info: true, at: ['tele'],
@@ -78,6 +86,12 @@ const ISLAND: Tip[] = [
     when: () => { const h = onIsland('snapclaw'); return !!h && h.intent === 'pinch' && h.guard === 0 && freeDice(h) > 0; },
     text: () => 'A big hit is coming. Block it.',
     done: () => (hunt()?.guard ?? 0) > 0
+  },
+  {
+    id: 'i-undo', guide: true, learn: true, at: ['undo'],
+    when: () => { const h = onIsland('snapclaw'); return !!h && h.turn >= 2 && h.intent !== 'pinch' && game.undoStack.length > 0 && !unusedTurn(h); },
+    text: () => 'Changed your mind? Click Undo to take it back.',
+    done: () => game.undos > 0
   },
   {
     id: 'i-forge', guide: true, learn: true, at: ['to-forge', 'nav-forge'],
@@ -95,15 +109,8 @@ const ISLAND: Tip[] = [
   {
     id: 'i-aim', guide: true, learn: true, at: ['parts'],
     when: () => { const h = onIsland('tuskling'); return !!h && E.islandStep(game.save) === 3 && h.target !== 'hide' && !h.mon.parts.hide.broken; },
-    text: () => 'Blades can\u2019t break tusks. Tap the Hide.',
+    text: () => 'Blades can\u2019t break tusks. Click the Hide.',
     done: () => hunt()?.target === 'hide'
-  },
-  {
-    // the shortcut (Mekkman, Nov 2026): a move picks its own dice when none are selected
-    id: 'i-quick', guide: true, learn: true, at: ['move'],
-    when: () => { const h = onIsland('tuskling'); return !!h && E.islandStep(game.save) === 3 && game.save.tips.includes('i-aim') && unusedTurn(h) && !game.sel.length && E.currentWeapon(h).moves.some((_, i) => E.canUseMove(h, i)); },
-    text: () => 'Shortcut: tap a move. It picks the dice.',
-    done: () => { const h = hunt(); return !!h && !unusedTurn(h); }
   },
   {
     id: 'i-maul', guide: true, info: true, at: ['slot-w1'],
@@ -118,16 +125,28 @@ const ISLAND: Tip[] = [
     done: () => { const h = hunt(); return !!h && E.currentWeapon(h).type === 'Blunt'; }
   },
   {
-    id: 'i-pick', guide: true, at: ['dice'],
-    when: () => { const h = onIsland('burrowmole'); return !!h && h.turn >= 2 && h.rerolls > 0 && unusedTurn(h) && !game.sel.length && h.dice.some(d => d.face === 'B'); },
-    text: () => 'Don\u2019t like a die? Tap it.',
-    done: () => game.sel.length > 0 || (hunt()?.stats.rerollsUsed ?? 0) > 0
+    id: 'i-pick', guide: true, learn: true, at: ['die-blank'],
+    when: () => { const h = onIsland('burrowmole'); return !!h && h.rerolls > 0 && h.stats.rerollsUsed === 0 && unusedTurn(h) && !h.mon.under && !game.sel.length && h.dice.some(d => d.face === 'B' && !d.used); },
+    text: () => 'A blank fits no move. Click the blank die.',
+    done: () => { const h = hunt(); return !!h && (h.stats.rerollsUsed > 0 || game.sel.some(i => h.dice[i]?.face === 'B')); }
   },
   {
     id: 'i-reroll', guide: true, learn: true, at: ['reroll'], side: 'right',
-    when: () => { const h = onIsland('burrowmole'); return !!h && h.rerolls > 0 && unusedTurn(h) && game.sel.length > 0 && game.save.tips.includes('i-pick'); },
-    text: () => 'Now Reroll it. New face, same turn.',
+    when: () => { const h = onIsland('burrowmole'); return !!h && h.rerolls > 0 && h.stats.rerollsUsed === 0 && game.sel.length > 0; },
+    text: () => 'Now click Reroll. It rolls that die again.',
     done: () => (hunt()?.stats.rerollsUsed ?? 0) > 0
+  },
+  {
+    id: 'i-multi', guide: true, learn: true, at: ['dice'],
+    when: () => { const h = onIsland('burrowmole'); const bl = h ? h.dice.filter(d => d.face === 'B' && !d.used).length : 0; return !!h && bl >= 2 && h.rerolls > 0 && h.stats.rerollsUsed === 1 && game.sel.length < 2; },
+    text: () => 'You can reroll several. Click each blank die.',
+    done: () => { const h = hunt(); return !!h && (h.stats.rerollsUsed > 1 || game.sel.filter(i => h.dice[i]?.face === 'B').length >= 2); }
+  },
+  {
+    id: 'i-reroll2', guide: true, learn: true, at: ['reroll'], side: 'right',
+    when: () => { const h = onIsland('burrowmole'); return !!h && h.rerolls > 0 && h.stats.rerollsUsed === 1 && game.sel.length >= 2 && game.save.tips.includes('i-multi'); },
+    text: () => 'Now click Reroll. They all roll again.',
+    done: () => (hunt()?.stats.rerollsUsed ?? 0) > 1
   },
   {
     id: 'i-shop', guide: true, learn: true, at: ['to-shop', 'nav-shop'],
