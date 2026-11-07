@@ -21,7 +21,7 @@
   const inc = $derived(E.incoming(h));
   const selGuard = $derived(game.sel.filter(i => !h.dice[i]?.used).reduce((a, i) => a + E.guardOf(h, i), 0));
   /** charging now would be broken by this turn's hit (playtest: nobody knew a hit can break a charge) */
-  const chargeRisk = $derived(!h.over && !h.chargePending && (inc?.net ?? 0) >= E.CHARGE_BREAK);
+  const chargeRisk = $derived(!h.over && !h.chargePending && (inc?.net ?? 0) > 0);
   const swapCounter = $derived(!!tipText && !h.over && tipText.includes(other.name) && other.moves.some(m => tipText.includes(m.name)) && !w.moves.some(m => tipText.includes(m.name)));
   const over = $derived(!!h.over);
   const n = $derived(game.sel.length);
@@ -101,7 +101,7 @@
   {/if}
   {#if shows(h, 'charge')}
   <button class="move dash {cOk ? 'ready' : 'no'}" onmouseenter={() => (game.preview = n ? [...game.sel] : auto.charge ?? [])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = n ? [...game.sel] : auto.charge ?? [])} onblur={() => (game.preview = [])} data-coach="charge" data-key="c" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
-    <span><span class="mn"><Key k="C" />Charge</span><span class="md">{chargeRisk ? `The −${inc?.net} coming would break it: block it under ${E.CHARGE_BREAK} first` : `Next hit ×2 · breaks at ${E.CHARGE_BREAK}+`}</span></span><span class="need dice"><CostDie c="any" /><span class="x">×{cd}</span></span>
+    <span><span class="mn"><Key k="C" />Charge</span><span class="md">{chargeRisk ? `The −${inc?.net} coming would break it: block all of it first` : `Next hit ×2 · any hit breaks it`}</span></span><span class="need dice"><CostDie c="any" /><span class="x">×{cd}</span></span>
   </button>
   {/if}
   {#if shows(h, 'swap')}

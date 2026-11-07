@@ -80,6 +80,7 @@ function evaluate(h: Hunt, plan: Omit<Plan, 'score'>, p: Policy): number | null 
   let score = dealt + 0.5 * partProg - risk * (taken + burned) + 0.3 * prevented + (plan.charge.length ? 30 : 0);
   if (E.currentWeapon(c).moves[0].flow) score += 4 * plan.moves.filter(i => i === 0).length;
   score -= risk * E.CHARGED_HIT * c.dice.filter(d => d.charged && (!d.used || d.used === 'Block')).length;
+  if (plan.charge.length && taken > 0) return null; // any hit through breaks a charge
   if (c.php - taken <= 0) score -= 1000;
   return score;
 }
@@ -100,7 +101,7 @@ function bestPlan(h: Hunt, p: Policy): Plan {
       .sort((x, y) => (h.dice[x].face === 'B' ? 0 : 1) - (h.dice[y].face === 'B' ? 0 : 1));
     for (let g = 0; g <= (p.noGuard ? 0 : left.length); g++) for (const ch of [false, true]) {
       const cd = E.chargeDice(h);
-      if (ch && (p.skill === 'casual' || p.noCharge || left.length - g < cd || inc >= E.CHARGE_BREAK)) continue;
+      if (ch && (p.skill === 'casual' || p.noCharge || left.length - g < cd))  continue;
       // a casual player guards everything against a big hit, or when its weapon can't reach the monster at all
       if (p.skill === 'casual' && !p.noGuard && g !== (inc >= 40 || (!E.canHit(h, E.currentWeapon(h)) && inc > 0) ? left.length : 0)) continue;
       const plan = { moves, guard: left.slice(0, g), charge: ch ? left.slice(g, g + cd) : [] };

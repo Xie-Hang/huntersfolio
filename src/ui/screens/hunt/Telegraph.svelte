@@ -21,7 +21,7 @@
   /** the hint names one of your moves: that move answers what the monster is doing */
   const isCounter = $derived(!!tip && [...E.currentWeapon(h).moves, ...E.otherWeapon(h).moves].some(m => tip!.includes(m.name)));
   /** you're charging and this hit is big enough to break it */
-  const breaksCharge = $derived(!!h.chargePending && !!inc && inc.net >= E.CHARGE_BREAK);
+  const breaksCharge = $derived(!!h.chargePending && !!inc && inc.net > 0);
   const breaksSnare = $derived(!!h.snareSet && !!inc && inc.net >= E.CHARGE_BREAK);
   const multi = $derived(info.name.includes(' + '));
   const cls = $derived(h.over ? 'end' : info.threat >= 3 ? 'danger' : info.threat === 0 ? 'calm' : '');
@@ -119,7 +119,7 @@
     {/if}
     {#if tp?.extra}<div class="calc rider">+<b>{tp.extra}</b> at the end of the turn: {tp.why.join(', ')} · <span class="nores">block can’t stop it</span></div>{/if}
     {#if E.trapCatches(h.trapSet, h.intent)}<div class="calc rider" style="color:var(--gold-hi)">Your {(E.ITEMS[h.item ?? '']?.name ?? 'trap')} catches it: no damage, and it’s held for {E.TRAP_HOLD[h.trapSet!]} turns{E.canCapture(h) ? '. It’s weak enough, so it’s captured' : ''}.</div>{:else if h.trapSet}<div class="calc rider"><span class="nores">Your {(E.ITEMS[h.item ?? '']?.name ?? 'trap')} won’t catch this: it’s wasted.</span></div>{/if}
-    {#if info.note || info.steady || breaksCharge || breaksSnare}<div class="note">{[info.note, info.steady && E.carries(h, 'Blunt') ? 'Daze can\'t cancel it' : null, breaksCharge ? `This hit breaks your charge (${E.CHARGE_BREAK}+)` : null, breaksSnare ? `This hit tears it free of your snare: block it under ${E.CHARGE_BREAK}` : null].filter(Boolean).join(' · ')}</div>{/if}
+    {#if info.note || info.steady || breaksCharge || breaksSnare}<div class="note">{[info.note, info.steady && E.carries(h, 'Blunt') ? 'Daze can\'t cancel it' : null, breaksCharge ? 'This hit breaks your charge' : null, breaksSnare ? `This hit tears it free of your snare: block it under ${E.CHARGE_BREAK}` : null].filter(Boolean).join(' · ')}</div>{/if}
     {#if tip}<div class="answer" class:counter={isCounter}><b>{isCounter ? 'Counter:' : 'Tip:'}</b> <Tagged text={tip} /></div>{/if}
     {#if recap}
       <div class="recap">

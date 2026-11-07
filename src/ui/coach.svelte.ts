@@ -531,8 +531,8 @@ export const TIPS: Tip[] = [
   {
     // the fourth hunt's layer: Charge (Capture has its own tip when it's ready)
     id: 'chargeNew', learn: true, at: ['charge'],
-    when: () => { const h = hunt(); return !!h && shows(h, 'all') && h.turn >= 2 && unusedTurn(h) && (E.incoming(h)?.net ?? 0) < E.CHARGE_BREAK && !h.chargePending && !h.chargeReady; },
-    text: () => `New: Charge. Spend ${E.chargeDice(hunt()!)} dice now and your first hit next turn deals double. A hit of ${E.CHARGE_BREAK}+ on you breaks it.`,
+    when: () => { const h = hunt(); return !!h && shows(h, 'all') && h.turn >= 2 && unusedTurn(h) && (E.incoming(h)?.net ?? 0) === 0 && !h.chargePending && !h.chargeReady; },
+    text: () => `New: Charge. Spend ${E.chargeDice(hunt()!)} dice now and your first hit next turn deals double. Any hit that gets through breaks it.`,
     done: () => !!hunt()?.chargePending
   },
   {
