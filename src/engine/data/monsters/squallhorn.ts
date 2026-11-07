@@ -45,19 +45,19 @@ export const squallhorn: MonsterDef = {
       case 'jab': return { name: 'Tusk Jab', text: 'It snorts and hooks a tusk at you.', dmg: enr ? 42 : 32, threat: 2 };
       case 'gather': {
         const after = Math.min(cap, w + (enr && w === 0 ? 2 : 1));
-        return { name: 'Gathering Wind', text: 'Its mane streams out as the wind gathers.', dmg: enr ? 32 : 25, threat: 1, note: after >= cap ? `Wind ${after} of ${cap} after this: it charges next turn` : `Wind ${after} of ${cap} after this. At ${cap} it charges` };
+        return { name: 'Gathering Wind', text: 'Its mane streams out as the wind gathers.', dmg: enr ? 32 : 25, threat: 1, note: after >= cap ? `**Wind** ${after} of ${cap} after this. Charges next turn` : `**Wind** ${after} of ${cap} after this. At ${cap} it charges` };
       }
       case 'cyclone': {
         const base = cap >= 3 ? (enr ? 118 : 106) : (enr ? 93 : 84);
         const dmg = Math.round(base * (tb ? 0.75 : 1));
-        return { name: 'Cyclone Charge', text: 'It lets go of the storm and comes at you inside it!', dmg, threat: enr ? 4 : 3, halfGuard: !!m.tailwind, note: m.tailwind ? 'Tailwind: ignores half your guard' : undefined };
+        return { name: 'Cyclone Charge', text: 'It lets go of the storm and comes at you inside it!', dmg, threat: enr ? 4 : 3, halfGuard: !!m.tailwind, note: m.tailwind ? '**Tailwind**. Your **Block** is ½' : undefined };
       }
       // enraged (Nov 2026): its wind turned up, a jab that gathers the storm as it lands
-      case 'squall': return { name: 'Squall Jab', text: 'It hooks a tusk at you, and the wind rises with it.', dmg: enr ? 42 : 32, threat: 2, isNew: !m.newSeen, note: `Gathers a pip of wind too (${Math.min(cap, w + 1)} of ${cap}). Daze it to scatter the wind` };
-      case 'tailwind': return { name: 'Tailwind', text: 'It turns its mane into the wind and lets it fill.', dmg: 0, threat: 0, note: 'Its next charge ignores half your block' };
-      case 'winded': return { name: 'Winded', text: 'The storm drops away. It stands blowing, sides heaving.', dmg: 0, threat: 0, note: 'A free turn to attack' };
-      case 'pinned': return { name: 'Pinned', text: 'An arrow through the foreleg breaks its stance. Some of the wind slips away.', dmg: 0, threat: 0, note: 'A pip of wind lost' };
-      case 'dazed': return { name: 'Dazed', text: 'It reels, and the gathered wind tears loose around it.', dmg: 0, threat: 0, note: 'Its action is lost. The wind is gone' };
+      case 'squall': return { name: 'Squall Jab', text: 'It hooks a tusk at you, and the wind rises with it.', dmg: enr ? 42 : 32, threat: 2, isNew: !m.newSeen, note: `Also gathers **Wind** (${Math.min(cap, w + 1)} of ${cap}). **Daze** scatters it` };
+      case 'tailwind': return { name: 'Tailwind', text: 'It turns its mane into the wind and lets it fill.', dmg: 0, threat: 0, note: 'Your **Block** is ½ against its next **Cyclone Charge**' };
+      case 'winded': return { name: 'Winded', text: 'The storm drops away. It stands blowing, sides heaving.', dmg: 0, threat: 0, note: 'A free turn' };
+      case 'pinned': return { name: 'Pinned', text: 'An arrow through the foreleg breaks its stance. Some of the wind slips away.', dmg: 0, threat: 0, note: 'Loses 1 **Wind**' };
+      case 'dazed': return { name: 'Dazed', text: 'It reels, and the gathered wind tears loose around it.', dmg: 0, threat: 0, note: 'It loses its turn and its **Wind**' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
   },
@@ -113,7 +113,7 @@ export const squallhorn: MonsterDef = {
 
   tip(h, type) {
     const m = h.mon;
-    if (type === 'cyclone' && carries(h, 'Blunt') && m.daze >= m.dazeMax * 0.6) return `${dazeTag} Fill the daze meter now to stop this charge.`;
+    if (type === 'cyclone' && carries(h, 'Blunt') && m.daze >= m.dazeMax * 0.6) return `${dazeTag} A full **Daze** meter now stops this charge.`;
     return null;
   }
 };

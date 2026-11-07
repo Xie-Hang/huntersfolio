@@ -64,7 +64,7 @@ export const duskheron: MonsterDef = {
 
   intent(h, type): Intent {
     const m = h.mon, enr = m.enraged, halfGuard = (m.screech ?? 0) > 0;
-    if (type === 'rear') return { name: 'Rear Up', text: 'Both heads rise high, necks coiled. Two spears are coming.', dmg: 0, threat: 0, note: 'Twin Spear next turn. Daze a head to stop its half' };
+    if (type === 'rear') return { name: 'Rear Up', text: 'Both heads rise high, necks coiled. Two spears are coming.', dmg: 0, threat: 0, note: '**Twin Spear** next turn. **Daze** on a head stops its half' };
     if (type === 'twin') {
       const live = HEADS.filter(x => !reeling(h, x)), each = enr ? 50 : 42;
       return { name: 'Twin Spear', text: live.length === 2 ? 'Both heads drive down at once!' : live.length ? 'The head still standing drives down!' : 'Both heads sway, dazed.', dmg: each * live.length, threat: band(each * live.length), halfGuard };
@@ -72,16 +72,16 @@ export const duskheron: MonsterDef = {
     // enraged (Nov 2026): both heads cross from either side at once, half your block slips between them
     if (type === 'scissor') {
       const live = HEADS.filter(x => !reeling(h, x)), each = 30;
-      return { name: 'Scissor Strike', text: live.length === 2 ? 'Both necks swing in from either side at once!' : 'The head still standing swings in alone.', dmg: each * live.length, threat: band(each * live.length), halfGuard: true, isNew: !m.newSeen, note: 'Your block counts half. Daze a head to stop its half' };
+      return { name: 'Scissor Strike', text: live.length === 2 ? 'Both necks swing in from either side at once!' : 'The head still standing swings in alone.', dmg: each * live.length, threat: band(each * live.length), halfGuard: true, isNew: !m.newSeen, note: 'Your **Block** is ½. **Daze** on a head stops its half' };
     }
-    if (type === 'dazed') return { name: 'Dazed', text: 'Both heads sway, eyes unfocused.', dmg: 0, threat: 0, note: 'Its action is lost' };
+    if (type === 'dazed') return { name: 'Dazed', text: 'Both heads sway, eyes unfocused.', dmg: 0, threat: 0, note: 'It loses its turn' };
     const acts = parse(type);
     if (!acts) return { name: '…', text: '', dmg: 0, threat: 0 };
     const parts = HEADS.map(x => headAct(h, x, reeling(h, x) ? 'reel' : acts[x]));
     const dmg = parts.reduce((t, p) => t + p.dmg, 0);
     const names = parts.map(p => p.name).join(' + ');
     const screech = HEADS.some(x => acts[x] === 'screech' && !reeling(h, x));
-    return { name: names, text: parts.map(p => p.text).join(' '), dmg, threat: band(dmg), halfGuard, note: screech ? 'Your block is halved next turn' : undefined };
+    return { name: names, text: parts.map(p => p.text).join(' '), dmg, threat: band(dmg), halfGuard, note: screech ? 'Your **Block** is ½ next turn' : undefined };
   },
 
   next(h, prev) {
@@ -125,9 +125,9 @@ export const duskheron: MonsterDef = {
   },
 
   tip(h, type) {
-    if (type === 'rear') return carries(h, 'Blunt') ? `Daze a head with your ${carryingName(h, 'Blunt')} and only one spear comes down.` : 'A Twin Spear is coming. Block everything you can.';
-    if (!h.mon.parts.wings.broken && carries(h, 'Pierce')) return `Break the wings with your ${carryingName(h, 'Pierce')} to stop the Twin Spear.`;
-    if (carries(h, 'Blunt')) return 'Each head has its own daze meter. A dazed head misses this turn and the next.';
+    if (type === 'rear') return carries(h, 'Blunt') ? `**Daze** on a head from your ${carryingName(h, 'Blunt')} stops its spear.` : 'A **Twin Spear** is coming.';
+    if (!h.mon.parts.wings.broken && carries(h, 'Pierce')) return `Breaking its wings with your ${carryingName(h, 'Pierce')} stops the **Twin Spear**.`;
+    if (carries(h, 'Blunt')) return 'Each head has its own **Daze** meter. A dazed head loses this turn and the next.';
     return null;
   }
 };

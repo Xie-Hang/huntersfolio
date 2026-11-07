@@ -185,7 +185,7 @@ export const TRAP_CATCH: Record<'trapRush' | 'trapLand', string[]> = {
 /** monster actions a sprung trap holds it for (tunable: the sim tests 1 and 2) */
 export const TRAP_HOLD: Record<'trapRush' | 'trapLand', number> = { trapRush: 2, trapLand: 2 };
 export const trapCatches = (fx: string | null | undefined, intent: string) => !!fx && (TRAP_CATCH as Record<string, string[]>)[fx]?.includes(intent);
-const TRAPPED: Intent = { name: 'Trapped', text: 'It thrashes in the trap.', dmg: 0, threat: 0, note: 'Its action is lost' };
+const TRAPPED: Intent = { name: 'Trapped', text: 'It thrashes in the trap.', dmg: 0, threat: 0, note: 'It loses its turn' };
 /** The first hunt (lesson 1) is a gentler fight: a player who only knows the basics should win it, and win it in
  *  about 8 turns (Nov 2026 playtest). Its moves hit softer and it has less HP. */
 export const LESSON1 = { hp: 0.7, dmg: 0.9 };
@@ -281,8 +281,8 @@ export function turnPreview(h: Hunt): { attack: number; extra: number; why: stri
   const taken0 = c.stats.taken, { taken } = endTurn(c);
   const extra = Math.max(0, c.stats.taken - taken0 - taken), why: string[] = [];
   if (extra) for (const { t } of [...c.log].reverse()) {
-    const w = /spark on you discharges/i.test(t) ? 'your Spark goes off' : /charged d(ie|ice)/i.test(t) && /discharge|go(es)? off/i.test(t) ? 'charged dice you didn’t use go off'
-      : /infection eats at you/i.test(t) ? 'the infection' : /slime (burns|drinks|stings)/i.test(t) ? 'its slime' : /magma burns you/i.test(t) ? 'the magma' : null;
+    const w = /spark on you discharges/i.test(t) ? 'your **Spark**' : /charged d(ie|ice)/i.test(t) && /discharge|go(es)? off/i.test(t) ? 'unused charged dice'
+      : /infection eats at you/i.test(t) ? '**Infect**' : /slime (burns|drinks|stings)/i.test(t) ? 'its slime' : /magma burns you/i.test(t) ? 'the magma' : null;
     if (w && !why.includes(w)) why.push(w);
   }
   return { attack: taken, extra, why, hpAfter: c.over === 'lose' ? 0 : c.php, lethal: c.over === 'lose' };

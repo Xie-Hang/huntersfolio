@@ -49,15 +49,15 @@ export const galeshrike: MonsterDef = {
     switch (type) {
       case 'rake': return { name: 'Talon Rake', text: tb ? 'It hops forward, slashing with its one good foot.' : 'It hops forward, talons spread wide.', dmg: tb ? 18 : 28, threat: 1 };
       case 'takeoff': { const n = airTurns(h); return { name: 'Taking off', text: 'It spreads its wings and leaps into the wind.', dmg: 0, threat: 0, note: `Still on the ground now. After your turn it's airborne for ${n} turn${n > 1 ? 's' : ''}: only bows reach it then` }; }
-      case 'gust': return { name: enr ? 'Gale Storm' : 'Gust Buffet', text: enr ? 'It hammers the air with both wings, again and again.' : 'It beats its wings hard, driving a wall of wind at you.', dmg: enr ? 38 : 28, threat: enr ? 2 : 1, halfGuard: true, note: 'Ignores half your guard' };
+      case 'gust': return { name: enr ? 'Gale Storm' : 'Gust Buffet', text: enr ? 'It hammers the air with both wings, again and again.' : 'It beats its wings hard, driving a wall of wind at you.', dmg: enr ? 38 : 28, threat: enr ? 2 : 1, halfGuard: true, note: 'Your **Block** is ½' };
       case 'circle': return { name: 'Circling high', text: 'It climbs into a wide circle overhead, watching you.', dmg: 0, threat: 0, note: 'Dives next turn' };
       case 'dive': return { name: 'Plunging Dive', text: 'It folds its wings and drops like a stone!', dmg: tb ? (enr ? 70 : 60) : (enr ? 95 : 80), threat: enr ? 4 : 3, note: 'Then it’s stuck for a turn' };
       // enraged (Nov 2026): it pulls out of the dive and drops again, from low: a second dive, still airborne
-      case 'dive2': return { name: 'Twin Dive', text: 'It pulls up, wheels and drops again!', dmg: tb ? 40 : 55, threat: 3, isNew: !m.newSeen, note: 'Airborne still: only bows reach it. Then it’s stuck for a turn' };
-      case 'stuck': return { name: 'Beak stuck', text: 'Its beak is buried in the earth. It thrashes to pull free.', dmg: 0, threat: 0, note: 'Grounded. The crest is exposed' };
-      case 'crashed': return { name: 'Brought down', text: 'It crashes to the ground in a tangle of feathers.', dmg: 0, threat: 0, note: 'Grounded. Its action is lost' };
-      case 'feint': return { name: 'Feint', text: 'It hops sideways, wings half open, snapping at you as it goes.', dmg: 18, threat: 1, note: 'It sidesteps your first Cut or Blunt hit this turn (the dice are still spent). Pierce isn’t dodged' };
-      case 'dazed': return { name: 'Dazed', text: 'It reels, eyes unfocused, swaying on its feet.', dmg: 0, threat: 0, note: 'Its action is lost' };
+      case 'dive2': return { name: 'Twin Dive', text: 'It pulls up, wheels and drops again!', dmg: tb ? 40 : 55, threat: 3, isNew: !m.newSeen, note: 'Still airborne. **Pierce** only. Then it’s stuck for a turn' };
+      case 'stuck': return { name: 'Beak stuck', text: 'Its beak is buried in the earth. It thrashes to pull free.', dmg: 0, threat: 0, note: 'On the ground. Its crest is open' };
+      case 'crashed': return { name: 'Brought down', text: 'It crashes to the ground in a tangle of feathers.', dmg: 0, threat: 0, note: 'On the ground. It loses its turn' };
+      case 'feint': return { name: 'Feint', text: 'It hops sideways, wings half open, snapping at you as it goes.', dmg: 18, threat: 1, note: 'Sidesteps your first **Cut** or **Blunt** hit this turn, dice still spent. **Pierce** lands' };
+      case 'dazed': return { name: 'Dazed', text: 'It reels, eyes unfocused, swaying on its feet.', dmg: 0, threat: 0, note: 'It loses its turn' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
   },
@@ -107,10 +107,10 @@ export const galeshrike: MonsterDef = {
 
   tip(h, type) {
     const m = h.mon;
-    if (m.air && carries(h, 'Pierce')) return `Pinning Shot brings it down (${carryingName(h, 'Pierce')}).`;
-    if (m.air && h.item === 'net' && h.itemCharges > 0) return 'Throw the Weighted Net to bring it down.';
-    if ((type === 'stuck' || type === 'crashed') && carries(h, 'Blunt')) return `${dazeTag} It’s grounded. Hit the crest while you can.`;
-    if (m.air) return 'It’s airborne: only Pierce reaches it. Block until it dives, then hit it while it’s stuck.';
+    if (m.air && carries(h, 'Pierce')) return `**Pinning Shot** brings it down (${carryingName(h, 'Pierce')}).`;
+    if (m.air && h.item === 'net' && h.itemCharges > 0) return 'A **Weighted Net** brings it down.';
+    if ((type === 'stuck' || type === 'crashed') && carries(h, 'Blunt')) return `${dazeTag} It’s on the ground and dazed. Its crest is open.`;
+    if (m.air) return 'It’s airborne. **Pierce** only. After its dive it’s stuck on the ground.';
     return null;
   },
 

@@ -44,12 +44,12 @@ export const mistglass: MonsterDef = {
     const m = h.mon, enr = m.enraged;
     switch (type) {
       case 'rake': return { name: 'Glass Rake', text: 'It rakes at you with claws like broken panes.', dmg: enr ? 32 : 26, threat: 2 };
-      case 'mist': return { name: 'Freezing Mist', text: 'It breathes out a cloud of freezing mist.', dmg: enr ? 20 : 16, threat: 1, note: 'Freezes one of your dice next turn' };
-      case 'split': return { name: 'Split', text: 'It shivers and splits into mirror images.', dmg: 0, threat: 0, note: `For ${splitTurns(h)} turns, only your first hit each turn lands` };
+      case 'mist': return { name: 'Freezing Mist', text: 'It breathes out a cloud of freezing mist.', dmg: enr ? 20 : 16, threat: 1, note: '1 fewer die next turn' };
+      case 'split': return { name: 'Split', text: 'It shivers and splits into mirror images.', dmg: 0, threat: 0, note: `1st hit only for ${splitTurns(h)} turns` };
       case 'pounce': return { name: 'Pounce', text: 'All the images leap at once. One of them is real!', dmg: enr ? 64 : 54, threat: 3, steady: true };
       // enraged (Nov 2026): on their last turn the images burst outward in a storm of glass, ending early
-      case 'shatter': return { name: 'Shatter', text: 'Every image cracks at once and flies apart at you!', dmg: 44, threat: 3, isNew: !m.newSeen, note: 'Block it. The images are gone after it, so every hit lands again' };
-      case 'dazed': return { name: 'Dazed', text: 'Its facets flicker. The images waver.', dmg: 0, threat: 0, note: 'Its action is lost' };
+      case 'shatter': return { name: 'Shatter', text: 'Every image cracks at once and flies apart at you!', dmg: 44, threat: 3, isNew: !m.newSeen, note: 'The images go after this. Every hit lands again' };
+      case 'dazed': return { name: 'Dazed', text: 'Its facets flicker. The images waver.', dmg: 0, threat: 0, note: 'It loses its turn' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
   },
@@ -93,10 +93,10 @@ export const mistglass: MonsterDef = {
   tip(h, type) {
     const m = h.mon;
     if ((m.mirage ?? 0) > 0) return h.chargeReady
-      ? 'Your charge is ready. Make it your first hit this turn: only the first one lands.'
-      : 'Only your first hit each turn lands. Charge this turn and strike once, hard, the next. Block with the rest.';
-    if (type === 'split') return carries(h, 'Cut') ? `Images are coming. Break its tail shards with your ${carryingName(h, 'Cut')} and they fade sooner.` : 'Images are coming: from next turn, only your first hit each turn lands.';
-    if (type === 'mist' && carries(h, 'Pierce')) return `Break its eyes with your ${carryingName(h, 'Pierce')} to stop the Freezing Mist.`;
+      ? 'Your **Charge** is ready. Only your first hit lands this turn.'
+      : 'Only your first hit each turn lands.';
+    if (type === 'split') return carries(h, 'Cut') ? `Images are coming. Breaking its tail shards with your ${carryingName(h, 'Cut')} ends them sooner.` : 'Images are coming. From next turn, only your first hit each turn lands.';
+    if (type === 'mist' && carries(h, 'Pierce')) return `Breaking its eyes with your ${carryingName(h, 'Pierce')} stops the **Freezing Mist**.`;
     return null;
   }
 };

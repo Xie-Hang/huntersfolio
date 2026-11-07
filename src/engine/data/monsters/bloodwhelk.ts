@@ -43,8 +43,8 @@ export const bloodwhelk: MonsterDef = {
     const out = r.dmg ? { ...r, dmg: Math.round(r.dmg * HIT) } : r;
     if (type === 'spit') return { ...out, name: 'Spit Grit', text: 'It hawks a gob of grit and red slime.' };
     // enraged (Nov 2026): its slime turned up, a tide that drinks for longer
-    if (type === 'tide') { const s = emberwhelk.intent.call(this, h, 'slime'); return { name: 'Blood Tide', text: 'A wave of red slime rolls over you.', dmg: Math.round(s.dmg * HIT), threat: 2, isNew: !h.mon.newSeen, note: h.arm.leechProof ? 'Your armor keeps the slime off' : `Then it drinks ${LEECH_TURNS + 2} turns, past your block. Broken gills: it can’t heal from it` }; }
-    if (type === 'slime') return { ...out, name: 'Leeching Slime', text: 'It surges forward on a wave of red slime.', note: h.arm.leechProof ? 'Your armor keeps the slime off' : `Then it drinks ${LEECH_TURNS} turns, past your block` };
+    if (type === 'tide') { const s = emberwhelk.intent.call(this, h, 'slime'); return { name: 'Blood Tide', text: 'A wave of red slime rolls over you.', dmg: Math.round(s.dmg * HIT), threat: 2, isNew: !h.mon.newSeen, note: h.arm.leechProof ? 'Your armour keeps the slime off' : `Then drains you ${LEECH_TURNS + 2} turns, through your **Block**. Breaking its gills stops the healing` }; }
+    if (type === 'slime') return { ...out, name: 'Leeching Slime', text: 'It surges forward on a wave of red slime.', note: h.arm.leechProof ? 'Your armour keeps the slime off' : `Then drains you ${LEECH_TURNS} turns, through your **Block**` };
     return out;
   },
 
@@ -86,7 +86,7 @@ export const bloodwhelk: MonsterDef = {
   },
 
   tip(h, type) {
-    if (!h.mon.parts.gills.broken && carries(h, 'Pierce')) return `Break the gills (${carryingName(h, 'Pierce')}): no more healing.`;
+    if (!h.mon.parts.gills.broken && carries(h, 'Pierce')) return `Breaking its gills with your ${carryingName(h, 'Pierce')} stops the healing.`;
     return emberwhelk.tip!.call(this, h, type);
   }
 };

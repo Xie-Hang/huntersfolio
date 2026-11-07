@@ -45,14 +45,14 @@ export const rimeshrike: MonsterDef = {
     switch (type) {
       case 'rake': return { name: 'Icicle Rake', text: tb ? 'It hops forward, slashing with its one good foot.' : 'It hops forward, iced talons spread wide.', dmg: tb ? 26 : 37, threat: 2 };
       case 'takeoff': { const n = airTurns(h); return { name: 'Taking off', text: 'It shakes the ice off its wings and leaps into the wind.', dmg: 0, threat: 0, note: `Still on the ground now. After your turn it's airborne for ${n} turn${n > 1 ? 's' : ''}: only bows reach it then` }; }
-      case 'gust': return { name: 'Hail Buffet', text: 'It beats its wings and drives a sheet of hail at you.', dmg: enr ? 48 : 39, threat: 2, halfGuard: true, note: 'Ignores half your guard' };
+      case 'gust': return { name: 'Hail Buffet', text: 'It beats its wings and drives a sheet of hail at you.', dmg: enr ? 48 : 39, threat: 2, halfGuard: true, note: 'Your **Block** is ½' };
       case 'circle': return { name: 'Circling high', text: 'It climbs into a wide circle, frost trailing from its wings.', dmg: 0, threat: 0, note: 'Dives next turn' };
-      case 'dive': return { name: 'Frost Dive', text: 'It folds its wings and drops, wrapped in freezing air!', dmg: tb ? (enr ? 88 : 78) : (enr ? 112 : 100), threat: enr ? 4 : 3, note: m.parts.crest.broken ? 'Then it’s stuck for a turn' : 'Then it’s stuck, and shrouded in ice' };
+      case 'dive': return { name: 'Frost Dive', text: 'It folds its wings and drops, wrapped in freezing air!', dmg: tb ? (enr ? 88 : 78) : (enr ? 112 : 100), threat: enr ? 4 : 3, note: m.parts.crest.broken ? 'Then it’s stuck for a turn' : 'Then it’s stuck, and **Frost-shrouded**' };
       // enraged (Nov 2026): its ice shroud turned up, shed as shards and grown back thicker
-      case 'flare': return { name: 'Frost Flare', text: 'It shrugs, and ice shards burst off its feathers.', dmg: 30, threat: 2, isNew: !m.newSeen, note: 'Its ice regrows and it stays down a turn longer: arrows glance off. Cut and Blunt still reach it' };
-      case 'stuck': return { name: 'Beak stuck', text: 'Its beak is buried in the frozen ground. It thrashes to pull free.', dmg: 0, threat: 0, note: 'Grounded' };
-      case 'crashed': return { name: 'Brought down', text: 'It crashes to the ground in a spray of ice.', dmg: 0, threat: 0, note: 'Grounded, no shroud. Its action is lost' };
-      case 'dazed': return { name: 'Dazed', text: 'It reels, eyes unfocused, swaying on its feet.', dmg: 0, threat: 0, note: 'Its action is lost' };
+      case 'flare': return { name: 'Frost Flare', text: 'It shrugs, and ice shards burst off its feathers.', dmg: 30, threat: 2, isNew: !m.newSeen, note: 'Its ice regrows and it stays down a turn longer. **Cut**/**Blunt** only' };
+      case 'stuck': return { name: 'Beak stuck', text: 'Its beak is buried in the frozen ground. It thrashes to pull free.', dmg: 0, threat: 0, note: 'On the ground' };
+      case 'crashed': return { name: 'Brought down', text: 'It crashes to the ground in a spray of ice.', dmg: 0, threat: 0, note: 'On the ground, shroud gone. It loses its turn' };
+      case 'dazed': return { name: 'Dazed', text: 'It reels, eyes unfocused, swaying on its feet.', dmg: 0, threat: 0, note: 'It loses its turn' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
   },
@@ -120,11 +120,11 @@ export const rimeshrike: MonsterDef = {
 
   tip(h, type) {
     const m = h.mon;
-    if (m.air && carries(h, 'Pierce')) return `Pinning Shot brings it down, with no shroud (${carryingName(h, 'Pierce')}).`;
-    if (m.air && h.item === 'net' && h.itemCharges > 0) return 'Throw the Weighted Net to bring it down. It lands without its shroud.';
-    if ((m.shroud ?? 0) > 0 && carries(h, 'Blunt')) return `${dazeTag} It’s shrouded and grounded. Hit the crest while you can.`;
-    if (m.air) return 'It’s airborne: only Pierce reaches it.';
-    if (type === 'takeoff') return 'Its shroud is gone: anything reaches it this turn.';
+    if (m.air && carries(h, 'Pierce')) return `**Pinning Shot** brings it down without its shroud (${carryingName(h, 'Pierce')}).`;
+    if (m.air && h.item === 'net' && h.itemCharges > 0) return 'A **Weighted Net** brings it down without its shroud.';
+    if ((m.shroud ?? 0) > 0 && carries(h, 'Blunt')) return `${dazeTag} It’s on the ground, dazed and **Frost-shrouded**. Its crest is open.`;
+    if (m.air) return 'It’s airborne. **Pierce** only.';
+    if (type === 'takeoff') return 'Its shroud is gone. Every weapon reaches it this turn.';
     return null;
   },
 

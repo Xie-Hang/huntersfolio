@@ -50,12 +50,12 @@ export const monolith: MonsterDef = {
     switch (type) {
       case 'sweep': return { name: 'Knuckle Sweep', text: 'It swings a fist like a falling wall.', dmg: enr ? 30 : 26, threat: 2 };
       case 'toss': return { name: 'Boulder Toss', text: 'It tears a boulder from its own arm and hurls it.', dmg: m.parts.arms.broken ? 26 : enr ? 46 : 40, threat: m.parts.arms.broken ? 2 : 3 };
-      case 'rumble': return { name: 'Rumble', text: 'It plants both fists. The ground starts to shake.', dmg: 0, threat: 0, note: 'Quake next turn. Daze it to stop it' };
+      case 'rumble': return { name: 'Rumble', text: 'It plants both fists. The ground starts to shake.', dmg: 0, threat: 0, note: 'Quake next turn. **Daze** stops it' };
       case 'quake': return { name: 'Quake', text: 'It brings the mountain down on you!', dmg: enr ? 70 : 62, threat: 4 };
       // enraged (Nov 2026): its quake turned up, a second, smaller quake straight after the first
-      case 'aftershock': return { name: 'Aftershock', text: 'The ground heaves again before it has settled!', dmg: enr ? 28 : 24, threat: 3, isNew: !m.newSeen, note: 'A second quake right after the first. Block it, or daze it to stop it' };
-      case 'reform': return { name: 'Reform', text: 'Stone slides back over the glowing core.', dmg: 0, threat: 0, note: 'Its plates come back. Last turn to hit the core' };
-      case 'dazed': return { name: 'Dazed', text: 'It sways, grinding, light flickering in its chest.', dmg: 0, threat: 0, note: 'Its action is lost' };
+      case 'aftershock': return { name: 'Aftershock', text: 'The ground heaves again before it has settled!', dmg: enr ? 28 : 24, threat: 3, isNew: !m.newSeen, note: 'A second quake right after the first. **Daze** it to stop it' };
+      case 'reform': return { name: 'Reform', text: 'Stone slides back over the glowing core.', dmg: 0, threat: 0, note: 'Its plates come back after this. Last turn the core is open' };
+      case 'dazed': return { name: 'Dazed', text: 'It sways, grinding, light flickering in its chest.', dmg: 0, threat: 0, note: 'It loses its turn' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
   },
@@ -119,9 +119,9 @@ export const monolith: MonsterDef = {
   },
 
   tip(h, type) {
-    if (type === 'rumble') return carries(h, 'Blunt') ? `A Quake is coming. Daze it through the plates with your ${carryingName(h, 'Blunt')} to stop it.` : 'A Quake is coming. Block everything you can.';
-    if (coreOut(h)) return carries(h, 'Pierce') ? `The core is open. Aim at it and hit it with your ${carryingName(h, 'Pierce')}: double damage.` : 'The core is open, but only Pierce reaches it.';
-    if (!carries(h, 'Blunt')) return carries(h, 'Cut') ? `Its plates turn aside 60% of every hit. Your ${carryingName(h, 'Cut')} cracks them slowly; a hammer does it twice as fast.` : 'Its plates turn aside 60% of every hit, and a bow can’t crack them. Bring a hammer or a blade.';
-    return h.target === 'plates' ? null : `Aim at the plates with your ${carryingName(h, 'Blunt')} to crack them open.`;
+    if (type === 'rumble') return carries(h, 'Blunt') ? `**Daze** from your ${carryingName(h, 'Blunt')} gets through the plates and stops the **Quake**.` : 'A **Quake** is coming.';
+    if (coreOut(h)) return carries(h, 'Pierce') ? `The core is open. Your ${carryingName(h, 'Pierce')} hits it for double.` : 'The core is open. **Pierce** only.';
+    if (!carries(h, 'Blunt')) return carries(h, 'Cut') ? `Its plates take 60% of every hit. Your ${carryingName(h, 'Cut')} breaks them, and **Blunt** breaks them twice as fast.` : 'Its plates take 60% of every hit. **Cut** and **Blunt** break them.';
+    return h.target === 'plates' ? null : `Your ${carryingName(h, 'Blunt')} breaks its plates open.`;
   }
 };

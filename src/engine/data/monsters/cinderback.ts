@@ -51,14 +51,14 @@ export const cinderback: MonsterDef = {
     const m = h.mon, enr = m.enraged, pb = m.parts.plate.broken;
     switch (type) {
       case 'swipe': return { name: enr ? 'Raking Swipes' : 'Claw Swipe', text: enr ? 'It rears up, claws glowing, and slashes twice.' : 'It scrapes forward, claws dragging sparks from the rock.', dmg: enr ? 34 : 26, threat: enr ? 2 : 1 };
-      case 'burrow': return { name: 'Burrowing', text: 'It tears into the ground and vanishes in a spray of hot grit.', dmg: 0, threat: 0, note: 'Still on the surface now: hit it while you can. After your turn it\'s underground, then erupts' };
-      case 'erupt': return { name: 'Eruption', text: 'The ground under your feet glows and bulges. Something is coming up!', dmg: pb ? (enr ? 60 : 48) : (enr ? 80 : 64), threat: enr ? 4 : 3, note: m.parts.vents.broken ? 'Drive it up with a heavy Blunt hit to cancel' : 'Drive it up to cancel. Then its shell is molten for 2 turns' };
+      case 'burrow': return { name: 'Burrowing', text: 'It tears into the ground and vanishes in a spray of hot grit.', dmg: 0, threat: 0, note: 'After your turn it’s underground, then erupts. **Blunt** only then' };
+      case 'erupt': return { name: 'Eruption', text: 'The ground under your feet glows and bulges. Something is coming up!', dmg: pb ? (enr ? 60 : 48) : (enr ? 80 : 64), threat: enr ? 4 : 3, note: m.parts.vents.broken ? 'A heavy **Blunt** hit drives it up and stops it' : 'Driving it up stops it. Then its shell is molten for 2 turns' };
       // enraged (Nov 2026): every other time under, it sprays magma up through the cracks: Block can't stop it, but a
       // heavy Blunt hit drives it up and cancels it like an eruption
-      case 'spray': return { name: 'Magma Spray', text: 'Molten rock jets up through every crack around you!', dmg: 42, threat: 3, noGuard: true, isNew: !m.newSeen, note: 'A heavy Blunt hit drives it up and cancels it' };
-      case 'venting': return { name: 'Venting', text: 'It squats on the surface, steam pouring from its back.', dmg: 0, threat: 0, note: 'A free turn. Mind the molten shell' };
-      case 'unearthed': return { name: 'Driven up', text: 'It bursts out of the ground, dazed and blinking.', dmg: 0, threat: 0, note: 'Eruption cancelled. Its action is lost' };
-      case 'dazed': return { name: 'Dazed', text: 'It reels, eyes unfocused, swaying on its claws.', dmg: 0, threat: 0, note: 'Its action is lost' };
+      case 'spray': return { name: 'Magma Spray', text: 'Molten rock jets up through every crack around you!', dmg: 42, threat: 3, noGuard: true, isNew: !m.newSeen, note: 'A heavy **Blunt** hit drives it up and stops it' };
+      case 'venting': return { name: 'Venting', text: 'It squats on the surface, steam pouring from its back.', dmg: 0, threat: 0, note: 'A free turn' };
+      case 'unearthed': return { name: 'Driven up', text: 'It bursts out of the ground, dazed and blinking.', dmg: 0, threat: 0, note: '**Eruption** stopped. It loses its turn' };
+      case 'dazed': return { name: 'Dazed', text: 'It reels, eyes unfocused, swaying on its claws.', dmg: 0, threat: 0, note: 'It loses its turn' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
   },
@@ -110,12 +110,12 @@ export const cinderback: MonsterDef = {
   tip(h, type) {
     const m = h.mon;
     if (m.under) {
-      if (carries(h, 'Blunt')) return `${dazeTag} Smash or Skullcrack drives it up and cancels the ${type === 'spray' ? 'spray' : 'eruption'} (${carryingName(h, 'Blunt')}).`;
-      if (h.item && h.itemCharges > 0 && h.item === 'blast') return 'Throw the Blast Powder to force it up.';
-      return 'Only Blunt reaches it underground. Block for the eruption.';
+      if (carries(h, 'Blunt')) return `${dazeTag} **Smash** or **Skullcrack** drives it up and stops the ${type === 'spray' ? 'spray' : 'eruption'} (${carryingName(h, 'Blunt')}).`;
+      if (h.item && h.itemCharges > 0 && h.item === 'blast') return '**Blast Powder** forces it up.';
+      return 'It’s underground. **Blunt** only. It erupts next.';
     }
-    if (m.molten > 0) return `Molten shell: Cut and Blunt hits burn you ${moltenBurn(m.enraged)}.${carries(h, 'Pierce') ? ` Pierce is safe (${carryingName(h, 'Pierce')}).` : ''}`;
-    if (type === 'burrow' && carries(h, 'Blunt')) return `It’s about to dig in. Keep your ${carryingName(h, 'Blunt')} ready.`;
+    if (m.molten > 0) return `Its shell is molten. **Cut** and **Blunt** hits burn you for ${moltenBurn(m.enraged)}.`;
+    if (type === 'burrow' && carries(h, 'Blunt')) return `It digs in after this. Your ${carryingName(h, 'Blunt')} reaches it there.`;
     return null;
   },
 

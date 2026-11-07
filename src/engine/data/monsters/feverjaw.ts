@@ -42,12 +42,12 @@ export const feverjaw: MonsterDef = {
   intent(h, type): Intent {
     const enr = h.mon.enraged;
     // enraged (Nov 2026): its belch turned up, a cloud that keeps you infected longer
-    if (type === 'burst') return { name: 'Spore Burst', text: 'Every wart bursts at once in a hot, choking cloud.', dmg: enr ? 28 : 24, threat: 2, isNew: !h.mon.newSeen, note: 'If it hits, you’re infected for 5 turns. Break its warts to stop the belching' };
-    if (type === 'belch') return { name: 'Spore Belch', text: 'Its warts swell, and it belches a hot cloud of spores at you.', dmg: enr ? 28 : 22, threat: 1, note: 'If it hits, you’re infected for 3 turns' };
+    if (type === 'burst') return { name: 'Spore Burst', text: 'Every wart bursts at once in a hot, choking cloud.', dmg: enr ? 28 : 24, threat: 2, isNew: !h.mon.newSeen, note: 'If it hits, **Infect** on you for 5 turns. Breaking its warts stops it' };
+    if (type === 'belch') return { name: 'Spore Belch', text: 'Its warts swell, and it belches a hot cloud of spores at you.', dmg: enr ? 28 : 22, threat: 1, note: 'If it hits, **Infect** on you for 3 turns' };
     const r = bogjaw.intent.call(this, h, type);
     const out = r.dmg ? { ...r, dmg: Math.round(r.dmg * HIT) } : r;
-    if (type === 'swallow') return { ...out, note: 'Swallowed: 2 dice stuck, and you’re infected until you’re out' };
-    if (type === 'digest') return { ...out, note: `Cut your way out: ${Math.max(0, h.mon.gutHp ?? 0)} left. You stay infected inside` };
+    if (type === 'swallow') return { ...out, note: 'Swallowed. 2 dice stuck, and **Infect** on you until you’re out' };
+    if (type === 'digest') return { ...out, note: `${Math.max(0, h.mon.gutHp ?? 0)} left to cut free. **Infect** stays on you inside` };
     return out;
   },
 
@@ -73,7 +73,7 @@ export const feverjaw: MonsterDef = {
   },
 
   tip(h, type) {
-    if ((h.mon.gut ?? 0) > 0) return carries(h, 'Cut') ? `Cut counts double toward cutting free (${carryingName(h, 'Cut')}).` : 'Every hit counts toward cutting free; Cut counts double.';
+    if ((h.mon.gut ?? 0) > 0) return carries(h, 'Cut') ? `**Cut** counts double toward cutting free (${carryingName(h, 'Cut')}).` : 'Every hit counts toward cutting free. **Cut** counts double.';
     return bogjaw.tip!.call(this, h, type);
   }
 };

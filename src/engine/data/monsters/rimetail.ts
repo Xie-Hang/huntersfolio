@@ -46,12 +46,12 @@ export const rimetail: MonsterDef = {
       case 'pounce': return { name: 'Pounce', text: jb ? 'It crouches low, its broken jaw hanging open.' : 'It crouches low in the snow, haunches twitching.', dmg: jb ? (enr ? 18 : 14) : (enr ? 24 : 18), threat: enr ? 2 : 1 };
       case 'sweep': return tb
         ? { name: 'Stump Swipe', text: 'It swings round, lashing out with the stump of its tail.', dmg: enr ? 28 : 22, threat: 1 }
-        : { name: 'Tail Sweep', text: 'It coils its barbed tail behind it, low to the ground.', dmg: enr ? 60 : 48, threat: enr ? 4 : 3, note: 'Sever the tail to stop this' };
+        : { name: 'Tail Sweep', text: 'It coils its barbed tail behind it, low to the ground.', dmg: enr ? 60 : 48, threat: enr ? 4 : 3, note: 'Breaking its tail stops this' };
       // enraged (Nov 2026): a freezing breath that ices one of your dice for your next turn
-      case 'frostlock': return { name: 'Frost Lock', text: 'It breathes a freezing mist across your hands.', dmg: 16, threat: 1, isNew: !m.newSeen, note: 'One of your dice is frozen next turn' };
-      case 'rimecoat': return { name: 'Rime Coat', text: 'It goes still. Frost creeps across its back, hardening into plates.', dmg: 0, threat: 0, note: `Regrows ${layers(h)} layers of ice plating` };
-      case 'mirror': return { name: 'Ice Mirror', text: 'It turns its iced back to you, smooth as glass, and flicks its tail at you.', dmg: 14, threat: 1, note: 'Hits of 40 or more this turn glance off: half damage, and the shards hit you for 12 (they can’t knock you out)' };
-      case 'dazed': return { name: 'Dazed', text: 'It reels, eyes unfocused, swaying on its feet.', dmg: 0, threat: 0, note: 'Its action is lost' };
+      case 'frostlock': return { name: 'Frost Lock', text: 'It breathes a freezing mist across your hands.', dmg: 16, threat: 1, isNew: !m.newSeen, note: '1 fewer die next turn' };
+      case 'rimecoat': return { name: 'Rime Coat', text: 'It goes still. Frost creeps across its back, hardening into plates.', dmg: 0, threat: 0, note: `Regrows ${layers(h)} layers of ice` };
+      case 'mirror': return { name: 'Ice Mirror', text: 'It turns its iced back to you, smooth as glass, and flicks its tail at you.', dmg: 14, threat: 1, note: 'Hits of 40 or more take ½ this turn, and its shards hit you back for 12' };
+      case 'dazed': return { name: 'Dazed', text: 'It reels, eyes unfocused, swaying on its feet.', dmg: 0, threat: 0, note: 'It loses its turn' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
   },
@@ -83,13 +83,13 @@ export const rimetail: MonsterDef = {
   tip(h, type) {
     const m = h.mon;
     if (m.plating > 0) {
-      if (h.item === 'firepot' && h.itemCharges > 0 && m.plating >= 2) return 'Throw the Firepot to melt all of its ice.';
+      if (h.item === 'firepot' && h.itemCharges > 0 && m.plating >= 2) return 'A **Firepot** melts all of its ice.';
       return carries(h, 'Cut')
-        ? `Ice plating: hits break ice instead of dealing damage. Your ${carryingName(h, 'Cut')} clears it in one hit.`
-        : 'Ice plating: hits break ice instead of dealing damage, one layer each. Spend your cheapest moves on it.';
+        ? `The ice takes your hits before its HP does. Your ${carryingName(h, 'Cut')} breaks it in one hit.`
+        : 'The ice takes your hits before its HP does. Each hit breaks a layer.';
     }
-    if (type === 'sweep' && !m.parts.tail.broken && carries(h, 'Cut')) return `Sever the tail with your ${carryingName(h, 'Cut')} to stop the Tail Sweep.`;
-    if (type === 'rimecoat') return 'It’s about to regrow its plating. Hit hard now.';
+    if (type === 'sweep' && !m.parts.tail.broken && carries(h, 'Cut')) return `Breaking its tail with your ${carryingName(h, 'Cut')} stops the **Tail Sweep**.`;
+    if (type === 'rimecoat') return 'It regrows its ice after this.';
     return null;
   }
 };

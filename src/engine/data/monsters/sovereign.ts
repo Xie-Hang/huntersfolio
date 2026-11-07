@@ -87,20 +87,20 @@ export const sovereign: MonsterDef = {
       case 'slam': return { name: 'Body Slam', text: 'It rears up and falls on you.', dmg: d(34), threat: 2 };
       case 'windup': return { name: 'Lowering its tusks', text: 'Rock crusts over it as the tusks swing forward.', dmg: 0, threat: 0, note: 'Charges next turn' };
       case 'charge': return { name: 'Sovereign Charge', text: 'The whole mass comes at you behind the tusks!', dmg: d(90), threat: 4 };
-      case 'takeoff': return { name: 'Spreading its wings', text: 'The swallowed wings unfold from its back and beat.', dmg: 0, threat: 0, note: 'Still on the ground now. After your turn it\'s airborne: only bows reach it then' };
-      case 'gust': return { name: 'Downdraft', text: 'It beats a gale down on you.', dmg: d(37), threat: 2, halfGuard: true, note: 'Ignores half your guard' };
+      case 'takeoff': return { name: 'Spreading its wings', text: 'The swallowed wings unfold from its back and beat.', dmg: 0, threat: 0, note: 'After your turn it’s airborne. **Pierce** only then' };
+      case 'gust': return { name: 'Downdraft', text: 'It beats a gale down on you.', dmg: d(37), threat: 2, halfGuard: true, note: 'Your **Block** is ½' };
       case 'dive': return { name: 'Wing Dive', text: 'It folds the wings and drops!', dmg: d(83), threat: 4, note: 'Then it lands' };
-      case 'burrow': return { name: 'Sinking', text: 'It melts down into the crater floor.', dmg: 0, threat: 0, note: 'Still on the surface now. After your turn it\'s underground: only Blunt reaches it' };
-      case 'erupt': return { name: 'Caldera Eruption', text: 'The ground glows and swells under you!', dmg: d(83), threat: 4, note: 'A 2-dice Blunt move drives it up to cancel' };
+      case 'burrow': return { name: 'Sinking', text: 'It melts down into the crater floor.', dmg: 0, threat: 0, note: 'After your turn it’s underground. **Blunt** only then' };
+      case 'erupt': return { name: 'Caldera Eruption', text: 'The ground glows and swells under you!', dmg: d(83), threat: 4, note: 'A 2-dice **Blunt** move drives it up and stops it' };
       case 'swipe': return { name: 'Molten Lash', text: 'It lashes out, dripping fire.', dmg: d(35), threat: 2 };
-      case 'coat': return { name: 'Freezing over', text: 'Frost runs along its tail and across its back.', dmg: 0, threat: 0, note: 'After your turn: 2 layers of ice plating' };
+      case 'coat': return { name: 'Freezing over', text: 'Frost runs along its tail and across its back.', dmg: 0, threat: 0, note: 'After your turn it has 2 layers of ice' };
       case 'sweep': return { name: 'Glacier Sweep', text: 'The frozen tail swings round, low and wide!', dmg: d(77), threat: 4 };
       case 'bite': return { name: 'Engulf', text: 'It surges forward and tries to swallow you.', dmg: d(34), threat: 2 };
       case 'crush': return { name: 'Crushing Weight', text: 'It rolls over you, all of it.', dmg: d(64), threat: 3 };
-      case 'pinned': return { name: 'Pinned', text: 'An arrow pins its front. The charge spills apart.', dmg: 0, threat: 0, note: 'Charge cancelled' };
-      case 'crashed': return { name: 'Brought down', text: 'It splatters to the ground.', dmg: 0, threat: 0, note: 'Grounded. Its action is lost' };
-      case 'unearthed': return { name: 'Driven up', text: 'It bursts out of the ground, quivering.', dmg: 0, threat: 0, note: 'Eruption cancelled. Its action is lost' };
-      case 'dazed': return { name: 'Dazed', text: 'Its whole body wobbles, eyes rolling.', dmg: 0, threat: 0, note: 'Its action is lost' };
+      case 'pinned': return { name: 'Pinned', text: 'An arrow pins its front. The charge spills apart.', dmg: 0, threat: 0, note: 'Its charge is stopped. It loses its turn' };
+      case 'crashed': return { name: 'Brought down', text: 'It splatters to the ground.', dmg: 0, threat: 0, note: 'On the ground. It loses its turn' };
+      case 'unearthed': return { name: 'Driven up', text: 'It bursts out of the ground, quivering.', dmg: 0, threat: 0, note: '**Eruption** stopped. It loses its turn' };
+      case 'dazed': return { name: 'Dazed', text: 'Its whole body wobbles, eyes rolling.', dmg: 0, threat: 0, note: 'It loses its turn' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
   },
@@ -194,9 +194,9 @@ export const sovereign: MonsterDef = {
 
   tip(h, type) {
     const m = h.mon;
-    if (m.air && carries(h, 'Pierce')) return 'Pinning Shot brings it down.';
-    if (type === 'windup' && carries(h, 'Pierce')) return 'Pinning Shot now cancels the charge.';
-    if (type === 'charge' && carries(h, 'Blunt') && m.daze >= m.dazeMax * 0.6) return `${dazeTag} Fill the daze meter now to stop this charge.`;
+    if (m.air && carries(h, 'Pierce')) return '**Pinning Shot** brings it down.';
+    if (type === 'windup' && carries(h, 'Pierce')) return '**Pinning Shot** now stops the charge.';
+    if (type === 'charge' && carries(h, 'Blunt') && m.daze >= m.dazeMax * 0.6) return `${dazeTag} A full **Daze** meter now stops this charge.`;
     return null;
   },
 

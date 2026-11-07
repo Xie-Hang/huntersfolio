@@ -47,8 +47,8 @@ export const archeron: MonsterDef = {
     const r = duskheron.intent.call(this, h, type), acts = parse(type);
     const out = r.dmg ? { ...r, dmg: Math.round(r.dmg * HIT) } : { ...r };
     // enraged (Nov 2026): its cry turned up, a field that charges three of your dice
-    if (type === 'field') return { name: 'Static Field', text: 'Both heads cry out together. The air crackles around your hands.', dmg: 18, threat: 1, isNew: !h.mon.newSeen, note: h.arm.chargeProof ? 'Your armor keeps the charge off' : 'Charges 3 of your dice next turn: a charged die can only attack, so spend them on hits' };
-    if (type === 'twin') return { ...out, note: 'Each head that lands leaves a Spark pip on you' };
+    if (type === 'field') return { name: 'Static Field', text: 'Both heads cry out together. The air crackles around your hands.', dmg: 18, threat: 1, isNew: !h.mon.newSeen, note: h.arm.chargeProof ? 'Your armour keeps the charge off' : 'Charges 3 of your dice next turn. A charged die can only attack' };
+    if (type === 'twin') return { ...out, note: 'Each head that hits puts 1 **Spark** on you' };
     if (!acts) return out;
     const cry = live(h, acts, 'screech') > 0 && !h.arm.chargeProof, thrusts = live(h, acts, 'thrust');
     const notes = [thrusts ? `${thrusts} Spark pip${thrusts > 1 ? 's' : ''} on you if it lands` : '', cry ? `Charges ${CRY_DICE} of your dice next turn` : ''].filter(Boolean);
@@ -84,8 +84,8 @@ export const archeron: MonsterDef = {
   },
 
   tip(h, type) {
-    if (h.dice.some(d => d.charged && !d.used)) return 'Charged dice can only attack: blocking with one or leaving it sets it off.';
-    if ((h.mon.pSpark ?? 0) >= 2 && carries(h, 'Blunt')) return `Two pips on you. Daze the thrusting head with your ${carryingName(h, 'Blunt')}, or any Blunt move grounds a pip.`;
+    if (h.dice.some(d => d.charged && !d.used)) return 'A charged die can only attack. Blocking with it or leaving it sets it off.';
+    if ((h.mon.pSpark ?? 0) >= 2 && carries(h, 'Blunt')) return `2 **Spark** on you. **Daze** to the thrusting head from your ${carryingName(h, 'Blunt')} stops it, and any **Blunt** move grounds 1.`;
     return duskheron.tip!.call(this, h, type);
   }
 };

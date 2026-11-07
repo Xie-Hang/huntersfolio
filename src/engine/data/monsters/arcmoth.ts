@@ -49,16 +49,16 @@ export const arcmoth: MonsterDef = {
   intent(h, type): Intent {
     const m = h.mon, enr = m.enraged, spark = !m.parts.feelers.broken || m.charges % 2 === 0;
     switch (type) {
-      case 'rake': return { name: 'Wing Rake', text: 'It beats low and drags a dusty wing edge across you.', dmg: enr ? 30 : 24, threat: 1, note: spark ? 'If it hits: a Spark pip on you' : 'The dust is dead this time' };
-      case 'dust': return { name: 'Dust Cloud', text: 'It shakes its torn wings and the dust pours off it.', dmg: enr ? 14 : 10, threat: 1, note: spark ? 'If it hits: a Spark pip on you' : 'The dust is dead this time' };
-      case 'takeoff': return { name: 'Taking off', text: 'Its wings snap open.', dmg: 0, threat: 0, note: `Still on the ground now. After your turn it’s airborne for ${MOTH_AIR} wingbeats: only bows reach it then` };
-      case 'beat': return { name: 'Wingbeat', text: 'It hangs above you, fanning dust down.', dmg: enr ? 20 : 16, threat: 1, note: spark ? 'If it hits: a Spark pip on you' : 'The dust is dead this time' };
+      case 'rake': return { name: 'Wing Rake', text: 'It beats low and drags a dusty wing edge across you.', dmg: enr ? 30 : 24, threat: 1, note: spark ? 'If it hits, 1 **Spark** on you' : 'No **Spark** this time' };
+      case 'dust': return { name: 'Dust Cloud', text: 'It shakes its torn wings and the dust pours off it.', dmg: enr ? 14 : 10, threat: 1, note: spark ? 'If it hits, 1 **Spark** on you' : 'No **Spark** this time' };
+      case 'takeoff': return { name: 'Taking off', text: 'Its wings snap open.', dmg: 0, threat: 0, note: `After your turn it’s airborne for ${MOTH_AIR} turns. **Pierce** only then` };
+      case 'beat': return { name: 'Wingbeat', text: 'It hangs above you, fanning dust down.', dmg: enr ? 20 : 16, threat: 1, note: spark ? 'If it hits, 1 **Spark** on you' : 'No **Spark** this time' };
       // enraged (Nov 2026): the first wingbeat of each flight is a Static Surge: two Spark pips at once
-      case 'surge': return { name: 'Static Surge', text: 'Its wings flare white and the dust crackles down in a sheet.', dmg: enr ? 20 : 16, threat: 2, isNew: !m.newSeen, note: 'If it hits: two Spark pips on you. A Blunt move grounds one; bows bring it down' };
-      case 'dive': return { name: 'Static Dive', text: 'It folds and drops, crackling!', dmg: enr ? 72 : 62, threat: enr ? 4 : 3, note: 'Then it’s on the ground' };
-      case 'settle': return { name: 'Settled', text: 'It sits stunned on the cave floor, wings spread.', dmg: 0, threat: 0, note: 'On the ground: a free turn' };
-      case 'crashed': return { name: 'Brought down', text: 'It flutters to the ground, tangled.', dmg: 0, threat: 0, note: 'On the ground. Its action is lost' };
-      case 'dazed': return { name: 'Dazed', text: 'Its wings droop and twitch.', dmg: 0, threat: 0, note: 'Its action is lost' };
+      case 'surge': return { name: 'Static Surge', text: 'Its wings flare white and the dust crackles down in a sheet.', dmg: enr ? 20 : 16, threat: 2, isNew: !m.newSeen, note: 'If it hits, 2 **Spark** on you. A **Blunt** move grounds 1, **Pierce** brings it down' };
+      case 'dive': return { name: 'Static Dive', text: 'It folds and drops, crackling!', dmg: enr ? 72 : 62, threat: enr ? 4 : 3, note: 'Then it lands' };
+      case 'settle': return { name: 'Settled', text: 'It sits stunned on the cave floor, wings spread.', dmg: 0, threat: 0, note: 'On the ground. A free turn' };
+      case 'crashed': return { name: 'Brought down', text: 'It flutters to the ground, tangled.', dmg: 0, threat: 0, note: 'On the ground. It loses its turn' };
+      case 'dazed': return { name: 'Dazed', text: 'Its wings droop and twitch.', dmg: 0, threat: 0, note: 'It loses its turn' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
   },
@@ -99,8 +99,8 @@ export const arcmoth: MonsterDef = {
 
   tip(h) {
     const m = h.mon;
-    if ((m.pSpark ?? 0) >= 2 && !m.air && carries(h, 'Blunt')) return `Any ${carryingName(h, 'Blunt')} move grounds a Spark pip.`;
-    if (m.air && carries(h, 'Pierce')) return `Pinning Shot brings it down (${carryingName(h, 'Pierce')}).`;
+    if ((m.pSpark ?? 0) >= 2 && !m.air && carries(h, 'Blunt')) return `Any ${carryingName(h, 'Blunt')} move grounds 1 **Spark**.`;
+    if (m.air && carries(h, 'Pierce')) return `**Pinning Shot** brings it down (${carryingName(h, 'Pierce')}).`;
     return null;
   },
 

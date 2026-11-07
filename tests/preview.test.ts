@@ -29,7 +29,7 @@ describe('the damage preview', () => {
     h.mon.pSpark = 2;
     const tp = E.turnPreview(h)!;
     expect(tp.extra).toBeGreaterThan(0);
-    expect(tp.why).toContain('your Spark goes off');
+    expect(tp.why).toContain('your **Spark**');
     const php = h.php; E.endTurn(h);
     expect(h.php).toBe(tp.hpAfter);
     expect(php - h.php).toBe(tp.attack + tp.extra);

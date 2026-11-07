@@ -47,12 +47,12 @@ export const fenmother: MonsterDef = {
     switch (type) {
       case 'lash': return { name: 'Tongue Lash', text: 'Its tongue whips out of the steam.', dmg: enr ? 32 : 26, threat: 1 };
       case 'belch': return { name: 'Scalding Belch', text: 'Its throat swells and glows. It belches boiling water at you.', dmg: enr ? 52 : 42, threat: 2 };
-      case 'gape': return { name: 'Gape', text: 'It opens its jaws wide. The spring pours into its throat.', dmg: 0, threat: 0, note: sac ? 'A Snap is coming next turn' : 'Swallows you next turn. Daze the head to stop it' };
-      case 'swallow': return { name: 'Swallow', text: 'It lunges to swallow you whole!', dmg: enr ? 48 : 40, threat: 3, note: 'Two of your dice get stuck inside until you cut free' };
+      case 'gape': return { name: 'Gape', text: 'It opens its jaws wide. The spring pours into its throat.', dmg: 0, threat: 0, note: sac ? '**Snap** next turn' : 'Swallows you next turn. **Daze** to the head stops it' };
+      case 'swallow': return { name: 'Swallow', text: 'It lunges to swallow you whole!', dmg: enr ? 48 : 40, threat: 3, note: '2 of your dice stuck inside until you cut free' };
       case 'snap': return { name: 'Snap', text: 'It snaps its torn throat shut on empty steam.', dmg: enr ? 34 : 28, threat: 2 };
-      case 'digest': return { name: 'Digest', text: 'You’re inside, in the heat. The walls squeeze.', dmg: enr ? 20 : 16, threat: 1, note: `Cut your way out: ${Math.max(0, m.gutHp ?? 0)} left (Cut counts double, Blunt half)` };
-      case 'steam': return { name: 'Steam Cloud', text: 'It sinks into the spring and the steam rolls over everything.', dmg: 0, threat: 0, isNew: !m.newSeen, note: 'For 2 turns, only your first hit each turn lands' };
-      case 'dazed': return { name: 'Dazed', text: 'It sways, eyes rolling, steam leaking from its jaws.', dmg: 0, threat: 0, note: 'Its action is lost' };
+      case 'digest': return { name: 'Digest', text: 'You’re inside, in the heat. The walls squeeze.', dmg: enr ? 20 : 16, threat: 1, note: `${Math.max(0, m.gutHp ?? 0)} left to cut free. **Cut** counts double, **Blunt** ½` };
+      case 'steam': return { name: 'Steam Cloud', text: 'It sinks into the spring and the steam rolls over everything.', dmg: 0, threat: 0, isNew: !m.newSeen, note: '1st hit only for 2 turns' };
+      case 'dazed': return { name: 'Dazed', text: 'It sways, eyes rolling, steam leaking from its jaws.', dmg: 0, threat: 0, note: 'It loses its turn' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
   },
@@ -108,13 +108,13 @@ export const fenmother: MonsterDef = {
 
   tip(h, type) {
     const m = h.mon;
-    if ((m.gut ?? 0) > 0) return carries(h, 'Cut') ? `You’re swallowed. Hit it with your ${carryingName(h, 'Cut')}: Cut counts double toward cutting free.` : 'You’re swallowed. Every hit counts toward cutting free: Cut counts double, Blunt only half.';
-    if ((m.mirage ?? 0) > 0) return h.chargeReady ? 'Your charge is ready. Make it your first hit: only the first one lands in the steam.' : 'In the steam only your first hit each turn lands. Charge, then strike once, hard.';
+    if ((m.gut ?? 0) > 0) return carries(h, 'Cut') ? `You’re swallowed. Your ${carryingName(h, 'Cut')} counts double toward cutting free.` : 'You’re swallowed. Every hit counts toward cutting free. **Cut** counts double, **Blunt** ½.';
+    if ((m.mirage ?? 0) > 0) return h.chargeReady ? 'Your **Charge** is ready. Only your first hit lands in the steam.' : 'In the steam only your first hit each turn lands.';
     if (type === 'gape') {
-      if (h.item === 'smoke' && h.itemCharges > 0) return 'Throw the Smoke Pouch now and the Swallow misses.';
-      return carries(h, 'Blunt') ? `Daze the head with your ${carryingName(h, 'Blunt')} to stop the Swallow, or block hard.` : 'It’s about to swallow you. Block, or break the throat sac.';
+      if (h.item === 'smoke' && h.itemCharges > 0) return 'A **Smoke Pouch** now makes the **Swallow** miss.';
+      return carries(h, 'Blunt') ? `**Daze** to the head from your ${carryingName(h, 'Blunt')} stops the **Swallow**.` : 'It swallows you next turn. Breaking its throat sac stops it.';
     }
-    if (!m.parts.gills.broken && carries(h, 'Pierce')) return `Its gills heal it every turn. Break them with your ${carryingName(h, 'Pierce')}.`;
+    if (!m.parts.gills.broken && carries(h, 'Pierce')) return `Its gills heal it every turn. Your ${carryingName(h, 'Pierce')} can break them.`;
     return null;
   }
 };

@@ -53,21 +53,21 @@ export const cragwing: MonsterDef = {
   intent(h, type): Intent {
     const m = h.mon, enr = m.enraged;
     switch (type) {
-      case 'brace': return { name: 'Slate Brace', text: 'It hunkers down behind its slate, wings held wide, and butts at you.', dmg: 20, threat: 1, note: 'Hits on its Horn and Back deal half this turn. Its Wings are exposed' };
+      case 'brace': return { name: 'Slate Brace', text: 'It hunkers down behind its slate, wings held wide, and butts at you.', dmg: 20, threat: 1, note: 'Horn and Back take ½ this turn. Its Wings are open' };
       // enraged (Nov 2026): loose slate down the slope; it buries your footing, so no Swap the turn after
-      case 'rockslide': return { name: 'Rockslide', text: 'It kicks the scree loose. Slate pours down the slope at you!', dmg: enr ? 34 : 28, threat: 2, isNew: !m.newSeen, note: 'Buries your footing: no Swap next turn. Swap now if you need to' };
+      case 'rockslide': return { name: 'Rockslide', text: 'It kicks the scree loose. Slate pours down the slope at you!', dmg: enr ? 34 : 28, threat: 2, isNew: !m.newSeen, note: 'Buries your footing. **Swap** is locked next turn' };
       case 'lash': return { name: 'Tail Lash', text: 'It swings round, its tail scattering loose slate.', dmg: enr ? 34 : 28, threat: 1 };
-      case 'windup': return { name: 'Winding up', text: 'It drops its horned head and scrapes the scree, gathering itself.', dmg: 0, threat: 0, note: 'Shale Charge next turn: block for it' };
+      case 'windup': return { name: 'Winding up', text: 'It drops its horned head and scrapes the scree, gathering itself.', dmg: 0, threat: 0, note: '**Shale Charge** next turn' };
       case 'charge': return { name: 'Shale Charge', text: 'It hurls itself down the slope, horn first!', dmg: enr ? 84 : 70, threat: enr ? 4 : 3 };
       case 'takeoff': { const n = airTurns(h); return { name: 'Taking off', text: 'It spreads its stone wings and climbs into the ridge wind.', dmg: 0, threat: 0, note: `Still on the ground now. After your turn it's airborne for ${n} turn${n > 1 ? 's' : ''}: only bows reach it then` }; }
-      case 'gust': return { name: 'Gust Buffet', text: 'It hangs in the wind and beats a gale down at you.', dmg: enr ? 38 : 30, threat: 1, halfGuard: true, note: 'Ignores half your guard. Dives next turn' };
-      case 'dive': return { name: 'Talon Dive', text: 'It folds its wings and drops out of the sky, talons first!', dmg: enr ? 76 : 64, threat: enr ? 4 : 3, note: 'Then it sits perched for a turn' };
-      case 'perched': return { name: 'Perched', text: 'It lands hard on a boulder, catching its breath.', dmg: 0, threat: 0, note: 'A free turn on the ground' };
-      case 'burrow': return { name: 'Burrowing', text: 'It drives its horn into the scree and vanishes under the slate.', dmg: 0, threat: 0, note: 'Still on the surface now. After your turn it\'s underground: only Blunt reaches it' };
-      case 'rockburst': return { name: 'Rockburst', text: 'The scree under you shifts and heaves. Something is coming up!', dmg: enr ? 74 : 62, threat: enr ? 4 : 3, note: m.parts.back.broken ? 'Drive it up with a heavy Blunt hit to cancel' : 'Drive it up to cancel. Coming up, it packs fresh slate onto its back' };
-      case 'crashed': return { name: 'Brought down', text: 'It tumbles out of the air in a clatter of slate.', dmg: 0, threat: 0, note: 'Grounded. Its action is lost' };
-      case 'unearthed': return { name: 'Driven up', text: 'It bursts out of the scree, dazed, shaking grit from its horn.', dmg: 0, threat: 0, note: 'Rockburst cancelled. Its action is lost' };
-      case 'dazed': return { name: 'Dazed', text: 'It reels, wings drooping, swaying on the slope.', dmg: 0, threat: 0, note: 'Its action is lost' };
+      case 'gust': return { name: 'Gust Buffet', text: 'It hangs in the wind and beats a gale down at you.', dmg: enr ? 38 : 30, threat: 1, halfGuard: true, note: 'Your **Block** is ½. Dives next turn' };
+      case 'dive': return { name: 'Talon Dive', text: 'It folds its wings and drops out of the sky, talons first!', dmg: enr ? 76 : 64, threat: enr ? 4 : 3, note: 'Then it perches for a turn' };
+      case 'perched': return { name: 'Perched', text: 'It lands hard on a boulder, catching its breath.', dmg: 0, threat: 0, note: 'On the ground. A free turn' };
+      case 'burrow': return { name: 'Burrowing', text: 'It drives its horn into the scree and vanishes under the slate.', dmg: 0, threat: 0, note: 'After your turn it’s underground. **Blunt** only then' };
+      case 'rockburst': return { name: 'Rockburst', text: 'The scree under you shifts and heaves. Something is coming up!', dmg: enr ? 74 : 62, threat: enr ? 4 : 3, note: m.parts.back.broken ? 'A heavy **Blunt** hit drives it up and stops it' : 'Driving it up stops it. Coming up, it adds fresh slate' };
+      case 'crashed': return { name: 'Brought down', text: 'It tumbles out of the air in a clatter of slate.', dmg: 0, threat: 0, note: 'On the ground. It loses its turn' };
+      case 'unearthed': return { name: 'Driven up', text: 'It bursts out of the scree, dazed, shaking grit from its horn.', dmg: 0, threat: 0, note: '**Rockburst** stopped. It loses its turn' };
+      case 'dazed': return { name: 'Dazed', text: 'It reels, wings drooping, swaying on the slope.', dmg: 0, threat: 0, note: 'It loses its turn' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
   },
@@ -130,19 +130,19 @@ export const cragwing: MonsterDef = {
   tip(h, type) {
     const m = h.mon;
     if (m.air) {
-      if (carries(h, 'Pierce')) return `Only your ${carryingName(h, 'Pierce')} reaches it up there. Pinning Shot brings it down.`;
-      if (h.item === 'net' && h.itemCharges > 0) return 'Throw the Weighted Net to bring it down.';
-      return 'It’s airborne: only Pierce reaches it. Block for the dive.';
+      if (carries(h, 'Pierce')) return `Only your ${carryingName(h, 'Pierce')} reaches it up there. **Pinning Shot** brings it down.`;
+      if (h.item === 'net' && h.itemCharges > 0) return 'A **Weighted Net** brings it down.';
+      return 'It’s airborne. **Pierce** only. It dives next.';
     }
     if (m.under) {
-      if (carries(h, 'Blunt')) return `${dazeTag} A Blunt move of 2+ dice drives it up and cancels the Rockburst (${carryingName(h, 'Blunt')}).`;
-      if (h.item === 'blast' && h.itemCharges > 0) return 'Throw the Blast Powder to force it up.';
-      return 'Only Blunt reaches it under the scree. Block for the Rockburst.';
+      if (carries(h, 'Blunt')) return `${dazeTag} A 2-dice **Blunt** move drives it up and stops the **Rockburst** (${carryingName(h, 'Blunt')}).`;
+      if (h.item === 'blast' && h.itemCharges > 0) return '**Blast Powder** forces it up.';
+      return 'It’s under the scree. **Blunt** only. **Rockburst** next.';
     }
-    if (m.plating > 0) return carries(h, 'Cut') ? `Slate plating: your ${carryingName(h, 'Cut')} clears it in one hit.` : 'Slate plating: each hit breaks one layer before it does damage.';
-    if (type === 'windup') return 'A Shale Charge is coming. Block with your spare dice.';
-    if (type === 'takeoff' && !carries(h, 'Pierce')) return 'It’s about to fly, and only bows reach it in the air.';
-    if (type === 'burrow' && !carries(h, 'Blunt')) return 'It’s about to burrow, and only mauls reach it under the scree.';
+    if (m.plating > 0) return carries(h, 'Cut') ? `Your ${carryingName(h, 'Cut')} breaks the slate in one hit.` : 'The slate takes your hits before its HP does. Each hit breaks a layer.';
+    if (type === 'windup') return 'A **Shale Charge** is coming.';
+    if (type === 'takeoff' && !carries(h, 'Pierce')) return 'It flies after this. **Pierce** only in the air.';
+    if (type === 'burrow' && !carries(h, 'Blunt')) return 'It burrows after this. **Blunt** only under the scree.';
     return null;
   },
 

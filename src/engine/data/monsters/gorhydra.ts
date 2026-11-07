@@ -70,16 +70,16 @@ export const gorhydra: MonsterDef = {
 
   intent(h, type): Intent {
     if (type === 'slam') return { name: 'Tail Slam', text: 'Headless, it thrashes its tail at you.', dmg: h.mon.enraged ? 34 : 28, threat: 2 };
-    if (type === 'dazed') return { name: 'Dazed', text: 'All three heads sway.', dmg: 0, threat: 0, note: 'Its action is lost' };
+    if (type === 'dazed') return { name: 'Dazed', text: 'All three heads sway.', dmg: 0, threat: 0, note: 'It loses its turn' };
     // enraged (Nov 2026): its Frost Breath turned up, every head breathing at once
-    if (type === 'chain') { const n = live(h).length, d = 16 * n; return { name: 'Frost Chain', text: 'Every head draws breath at once. The air goes white.', dmg: d, elemDmg: d, threat: band(d), isNew: !h.mon.newSeen, note: `Freezes ${Math.min(2, n)} of your dice next turn. Each head you cut off is one breath less` }; }
+    if (type === 'chain') { const n = live(h).length, d = 16 * n; return { name: 'Frost Chain', text: 'Every head draws breath at once. The air goes white.', dmg: d, elemDmg: d, threat: band(d), isNew: !h.mon.newSeen, note: `${Math.min(2, n)} fewer dice next turn. Each head cut off makes it 1 less` }; }
     const acts = parse(type);
     if (!acts) return { name: '…', text: '', dmg: 0, threat: 0 };
     const parts = HYDRA_HEADS.filter(x => !h.mon.parts[x].broken && !sealed(h, x)).map(x => headAct(h, x, reeling(h, x) ? 'reel' : acts[x]));
     const dmg = parts.reduce((t, p) => t + p.dmg, 0);
     const breath = HYDRA_HEADS.some(x => acts[x] === 'breath' && !reeling(h, x) && live(h).includes(x as never));
     const stumps = HYDRA_HEADS.filter(x => stumped(h, x));
-    const note = [breath ? 'Frost Breath freezes one of your dice next turn' : '', stumps.length ? `${stumps.length === 1 ? 'A stump regrows' : 'Stumps regrow'} soon: seal with Cut or Ember` : ''].filter(Boolean).join('. ');
+    const note = [breath ? '**Frost Breath** means 1 fewer die next turn' : '', stumps.length ? `${stumps.length === 1 ? 'A stump regrows' : 'Stumps regrow'} soon. **Cut** or **Ember** seals it` : ''].filter(Boolean).join('. ');
     const elemDmg = parts.filter(p => p.name === 'Frost Breath').reduce((t, p) => t + p.dmg, 0);
     return { name: parts.map(p => p.name).join(' + ') || 'Thrashing', text: parts.map(p => p.text).join(' '), dmg, elemDmg, threat: band(dmg), note: note || undefined };
   },
@@ -180,8 +180,8 @@ export const gorhydra: MonsterDef = {
 
   tip(h) {
     const stumps = HYDRA_HEADS.filter(x => stumped(h, x));
-    if (stumps.length) return carries(h, 'Cut') ? `Aim at the stump and hit it with your ${carryingName(h, 'Cut')} to seal it before it grows back.` : h.weps.some(w => w.elem === 'Ember') ? 'Hit the stump with your Ember weapon to seal it before it grows back.' : 'A stump is regrowing, and only Cut or Ember seals it.';
-    if (carries(h, 'Cut')) return `Cut a head off with your ${carryingName(h, 'Cut')}, then seal the stump. Fewer heads, fewer attacks.`;
+    if (stumps.length) return carries(h, 'Cut') ? `Your ${carryingName(h, 'Cut')} on the stump seals it before it grows back.` : h.weps.some(w => w.elem === 'Ember') ? 'Your **Ember** weapon on the stump seals it before it grows back.' : 'A stump is regrowing. **Cut** or **Ember** seals it.';
+    if (carries(h, 'Cut')) return `Your ${carryingName(h, 'Cut')} cuts a head off. Seal the stump and it attacks less.`;
     return null;
   }
 };

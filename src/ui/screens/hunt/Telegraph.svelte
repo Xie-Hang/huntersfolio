@@ -4,6 +4,7 @@
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
   import Tagged from '../../parts/Tagged.svelte';
+  import Rich from '../../parts/Rich.svelte';
   import Elem from '../../parts/Elem.svelte';
   import RankMedal from '../../parts/RankMedal.svelte';
   import Modal from '../../parts/Modal.svelte';
@@ -104,22 +105,22 @@
       {#if multi}<h3 class="mvname multi">{#each info.name.split(' + ') as n, i}{#if i}<span class="sep" aria-hidden="true">&nbsp;·&nbsp;</span>{/if}<span>{n}</span>{/each}</h3>
       {:else}<h3 class="mvname">{info.name}{#if info.isNew}<span class="newmove">New move</span>{/if}</h3>{/if}
       {#if inc || tp?.extra}
-        {#if total}<span class="big" aria-label="{total} damage to you this turn">−{total}</span>{:else}<span class="big safe">{E.trapCatches(h.trapSet, h.intent) ? 'Trapped' : inc?.evade ? 'Dodged' : 'Blocked'}</span>{/if}
+        {#if total}<span class="big" aria-label="{total} damage to you this turn">−{total}</span>{:else}<span class="big safe">{E.trapCatches(h.trapSet, h.intent) ? 'Trapped' : inc?.evade ? 'Missed' : 'Blocked'}</span>{/if}
       {/if}
     </div>
     {#if !multi && !tip}<p class="say">{info.text}</p>{/if}
     {#if inc && !full}
-      {#if inc.net && !inc.noGuard}{#if shows(h, 'block')}<div class="calc">Block to take less.</div>{/if}{:else if inc.noGuard && inc.net}<div class="calc"><span class="nores">Block can’t stop this one.</span></div>{/if}
+      {#if inc.net && !inc.noGuard}{#if shows(h, 'block')}<div class="calc"><b>Block</b> takes some off.</div>{/if}{:else if inc.noGuard && inc.net}<div class="calc"><span class="nores">Goes through <b>Block</b>.</span></div>{/if}
     {:else if inc && calcWorth}
       <div class="calc">
-        {#if inc.elem === 0}<b>{inc.raw}</b> physical{#if inc.wearsResist} · <span class="nores">your armor's {E.monElem(h)} resist doesn't apply</span>{/if}
-        {:else if inc.phys === 0}<Elem e={E.monElem(h)} /><b>{inc.raw}</b> {E.monElem(h)}{#if inc.res} · resisted by your armor → <b>{inc.after}</b>{/if}
-        {:else}<b>{inc.phys}</b> physical + <Elem e={E.monElem(h)} /><b>{inc.elem}</b> {E.monElem(h)}{#if inc.res} · {E.monElem(h)} part resisted → <b>{inc.after}</b>{/if}{/if}{#if inc.evade && !E.trapCatches(h.trapSet, h.intent)} · smoke: <b>misses</b>{:else if h.guard} · − <b>{inc.g}</b> block{inc.half ? ' (halved)' : ''}{/if}{#if !inc.evade && inc.ward} · − <b>{inc.ward}</b> armor{/if}{#if !inc.evade && inc.net && inc.noGuard} · <span class="nores">block can’t stop it</span>{:else if !inc.evade && inc.net && inc.half} · <span style="color:var(--muted)">block counts half</span>{/if}
+        {#if inc.elem === 0}<b>{inc.raw}</b> physical{#if inc.wearsResist} · <span class="nores">your resist is <b>{E.monElem(h)}</b> only</span>{/if}
+        {:else if inc.phys === 0}<Elem e={E.monElem(h)} /><b>{inc.raw}</b> {E.monElem(h)}{#if inc.res} · your resist → <b>{inc.after}</b>{/if}
+        {:else}<b>{inc.phys}</b> physical + <Elem e={E.monElem(h)} /><b>{inc.elem}</b> {E.monElem(h)}{#if inc.res} · your resist → <b>{inc.after}</b>{/if}{/if}{#if inc.evade && !E.trapCatches(h.trapSet, h.intent)} · <b>Smoke</b>, it misses{:else if h.guard} · − <b>{inc.g}</b> block{inc.half ? ' (½)' : ''}{/if}{#if !inc.evade && inc.ward} · − <b>{inc.ward}</b> armor{/if}{#if !inc.evade && inc.net && inc.noGuard} · <span class="nores">through <b>Block</b></span>{:else if !inc.evade && inc.net && inc.half} · <span style="color:var(--muted)"><b>Block</b> is ½</span>{/if}
       </div>
     {/if}
-    {#if tp?.extra}<div class="calc rider">+<b>{tp.extra}</b> at the end of the turn: {tp.why.join(', ')} · <span class="nores">block can’t stop it</span></div>{/if}
-    {#if E.trapCatches(h.trapSet, h.intent)}<div class="calc rider" style="color:var(--gold-hi)">Your {(E.ITEMS[h.item ?? '']?.name ?? 'trap')} catches it: no damage, and it’s held for {E.TRAP_HOLD[h.trapSet!]} turns{E.canCapture(h) ? '. It’s weak enough, so it’s captured' : ''}.</div>{:else if h.trapSet}<div class="calc rider"><span class="nores">Your {(E.ITEMS[h.item ?? '']?.name ?? 'trap')} won’t catch this: it’s wasted.</span></div>{/if}
-    {#if info.note || info.steady || breaksCharge || breaksSnare}<div class="note">{[info.note, info.steady && E.carries(h, 'Blunt') ? 'Daze can\'t cancel it' : null, breaksCharge ? 'This hit breaks your charge' : null, breaksSnare ? `This hit tears it free of your snare: block it under ${E.CHARGE_BREAK}` : null].filter(Boolean).join(' · ')}</div>{/if}
+    {#if tp?.extra}<div class="calc rider">+<b>{tp.extra}</b> at turn end from <Rich text={tp.why.join(' and ')} /> · <span class="nores">through <b>Block</b></span></div>{/if}
+    {#if E.trapCatches(h.trapSet, h.intent)}<div class="calc rider" style="color:var(--gold-hi)">Your {(E.ITEMS[h.item ?? '']?.name ?? 'trap')} catches it. No hit, and it loses {E.TRAP_HOLD[h.trapSet!]} turns{E.canCapture(h) ? '. It’s weak enough, so it’s captured' : ''}.</div>{:else if h.trapSet}<div class="calc rider"><span class="nores">Your {(E.ITEMS[h.item ?? '']?.name ?? 'trap')} is wasted on this move.</span></div>{/if}
+    {#if info.note || info.steady || breaksCharge || breaksSnare}<div class="note"><Rich text={[info.note, info.steady && E.carries(h, 'Blunt') ? 'Goes through **Daze**' : null, breaksCharge ? 'This hit breaks your **Charge**' : null, breaksSnare ? 'This hit tears it free of your **Snare**' : null].filter(Boolean).join(' · ')} /></div>{/if}
     {#if tip}<div class="answer" class:counter={isCounter}><b>{isCounter ? 'Counter:' : 'Tip:'}</b> <Tagged text={tip} /></div>{/if}
     {#if recap}
       <div class="recap">
@@ -159,6 +160,7 @@
   .calc { font-family: var(--f-body); font-size: var(--fs-sm); color: var(--soft); }
   .calc b { color: var(--fg); font-weight: 600; }
   .calc .nores { color: var(--ember-soft); }
+  .calc .nores b { color: inherit; font-weight: 700; }
   .answer { padding: 6px 10px; border: 1px solid var(--line-2); border-radius: 3px; background: var(--raise); font-size: var(--fs-sm); line-height: 1.35; color: var(--fg); }
   .answer.counter { border-color: var(--gold); }
   .answer b { color: var(--gold-hi); font-weight: 600; }

@@ -34,9 +34,9 @@ export const gustmarmot: MonsterDef = {
     const enr = h.mon.enraged;
     switch (type) {
       case 'nip': return { name: 'Peck', text: 'It darts in and pecks.', dmg: 16, threat: 1 };
-      case 'whistle': return { name: 'Flapping', text: 'It beats its stubby wings hard. The wind gathers.', dmg: 0, threat: 0, note: 'Gusts next turn. Nothing hits you this turn: a safe turn to Charge' };
+      case 'whistle': return { name: 'Flapping', text: 'It beats its stubby wings hard. The wind gathers.', dmg: 0, threat: 0, note: 'A free turn. Gusts next turn' };
       case 'gust': return { name: enr ? 'Howling Gust' : 'Gust', text: enr ? 'The wind howls straight at you.' : 'A wall of wind hits you.', dmg: enr ? 50 : 40, threat: 3 };
-      case 'dazed': return { name: 'Dazed', text: 'It wobbles, dizzy.', dmg: 0, threat: 0, note: 'Its action is lost' };
+      case 'dazed': return { name: 'Dazed', text: 'It wobbles, dizzy.', dmg: 0, threat: 0, note: 'It loses its turn' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
   },

@@ -50,11 +50,11 @@ export const ashtail: MonsterDef = {
       case 'pounce': return { name: 'Flare Pounce', text: jb ? 'It crouches low, its broken jaw smoking.' : 'It crouches low in the ash, haunches twitching.', dmg: jb ? (enr ? 23 : 19) : (enr ? 34 : 27), threat: enr ? 2 : 1 };
       case 'sweep': return tb
         ? { name: 'Stump Swipe', text: 'It swings round, lashing out with the stump of its tail.', dmg: enr ? 34 : 27, threat: 1 }
-        : { name: 'Cinder Sweep', text: 'It coils its glowing tail behind it, low to the ground.', dmg: enr ? 69 : 59, threat: enr ? 4 : 3, note: 'Sever the tail to stop this' };
+        : { name: 'Cinder Sweep', text: 'It coils its glowing tail behind it, low to the ground.', dmg: enr ? 69 : 59, threat: enr ? 4 : 3, note: 'Breaking its tail stops this' };
       // enraged (Nov 2026): its cinder scales turned up, flung at you and grown straight back
-      case 'flare': return { name: 'Flare-up', text: 'It shakes its back and burning scales spray across you.', dmg: enr ? 30 : 24, threat: 2, isNew: !m.newSeen, note: 'It throws off a layer of its own scales doing it: hit hard after' };
-      case 'kindle': return { name: 'Kindle', text: 'It goes still. Its back glows brighter as new scales flare up.', dmg: 0, threat: 0, note: `Regrows ${layers(h)} layers of cinder scales` };
-      case 'dazed': return { name: 'Dazed', text: 'It reels, eyes unfocused, swaying on its feet.', dmg: 0, threat: 0, note: 'Its action is lost' };
+      case 'flare': return { name: 'Flare-up', text: 'It shakes its back and burning scales spray across you.', dmg: enr ? 30 : 24, threat: 2, isNew: !m.newSeen, note: 'It loses a layer of its own scales doing it' };
+      case 'kindle': return { name: 'Kindle', text: 'It goes still. Its back glows brighter as new scales flare up.', dmg: 0, threat: 0, note: `Regrows ${layers(h)} layers of scales` };
+      case 'dazed': return { name: 'Dazed', text: 'It reels, eyes unfocused, swaying on its feet.', dmg: 0, threat: 0, note: 'It loses its turn' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
   },
@@ -87,11 +87,11 @@ export const ashtail: MonsterDef = {
   tip(h, type) {
     const m = h.mon;
     if (m.plating > 0) {
-      if (carries(h, 'Pierce')) return `Cinder scales: your ${carryingName(h, 'Pierce')} clears two layers a hit, without the burn.`;
-      return `Cinder scales: hits break scales instead of dealing damage.${carries(h, 'Cut') ? ` A Cut hit burns you ${scorch(m.enraged)}.` : ''}`;
+      if (carries(h, 'Pierce')) return `Your ${carryingName(h, 'Pierce')} breaks two layers of scales a hit, and they don’t burn it.`;
+      return `Its scales take your hits before its HP does.${carries(h, 'Cut') ? ` **Cut** hits burn you for ${scorch(m.enraged)}.` : ''}`;
     }
-    if (type === 'sweep' && !m.parts.tail.broken && carries(h, 'Cut')) return `Its scales are down: sever the tail with your ${carryingName(h, 'Cut')}.`;
-    if (type === 'kindle') return 'It’s about to rekindle its scales. Hit hard now.';
+    if (type === 'sweep' && !m.parts.tail.broken && carries(h, 'Cut')) return `Its scales are down. Your ${carryingName(h, 'Cut')} can break its tail.`;
+    if (type === 'kindle') return 'It regrows its scales after this.';
     return null;
   }
 };

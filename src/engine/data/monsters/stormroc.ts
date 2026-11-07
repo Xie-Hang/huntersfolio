@@ -50,16 +50,16 @@ export const stormroc: MonsterDef = {
     const rod = !!h.arm.rod;
     switch (type) {
       case 'rake': return { name: m.air ? 'Swooping Rake' : 'Talon Rake', text: m.air ? 'It swoops low, talons first.' : 'It lunges with its talons.', dmg: tb ? 20 : enr ? 32 : 26, threat: 2, halfGuard: half };
-      case 'buffet': return { name: 'Gale Buffet', text: 'It drives a wall of wind at you.', dmg: enr ? 22 : 18, threat: 1, halfGuard: half, note: 'Your block is halved next turn' };
-      case 'takeoff': return { name: 'Taking off', text: 'It spreads its wings and rises into the storm.', dmg: 0, threat: 0, note: 'Still on the ground now. After your turn it\'s airborne: only bows reach it then' };
+      case 'buffet': return { name: 'Gale Buffet', text: 'It drives a wall of wind at you.', dmg: enr ? 22 : 18, threat: 1, halfGuard: half, note: 'Your **Block** is ½ next turn' };
+      case 'takeoff': return { name: 'Taking off', text: 'It spreads its wings and rises into the storm.', dmg: 0, threat: 0, note: 'After your turn it’s airborne. **Pierce** only then' };
       case 'dive': return { name: 'Stoop Dive', text: 'It folds its wings and falls on you like a thunderbolt!', dmg: tb ? 40 : enr ? 60 : 52, threat: 3, halfGuard: half, note: 'Then it lands for a turn' };
-      case 'perched': return { name: 'Landed', text: 'It lands hard, spent, and shakes the rain from its wings.', dmg: 0, threat: 0, note: 'Grounded for a turn: full damage, and every weapon reaches the crown' };
-      case 'thunder': { const d = enr ? 78 : 70; return { name: 'Thunderhead', text: 'Its crown blazes white. Lightning is coming down!', dmg: rod ? Math.round(d / 2) : d, threat: 4, halfGuard: half, steady: true, note: carries(h, 'Pierce') ? 'A Pierce hit on the crown snuffs it out' : undefined }; }
+      case 'perched': return { name: 'Landed', text: 'It lands hard, spent, and shakes the rain from its wings.', dmg: 0, threat: 0, note: 'On the ground for a turn. Every weapon reaches the crown' };
+      case 'thunder': { const d = enr ? 78 : 70; return { name: 'Thunderhead', text: 'Its crown blazes white. Lightning is coming down!', dmg: rod ? Math.round(d / 2) : d, threat: 4, halfGuard: half, steady: true, note: carries(h, 'Pierce') ? 'A **Pierce** hit on the crown stops it' : undefined }; }
       // enraged (Nov 2026): it can't hold the storm in; its crown flashes early, smaller, and the storm starts over
-      case 'flash': { const d = enr ? 38 : 34; return { name: 'Crown Flash', text: 'Its crown flares too soon. Lightning forks down at you!', dmg: rod ? Math.round(d / 2) : d, threat: 3, halfGuard: half, isNew: !m.newSeen, note: carries(h, 'Pierce') ? 'An early Thunderhead. A Pierce hit on the crown snuffs it out' : 'An early Thunderhead: block it. It empties the storm' }; }
-      case 'gutter': return { name: 'Storm snuffed', text: 'The light in its crown gutters and goes out.', dmg: 0, threat: 0, note: 'Its Thunderhead is lost' };
-      case 'crashed': return { name: 'Brought down', text: 'It crashes into the rocks in a tangle of wings.', dmg: 0, threat: 0, note: 'Grounded for a turn. Its action is lost' };
-      case 'dazed': return { name: 'Dazed', text: 'It reels, its crown flickering.', dmg: 0, threat: 0, note: 'Its action is lost' };
+      case 'flash': { const d = enr ? 38 : 34; return { name: 'Crown Flash', text: 'Its crown flares too soon. Lightning forks down at you!', dmg: rod ? Math.round(d / 2) : d, threat: 3, halfGuard: half, isNew: !m.newSeen, note: carries(h, 'Pierce') ? 'An early **Thunderhead**. A **Pierce** hit on the crown stops it' : 'An early **Thunderhead**. It empties the storm' }; }
+      case 'gutter': return { name: 'Storm snuffed', text: 'The light in its crown gutters and goes out.', dmg: 0, threat: 0, note: '**Thunderhead** stopped' };
+      case 'crashed': return { name: 'Brought down', text: 'It crashes into the rocks in a tangle of wings.', dmg: 0, threat: 0, note: 'On the ground for a turn. It loses its turn' };
+      case 'dazed': return { name: 'Dazed', text: 'It reels, its crown flickering.', dmg: 0, threat: 0, note: 'It loses its turn' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
   },
@@ -150,10 +150,10 @@ export const stormroc: MonsterDef = {
 
   tip(h, type) {
     const m = h.mon;
-    if (type === 'thunder') return carries(h, 'Pierce') ? `Hit its crown with your ${carryingName(h, 'Pierce')} to snuff out the Thunderhead.` : 'A Thunderhead is coming. Block with everything you have.';
-    if (m.air && !carries(h, 'Pierce')) return h.item === 'net' && h.itemCharges > 0 ? 'Throw the Weighted Net to bring it down.' : 'It’s airborne: only Pierce reaches it. Block, and strike when it swoops low or lands.';
-    if (m.air && (m.storm ?? 0) > 0) return `Arrows into its crown drain the storm. Aim at the crown with your ${carryingName(h, 'Pierce')}.`;
-    if (type === 'perched') return 'It’s landed: every weapon reaches the crown this turn.';
+    if (type === 'thunder') return carries(h, 'Pierce') ? `Your ${carryingName(h, 'Pierce')} on its crown stops the **Thunderhead**.` : 'A **Thunderhead** is coming.';
+    if (m.air && !carries(h, 'Pierce')) return h.item === 'net' && h.itemCharges > 0 ? 'A **Weighted Net** brings it down.' : 'It’s airborne. **Pierce** only. Every weapon reaches it when it swoops low or lands.';
+    if (m.air && (m.storm ?? 0) > 0) return `**Pierce** hits on its crown drain the storm. Your ${carryingName(h, 'Pierce')} reaches it.`;
+    if (type === 'perched') return 'It’s on the ground. Every weapon reaches the crown this turn.';
     return null;
   },
 

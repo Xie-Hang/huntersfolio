@@ -43,14 +43,14 @@ export const gorehorn: MonsterDef = {
       // enraged (Nov 2026): a charge with no wind-up turn; you still see it coming this turn
       case 'mudcharge': return tb
         ? { name: 'Mud Charge', text: 'It slews out of the mud on broken tusks.', dmg: 30, threat: 2, isNew: !m.newSeen }
-        : { name: 'Mud Charge', text: 'It bursts out of the mud, tusks first, with no wind-up!', dmg: 56, threat: 3, isNew: !m.newSeen, note: 'No wind-up turn: block it now' };
-      case 'wallow': return { name: 'Mud Wallow', text: 'It rolls in the wet earth, caking its hide in mud.', dmg: 0, threat: 0, note: 'Hide takes half damage for 2 turns' };
-      case 'root': return { name: 'Root for Food', text: 'It noses the ground, distracted by roots.', dmg: 0, threat: 0, note: 'Heals 25. A free turn to attack' };
-      case 'exhausted': return { name: 'Exhausted', text: 'It staggers, sides heaving.', dmg: 0, threat: 0, note: 'Wide open' };
-      case 'pinned': return { name: 'Pinned', text: 'An arrow through the foreleg. It stumbles mid-stride, the charge spent.', dmg: 0, threat: 0, note: 'Charge cancelled' };
+        : { name: 'Mud Charge', text: 'It bursts out of the mud, tusks first, with no wind-up!', dmg: 56, threat: 3, isNew: !m.newSeen, note: 'No wind-up this time' };
+      case 'wallow': return { name: 'Mud Wallow', text: 'It rolls in the wet earth, caking its hide in mud.', dmg: 0, threat: 0, note: 'Hide takes ½ for 2 turns' };
+      case 'root': return { name: 'Root for Food', text: 'It noses the ground, distracted by roots.', dmg: 0, threat: 0, note: 'Heals 25. A free turn' };
+      case 'exhausted': return { name: 'Exhausted', text: 'It staggers, sides heaving.', dmg: 0, threat: 0, note: 'A free turn' };
+      case 'pinned': return { name: 'Pinned', text: 'An arrow through the foreleg. It stumbles mid-stride, the charge spent.', dmg: 0, threat: 0, note: 'Its charge is stopped. It loses its turn' };
       // counter stance (Nov 2026): a turn where the obvious play, a big hit on its weakest part, is punished
-      case 'bristle': return { name: 'Bristle Up', text: 'Its bristles stand up like iron nails. It shoulders forward, daring you to hit its back.', dmg: 10, threat: 1, note: 'Your first hit on its Hide this turn is struck back at you for 20 (it can’t knock you out). Its Tusks and Hind Legs are safe' };
-      case 'dazed': return { name: 'Dazed', text: 'It reels, eyes unfocused, swaying on its feet.', dmg: 0, threat: 0, note: 'Its action is lost' };
+      case 'bristle': return { name: 'Bristle Up', text: 'Its bristles stand up like iron nails. It shoulders forward, daring you to hit its back.', dmg: 10, threat: 1, note: 'Your first hit on its Hide this turn hits you back for 20' };
+      case 'dazed': return { name: 'Dazed', text: 'It reels, eyes unfocused, swaying on its feet.', dmg: 0, threat: 0, note: 'It loses its turn' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
   },
@@ -110,9 +110,9 @@ export const gorehorn: MonsterDef = {
   },
 
   tip(h, type) {
-    if (type === 'windup' && carries(h, 'Pierce')) return `Pinning Shot now cancels the charge (${carryingName(h, 'Pierce')}).`;
-    if (type === 'wallow' && carries(h, 'Pierce')) return `Pierce ignores the mud (${carryingName(h, 'Pierce')}).`;
-    if (type === 'charge' && carries(h, 'Blunt') && h.mon.daze >= h.mon.dazeMax * 0.6) return `${dazeTag} Fill the daze meter now to stop this charge.`;
+    if (type === 'windup' && carries(h, 'Pierce')) return `**Pinning Shot** now stops the charge (${carryingName(h, 'Pierce')}).`;
+    if (type === 'wallow' && carries(h, 'Pierce')) return `**Pierce** goes through the mud (${carryingName(h, 'Pierce')}).`;
+    if (type === 'charge' && carries(h, 'Blunt') && h.mon.daze >= h.mon.dazeMax * 0.6) return `${dazeTag} A full **Daze** meter now stops this charge.`;
     return null;
   }
 };

@@ -44,13 +44,13 @@ export const emberwhelk: MonsterDef = {
     const m = h.mon, enr = m.enraged;
     switch (type) {
       case 'spit': return { name: 'Spit Cinders', text: 'It hawks a gob of glowing cinders.', dmg: enr ? 28 : 22, threat: 1 };
-      case 'slime': return { name: 'Molten Slime', text: 'It surges forward on a wave of burning slime.', dmg: enr ? 20 : 16, threat: 2, note: `Then the slime burns you for ${SLIME_TURNS} turns` };
-      case 'retreat': return { name: 'Shell Retreat', text: 'It pulls back into its shell, hissing.', dmg: 0, threat: 0, note: 'Your hits deal half until it comes out. It heals 30' };
-      case 'rear': return { name: 'Rears Back', text: 'It rears up, shell tilted forward like a battering ram.', dmg: 0, threat: 0, note: 'Shell Lunge next turn' };
+      case 'slime': return { name: 'Molten Slime', text: 'It surges forward on a wave of burning slime.', dmg: enr ? 20 : 16, threat: 2, note: `Then its slime burns you for ${SLIME_TURNS} turns` };
+      case 'retreat': return { name: 'Shell Retreat', text: 'It pulls back into its shell, hissing.', dmg: 0, threat: 0, note: 'Takes ½ until it comes out. Heals 30' };
+      case 'rear': return { name: 'Rears Back', text: 'It rears up, shell tilted forward like a battering ram.', dmg: 0, threat: 0, note: '**Shell Lunge** next turn' };
       case 'lunge': return { name: 'Shell Lunge', text: 'It throws the whole molten shell at you!', dmg: enr ? 66 : 56, threat: 3 };
       // enraged (Nov 2026): its gills open wide and it heals a big chunk after your turn (on top of the usual flare)
-      case 'bloom': return { name: 'Gill Bloom', text: 'Its gills fan open, glowing white-hot.', dmg: 0, threat: 0, isNew: !m.newSeen, note: 'It heals 40 after your turn. Break the gills, or daze it, to stop it' };
-      case 'dazed': return { name: 'Dazed', text: 'It sways, its eye stalks drooping.', dmg: 0, threat: 0, note: 'Its action is lost' };
+      case 'bloom': return { name: 'Gill Bloom', text: 'Its gills fan open, glowing white-hot.', dmg: 0, threat: 0, isNew: !m.newSeen, note: 'Heals 40 after your turn. Breaking its gills or **Daze** stops it' };
+      case 'dazed': return { name: 'Dazed', text: 'It sways, its eye stalks drooping.', dmg: 0, threat: 0, note: 'It loses its turn' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
   },
@@ -99,10 +99,10 @@ export const emberwhelk: MonsterDef = {
   tip(h, type) {
     const m = h.mon;
     if (!m.parts.gills.broken) return carries(h, 'Pierce')
-      ? `It heals while its gills are intact. Expose them with your ${carryingName(h, 'Pierce')}, then break them.`
-      : 'It heals every turn while its gills are intact. Break the gills first.';
-    if (type === 'retreat') return 'It’s pulling into its shell: your hits deal half next turn. A good turn to block or charge.';
-    if (type === 'rear') return 'A Shell Lunge is coming. Block, or daze it through the shell.';
+      ? `Its gills heal it. Your ${carryingName(h, 'Pierce')} can **Expose** them and break them.`
+      : 'It heals every turn. Breaking its gills stops the healing.';
+    if (type === 'retreat') return 'It goes into its shell. It takes ½ next turn.';
+    if (type === 'rear') return 'A **Shell Lunge** is coming. **Daze** gets through the shell and stops it.';
     return null;
   }
 };

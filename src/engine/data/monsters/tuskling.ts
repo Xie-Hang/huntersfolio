@@ -34,8 +34,8 @@ export const tuskling: MonsterDef = {
     switch (type) {
       case 'jab': return { name: 'Jab', text: 'It lowers its little tusks.', dmg: 14, threat: 1 };
       case 'bite': return { name: 'Bite', text: 'It opens its jaws wide.', dmg: 28, threat: 2 };
-      case 'tired': return { name: 'Tired', text: 'It stands still, sides heaving.', dmg: 0, threat: 0, note: 'It’s weak and still' };
-      case 'dazed': return { name: 'Dazed', text: 'It wobbles on its feet.', dmg: 0, threat: 0, note: 'Its action is lost' };
+      case 'tired': return { name: 'Tired', text: 'It stands still, sides heaving.', dmg: 0, threat: 0, note: 'A free turn' };
+      case 'dazed': return { name: 'Dazed', text: 'It wobbles on its feet.', dmg: 0, threat: 0, note: 'It loses its turn' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
   },

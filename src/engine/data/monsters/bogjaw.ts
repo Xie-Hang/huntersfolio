@@ -44,13 +44,13 @@ export const bogjaw: MonsterDef = {
     switch (type) {
       case 'lash': return { name: 'Tongue Lash', text: 'Its tongue uncoils, slick with mud.', dmg: enr ? 26 : 20, threat: 1 };
       case 'slam': return { name: 'Body Slam', text: 'It heaves its bulk out of the mire to crush you.', dmg: warts ? (enr ? 48 : 38) : (enr ? 78 : 64), threat: 2 };
-      case 'gape': return { name: 'Gape', text: 'It opens its jaws impossibly wide. The mire drains into its throat.', dmg: 0, threat: 0, note: sac ? 'A Snap is coming next turn' : 'Swallows you next turn. Daze the jaw to stop it' };
-      case 'swallow': return { name: 'Swallow', text: 'It lunges, jaws wide open, to swallow you whole!', dmg: jaw ? (enr ? 28 : 22) : (enr ? 42 : 36), threat: 3, note: 'Two of your dice get stuck inside until you cut free' };
+      case 'gape': return { name: 'Gape', text: 'It opens its jaws impossibly wide. The mire drains into its throat.', dmg: 0, threat: 0, note: sac ? '**Snap** next turn' : 'Swallows you next turn. **Daze** to the jaw stops it' };
+      case 'swallow': return { name: 'Swallow', text: 'It lunges, jaws wide open, to swallow you whole!', dmg: jaw ? (enr ? 28 : 22) : (enr ? 42 : 36), threat: 3, note: '2 of your dice stuck inside until you cut free' };
       // enraged (Nov 2026): once a hunt it swallows you deeper: a fifth more to cut through
-      case 'gulp': return { name: 'Deep Gulp', text: 'It lunges, throat bulging, to swallow you whole and deep!', dmg: jaw ? 28 : 42, threat: 3, isNew: !m.newSeen, note: 'Two of your dice stuck, and deeper: more cutting to get out. Daze the jaw or break the throat sac to stop it' };
+      case 'gulp': return { name: 'Deep Gulp', text: 'It lunges, throat bulging, to swallow you whole and deep!', dmg: jaw ? 28 : 42, threat: 3, isNew: !m.newSeen, note: '2 of your dice stuck, deeper this time. **Daze** to the jaw or breaking its throat sac stops it' };
       case 'snap': return { name: 'Snap', text: 'It lunges and snaps its torn throat shut on empty air.', dmg: enr ? 30 : 24, threat: 2 };
-      case 'digest': return { name: 'Digest', text: 'You’re inside. The walls of its gut squeeze.', dmg: enr ? 18 : 14, threat: 1, note: `Cut your way out: ${Math.max(0, m.gutHp ?? 0)} left (Cut counts double, Blunt half)` };
-      case 'dazed': return { name: 'Dazed', text: 'It sways, jaw hanging, eyes rolling.', dmg: 0, threat: 0, note: 'Its action is lost' };
+      case 'digest': return { name: 'Digest', text: 'You’re inside. The walls of its gut squeeze.', dmg: enr ? 18 : 14, threat: 1, note: `${Math.max(0, m.gutHp ?? 0)} left to cut free. **Cut** counts double, **Blunt** ½` };
+      case 'dazed': return { name: 'Dazed', text: 'It sways, jaw hanging, eyes rolling.', dmg: 0, threat: 0, note: 'It loses its turn' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
   },
@@ -99,13 +99,13 @@ export const bogjaw: MonsterDef = {
   tip(h, type) {
     const m = h.mon;
     if ((m.gut ?? 0) > 0) return carries(h, 'Cut')
-      ? `You’re swallowed. Hit it with your ${carryingName(h, 'Cut')}: Cut counts double toward cutting free.`
-      : 'You’re swallowed. Every hit counts toward cutting free: Cut counts double, Blunt only half.';
+      ? `You’re swallowed. Your ${carryingName(h, 'Cut')} counts double toward cutting free.`
+      : 'You’re swallowed. Every hit counts toward cutting free. **Cut** counts double, **Blunt** ½.';
     if (type === 'gape') {
-      if (h.item === 'smoke' && h.itemCharges > 0) return 'Throw the Smoke Pouch now and the Swallow misses.';
-      return carries(h, 'Blunt') ? `Daze the jaw with your ${carryingName(h, 'Blunt')} to stop the Swallow, or block hard.` : 'It’s about to swallow you. Block, or break the throat sac.';
+      if (h.item === 'smoke' && h.itemCharges > 0) return 'A **Smoke Pouch** now makes the **Swallow** miss.';
+      return carries(h, 'Blunt') ? `**Daze** to the jaw from your ${carryingName(h, 'Blunt')} stops the **Swallow**.` : 'It swallows you next turn. Breaking its throat sac stops it.';
     }
-    if (!m.parts.sac.broken && carries(h, 'Cut')) return `Your ${carryingName(h, 'Cut')} can break the throat sac and end the Swallow for good.`;
+    if (!m.parts.sac.broken && carries(h, 'Cut')) return `Breaking its throat sac with your ${carryingName(h, 'Cut')} ends the **Swallow** for good.`;
     return null;
   }
 };
