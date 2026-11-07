@@ -747,3 +747,14 @@ html[data-input="pad"] body{cursor:none}
 .lay-g .gearpanel > .move:not(.dash):not(.capture):not(.pocket) .md{grid-column:2;grid-row:1 / span 2;align-self:center}
 .lay-g .gearpanel > .move:not(.dash):not(.capture):not(.pocket) .need{grid-column:1;grid-row:2;justify-self:start}
 .lay-g .gearpanel .md .dn{font-size:28px}
+
+/* F, revised (Nov 2026): compact attacks, no weapon average, no "Aim", "Swap" alone */
+.lay-f .gearpanel .avg,.lay-f .partspanel .aimword,.lay-f .gearpanel .swapto{display:none}
+.lay-f .partspanel .ph{justify-content:flex-end}
+.lay-f .gearpanel > .move:not(.dash):not(.capture):not(.pocket){display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:6px;row-gap:4px;padding:7px 10px;flex-direction:initial}
+.lay-f .gearpanel > .move:not(.dash):not(.capture):not(.pocket) > span:first-child{display:contents}
+.lay-f .gearpanel > .move:not(.dash):not(.capture):not(.pocket) .mn{grid-column:1 / -1;grid-row:1;white-space:nowrap;overflow:hidden}
+.lay-f .gearpanel > .move:not(.dash):not(.capture):not(.pocket) .need{grid-column:1;grid-row:2;justify-self:start}
+.lay-f .gearpanel > .move:not(.dash):not(.capture):not(.pocket) .md{grid-column:2;grid-row:2;justify-self:end}
+.lay-f .gearpanel .md .dn{font-size:24px;line-height:1}
+.lay-f .gearpanel > .move:not(.dash):not(.capture):not(.pocket) .need .cd{width:24px;height:24px}

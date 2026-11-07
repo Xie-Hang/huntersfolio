@@ -105,8 +105,8 @@
   </button>
   {/if}
   {#if shows(h, 'swap')}
-  <button class="move dash {sOk ? 'ready' : 'no'}" onmouseenter={() => (game.preview = n ? [...game.sel] : auto.swap ?? [])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = n ? [...game.sel] : auto.swap ?? [])} onblur={() => (game.preview = [])} data-coach="swap" data-key="s" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
-    <span><span class="mn"><Key k="S" pad="RT" /><WeaponArt id={other.id} size={22} />Swap to {other.name}{#if swapCounter}<span class="tag counter">Counter</span>{/if}</span><span class="md">{#if buried}Buried by the rockslide: no swapping this turn{:else}{other.type} · <Elem e={markOf(other)} />{elemLabel(other)}{/if}</span></span><span class="need dice">{#if E.freeSwap(h)}Free{:else}<CostDie c="any" />{/if}</span>
+  <button class="move dash {sOk ? 'ready' : 'no'}" onmouseenter={() => (game.preview = n ? [...game.sel] : auto.swap ?? [])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = n ? [...game.sel] : auto.swap ?? [])} onblur={() => (game.preview = [])} data-coach="swap" data-key="s" title="Swap to {other.name}" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
+    <span><span class="mn"><Key k="S" pad="RT" /><WeaponArt id={other.id} size={22} />Swap<span class="swapto"> to {other.name}</span>{#if swapCounter}<span class="tag counter">Counter</span>{/if}</span><span class="md">{#if buried}Buried by the rockslide: no swapping this turn{:else}{other.type} · <Elem e={markOf(other)} />{elemLabel(other)}{/if}</span></span><span class="need dice">{#if E.freeSwap(h)}Free{:else}<CostDie c="any" />{/if}</span>
   </button>
   {/if}
   <!-- With everything on it's always shown, so players learn it exists before it's available. In the second and third
@@ -135,7 +135,7 @@
     <div class="divider"><span class="label">Item · Free action</span><span class="label">{h.itemCharges} left</span></div>
     <button class="move pocket {iOk ? 'ready' : 'no'}" data-coach="item" data-key="f" aria-disabled={!iOk} onclick={() => iOk && game.item()}>
       <span><span class="mn"><Key k="F" /><Icon id={h.item} size={20} />{it.name}</span><span class="md">{#if E.itemBlockReason(h)}<span class="why">{E.itemBlockReason(h)}</span>{:else if it.effect === 'trapRush' || it.effect === 'trapLand'}{#if E.trapCatches(it.effect, h.intent)}<span class="good">Catches this {E.intentInfo(h).name}: no damage, held {E.TRAP_HOLD[it.effect]} turns{E.canCapture(h) ? ', and it’s weak enough: captured' : ''}</span>{:else}<span class="why">Won’t catch its {E.intentInfo(h).name}: wasted if set now</span>{/if}{:else}{it.desc}{/if}</span></span>
-      <span class="need">Free</span>
+      <span class="need ileft"><span>Free</span><small>{h.itemCharges} left</small></span>
     </button>
   {:else}
     <div class="divider"><span class="label">Item</span><span class="label">None carried</span></div>
@@ -151,4 +151,6 @@
   .smeter { flex: 1 1 110px; display: flex; gap: 6px; align-items: center; font-size: var(--fs-sm); min-width: 0; }
   .smeter .bar { flex: 1; height: 6px; }
   .md .dn { font-weight: inherit; }
+  .ileft { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.15; }
+  .ileft small { font-size: var(--fs-sm); color: var(--soft); font-weight: 500; }
 </style>

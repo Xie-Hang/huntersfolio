@@ -97,7 +97,7 @@
     {@render stats()}
   {:else}
     <div class="ph">
-      <span class="kicker">Its next move</span>
+      <span class="kicker">{M.short}’s next move</span>
       <span class="pips" aria-label="Threat {info.threat} of 4" title="Threat {info.threat} of 4"><span class="label tw" style="margin-right:6px">Threat</span>{#each [1, 2, 3, 4] as n}<i class:f={n <= info.threat}></i>{/each}</span>
     </div>
     <div class="nextline">
