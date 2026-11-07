@@ -227,6 +227,9 @@ class Game {
     if (!h || h.over || h.mid !== 'burrowmole' || E.islandStep(this.save) !== 5) return;
     const seen = (id: string) => this.save.tips.includes(id);
     if (start && !seen('i-pick')) { const f: E.Face[] = ['C', 'B', 'T', 'C']; h.dice.forEach((d, i) => { d.face = f[i] ?? d.face; }); }
+    // turn 3, when it's first underground: a blank for Swap to take (Swap takes a blank by itself; without one the
+    // player would have to pick a die first, and the swap prompt's lock would have them stuck)
+    if (start && !seen('i-swap')) { h.script = h.script ?? []; h.script[2] = ['C', 'T', 'B', 'C']; }
     if (!start && h.stats.rerollsUsed === 1 && !seen('i-multi')) { h.script = h.script ?? []; h.script[h.turn] = ['B', 'C', 'B', 'T']; }
   }
   item() {

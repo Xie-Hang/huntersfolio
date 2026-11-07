@@ -12,7 +12,8 @@ import { shows } from './reveal';
 export interface Tip {
   id: string;
   /** data-coach value of the element to point at, in order of preference */
-  at: string[];
+  /** the targets, first found wins; a function when it depends on the screen (the result card's button vs the nav) */
+  at: string[] | (() => string[]);
   when: () => boolean;
   text: () => string;
   /** the player did what the tip asks */
@@ -94,7 +95,7 @@ const ISLAND: Tip[] = [
     done: () => game.undos > 0
   },
   {
-    id: 'i-forge', guide: true, learn: true, at: ['to-forge', 'nav-forge'],
+    id: 'i-forge', guide: true, learn: true, at: () => (game.view === 'hunt' ? ['to-forge'] : ['nav-forge']),
     when: () => E.islandStep(game.save) === 2 && game.view !== 'forge' && !(game.view === 'hunt' && game.hunt && !game.hunt.over),
     text: () => 'You have Shell. Make a blade.',
     done: () => game.view === 'forge'
@@ -120,7 +121,7 @@ const ISLAND: Tip[] = [
   },
   {
     id: 'i-swap', guide: true, learn: true, at: ['swap'],
-    when: () => { const h = onIsland('burrowmole'); return !!h && h.mon.under && E.currentWeapon(h).type !== 'Blunt' && freeDice(h) > 0; },
+    when: () => { const h = onIsland('burrowmole'); return !!h && h.mon.under && E.currentWeapon(h).type !== 'Blunt' && freeDice(h) > 0 && (game.sel.length === 1 || !!E.autoDice(h, 'swap')); },
     text: () => 'It\u2019s underground. Swap to your maul.',
     done: () => { const h = hunt(); return !!h && E.currentWeapon(h).type === 'Blunt'; }
   },
@@ -149,7 +150,7 @@ const ISLAND: Tip[] = [
     done: () => (hunt()?.stats.rerollsUsed ?? 0) > 1
   },
   {
-    id: 'i-shop', guide: true, learn: true, at: ['to-shop', 'nav-shop'],
+    id: 'i-shop', guide: true, learn: true, at: () => (game.view === 'hunt' ? ['to-shop'] : ['nav-shop']),
     when: () => E.islandStep(game.save) === 6 && game.view !== 'shop' && !(game.view === 'hunt' && game.hunt && !game.hunt.over),
     text: () => 'The Shop is open. Buy a salve.',
     done: () => game.view === 'shop'
@@ -187,6 +188,8 @@ const ISLAND: Tip[] = [
 ];
 /** the first Ridge hunt's basics, already taught in the Foothills */
 const ISLAND_TAUGHT = ['begin', 'g-next', 'g-hp', 'move', 'guard', 'end', 'aim', 'g-pick', 'reroll', 'g-free', 'item'];
+
+export const tipTargets = (t: Tip | null | undefined) => (typeof t?.at === 'function' ? t.at() : t?.at ?? []);
 
 export const TIPS: Tip[] = [
   // ---- the guided first hunt ----
@@ -355,7 +358,7 @@ export const TIPS: Tip[] = [
   // ---- back in town ----
   {
     // playtest (Nov 2026): three testers never found out that materials sell for coin
-    id: 'sell', learn: true, at: ['to-shop', 'nav-shop'],
+    id: 'sell', learn: true, at: () => (game.view === 'hunt' ? ['to-shop'] : ['nav-shop']),
     when: () => game.save.hunts > 0 && game.save.tips.includes('track') && game.view !== 'shop' && !(game.view === 'hunt' && game.hunt && !game.hunt.over) && E.surplusValue(game.save) >= 40,
     text: () => `Short on coin? Materials no recipe needs sell at the Shop. Yours are worth ${E.surplusValue(game.save)} coin right now: open the Shop's Sell tab.`,
     done: () => game.view === 'shop'
@@ -372,7 +375,7 @@ export const TIPS: Tip[] = [
     text: () => 'Hunts can fail. You keep your weapons, armor and the materials of any part you broke; you lose the coin and the items you carried. Block against its big hits, and break the part that powers them.'
   },
   {
-    id: 'forge', guide: true, learn: true, at: ['to-forge', 'nav-forge'],
+    id: 'forge', guide: true, learn: true, at: () => (game.view === 'hunt' ? ['to-forge'] : ['nav-forge']),
     // Nov 2026 playtest: straight after the first win this was "more info". It now waits until something can be made.
     when: () => game.save.hunts > 1 && game.view !== 'forge' && !(game.view === 'hunt' && game.hunt && !game.hunt.over) && E.forgeReady(game.save),
     text: () => 'You have enough to make something at the Forge.',

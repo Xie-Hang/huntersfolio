@@ -106,3 +106,20 @@ describe('the Foothills', () => {
     expect(Object.keys(E.reinforceCost(0, 'w', 'blade'))).toContain('hide');
   });
 });
+
+describe('the Burrowmole lesson order', () => {
+  it('digs in on its second turn and can’t be finished before it has dug in once', () => {
+    const s = E.newPlayerSave(); s.island = 5; s.weapons = { blade: { lv: 0 }, maul: { lv: 0 } }; s.loadout.weapons = ['blade', 'maul']; s.loadout.target = 'burrowmole';
+    const h = E.startHunt(s, 9);
+    expect(h.intent).toBe('scratch');
+    h.mon.hp = 5; h.dice = h.dice.map(() => ({ face: 'C' as const, used: null }));
+    E.useMove(h, 0);
+    expect(h.mon.hp).toBe(1);
+    expect(h.over).toBeFalsy();
+    E.endTurn(h);
+    expect(h.intent).toBe('dig');
+    E.endTurn(h);
+    expect(h.mon.under).toBe(true);
+    expect(h.intent).toBe('bite');
+  });
+});

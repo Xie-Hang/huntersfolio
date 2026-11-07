@@ -36,12 +36,16 @@ export const burrowmole: MonsterDef = {
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
   },
+  // The first time round it digs in on its second turn, so the lessons come in order: rerolls on turns 1 and 2, then
+  // the swap on turn 3 when it's underground. It can't be finished before it has dug in once (Mekkman, Nov 2026: he
+  // killed it before the reroll and swap lessons came up). After that: scratch, scratch, dig.
   next(h, prev) {
     if (prev === 'dig' || h.mon.under) return 'bite';
+    if (!h.mon.dug) { if (h.mon.seq < 1) { h.mon.seq++; return 'scratch'; } return 'dig'; }
     const t = ['scratch', 'scratch', 'dig'][h.mon.seq % 3]; h.mon.seq++; return t;
   },
   resolve(h, type) {
-    if (type === 'dig') { h.mon.under = true; return 'It’s underground.'; }
+    if (type === 'dig') { h.mon.under = true; h.mon.dug = true; h.mon.seq = 3; return 'It’s underground.'; }
     if (type === 'bite') { h.mon.under = false; return 'It pops back up.'; }
     return null;
   },
@@ -51,5 +55,10 @@ export const burrowmole: MonsterDef = {
     if (h.mon.under && w.type === 'Blunt') { h.mon.under = false; h.intent = 'stunned'; return 'Your maul shakes the ground. It pops up, stunned!'; }
     return null;
   },
-  canCapture(h) { return !h.mon.under; }
+  canCapture(h) { return !h.mon.under; },
+  // before it has dug in once it scrambles off a killing blow, keeping a sliver of HP
+  absorb(h, dmg) {
+    if (h.mon.dug || dmg < h.mon.hp) return null;
+    return { dmg: Math.max(0, h.mon.hp - 1), note: 'It scrambles back, half into its hole.' };
+  }
 };

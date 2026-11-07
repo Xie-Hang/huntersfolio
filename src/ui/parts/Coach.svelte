@@ -1,7 +1,7 @@
 <script lang="ts">
   // The tutorial tip on screen: a small card beside the thing it describes, with a ring around that thing.
   // Placement tries below, above, right, then left of the target, and stays inside the window.
-  import { coach } from '../coach.svelte';
+  import { coach, tipTargets } from '../coach.svelte';
   import { padWords } from '../pad.svelte';
   import { game } from '../game.svelte';
   import { tutorialLock } from '../lock.svelte';
@@ -15,20 +15,22 @@
 
   $effect(() => { coach.sync(); });
 
-  /** fully shown: not hidden, and not still fading in (a result card's buttons fade in line by line; the tip used to
+  /** fully shown: not hidden, and not still fading in or sliding in (a looping glow or pulse doesn't count) (a result card's buttons fade in line by line; the tip used to
    *  arrive before its button did) */
   function settled(el: HTMLElement) {
     if (!el.getClientRects().length) return false;
     for (let n: HTMLElement | null = el; n && n !== document.body; n = n.parentElement) {
       const cs = getComputedStyle(n);
-      if (cs.visibility === 'hidden' || parseFloat(cs.opacity) < 0.98 || (cs.transform !== 'none' && n.getAnimations?.().some(a => a.playState === 'running'))) return false;
+      if (cs.visibility === 'hidden' || parseFloat(cs.opacity) < 0.98 || (cs.transform !== 'none' && n.getAnimations?.().some(a => a.playState === 'running' && a.effect?.getTiming().iterations !== Infinity))) return false;
     }
     return true;
   }
+  /** The first of the tip's targets that's on the page. One that's there but still fading in is waited for, not
+   *  skipped: the Shop prompt used to land on the Shop tab, then jump to the result card's button once it faded in. */
   function anchor(): HTMLElement | null {
-    for (const key of coach.current?.at ?? []) {
+    for (const key of tipTargets(coach.current)) {
       const el = document.querySelector<HTMLElement>(`[data-coach="${key}"]`);
-      if (el && settled(el)) return el;
+      if (el && el.getClientRects().length) return settled(el) ? el : null;
     }
     return null;
   }
@@ -68,7 +70,7 @@
   function place() {
     const z = zoom(), el = anchor(), vw = window.innerWidth / z, vh = window.innerHeight / z, ch = cardH || 120, cw = Math.min(W, vw - EDGE * 2);
     // keep the last good target while it's still on the page (it can be mid-animation for a moment)
-    if (!el && target?.isConnected && ready && coach.current?.at.some(k => target!.dataset.coach === k)) return;
+    if (!el && target?.isConnected && ready && tipTargets(coach.current).some(k => target!.dataset.coach === k)) return;
     target = el;
     if (!el) { ring = null; arrow = null; ready = !coach.current?.guide; pos = { x: (vw - cw) / 2, y: vh - ch - 24 }; return; }
     ready = true;

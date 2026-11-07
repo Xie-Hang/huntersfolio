@@ -187,6 +187,8 @@ export interface PartState { hp: number; max: number; broken: boolean; exposed: 
 export interface MonsterState {
   /** a counter stance's one-off punishment already happened this turn */
   stanceUsed?: boolean;
+  /** the Burrowmole (the Foothills) has dug in at least once this hunt */
+  dug?: boolean;
   /** turns it's still held by a trap */
   trapped?: number;
   hp: number;
