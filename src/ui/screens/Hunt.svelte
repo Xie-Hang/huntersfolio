@@ -40,7 +40,7 @@
   </div>
   {#if !h.over}
   <div class="pcol">
-    {#if L === 'd' || L === 'e'}<div class="youbox"><DicePanel part="dice" rerollBelow={L === 'e'} /></div><GearPanel /><DicePanel part="end" />
+    {#if L === 'd' || L === 'e' || L === 'f' || L === 'g'}<div class="youbox"><DicePanel part="dice" rerollBelow={L === 'e'} /></div><GearPanel /><DicePanel part="end" />
     {:else if L === 'b'}<GearPanel /><div class="youbox"><DicePanel /></div>
     {:else}<div class="youbox"><DicePanel /></div><GearPanel />{/if}
   </div>

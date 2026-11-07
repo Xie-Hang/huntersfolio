@@ -723,3 +723,27 @@ html[data-input="pad"] body{cursor:none}
 .lay-e .dtop .diceline{gap:8px}
 .lay-e .dtop{padding-block:10px}
 .lay-e .dtop .tray{gap:12px}
+
+/* drafts F and G (Nov 2026): the three attacks in one row, then Block · Charge · Swap, then Capture · item */
+.lay-f .gearpanel,.lay-g .gearpanel{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;padding-block:12px}
+.lay-f .gearpanel > *,.lay-g .gearpanel > *{grid-column:1 / -1}
+.lay-f .gearpanel > .divider,.lay-g .gearpanel > .divider{display:none}
+.lay-f .gearpanel > .move.dash,.lay-g .gearpanel > .move.dash{grid-column:span 2;min-height:48px;padding:6px 10px;gap:6px}
+.lay-f .gearpanel > .move.capture,.lay-f .gearpanel > .move.pocket,.lay-g .gearpanel > .move.capture,.lay-g .gearpanel > .move.pocket{grid-column:span 3;min-height:48px;padding:6px 10px}
+.lay-f .gearpanel > .move.dash .md,.lay-g .gearpanel > .move.dash .md{display:none}
+.lay-f .gearpanel > .move.dash .mn,.lay-g .gearpanel > .move.dash .mn{font-size:15px;line-height:1.2}
+.lay-f .gearpanel > .move:not(.dash):not(.capture):not(.pocket),.lay-g .gearpanel > .move:not(.dash):not(.capture):not(.pocket){grid-column:span 2;min-height:0}
+.lay-f .gearpanel .md .dw,.lay-f .gearpanel .md .dx,.lay-g .gearpanel .md .dw,.lay-g .gearpanel .md .dx{display:none}
+.lay-f .gearpanel .md .dn,.lay-g .gearpanel .md .dn{font-weight:700;color:var(--fg)}
+.lay-f .gearpanel .move.no .md .dn,.lay-g .gearpanel .move.no .md .dn{color:var(--muted)}
+/* F: a card: name, a big number, the dice under it */
+.lay-f .gearpanel > .move:not(.dash):not(.capture):not(.pocket){flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:4px;padding:10px 12px}
+.lay-f .gearpanel > .move:not(.dash):not(.capture):not(.pocket) > span:first-child{display:flex;flex-direction:column;gap:2px}
+.lay-f .gearpanel .md .dn{font-size:30px;line-height:1.05}
+/* G: one line: name and dice on the left, the number big on the right */
+.lay-g .gearpanel > .move:not(.dash):not(.capture):not(.pocket){display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;column-gap:8px;row-gap:6px;padding:9px 12px}
+.lay-g .gearpanel > .move:not(.dash):not(.capture):not(.pocket) > span:first-child{display:contents}
+.lay-g .gearpanel > .move:not(.dash):not(.capture):not(.pocket) .mn{grid-column:1;grid-row:1}
+.lay-g .gearpanel > .move:not(.dash):not(.capture):not(.pocket) .md{grid-column:2;grid-row:1 / span 2;align-self:center}
+.lay-g .gearpanel > .move:not(.dash):not(.capture):not(.pocket) .need{grid-column:1;grid-row:2;justify-self:start}
+.lay-g .gearpanel .md .dn{font-size:28px}
