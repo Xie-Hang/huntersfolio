@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { matchup } from '../src/sim/scenarios';
 
 // Swapping to fit the roll is rewarded, not required (Mekkman, Nov 2026): skilled players who do it finish sooner,
-// and nobody has to. Measured at about half a turn a hunt.
+// and nobody has to. Measured at about half a turn a hunt. Never hinted: players find the patterns themselves.
 describe('swapping to fit the roll', () => {
   it('saves skilled players turns, on average', () => {
     const S: [string, object][] = [
@@ -21,17 +21,3 @@ describe('swapping to fit the roll', () => {
   });
 });
 
-import * as E from '../src/engine';
-describe('the Swap hint', () => {
-  const hunt = (faces: string) => {
-    const s = E.newSave(); s.weapons.bow = { lv: 0 }; s.loadout.weapons = ['blade', 'bow'];
-    const h = E.startHunt(s, 1); h.dice = [...faces].map(f => ({ face: f as E.Face, used: null })); return h;
-  };
-  it('names the other weapon’s move when the roll suits it better, paying with a blank', () => {
-    expect(E.swapFits(hunt('TTTB'))).toBe('Volley'); // the blade can do nothing with Claws
-  });
-  it('stays quiet when this weapon already uses the roll as well', () => {
-    expect(E.swapFits(hunt('CCTB'))).toBeNull(); // Rend
-    expect(E.swapFits(hunt('CTBB'))).toBeNull(); // Slash here, Quick Shot there: no gain
-  });
-});

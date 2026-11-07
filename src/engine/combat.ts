@@ -554,22 +554,6 @@ export function swap(h: Hunt, idx: number[]): boolean {
   if (charmFx(h) === 'swapWhet') { h.whet = Math.max(h.whet, SWAP_WHET); log(h, 'Core Charm: your next hit deals +30%.', 'gold'); }
   return true;
 }
-/** The other weapon's move this roll suits better (Nov 2026: each weapon type has its own dice pattern). After paying
- *  for the swap (a blank first), the other weapon can make a bigger move than this one can with every die: its name.
- *  The Swap button says so, which is how players learn the patterns without a prompt. */
-export function swapFits(h: Hunt): string | null {
-  if (h.over || h.weps.length < 2 || swapBuried(h) || !canHit(h, otherWeapon(h))) return null;
-  const free = freeDice(h); if (free.length < 2) return null;
-  const top = (moves: { need: string }[], ix: number[]) => {
-    const have = { C: 0, T: 0 }; for (const i of ix) { const f = h.dice[i].face; if (f !== 'B') have[f]++; }
-    let b = -1;
-    moves.forEach((m, i) => { const c = [...m.need].filter(x => x === 'C').length, t = m.need.length - c; if (c <= have.C && t <= have.T) b = i; });
-    return b;
-  };
-  const pay = freeSwap(h) ? [] : (autoDice(h, 'swap') ?? [free[0]]);
-  const oth = otherWeapon(h), o = top(oth.moves, free.filter(i => !pay.includes(i)));
-  return o > top(currentWeapon(h).moves, free) ? oth.moves[o].name : null;
-}
 /** Weak enough, a Snare carried, none set yet this turn. */
 export const captureReady = (h: Hunt) => canCapture(h) && !captureBlocked(h) && h.snares > 0 && !h.snareSet;
 /** Set a snare (2 dice, 1 Snare). It closes when you end your turn, after the monster's move: a hit of

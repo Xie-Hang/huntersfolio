@@ -262,7 +262,6 @@
         <li><span class="tag flow" style="margin:0">Flow</span> Cut: the middle move (Cleave) gives back a reroll, once a turn.</li>
         <li><span class="tag daze" style="margin:0">Daze</span> Blunt: Skullcrack to the head fills a daze meter; full, it loses a turn.</li>
         <li><span class="tag expose" style="margin:0">Expose</span> Pierce: Quick Shot exposes the part: it takes +20% and breaks twice as fast for 2 turns, from either weapon.</li>
-        <li>Blades want Fangs, bows want Claws, mauls want a mix. When your roll suits the other weapon, its Swap button says so.</li>
         <li>You carry two weapons. Swapping costs 1 die (a blank is fine). <strong>Avg</strong> is damage a turn with all 4 dice.</li>
       </ul></details>
       <details name="help"><summary>Monster states</summary><ul class="helplist">
