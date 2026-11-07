@@ -139,7 +139,7 @@ const ISLAND: Tip[] = [
     id: 'i-undo', head: 'Undo', guide: true, learn: true, at: ['undo'],
     // on the Tuskling, not the Rimekit (Nov 2026: the Rimekit already teaches faces, its next move, Slash ×2 and Block)
     when: () => { const h = onIsland('tuskling'); return !!h && E.islandStep(game.save) === 3 && h.turn >= 2 && game.undoStack.length > 0 && !unusedTurn(h); },
-    text: () => 'Changed your mind? Select Undo to take it back.',
+    text: () => 'Changed your mind? Select Undo.',
     done: () => game.undos > 0
   },
   {
@@ -164,7 +164,7 @@ const ISLAND: Tip[] = [
   {
     id: 'i-maul', guide: true, info: true, at: ['slot-w1'], head: 'Two weapons',
     when: () => game.view === 'board' && E.islandStep(game.save) === 4 && !(game.hunt && !game.hunt.over),
-    text: () => 'A gift: a maul. Select it to carry it.'
+    text: () => 'A gift: a maul. Select it.'
   },
   {
     id: 'i-swap', head: 'Swap', guide: true, learn: true, at: ['swap'],
@@ -291,7 +291,8 @@ const ISLAND: Tip[] = [
     // weakness and resistance, before the Forge asks you to track a Gale blade (Nov 2026 playtest: "what is Gale?")
     id: 'i-elems', gotit: true, head: 'Elements', guide: true, info: true, at: ['elems'],
     when: () => { const h = onIsland('gustmarmot'); return !!h && h.turn >= 2 && unusedTurn(h) && game.save.tips.includes('i-windup'); },
-    text: () => { const M = E.MONSTERS.gustmarmot; return `Weak to ${M.weak}: more damage. Resists ${M.resist}: less.`; }
+    // about the chips, not this monster's elements: the player owns no Frost or Stone weapon yet (Nov 2026)
+    text: () => 'Its weak element: more damage. Resisted: less.'
   },
   {
     id: 'i-charged', guide: true, info: true, at: ['moves', 'move'],
@@ -321,7 +322,7 @@ const ISLAND: Tip[] = [
     id: 'i-tracked', guide: true, info: true, at: ['begin'],
     when: () => E.islandStep(game.save) === 11 && game.view === 'board' && game.boardMon && !huntOn(),
     head: 'Tracking',
-    text: () => 'Its gland drops from Shrikelets. Select Hunt.'
+    text: () => 'Your blade\u2019s gland drops from Shrikelets. Select Hunt.'
   },
   {
     id: 'i-rare', head: 'Rare drops', guide: true, learn: true, at: () => (game.view === 'hunt' ? ['to-forge'] : ['nav-forge']),
@@ -357,7 +358,7 @@ const ISLAND: Tip[] = [
   {
     id: 'i-shop2', head: 'The Shop', guide: true, learn: true, at: () => (game.view === 'hunt' ? ['to-shop'] : ['nav-shop']),
     when: () => E.islandStep(game.save) === 14 && game.view !== 'shop' && !huntOn(),
-    text: () => 'The Shop has new stock.',
+    text: () => 'New stock at the Shop. Select Shop.',
     done: () => game.view === 'shop'
   },
   {
