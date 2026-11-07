@@ -7,7 +7,6 @@
   import Intro from './parts/Intro.svelte';
   import DetailTip from './parts/DetailTip.svelte';
   import { detail } from './detail.svelte';
-  import { onHuntKey } from './keys';
   import { storeAvailable, openStore, feedbackInfo, openFeedback, feedbackButton } from './store';
   import * as PL from './playlog';
   import { saveTextFile } from './files';
@@ -117,7 +116,7 @@
   }
 </script>
 
-<svelte:window onpointerdown={() => music.unlock()} onkeydown={e => { music.unlock(); onHuntKey(e); }} onclickcapture={uiClick} />
+<svelte:window onpointerdown={() => music.unlock()} onkeydown={() => music.unlock()} onclickcapture={uiClick} />
 
 {#if introOpen}<Intro fresh={freshPlayer} onbegin={() => (introOpen = false)} onskip={() => { coach.skipAll(true); introOpen = false; }} />{/if}
 
@@ -276,7 +275,6 @@
         <li>Each reinforcement (+1 to +3) adds 5% damage, or 10 HP and 1 block to armor. Upgrades keep it.</li>
       </ul></details>
       <details name="help"><summary>Controls</summary><ul class="helplist">
-        <li><strong>Keys:</strong> <kbd>1</kbd>–<kbd>4</kbd> dice · <kbd>Q</kbd> <kbd>W</kbd> <kbd>E</kbd> moves · <kbd>A</kbd> block · <kbd>C</kbd> charge · <kbd>S</kbd> swap · <kbd>X</kbd> capture · <kbd>F</kbd> item · <kbd>R</kbd> reroll · <kbd>Space</kbd> end turn · <kbd>Z</kbd> undo · <kbd>Esc</kbd> clear.</li>
         <li><strong>Controller:</strong> d-pad moves, <kbd>A</kbd> selects, <kbd>B</kbd> back. In a hunt: <kbd>Y</kbd> end turn · <kbd>X</kbd> reroll · <kbd>LB</kbd> <kbd>RB</kbd> aim · <kbd>LT</kbd> undo · <kbd>RT</kbd> swap. Elsewhere <kbd>LB</kbd> <kbd>RB</kbd> switch screens. <kbd>Menu</kbd> settings, <kbd>View</kbd> this help.</li>
       </ul></details>
     </div>

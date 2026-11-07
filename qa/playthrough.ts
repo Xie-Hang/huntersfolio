@@ -1,6 +1,6 @@
 // QA: plays the whole demo from a fresh save to the "That's the demo" card through the real UI.
 // Brain between hunts = the simulator's campaign choices (loadout, salves, counter items); the Forge is
-// clicked through the UI; every hunt is played with the keyboard shortcuts. Records errors, crash screens,
+// clicked through the UI; every hunt is played by selecting its controls. Records errors, crash screens,
 // page overflow, turn times and memory.
 //   npx tsx qa/playthrough.ts [width] [height] [outdir]
 import { createRequire } from 'node:module';
@@ -29,26 +29,29 @@ async function check(p: Page, where: string) {
   return r;
 }
 
+/** select the control a shortcut used to trigger (hunts have no keyboard shortcuts since 8 Nov 2026) */
+const tap = (p: Page, key: string) => p.evaluate(k => (document.querySelector(`[data-key="${k}"]`) as HTMLElement | null)?.click(), key);
+
 async function playHunt(p: Page, n: number) {
   const times: number[] = [];
   for (let turn = 0; turn < 60; turn++) {
     const h = await getJSON(p, HUNT) as E.Hunt | null;
     if (!h || h.over) break;
     const t0 = Date.now();
-    await p.keyboard.press('x'); // capture if it's allowed (the UI ignores it otherwise)
+    await tap(p, 'x'); // capture if it's allowed (the UI ignores it otherwise)
     let cur = await getJSON(p, HUNT) as E.Hunt; if (!cur || cur.over) break;
-    if (cur.item && E.itemUsable(cur) && cur.php < cur.pmax * 0.55 && E.ITEMS[cur.item].effect === 'heal30') await p.keyboard.press('f');
+    if (cur.item && E.itemUsable(cur) && cur.php < cur.pmax * 0.55 && E.ITEMS[cur.item].effect === 'heal30') await tap(p, 'f');
     if (cur.item && E.itemUsable(cur) && E.ITEMS[cur.item].effect !== 'heal30') {
       const fx = E.ITEMS[cur.item].effect;
-      if ((fx === 'net' && (cur.intent === 'gust' || cur.intent === 'circle')) || (fx === 'thaw' && cur.mon.plating >= 2) || (fx === 'blast' && cur.intent === 'erupt')) await p.keyboard.press('f');
+      if ((fx === 'net' && (cur.intent === 'gust' || cur.intent === 'circle')) || (fx === 'thaw' && cur.mon.plating >= 2) || (fx === 'blast' && cur.intent === 'erupt')) await tap(p, 'f');
     }
     cur = await getJSON(p, HUNT) as E.Hunt;
-    if (!E.canHit(cur, E.currentWeapon(cur)) && cur.weps.length > 1) { await p.keyboard.press('1'); await p.keyboard.press('s'); }
-    for (let k = 0; k < 3; k++) for (const key of ['e', 'w', 'q']) { await p.keyboard.press(key); }
+    if (!E.canHit(cur, E.currentWeapon(cur)) && cur.weps.length > 1) { await tap(p, '1'); await tap(p, 's'); }
+    for (let k = 0; k < 3; k++) for (const key of ['e', 'w', 'q']) { await tap(p, key); }
     cur = await getJSON(p, HUNT) as E.Hunt; if (!cur || cur.over) break;
-    for (const key of ['1', '2', '3', '4']) await p.keyboard.press(key);
-    await p.keyboard.press('a');
-    await p.keyboard.press(' ');
+    for (const key of ['1', '2', '3', '4']) await tap(p, key);
+    await tap(p, 'a');
+    await tap(p, 'space');
     await p.waitForTimeout(120);
     times.push(Date.now() - t0);
     if (turn % 6 === 0) await check(p, `hunt ${n} turn ${turn}`);

@@ -1,38 +1,9 @@
-// Keyboard shortcuts for hunts. Mouse stays the main input; keys are for speed.
-// All under the left hand (Nov 2026 playtest: "why are the keys so far apart?"):
-// 1–4 dice · Q W E moves · R reroll · A block · S swap · C charge · X capture · F item · Z undo · Space end turn
-// Ctrl+Z undo too · Esc clear selection. Each control carries its key as data-key, so a tutorial prompt can let
-// the key through when it triggers the thing the prompt points at.
-import * as E from '../engine';
-import { game } from './game.svelte';
+// Hunt keyboard shortcuts were removed (Mekkman, 8 Nov 2026): only the hunt had them, so the rest of the game
+// felt unsupported. Mouse, touch and controller remain. MOVE_KEYS still name the moves' data-key, which the
+// controller and the tutorial lock use to find a control.
 
 export const MOVE_KEYS = ['Q', 'W', 'E'];
 
-export function onHuntKey(e: KeyboardEvent) {
-  if (e.repeat || e.altKey || e.metaKey) return;
-  const t = e.target as HTMLElement | null;
-  if (t && (t.closest('input, textarea, select') || t.isContentEditable)) return;
-  if (document.querySelector('dialog[open]')) return;
-  const h = game.hunt;
-  if (game.view !== 'hunt' || !h || h.over) return;
-
-  const k = e.key.toLowerCase();
-  if (e.ctrlKey) { if (k === 'z') { game.undo(); e.preventDefault(); } return; }
-  let done = true;
-  if (k >= '1' && k <= '4') game.toggleDie(+k - 1);
-  else if (k === 'q' || k === 'w' || k === 'e') { const i = 'qwe'.indexOf(k); if (E.canUseMove(h, i)) game.move(i); }
-  else if (k === 'a') game.guard();
-  else if (k === 'c') game.charge();
-  else if (k === 's') game.swap();
-  else if (k === 'x') game.capture();
-  else if (k === 'f') game.item();
-  else if (k === 'r') game.reroll();
-  else if (k === 'z') game.undo();
-  else if (k === ' ') game.requestEnd();
-  else if (k === 'escape') game.sel = [];
-  else done = false;
-  if (done) e.preventDefault(); // Space would also click the focused button
-}
 
 /** the data-key of the control a key press triggers in a hunt (for the tutorial lock) */
 export function keyName(e: KeyboardEvent): string | null {
