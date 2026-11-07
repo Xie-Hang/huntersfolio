@@ -9,6 +9,10 @@ import { checkAchievements } from './achievements';
 import { settings } from './settings.svelte';
 import { shows } from './reveal';
 
+/** a dice roll on screen (Nov 2026 playtest: make it look and sound like dice): each die tumbles for ROLL_MS,
+ *  the next one ROLL_STAGGER later, flickering through faces until it lands */
+export const ROLL_MS = 720, ROLL_STAGGER = 70;
+
 export type View = 'board' | 'forge' | 'shop' | 'hunt';
 type Panel = 'mon' | 'player';
 export interface Float { id: number; at: Panel; text: string; cls: string }
@@ -31,6 +35,8 @@ class Game {
   /** End turn was pressed once with dice still worth spending: the next press ends it */
   endArmed = $state(false);
   rolling = $state<number[]>([]);
+  /** when the current roll started (the dice flicker through faces until each lands) */
+  rolledAt = 0;
   floats = $state<Float[]>([]);
   shakes = $state({ mon: 0, player: 0 });
   /** one-shot animation cues for the monster plate: it was hit / it attacked */
@@ -138,7 +144,8 @@ class Game {
   /* ---------- effects ---------- */
   private roll(idx: number[]) {
     this.rolling = idx;
-    setTimeout(() => (this.rolling = []), 480);
+    this.rolledAt = performance.now();
+    setTimeout(() => (this.rolling = []), ROLL_MS + 4 * ROLL_STAGGER + 40);
   }
   private float(at: Panel, text: string, cls = '') {
     const f = { id: ++floatId, at, text, cls };

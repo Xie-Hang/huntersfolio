@@ -64,19 +64,24 @@ const jitter = (x: number, amt = 0.08) => x * (1 + (Math.random() * 2 - 1) * amt
 /* ---------- the sounds ---------- */
 const SOUNDS: Record<Sfx, (c: AudioContext, t: number) => void> = {
   // dice: a run of wooden knocks that slows and settles (matches the 0.45 s tumble animation)
+  // (Nov 2026 playtest: "make it sound like dice"): a short rattle in the hand, then the throw, matched to the
+  // 0.72 s tumble: a hard first landing, bounces that come quicker and softer, a last clack per die as it settles
   diceRoll: (c, t) => {
     let at = t;
-    for (let i = 0; i < 9; i++) {
-      noise(c, at, 'bandpass', jitter(1800, 0.3), jitter(1800, 0.3), { d: 0.025, peak: 0.5 - i * 0.03 }, 6);
-      at += 0.025 + i * 0.008 + Math.random() * 0.015;
+    for (let i = 0; i < 5; i++) { noise(c, at, 'bandpass', jitter(2600, 0.25), jitter(2600, 0.25), { d: 0.018, peak: 0.22 }, 7); at += 0.022 + Math.random() * 0.01; }
+    at = t + 0.2;
+    noise(c, at, 'bandpass', 1100, 1100, { d: 0.05, peak: 0.6 }, 3); tone(c, at, 190, 110, { d: 0.07, peak: 0.35 });
+    for (let i = 0; i < 10; i++) {
+      at += 0.07 - i * 0.004 + Math.random() * 0.02;
+      noise(c, at, 'bandpass', jitter(1700, 0.35), jitter(1700, 0.35), { d: 0.022, peak: 0.42 - i * 0.03 }, 6);
     }
-    noise(c, at, 'bandpass', 900, 900, { d: 0.06, peak: 0.45 }, 3);
-    tone(c, at, 180, 120, { d: 0.06, peak: 0.25 });
+    for (let k = 0; k < 4; k++) { const s = t + 0.62 + k * 0.07; noise(c, s, 'bandpass', 950, 950, { d: 0.04, peak: 0.3 }, 3); tone(c, s, 170, 120, { d: 0.04, peak: 0.15 }); }
   },
   reroll: (c, t) => {
     let at = t;
-    for (let i = 0; i < 5; i++) { noise(c, at, 'bandpass', jitter(2000, 0.3), jitter(2000, 0.3), { d: 0.02, peak: 0.4 }, 6); at += 0.03 + i * 0.01; }
-    noise(c, at, 'bandpass', 950, 950, { d: 0.05, peak: 0.35 }, 3);
+    noise(c, at, 'bandpass', 1100, 1100, { d: 0.05, peak: 0.5 }, 3); tone(c, at, 190, 110, { d: 0.06, peak: 0.3 });
+    for (let i = 0; i < 7; i++) { at += 0.06 - i * 0.004 + Math.random() * 0.02; noise(c, at, 'bandpass', jitter(1900, 0.3), jitter(1900, 0.3), { d: 0.02, peak: 0.38 - i * 0.04 }, 6); }
+    noise(c, t + 0.6, 'bandpass', 950, 950, { d: 0.05, peak: 0.3 }, 3);
   },
   dieTap: (c, t) => { noise(c, t, 'bandpass', 2400, 2400, { d: 0.02, peak: 0.25 }, 8); },
 

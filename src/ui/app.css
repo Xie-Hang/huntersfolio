@@ -424,14 +424,17 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .die:hover{transform:translateY(-2px)}
 .die:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 .die.sel{transform:translateY(-6px);box-shadow:0 4px 0 var(--bone-edge),0 0 0 3px var(--gold)}
-.die.lift:not(.used){transform:translateY(-10px);box-shadow:0 4px 0 var(--bone-edge),0 0 0 3px var(--gold-hi),0 10px 18px rgba(0,0,0,.35)}
+/* the dice the action under the pointer would use: up, ringed and glowing (Nov 2026 playtest) */
+.die.lift:not(.used){transform:translateY(-16px);box-shadow:0 4px 0 var(--bone-edge),0 0 0 3px var(--gold-hi),0 0 22px 4px rgba(243,207,122,.55),0 14px 20px rgba(0,0,0,.4);animation:liftglow 1s ease-in-out infinite}
+@keyframes liftglow{50%{box-shadow:0 4px 0 var(--bone-edge),0 0 0 3px var(--gold-hi),0 0 30px 8px rgba(243,207,122,.7),0 14px 20px rgba(0,0,0,.4)}}
 .die.used{opacity:.4;cursor:default;transform:none}
 .die.used:hover{transform:none}
 .die svg{width:38px;height:38px;color:#2a1f17}
 /* blank is a real face: same die body, the word printed in faded ink */
 .die .bl{font-family:var(--f-body);font-weight:600;font-size:var(--fs-sm);color:#2a1f17;opacity:.72}
-.die.rolling{animation:tumble .45s ease-out}
-@keyframes tumble{0%{transform:rotate(-200deg) scale(.6)}70%{transform:rotate(12deg) scale(1.05)}100%{transform:rotate(0) scale(1)}}
+.die.rolling{animation:tumble .72s cubic-bezier(.2,.75,.3,1) var(--d,0ms) both}
+/* thrown in from above, a hard bounce, a smaller one, settle (Nov 2026 playtest: read it as dice) */
+@keyframes tumble{0%{transform:translateY(-46px) rotate(-280deg) scale(.7);opacity:.2}30%{transform:translateY(6px) rotate(-30deg) scale(1.06);opacity:1}48%{transform:translateY(-14px) rotate(14deg) scale(1)}66%{transform:translateY(3px) rotate(-6deg)}82%{transform:translateY(-3px) rotate(2deg)}100%{transform:none}}
 .dietag{font-family:var(--f-body);font-size:var(--fs-sm);color:var(--muted);min-height:15px;text-align:center}
 .dietag.used{color:var(--gold)}
 .tools{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid var(--line)}

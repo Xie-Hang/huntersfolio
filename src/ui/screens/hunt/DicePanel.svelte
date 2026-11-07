@@ -1,5 +1,21 @@
 <script lang="ts">
   import FaceMark from '../../parts/FaceMark.svelte';
+  import { ROLL_MS, ROLL_STAGGER } from '../../game.svelte';
+  import * as E from '../../../engine';
+  // while a die tumbles it flickers through the faces it can roll, then lands on its real one
+  let flick = $state<Record<number, string>>({});
+  $effect(() => {
+    const r = game.rolling; if (!r.length) { flick = {}; return; }
+    const faces = E.MONSTERS[h.mid]?.island?.faces ?? ['C', 'T', 'B'];
+    const tick = () => {
+      const t = performance.now() - game.rolledAt, f: Record<number, string> = {};
+      for (const i of r) if (t < i * ROLL_STAGGER + ROLL_MS * 0.6) f[i] = faces[Math.floor(Math.random() * faces.length)];
+      flick = f;
+    };
+    tick(); const id = setInterval(tick, 75);
+    return () => clearInterval(id);
+  });
+  const shown = (i: number, face: string) => flick[i] ?? face;
   import Key from '../../parts/Key.svelte';
   import { input } from '../../pad.svelte';
   import { game } from '../../game.svelte';
@@ -28,12 +44,13 @@
           class:used={!!d.used}
           class:charged={d.charged && !d.used}
           class:rolling={game.rolling.includes(i)}
+          style="--d:{i * ROLL_STAGGER}ms"
           aria-pressed={sel}
           aria-label="{label(d.face)} die{d.charged && !d.used ? ', charged: attack with it or it goes off' : ''}{d.used ? `, used for ${d.used}` : ''}"
           disabled={!!d.used || over}
           onclick={() => game.toggleDie(i)}
         >
-          {#if d.face === 'C' || d.face === 'T'}<FaceMark c={d.face} />
+          {#if shown(i, d.face) === 'C' || shown(i, d.face) === 'T'}<FaceMark c={shown(i, d.face)} />
           {:else}<span class="bl" aria-hidden="true"></span>{/if}<!-- a blank is an empty face, no word (Nov 2026) -->
         </button>
         <span class="dietag" class:used={!!d.used} class:charged={d.charged && !d.used}>{#if d.used || sel}{d.used || 'Selected'}{:else if d.charged}Charged{:else if !over}<Key k={String(i + 1)} />{/if}</span>
