@@ -77,7 +77,7 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .stage .plate .plate-stage{width:100%;max-width:460px}
 .stage .tele{margin:0;padding:12px 14px}
 .parts.row{flex-direction:row;flex-wrap:wrap}
-.parts.row{align-items:flex-start}
+.parts.row{align-items:stretch}
 .parts.row .part{flex:1 1 150px;min-width:0}
 .parts.row .part:not(.on) .hint{display:none}
 .partspanel{padding:12px 14px;gap:8px}

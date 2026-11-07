@@ -30,8 +30,9 @@
               {#if st.exposed > 0}<span class="chip sm exposed">Exposed · {st.exposed}</span>{/if}
             {/if}
             {#if note}<span class="chip sm exposed">{note.chip}</span>{/if}
-            {#if !st.broken}<span class="bar pbar"><i style="width:{pct(st.hp, st.max)}%;background:{on ? 'var(--gold)' : '#8c7a62'}"></i></span>{/if}
           </span>
+          <!-- the HP bar on its own line at the bottom, so every box's bar lines up (Mekkman, Nov 2026) -->
+          {#if !st.broken}<span class="bar pbar"><i style="width:{pct(st.hp, st.max)}%;background:{on ? 'var(--gold)' : '#8c7a62'}"></i></span>{/if}
           <span class="hint">{note ? note.hint : st.broken ? 'Hits here still damage it.' : p.hint}</span>
         </button>
       {/each}
@@ -47,9 +48,10 @@
   .pline .chip { flex: none; white-space: nowrap; padding-block: 1px; line-height: 1.35; }
   .pline:first-child { line-height: 1.2; }
   /* the bar gives way first: with a stance chip beside the tag, a narrow part keeps both chips and loses the bar */
-  .pline .pbar { flex: 1 1 40px; min-width: 0; }
   /* two chips that don't fit side by side (its tag and Exposed, on a narrow part): the second drops under (Nov 2026) */
   .pline:nth-child(2) { flex-wrap: wrap; row-gap: 4px; }
+  /* every box in the row is as tall as the tallest, and the HP bar sits at the bottom of each */
+  .part > .pbar { margin-top: auto; width: 100%; }
   /* four parts (the Wanderer Sovereign) still fit on one row */
   .parts.row.four { flex-wrap: nowrap; }
   .parts.row.four .part { flex: 1 1 0; }
