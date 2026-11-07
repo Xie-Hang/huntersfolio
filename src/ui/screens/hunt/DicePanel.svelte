@@ -1,4 +1,5 @@
 <script lang="ts">
+  import FaceMark from '../../parts/FaceMark.svelte';
   import Key from '../../parts/Key.svelte';
   import { input } from '../../pad.svelte';
   import { game } from '../../game.svelte';
@@ -7,11 +8,11 @@
   const over = $derived(!!h.over);
   const n = $derived(game.sel.length);
   const spare = $derived(game.spareDice);
-  const label = (f: string) => (f === 'C' ? 'Circle' : f === 'T' ? 'Triangle' : 'Blank');
+  const label = (f: string) => (f === 'C' ? 'Fang' : f === 'T' ? 'Claw' : 'Blank');
 </script>
 
 <section class="panel" aria-label="Your dice">
-  <div class="ph dph"><span class="label">Your dice · turn {h.turn}</span><span class="label">{input.mode === 'pad' ? 'Select any dice (A), then pick a move, or reroll them' : 'Click any dice to select them, then pick a move, or reroll them'}</span></div>
+  <div class="ph dph"><span class="label">Your dice · turn {h.turn}</span><span class="label">{input.mode === 'pad' ? 'Select any dice (A), then pick a move, or reroll them' : 'Select any dice, then pick a move, or reroll them'}</span></div>
   <div class="diceline">
   <div class="tray" data-coach="dice">
     {#each h.dice as d, i}
@@ -19,6 +20,7 @@
       <div class="diebox">
         <button
           class="die"
+          data-key={String(i + 1)}
           data-coach={d.face === 'B' && !d.used ? 'die-blank' : undefined}
           class:blank={d.face === 'B'}
           class:sel
@@ -30,8 +32,7 @@
           disabled={!!d.used || over}
           onclick={() => game.toggleDie(i)}
         >
-          {#if d.face === 'C'}<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="14" fill="#2a1f17" /></svg>
-          {:else if d.face === 'T'}<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 5l16 29H4z" fill="#2a1f17" /></svg>
+          {#if d.face === 'C' || d.face === 'T'}<FaceMark c={d.face} />
           {:else}<span class="bl" aria-hidden="true"></span>{/if}<!-- a blank is an empty face, no word (Nov 2026) -->
         </button>
         <span class="dietag" class:used={!!d.used} class:charged={d.charged && !d.used}>{#if d.used || sel}{d.used || 'Selected'}{:else if d.charged}Charged{:else if !over}<Key k={String(i + 1)} />{/if}</span>
@@ -39,13 +40,13 @@
     {/each}
   </div>
   <div class="acts">
-  <button class="btn primary endbtn" class:armed={game.endArmed} data-sound data-coach="end" disabled={over} onclick={() => game.requestEnd()}>
+  <button class="btn primary endbtn" class:armed={game.endArmed} data-sound data-coach="end" data-key="space" disabled={over} onclick={() => game.requestEnd()}>
     <Key k="Space" pad="Y" />{#if game.endArmed}<span class="et">End turn anyway?<small>{spare} {spare === 1 ? 'die' : 'dice'} unspent · press again</small></span>{:else if spare}<span class="et">End turn<small>{spare} {spare === 1 ? 'die' : 'dice'} unspent</small></span>{:else}End turn{/if}
   </button>
     {#if shows(h, 'reroll') || shows(h, 'undo')}
     <div class="grp">
-      {#if shows(h, 'reroll')}<button class="btn quiet" class:rr={n > 0 && h.rerolls > 0 && !over} data-sound data-coach="reroll" disabled={!n || h.rerolls < 1 || over} onclick={() => game.reroll()}><Key k="R" pad="X" />{n > 0 && h.rerolls > 0 ? `Reroll ${n} ${n === 1 ? 'die' : 'dice'}` : 'Reroll'} · {h.rerolls} left</button>{/if}
-      {#if shows(h, 'undo')}<button class="btn quiet" data-coach="undo" disabled={!game.undoStack.length || over} onclick={() => game.undo()}><Key k="U" pad="LT" />Undo</button>{/if}
+      {#if shows(h, 'reroll')}<button class="btn quiet" class:rr={n > 0 && h.rerolls > 0 && !over} data-sound data-coach="reroll" data-key="r" disabled={!n || h.rerolls < 1 || over} onclick={() => game.reroll()}><Key k="R" pad="X" />{n > 0 && h.rerolls > 0 ? `Reroll ${n} ${n === 1 ? 'die' : 'dice'}` : 'Reroll'} · {h.rerolls} left</button>{/if}
+      {#if shows(h, 'undo')}<button class="btn quiet" data-coach="undo" data-key="z" disabled={!game.undoStack.length || over} onclick={() => game.undo()}><Key k="Z" pad="LT" />Undo</button>{/if}
     </div>
     {/if}
   </div>

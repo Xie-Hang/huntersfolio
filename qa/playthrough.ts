@@ -37,17 +37,17 @@ async function playHunt(p: Page, n: number) {
     const t0 = Date.now();
     await p.keyboard.press('x'); // capture if it's allowed (the UI ignores it otherwise)
     let cur = await getJSON(p, HUNT) as E.Hunt; if (!cur || cur.over) break;
-    if (cur.item && E.itemUsable(cur) && cur.php < cur.pmax * 0.55 && E.ITEMS[cur.item].effect === 'heal30') await p.keyboard.press('i');
+    if (cur.item && E.itemUsable(cur) && cur.php < cur.pmax * 0.55 && E.ITEMS[cur.item].effect === 'heal30') await p.keyboard.press('f');
     if (cur.item && E.itemUsable(cur) && E.ITEMS[cur.item].effect !== 'heal30') {
       const fx = E.ITEMS[cur.item].effect;
-      if ((fx === 'net' && (cur.intent === 'gust' || cur.intent === 'circle')) || (fx === 'thaw' && cur.mon.plating >= 2) || (fx === 'blast' && cur.intent === 'erupt')) await p.keyboard.press('i');
+      if ((fx === 'net' && (cur.intent === 'gust' || cur.intent === 'circle')) || (fx === 'thaw' && cur.mon.plating >= 2) || (fx === 'blast' && cur.intent === 'erupt')) await p.keyboard.press('f');
     }
     cur = await getJSON(p, HUNT) as E.Hunt;
     if (!E.canHit(cur, E.currentWeapon(cur)) && cur.weps.length > 1) { await p.keyboard.press('1'); await p.keyboard.press('s'); }
     for (let k = 0; k < 3; k++) for (const key of ['e', 'w', 'q']) { await p.keyboard.press(key); }
     cur = await getJSON(p, HUNT) as E.Hunt; if (!cur || cur.over) break;
     for (const key of ['1', '2', '3', '4']) await p.keyboard.press(key);
-    await p.keyboard.press('g');
+    await p.keyboard.press('a');
     await p.keyboard.press(' ');
     await p.waitForTimeout(120);
     times.push(Date.now() - t0);

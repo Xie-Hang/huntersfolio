@@ -13,7 +13,7 @@
 </script>
 
 <section class="panel partspanel" aria-label="Parts" data-coach="parts">
-    <div class="ph"><span class="label">Aim{input.mode === 'pad' ? ' · LB / RB' : ''}</span><span class="label aimhint">{#if tp}<b>{tp.name}:</b> {tn ? tn.hint : m.parts[tp.id].broken ? 'Broken. Hits here still damage it.' : tp.hint}{:else}{input.mode === 'pad' ? 'LB / RB or select a part to aim' : 'Click a part to aim at it'}{/if}</span></div>
+    <div class="ph"><span class="label">Aim{input.mode === 'pad' ? ' · LB / RB' : ''}</span><span class="label aimhint">{#if tp}<b>{tp.name}:</b> {tn ? tn.hint : m.parts[tp.id].broken ? 'Broken. Hits here still damage it.' : tp.hint}{:else}{input.mode === 'pad' ? 'LB / RB or select a part to aim' : 'Select a part to aim at it'}{/if}</span></div>
     <div class="parts row" class:four={M.parts.length >= 4} style="--n:{M.parts.length}">
       {#each M.parts as p (p.id)}
         {@const st = m.parts[p.id]}

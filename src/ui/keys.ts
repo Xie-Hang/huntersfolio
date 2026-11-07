@@ -1,6 +1,8 @@
 // Keyboard shortcuts for hunts. Mouse stays the main input; keys are for speed.
-// 1–4 dice · Q W E moves · G block · C charge · S swap · X capture · I item · R reroll
-// Space end turn · Ctrl+Z or U undo · Esc clear selection.
+// All under the left hand (Nov 2026 playtest: "why are the keys so far apart?"):
+// 1–4 dice · Q W E moves · R reroll · A block · S swap · C charge · X capture · F item · Z undo · Space end turn
+// Ctrl+Z undo too · Esc clear selection. Each control carries its key as data-key, so a tutorial prompt can let
+// the key through when it triggers the thing the prompt points at.
 import * as E from '../engine';
 import { game } from './game.svelte';
 
@@ -19,15 +21,23 @@ export function onHuntKey(e: KeyboardEvent) {
   let done = true;
   if (k >= '1' && k <= '4') game.toggleDie(+k - 1);
   else if (k === 'q' || k === 'w' || k === 'e') { const i = 'qwe'.indexOf(k); if (E.canUseMove(h, i)) game.move(i); }
-  else if (k === 'g') game.guard();
+  else if (k === 'a') game.guard();
   else if (k === 'c') game.charge();
   else if (k === 's') game.swap();
   else if (k === 'x') game.capture();
-  else if (k === 'i') game.item();
+  else if (k === 'f') game.item();
   else if (k === 'r') game.reroll();
-  else if (k === 'u') game.undo();
+  else if (k === 'z') game.undo();
   else if (k === ' ') game.requestEnd();
   else if (k === 'escape') game.sel = [];
   else done = false;
   if (done) e.preventDefault(); // Space would also click the focused button
+}
+
+/** the data-key of the control a key press triggers in a hunt (for the tutorial lock) */
+export function keyName(e: KeyboardEvent): string | null {
+  if (e.ctrlKey && e.key.toLowerCase() === 'z') return 'z';
+  if (e.ctrlKey || e.altKey || e.metaKey) return null;
+  const k = e.key.toLowerCase();
+  return k === ' ' ? 'space' : k.length === 1 ? k : null;
 }

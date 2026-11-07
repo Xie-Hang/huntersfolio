@@ -4,7 +4,8 @@
   import { coach, tipTargets } from '../coach.svelte';
   import { padWords } from '../pad.svelte';
   import { game } from '../game.svelte';
-  import { tutorialLock } from '../lock.svelte';
+  import { tutorialLock, setLockAllows, keyAllowed } from '../lock.svelte';
+  import { keyName } from '../keys';
 
   const GAP = 12, W = 320, EDGE = 12;
   let cardH = $state(0);
@@ -53,11 +54,13 @@
       return !!target && target.isConnected && target.contains(n);
     };
     const block = (e: Event) => { if (!allowed(e.target)) { e.preventDefault(); e.stopImmediatePropagation(); } };
-    const keys = (e: KeyboardEvent) => { if (e.key === 'Tab' || e.key === 'Shift') return; if (!allowed(document.activeElement)) { e.preventDefault(); e.stopImmediatePropagation(); } };
+    // a key passes when it's focus on the target, or the shortcut for the target (1 for the first die, Q for a move…)
+    const keys = (e: KeyboardEvent) => { if (e.key === 'Tab' || e.key === 'Shift') return; if (!allowed(document.activeElement) && !keyAllowed(keyName(e))) { e.preventDefault(); e.stopImmediatePropagation(); } };
+    setLockAllows(el => allowed(el));
     const evs = ['pointerdown', 'mousedown', 'click', 'touchstart', 'dblclick'] as const;
     for (const ev of evs) window.addEventListener(ev, block, true);
     window.addEventListener('keydown', keys, true);
-    return () => { for (const ev of evs) window.removeEventListener(ev, block, true); window.removeEventListener('keydown', keys, true); tutorialLock.on = false; };
+    return () => { for (const ev of evs) window.removeEventListener(ev, block, true); window.removeEventListener('keydown', keys, true); tutorialLock.on = false; setLockAllows(null); };
   });
 
   /** CSS zoom (the browser stand-in for Interface size) scales fixed positions too; work in unzoomed px. */

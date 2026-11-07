@@ -9,7 +9,7 @@ export function needMarks(need: string, free: string[]): { c: string; have: bool
   return [...need].map(c => { const i = pool.indexOf(c); if (i >= 0) pool.splice(i, 1); return { c, have: i >= 0 }; });
 }
 export const HOLLOW: Record<string, string> = { C: '○', T: '△' };
-export const needLabel = (need: string) => [...need].map(c => (c === 'C' ? 'circle' : 'triangle')).join(', ');
+export const needLabel = (need: string) => [...need].map(c => (c === 'C' ? 'fang' : 'claw')).join(', ');
 export const movesLine = (moves: E.Move[]) => moves.map(m => `${glyphs(m.need)} ${m.dmg}`).join(' · ');
 
 export const effName = (e: number) => (e >= 1 ? 'Best' : e > 0 ? 'Half' : 'None');

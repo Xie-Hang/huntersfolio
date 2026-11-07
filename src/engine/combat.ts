@@ -288,6 +288,27 @@ export function pickDice(h: Hunt, need: string, prefer: number[] = []): number[]
   return picks;
 }
 export const canUseMove = (h: Hunt, i: number) => !h.over && !!currentWeapon(h).moves[i] && canHit(h, currentWeapon(h)) && !!pickDice(h, currentWeapon(h).moves[i].need);
+/** How many times the selected dice make move i exactly (Nov 2026 playtest: two Fangs and Slash = Slash ×2).
+ *  0 when they don't: a leftover die that isn't part of a whole copy means it's not a repeat. */
+export function repeatCount(h: Hunt, i: number, sel: number[]): number {
+  const mv = currentWeapon(h).moves[i]; if (!mv || !sel.length) return 0;
+  const faces = sel.filter(j => h.dice[j] && !h.dice[j].used).map(j => h.dice[j].face);
+  if (faces.length !== sel.length || faces.length % mv.need.length) return 0;
+  const k = faces.length / mv.need.length, count = (s: string[], c: string) => s.filter(x => x === c).length;
+  for (const c of new Set([...mv.need, ...faces])) if (count(faces, c) !== count([...mv.need], c) * k) return 0;
+  return k;
+}
+/** The most damage the given dice can still make with the weapon in hand (moves used one after another). */
+function planDmg(h: Hunt, faces: string[]): number {
+  const w = currentWeapon(h); if (!canHit(h, w)) return 0;
+  let best = 0;
+  for (const mv of w.moves) {
+    const rest = [...faces]; let ok = true;
+    for (const c of mv.need) { const j = rest.indexOf(c); if (j < 0) { ok = false; break; } rest.splice(j, 1); }
+    if (ok) best = Math.max(best, mv.dmg + planDmg(h, rest));
+  }
+  return best;
+}
 
 /* ---------- player actions ---------- */
 function flowReroll(h: Hunt, mv: { flow?: boolean }) {
@@ -495,7 +516,12 @@ export function autoDice(h: Hunt, action: DiceAction): number[] | null {
     if (free.length !== safe.length) return sb.length ? sb : null;
     if (blanks.length) return blanks;
     if (free.length && (free.length === 1 || !currentWeapon(h).moves.some((_, i) => canUseMove(h, i)))) return free;
-    return null;
+    // no blanks: the one die your moves miss least (Nov 2026 playtest: "why can't I block?")
+    if (!safe.length) return null;
+    const faces = (ix: number[]) => ix.map(i => h.dice[i].face as string), all = planDmg(h, faces(safe));
+    let pick = safe[safe.length - 1], least = Infinity;
+    for (const i of [...safe].reverse()) { const loss = all - planDmg(h, faces(safe.filter(j => j !== i))); if (loss < least) { least = loss; pick = i; } }
+    return [pick];
   }
   if (action === 'swap' && freeSwap(h)) return [];
   const n = action === 'charge' ? chargeDice(h) : action === 'swap' ? 1 : 2;

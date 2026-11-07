@@ -1,6 +1,6 @@
 // Shared types for the rules engine. The engine never touches the DOM.
 
-export type Face = 'C' | 'T' | 'B'; // circle, triangle, blank
+export type Face = 'C' | 'T' | 'B'; // Fang, Claw, blank (drawn by ui/parts/FaceMark.svelte; they were a circle and a triangle)
 export type DamageType = 'Cut' | 'Blunt' | 'Pierce';
 export type Element = 'Ember' | 'Frost' | 'Gale' | 'Stone';
 /** status effects (Nov 2026, the Gloamhollow): status weapons carry one instead of an element */

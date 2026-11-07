@@ -15,7 +15,8 @@
   --fs-sm:14px; --fs-md:16px; --fs-lg:20px; --fs-xl:28px; --fs-logo:40px;
   color-scheme: dark;
 }
-html,body{background:var(--bg)}
+html{background-color:var(--bg)}
+body{margin:0;min-height:100vh}
 body{color:var(--fg);font-family:var(--f-body);font-size:var(--fs-md);line-height:1.45;font-variant-numeric:lining-nums tabular-nums}
 .wrap{max-width:1360px;margin:0 auto;padding-block:24px 40px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));display:flex;flex-direction:column;gap:18px}
 button{font:inherit;color:inherit}
@@ -425,7 +426,7 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 .die.sel{transform:translateY(-6px);box-shadow:0 4px 0 var(--bone-edge),0 0 0 3px var(--gold)}
 .die.used{opacity:.4;cursor:default;transform:none}
 .die.used:hover{transform:none}
-.die svg{width:38px;height:38px}
+.die svg{width:38px;height:38px;color:#2a1f17}
 /* blank is a real face: same die body, the word printed in faded ink */
 .die .bl{font-family:var(--f-body);font-weight:600;font-size:var(--fs-sm);color:#2a1f17;opacity:.72}
 .die.rolling{animation:tumble .45s ease-out}

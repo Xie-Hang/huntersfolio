@@ -81,12 +81,13 @@
     <!-- the Foothills show a weapon's third move (Rend, Skullcrack) from the Burrowmole, where Reroll is taught -->
     {#if i < 2 || shows(h, 'rend')}
     {@const ok = E.canUseMove(h, i)}
+    {@const reps = ok ? E.repeatCount(h, i, game.sel) : 0}
     {@const marks = needMarks(mv.need, freeFaces)}
-    {@const miss = marks.filter(x => !x.have).map(x => (x.c === 'C' ? 'circle' : 'triangle'))}
-    <button class="move {ok ? 'ready' : 'no'}" class:pick={ok && picks(mv.need)} data-coach={i === bestReady ? 'move' : undefined} aria-disabled={!ok} onclick={() => ok && game.move(i)}>
+    {@const miss = marks.filter(x => !x.have).map(x => (x.c === 'C' ? 'fang' : 'claw'))}
+    <button class="move {ok ? 'ready' : 'no'}" class:pick={ok && (reps > 0 || picks(mv.need))} data-coach={i === bestReady ? 'move' : undefined} data-key={MOVE_KEYS[i]?.toLowerCase()} aria-disabled={!ok} onclick={() => ok && game.move(i)}>
       <span>
-        <span class="mn"><Key k={MOVE_KEYS[i]} />{mv.name}{#if mv.flow && shows(h, 'flow')}<span class="tag flow" use:detail={E.SIGNATURES.Cut.text}>Flow</span>{/if}{#if mv.daze && shows(h, 'daze')}<span class="tag daze" use:detail={E.SIGNATURES.Blunt.text}>Daze</span>{/if}{#if full && mv.expose}<span class="tag expose" use:detail={E.SIGNATURES.Pierce.text}>Expose</span>{/if}{#if !over && tipText?.includes(mv.name)}<span class="tag counter">Counter</span>{/if}</span>
-        <span class="md">{#if iceNow}{iceLine}{:else}{shownDmg(mv.dmg)} damage{halfAir ? ', halved in the air' : ''}{exposedNow ? ', exposed' : ''}{shows(h, 'rend') && shows(h, 'parts') && mv.part ? ` · ×${mv.part} toward breaks` : ''}{shows(h, 'daze') && mv.daze ? ` · Daze +${mv.daze}` : ''}{shows(h, 'flow') && mv.flow ? ' · +1 reroll' : ''}{/if}</span>
+        <span class="mn"><Key k={MOVE_KEYS[i]} />{mv.name}{#if reps > 1}<span class="reps"> ×{reps}</span>{/if}{#if mv.flow && shows(h, 'flow')}<span class="tag flow" use:detail={E.SIGNATURES.Cut.text}>Flow</span>{/if}{#if mv.daze && shows(h, 'daze')}<span class="tag daze" use:detail={E.SIGNATURES.Blunt.text}>Daze</span>{/if}{#if full && mv.expose}<span class="tag expose" use:detail={E.SIGNATURES.Pierce.text}>Expose</span>{/if}{#if !over && tipText?.includes(mv.name)}<span class="tag counter">Counter</span>{/if}</span>
+        <span class="md">{#if iceNow}{iceLine}{:else}{shownDmg(mv.dmg)} damage{reps > 1 ? ' each' : ''}{halfAir ? ', halved in the air' : ''}{exposedNow ? ', exposed' : ''}{shows(h, 'rend') && shows(h, 'parts') && mv.part ? ` · ×${mv.part} toward breaks` : ''}{shows(h, 'daze') && mv.daze ? ` · Daze +${mv.daze}` : ''}{shows(h, 'flow') && mv.flow ? ' · +1 reroll' : ''}{/if}</span>
       </span>
       <span class="need dice" aria-label="Needs {needLabel(mv.need)}{miss.length && !over ? `; missing ${miss.join(', ')}` : ''}">{#each mv.need as c}<CostDie {c} />{/each}</span>
     </button>
@@ -94,24 +95,24 @@
   {/each}
 
   {#if shows(h, 'block')}
-  <button class="move dash {gOk ? 'ready' : 'no'}" class:pick={gOk && n > 0} class:keepmd={!shows(h, 'all')} data-coach="guard" aria-disabled={!gOk} onclick={() => gOk && game.guard()}>
-    <span><span class="mn"><Key k="G" />Block</span><span class="md">{selGuard ? `Blocks ${selGuard} with the selected dice` : auto.guard?.length ? `${usesLine(auto.guard)}: blocks ${auto.guard.reduce((a, i) => a + E.guardOf(h, i), 0)}` : `${h.arm.guard} a die · ${Math.round(h.arm.guard * (h.arm.blankx2 ? E.VEST_BLANK_GUARD : E.BLANK_GUARD))} a blank`}</span></span><span class="need dice"><CostDie c="any" /></span>
+  <button class="move dash {gOk ? 'ready' : 'no'}" class:pick={gOk && n > 0} class:keepmd={!shows(h, 'all')} data-coach="guard" data-key="a" aria-disabled={!gOk} onclick={() => gOk && game.guard()}>
+    <span><span class="mn"><Key k="A" />Block</span><span class="md">{selGuard ? `Blocks ${selGuard} with the selected dice` : auto.guard?.length ? `${usesLine(auto.guard)}: blocks ${auto.guard.reduce((a, i) => a + E.guardOf(h, i), 0)}` : `${h.arm.guard} a die · ${Math.round(h.arm.guard * (h.arm.blankx2 ? E.VEST_BLANK_GUARD : E.BLANK_GUARD))} a blank`}</span></span><span class="need dice"><CostDie c="any" /></span>
   </button>
   {/if}
   {#if shows(h, 'charge')}
-  <button class="move dash {cOk ? 'ready' : 'no'}" data-coach="charge" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
+  <button class="move dash {cOk ? 'ready' : 'no'}" data-coach="charge" data-key="c" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
     <span><span class="mn"><Key k="C" />Charge</span><span class="md">{chargeRisk ? `The −${inc?.net} coming would break it: block it under ${E.CHARGE_BREAK} first` : `Next hit ×2 · breaks at ${E.CHARGE_BREAK}+`}{!chargeRisk && auto.charge ? ` · ${usesLine(auto.charge)}` : ''}</span></span><span class="need dice"><CostDie c="any" /><span class="x">×{cd}</span></span>
   </button>
   {/if}
   {#if shows(h, 'swap')}
-  <button class="move dash {sOk ? 'ready' : 'no'}" data-coach="swap" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
+  <button class="move dash {sOk ? 'ready' : 'no'}" data-coach="swap" data-key="s" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
     <span><span class="mn"><Key k="S" pad="RT" /><WeaponArt id={other.id} size={22} />Swap to {other.name}{#if swapCounter}<span class="tag counter">Counter</span>{/if}</span><span class="md">{other.type} · <Elem e={markOf(other)} />{elemLabel(other)}{auto.swap?.length ? ` · ${usesLine(auto.swap)}` : ''}</span></span><span class="need dice">{#if E.freeSwap(h)}Free{:else}<CostDie c="any" />{/if}</span>
   </button>
   {/if}
   <!-- With everything on it's always shown, so players learn it exists before it's available. In the second and third
        hunts it appears only once the monster is weak enough (it's the escape from a hunt going badly). -->
   {#if full || (shows(h, 'capture') && capLive)}
-  <button data-coach="capture" class="move capture {capLive && E.captureReady(h) ? 'live' : ''} {capOk ? 'ready' : 'no'}" aria-disabled={!capOk} onclick={() => capOk && game.capture()}>
+  <button data-coach="capture" data-key="x" class="move capture {capLive && E.captureReady(h) ? 'live' : ''} {capOk ? 'ready' : 'no'}" aria-disabled={!capOk} onclick={() => capOk && game.capture()}>
     <span>
       <span class="mn"><Key k="X" />Capture</span>
       <span class="md">
@@ -132,8 +133,8 @@
   {:else if h.item}
     {@const it = E.ITEMS[h.item]}
     <div class="divider"><span class="label">Item · Free action</span><span class="label">{h.itemCharges} left</span></div>
-    <button class="move pocket {iOk ? 'ready' : 'no'}" data-coach="item" aria-disabled={!iOk} onclick={() => iOk && game.item()}>
-      <span><span class="mn"><Key k="I" /><Icon id={h.item} size={20} />{it.name}</span><span class="md">{#if E.itemBlockReason(h)}<span class="why">{E.itemBlockReason(h)}</span>{:else if it.effect === 'trapRush' || it.effect === 'trapLand'}{#if E.trapCatches(it.effect, h.intent)}<span class="good">Catches this {E.intentInfo(h).name}: no damage, held {E.TRAP_HOLD[it.effect]} turns{E.canCapture(h) ? ', and it’s weak enough: captured' : ''}</span>{:else}<span class="why">Won’t catch its {E.intentInfo(h).name}: wasted if set now</span>{/if}{:else}{it.desc}{/if}</span></span>
+    <button class="move pocket {iOk ? 'ready' : 'no'}" data-coach="item" data-key="f" aria-disabled={!iOk} onclick={() => iOk && game.item()}>
+      <span><span class="mn"><Key k="F" /><Icon id={h.item} size={20} />{it.name}</span><span class="md">{#if E.itemBlockReason(h)}<span class="why">{E.itemBlockReason(h)}</span>{:else if it.effect === 'trapRush' || it.effect === 'trapLand'}{#if E.trapCatches(it.effect, h.intent)}<span class="good">Catches this {E.intentInfo(h).name}: no damage, held {E.TRAP_HOLD[it.effect]} turns{E.canCapture(h) ? ', and it’s weak enough: captured' : ''}</span>{:else}<span class="why">Won’t catch its {E.intentInfo(h).name}: wasted if set now</span>{/if}{:else}{it.desc}{/if}</span></span>
       <span class="need">Free</span>
     </button>
   {:else}
@@ -142,6 +143,7 @@
 </section>
 
 <style>
+  .reps { color: var(--gold-hi); font-weight: 600; }
   .why { color: var(--ember-soft); }
   .need.dice { display: inline-flex; align-items: center; gap: 5px; }
   .need .x { font-size: var(--fs-sm); color: var(--soft); }

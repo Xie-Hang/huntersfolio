@@ -179,8 +179,19 @@ class Game {
     // what the hit did, read by comparing before and after
     const w = E.currentWeapon(h0), ice0 = h0.mon.plating, intent0 = h0.intent, rr0 = h0.rerolls;
     const exposed0 = Object.values(h0.mon.parts).filter(p => p.exposed > 0).length;
-    const r = this.act(h => E.useMove(h, i, this.sel), r => !!r);
+    // dice for two (or more) whole copies of the move: it's used that many times (Slash ×2)
+    const reps = Math.max(1, E.repeatCount(h0, i, this.sel)), sel0 = [...this.sel];
+    const r = this.act(h => {
+      let total: E.HitResult | null = null;
+      for (let k = 0; k < reps && !h.over; k++) {
+        const one = E.useMove(h, i, sel0.filter(j => !h.dice[j]?.used));
+        if (!one) break;
+        total = total ? { dmg: total.dmg + one.dmg, broke: total.broke || one.broke } : one;
+      }
+      return total;
+    }, r => !!r);
     if (!r) return;
+    if (reps > 1) this.multi++;
     const h = this.hunt!;
     this.pulse.hit++;
     const sounds: Sfx[] = [];
@@ -229,8 +240,14 @@ class Game {
    *  "you can reroll several". Mekkman, Nov 2026. */
   rerollLesson(start: boolean) {
     const h = this.hunt;
-    if (!h || h.over || h.mid !== 'burrowmole' || E.islandStep(this.save) !== 5) return;
     const seen = (id: string) => this.save.tips.includes(id);
+    // the Rimekit: one Fang on turn 1, two on turn 2 (the "Slash ×2" lesson), so it's still standing for the Block
+    // lesson on turn 3 (Nov 2026 playtest: teach using several dice for the same move on the second monster)
+    if (start && h && h.mid === 'snapclaw' && E.islandStep(this.save) === 1 && !seen('i-twice2')) {
+      const f: E.Face[] = ['C', 'T', 'B']; h.dice.forEach((d, i) => { d.face = f[i] ?? d.face; });
+      h.script = h.script ?? []; h.script[1] = ['C', 'C', 'T'];
+    }
+    if (!h || h.over || h.mid !== 'burrowmole' || E.islandStep(this.save) !== 5) return;
     if (start && !seen('i-pick')) { const f: E.Face[] = ['C', 'B', 'T', 'C']; h.dice.forEach((d, i) => { d.face = f[i] ?? d.face; }); }
     // turn 3, when it's first underground: a blank for Swap to take (Swap takes a blank by itself; without one the
     // player would have to pick a die first, and the swap prompt's lock would have them stuck)
@@ -246,6 +263,8 @@ class Game {
   }
   /** how many times Undo has been used this session (the Foothills' Undo step waits for one) */
   undos = $state(0);
+  /** moves used several times at once (Slash ×2): the Rimekit prompt teaches it */
+  multi = $state(0);
   undo() {
     if (!this.hunt || this.hunt.over || !this.undoStack.length || !shows(this.hunt, 'undo')) return;
     this.undos++;

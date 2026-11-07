@@ -10,8 +10,11 @@
 }
 
 /* the page: a faint pattern of the game's marks; fainter during a hunt */
-body{background-image:var(--mat-doodle);background-size:220px 220px}
-body:has(.wrap.hunting){background-image:var(--mat-doodle-hunt)}
+/* the doodle sits on the root, which always paints the whole window: on body it stopped where the page's content did
+   (Nov 2026 playtest, a wide screen: "the background didn't fill the screen") */
+html{background-color:var(--bg);background-image:var(--mat-doodle);background-size:220px 220px;background-attachment:fixed}
+html:has(.wrap.hunting){background-image:var(--mat-doodle-hunt)}
+body{background:transparent}
 
 /* the monster: a bestiary plate. A double engraved rule, corner ornaments and faint hatching */
 .mat-plate,.stage{border-color:var(--mat-plate-rule);box-shadow:inset 0 0 0 4px var(--panel),inset 0 0 0 5px var(--mat-plate-inner);

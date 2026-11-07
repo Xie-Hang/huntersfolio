@@ -184,7 +184,7 @@
       </span>
     </div>
     <div class="setrow">
-      <span><span class="nm">Text detail</span><span class="md">Compact keeps rules behind <span class="dt" style="cursor:default">dotted words</span> (hover or click). Full shows them all.</span></span>
+      <span><span class="nm">Text detail</span><span class="md">Compact keeps rules behind <span class="dt" style="cursor:default">dotted words</span> (hover or select). Full shows them all.</span></span>
       <span class="seg" role="radiogroup" aria-label="Text detail">
         {#each [['compact', 'Compact'], ['full', 'Full']] as [v, l]}
           <button role="radio" aria-checked={settings.prefs.detail === v} onclick={() => { settings.prefs.detail = v as 'compact' | 'full'; settings.save(); }}>{l}</button>
@@ -208,7 +208,7 @@
     </div>
     <div class="setrow">
       <span><span class="nm">Save data</span><span class="md">Saved automatically · {game.save.hunts} hunts.{#if game.inHunt}{' '}Finish this hunt to reset.{/if}</span></span>
-      <button class="btn quiet danger" disabled={game.inHunt} onclick={reset}>{resetArmed ? 'Click again to erase everything' : 'Reset save'}</button>
+      <button class="btn quiet danger" disabled={game.inHunt} onclick={reset}>{resetArmed ? 'Select again to erase everything' : 'Reset save'}</button>
     </div>
     <div class="setrow"><span><span class="nm">Credits</span><span class="md">Placeholder music and sound effects made in code. Logo type: IM Fell English by Igino Marini (SIL OFL).</span></span></div>
     <div class="setrow"><span><span class="nm">Version</span><span class="md">{BUILD}{E.EDITION === 'demo' ? ' (demo)' : ''}</span></span></div>
@@ -246,7 +246,7 @@
         <li>Progress saves itself. Reset it in Settings.</li>
       </ul></details>
       <details name="help"><summary>A turn</summary><ul class="helplist">
-        <li>You roll 4 dice: circles, triangles and blanks.</li>
+        <li>You roll 4 dice: fangs, claws and blanks. Each move needs certain faces.</li>
         <li>The panel by the monster shows its next move and how much it will hurt.</li>
         <li>Spend dice on moves, <strong>Block</strong> with the rest (a blank blocks best), then end the turn.</li>
         <li><strong>Reroll</strong> the dice you select; rerolls are counted for the whole hunt.</li>

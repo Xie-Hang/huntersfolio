@@ -96,12 +96,19 @@ describe('Failed hunts', () => {
 
 describe('Dice actions pick their own dice (no selection)', () => {
   const hunt = () => { const s = E.newSave(); s.loadout = { ...s.loadout, target: 'gorehorn' }; return E.startHunt(s, 4); };
-  it('Guard takes the blanks; with none, the dice left if no move can use them', () => {
+  it('Guard takes the blanks; with none, the one die your moves miss least (or the dice no move can use)', () => {
     const h = hunt(); dice(h, 'CBTB');
     expect(E.autoDice(h, 'guard')).toEqual([1, 3]);
-    dice(h, 'CTCT'); expect(E.autoDice(h, 'guard')).toBeNull();
+    // Fang Claw Fang Claw: Rend takes Fang Fang Claw, so the spare Claw is the one to block with
+    dice(h, 'CTCT'); expect(E.autoDice(h, 'guard')).toEqual([3]);
     h.dice[0].used = 'x' as never; h.dice[1].used = 'x' as never; h.dice[2].used = 'x' as never;
     expect(E.autoDice(h, 'guard')).toEqual([3]);
+  });
+  it('dice for whole copies of a move use it that many times (Slash ×2), and nothing else counts', () => {
+    const h = hunt(); dice(h, 'CCTB');
+    expect(E.repeatCount(h, 0, [0, 1])).toBe(2); // two Fangs, Slash (one Fang)
+    expect(E.repeatCount(h, 0, [0])).toBe(1);
+    expect(E.repeatCount(h, 0, [0, 2])).toBe(0); // a Claw left over: not a repeat
   });
   it('Charge, Swap and Capture take blanks first, else exactly the dice left, else ask', () => {
     const h = hunt(); dice(h, 'BCBT');

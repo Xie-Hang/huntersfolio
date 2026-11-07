@@ -59,19 +59,26 @@ const ISLAND: Tip[] = [
   {
     id: 'i-begin', guide: true, learn: true, at: ['begin'],
     when: () => game.view === 'board' && !game.hunt && E.islandStep(game.save) === 0,
-    text: () => 'Your first hunt: a Cragling. Click Hunt.',
+    text: () => 'Your first hunt: a Cragling. Select Hunt.',
     done: () => game.view === 'hunt'
+  },
+  {
+    // the faces, said once at the very start (Nov 2026 playtest: a tester read the old circle as a "1")
+    id: 'i-faces', guide: true, info: true, at: ['dice'],
+    when: () => { const h = onIsland('scuttlehog'); return !!h && h.turn === 1 && unusedTurn(h) && !game.sel.length; },
+    text: () => 'These are your dice. They show Fangs.',
+    next: 'Got it'
   },
   {
     id: 'i-die', guide: true, learn: true, at: ['dice'],
     when: () => { const h = onIsland('scuttlehog'); return !!h && h.turn === 1 && unusedTurn(h) && !game.sel.length; },
-    text: () => 'Click a die.',
+    text: () => 'Select a die.',
     done: () => game.sel.length > 0 || !!hunt()?.dice.some(d => d.used)
   },
   {
     id: 'i-move', guide: true, learn: true, at: ['move'],
     when: () => { const h = onIsland('scuttlehog'); return !!h && h.turn === 1 && game.sel.length > 0 && unusedTurn(h); },
-    text: () => 'Now click Slash.',
+    text: () => 'Slash needs a Fang. Select Slash.',
     done: () => !!hunt()?.dice.some(d => d.used)
   },
   {
@@ -85,15 +92,34 @@ const ISLAND: Tip[] = [
     // (click a die, then the move) has been done
     id: 'i-quick', guide: true, learn: true, at: ['move'],
     when: () => { const h = onIsland('scuttlehog'); return !!h && h.turn === 2 && unusedTurn(h) && !game.sel.length; },
-    text: () => 'Shortcut: click Slash. It picks the die.',
+    text: () => 'Shortcut: select Slash. It picks the die.',
     // (only from turn 2 on: on turn 1 the dice get used the long way, and that must not count as having learned it)
     done: () => { const h = hunt(); return !!h && h.mid === 'scuttlehog' && ((h.turn === 2 && !unusedTurn(h)) || h.turn > 2); }
+  },
+  {
+    id: 'i-faces2', guide: true, info: true, at: ['dice'],
+    when: () => { const h = onIsland('snapclaw'); return !!h && h.turn === 1 && unusedTurn(h) && !game.sel.length; },
+    text: () => 'New faces: Claws, and blanks.',
+    next: 'Got it'
   },
   {
     id: 'i-tele', guide: true, info: true, at: ['tele'],
     when: () => { const h = onIsland('snapclaw'); return !!h && h.turn === 1 && unusedTurn(h); },
     text: () => 'This is its next move. Watch it.',
     next: 'Got it'
+  },
+  {
+    // several dice, one move, used that many times (Nov 2026 playtest)
+    id: 'i-twice', guide: true, learn: true, at: ['dice'],
+    when: () => { const h = onIsland('snapclaw'); const f = h ? h.dice.filter(d => d.face === 'C' && !d.used).length : 0; return !!h && h.turn === 2 && f >= 2 && unusedTurn(h) && game.sel.filter(i => h.dice[i]?.face === 'C').length < 2; },
+    text: () => 'Select both Fangs to Slash twice.',
+    done: () => { const h = hunt(); return game.multi > 0 || (!!h && h.mid === 'snapclaw' && game.sel.filter(i => h.dice[i]?.face === 'C').length >= 2); }
+  },
+  {
+    id: 'i-twice2', guide: true, learn: true, at: ['move'],
+    when: () => { const h = onIsland('snapclaw'); return !!h && game.save.tips.includes('i-twice') && E.repeatCount(h, 0, game.sel) >= 2; },
+    text: () => 'Now select Slash: Slash ×2.',
+    done: () => game.multi > 0
   },
   {
     id: 'i-block', guide: true, learn: true, at: ['guard'],
@@ -104,7 +130,7 @@ const ISLAND: Tip[] = [
   {
     id: 'i-undo', guide: true, learn: true, at: ['undo'],
     when: () => { const h = onIsland('snapclaw'); return !!h && h.turn >= 2 && h.intent !== 'pinch' && game.undoStack.length > 0 && !unusedTurn(h); },
-    text: () => 'Changed your mind? Click Undo to take it back.',
+    text: () => 'Changed your mind? Select Undo to take it back.',
     done: () => game.undos > 0
   },
   {
@@ -123,7 +149,7 @@ const ISLAND: Tip[] = [
   {
     id: 'i-aim', guide: true, learn: true, at: ['part-hide', 'parts'],
     when: () => { const h = onIsland('tuskling'); return !!h && E.islandStep(game.save) === 3 && h.target !== 'hide' && !h.mon.parts.hide.broken; },
-    text: () => 'Blades can\u2019t break tusks. Click the Hide.',
+    text: () => 'Blades can\u2019t break tusks. Select the Hide.',
     done: () => hunt()?.target === 'hide'
   },
   {
@@ -141,25 +167,25 @@ const ISLAND: Tip[] = [
   {
     id: 'i-pick', guide: true, learn: true, at: ['die-blank'],
     when: () => { const h = onIsland('burrowmole'); return !!h && h.rerolls > 0 && h.stats.rerollsUsed === 0 && unusedTurn(h) && !h.mon.under && !game.sel.length && h.dice.some(d => d.face === 'B' && !d.used); },
-    text: () => 'A blank fits no move. Click the blank die.',
+    text: () => 'A blank fits no move. Select the blank die.',
     done: () => { const h = hunt(); return !!h && (h.stats.rerollsUsed > 0 || game.sel.some(i => h.dice[i]?.face === 'B')); }
   },
   {
     id: 'i-reroll', guide: true, learn: true, at: ['reroll'], side: 'right',
     when: () => { const h = onIsland('burrowmole'); return !!h && h.rerolls > 0 && h.stats.rerollsUsed === 0 && game.sel.length > 0; },
-    text: () => 'Now click Reroll. It rolls that die again.',
+    text: () => 'Now select Reroll. It rolls that die again.',
     done: () => (hunt()?.stats.rerollsUsed ?? 0) > 0
   },
   {
     id: 'i-multi', guide: true, learn: true, at: ['dice'],
     when: () => { const h = onIsland('burrowmole'); const bl = h ? h.dice.filter(d => d.face === 'B' && !d.used).length : 0; return !!h && bl >= 2 && h.rerolls > 0 && h.stats.rerollsUsed === 1 && game.sel.length < 2; },
-    text: () => 'You can reroll several. Click each blank die.',
+    text: () => 'You can reroll several. Select each blank die.',
     done: () => { const h = hunt(); return !!h && (h.stats.rerollsUsed > 1 || game.sel.filter(i => h.dice[i]?.face === 'B').length >= 2); }
   },
   {
     id: 'i-reroll2', guide: true, learn: true, at: ['reroll'], side: 'right',
     when: () => { const h = onIsland('burrowmole'); return !!h && h.rerolls > 0 && h.stats.rerollsUsed === 1 && game.sel.length >= 2 && game.save.tips.includes('i-multi'); },
-    text: () => 'Now click Reroll. They all roll again.',
+    text: () => 'Now select Reroll. They all roll again.',
     done: () => (hunt()?.stats.rerollsUsed ?? 0) > 1
   },
   {
@@ -215,7 +241,7 @@ const ISLAND: Tip[] = [
   {
     id: 'i-vest2', guide: true, learn: true, at: () => (game.forgeTab === 'armor' ? ['forge-act'] : ['tab-armor']),
     when: () => E.islandStep(game.save) === 8 && game.view === 'forge' && canMake(),
-    text: () => (game.forgeTab === 'armor' ? 'Make the Hide Vest. You wear it.' : 'Click Armor.'),
+    text: () => (game.forgeTab === 'armor' ? 'Make the Hide Vest. You wear it.' : 'Select Armor.'),
     done: () => E.islandStep(game.save) >= 9
   },
   {
@@ -245,7 +271,7 @@ const ISLAND: Tip[] = [
   {
     id: 'i-track2', guide: true, learn: true, at: () => (game.forgeTab !== 'weapons' ? ['tab-weapons'] : game.forgeSel !== 'whistle' ? ['row-whistle'] : ['track']),
     when: () => E.islandStep(game.save) === 10 && game.view === 'forge',
-    text: () => (game.forgeTab !== 'weapons' ? 'Click Weapons.' : game.forgeSel !== 'whistle' ? 'Click the Whistling Blade.' : 'Gale beats the Gorehorn. Track this blade.'),
+    text: () => (game.forgeTab !== 'weapons' ? 'Select Weapons.' : game.forgeSel !== 'whistle' ? 'Select the Whistling Blade.' : 'Gale beats the Gorehorn. Track this blade.'),
     done: () => E.islandStep(game.save) >= 11
   },
   {
@@ -263,19 +289,19 @@ const ISLAND: Tip[] = [
   {
     id: 'i-whistle', guide: true, learn: true, at: () => (game.forgeTab !== 'weapons' ? ['tab-weapons'] : game.forgeSel !== 'whistle' ? ['row-whistle'] : ['forge-act']),
     when: () => E.islandStep(game.save) === 12 && game.view === 'forge' && !game.save.weapons.whistle && canMake(),
-    text: () => (game.forgeTab !== 'weapons' ? 'Click Weapons.' : game.forgeSel !== 'whistle' ? 'Click the Whistling Blade.' : 'Make the Whistling Blade.'),
+    text: () => (game.forgeTab !== 'weapons' ? 'Select Weapons.' : game.forgeSel !== 'whistle' ? 'Select the Whistling Blade.' : 'Make the Whistling Blade.'),
     done: () => !!game.save.weapons.whistle
   },
   {
     id: 'i-charm', guide: true, learn: true, at: () => (game.forgeTab === 'charms' ? ['forge-act'] : ['tab-charms']),
     when: () => E.islandStep(game.save) === 12 && game.view === 'forge' && !!game.save.weapons.whistle && !game.save.charms.clawcharm && canMake(),
-    text: () => (game.forgeTab === 'charms' ? 'A Claw Charm hits back when you block.' : 'Now a charm. Click Charms.'),
+    text: () => (game.forgeTab === 'charms' ? 'A Claw Charm hits back when you block.' : 'Now a charm. Select Charms.'),
     done: () => !!game.save.charms.clawcharm
   },
   {
     id: 'i-reinforce', guide: true, learn: true, at: () => (game.forgeTab === 'armor' ? ['forge-act'] : ['tab-armor']),
     when: () => E.islandStep(game.save) === 12 && game.view === 'forge' && !!game.save.weapons.whistle && !!game.save.charms.clawcharm && canMake(),
-    text: () => (game.forgeTab === 'armor' ? 'Reinforce the vest. It gets tougher.' : 'Last: your vest. Click Armor.'),
+    text: () => (game.forgeTab === 'armor' ? 'Reinforce the vest. It gets tougher.' : 'Last: your vest. Select Armor.'),
     done: () => E.islandStep(game.save) >= 13
   },
   {
@@ -329,7 +355,7 @@ export const TIPS: Tip[] = [
   {
     id: 'begin', guide: true, learn: true, at: ['begin'],
     when: () => game.view === 'board' && game.save.hunts === 0 && !game.hunt,
-    text: () => 'Your first hunt is the Gorehorn, a ridge boar. You start with a blade, a maul and leather armor. Click Hunt the Gorehorn.',
+    text: () => 'Your first hunt is the Gorehorn, a ridge boar. You start with a blade, a maul and leather armor. Select Hunt the Gorehorn.',
     done: () => game.view === 'hunt'
   },
   {
@@ -352,7 +378,7 @@ export const TIPS: Tip[] = [
     text: () => {
       const h = hunt()!, w = E.currentWeapon(h), p = bestPart(h), t = E.MONSTERS[h.mid].parts.find(x => x.id === h.target)!;
       const none = t.eff[w.type] === 0;
-      return `New: aim. Your ${w.name}${none ? ` can’t break the ${t.name.toLowerCase()}` : ` breaks less on the ${t.name.toLowerCase()}`}. Click the ${p.name}: it breaks more. A broken part drops materials.`;
+      return `New: aim. Your ${w.name}${none ? ` can’t break the ${t.name.toLowerCase()}` : ` breaks less on the ${t.name.toLowerCase()}`}. Select the ${p.name}: it breaks more. A broken part drops materials.`;
     },
     done: () => { const h = hunt(); return !!h && h.target === bestPart(h).id; }
   },
@@ -361,7 +387,7 @@ export const TIPS: Tip[] = [
     when: () => { const h = hunt(); return !!h && unusedTurn(h) && anyMoveReady(h); },
     text: () => {
       const h = hunt()!, w = E.currentWeapon(h), best = [...w.moves.keys()].filter(i => E.canUseMove(h, i)).sort((a, b) => w.moves[b].dmg - w.moves[a].dmg)[0];
-      return `To attack, click a move. Each move needs the dice shapes on its right. You rolled what ${w.moves[best].name} needs: click it.`;
+      return `To attack, select a move. Each move needs the dice shapes on its right. You rolled what ${w.moves[best].name} needs: select it.`;
     },
     done: () => { const h = hunt(); return !!h && h.dice.some(d => d.used && d.used !== 'Block'); }
   },
@@ -371,26 +397,26 @@ export const TIPS: Tip[] = [
     text: () => {
       const h = hunt()!, inc = E.incoming(h), d = game.sel.length ? game.sel : E.autoDice(h, 'guard') ?? [], g = d.reduce((a, i) => a + E.guardOf(h, i), 0);
       const blank = d.length && d.every(i => h.dice[i].face === 'B');
-      return `${blank ? 'A blank fits no move, but it blocks best.' : 'Dice that fit no move can Block.'} Click Block: it stops ${g}${inc?.net ? `, so the ${inc.raw} becomes ${Math.max(0, inc.raw - g)}` : ''}.`;
+      return `${blank ? 'A blank fits no move, but it blocks best.' : 'Dice that fit no move can Block.'} Select Block: it stops ${g}${inc?.net ? `, so the ${inc.raw} becomes ${Math.max(0, inc.raw - g)}` : ''}.`;
     },
     done: () => (hunt()?.guard ?? 0) > 0
   },
   {
     id: 'end', guide: true, learn: true, at: ['end'],
     when: () => { const h = hunt(); return !!h && h.turn === 1 && !unusedTurn(h) && (freeDice(h) === 0 || h.guard > 0) && !anyMoveReady(h); },
-    text: () => `Click End turn. The ${E.MONSTERS[hunt()!.mid].short} makes its move, then you roll 4 new dice.`,
+    text: () => `Select End turn. The ${E.MONSTERS[hunt()!.mid].short} makes its move, then you roll 4 new dice.`,
     done: () => (hunt()?.turn ?? 1) > 1
   },
   {
     id: 'g-pick', guide: true, at: ['dice'],
     when: () => { const h = hunt(); return !!h && h.turn >= 2 && h.rerolls > 0 && unusedTurn(h) && h.dice.some((d, i) => d.face === 'B' && !game.sel.includes(i)); },
-    text: () => { const n = hunt()!.dice.filter(d => d.face === 'B').length; return `A poor roll: ${n === 1 ? 'a blank' : `${n} blanks`}. You can reroll any dice you like, one or all of them. Click ${n === 1 ? 'the blank' : 'both blanks'} to select ${n === 1 ? 'it' : 'them'}.`; },
+    text: () => { const n = hunt()!.dice.filter(d => d.face === 'B').length; return `A poor roll: ${n === 1 ? 'a blank' : `${n} blanks`}. You can reroll any dice you like, one or all of them. Select ${n === 1 ? 'the blank' : 'both blanks'} to select ${n === 1 ? 'it' : 'them'}.`; },
     done: () => { const h = hunt(); return !!h && h.dice.every((d, i) => d.face !== 'B' || game.sel.includes(i)); }
   },
   {
     id: 'reroll', guide: true, learn: true, at: ['reroll'], side: 'right',
     when: () => { const h = hunt(); return !!h && h.turn >= 2 && h.rerolls > 0 && unusedTurn(h) && game.sel.length > 0; },
-    text: () => `Click Reroll. Only the selected dice roll again. You have ${hunt()!.rerolls} for the whole hunt.`,
+    text: () => `Select Reroll. Only the selected dice roll again. You have ${hunt()!.rerolls} for the whole hunt.`,
     done: () => (hunt()?.stats.rerollsUsed ?? 0) > 0
   },
   {
@@ -515,7 +541,7 @@ export const TIPS: Tip[] = [
   {
     id: 'track', guide: true, learn: true, at: ['track', 'forge-act'],
     when: () => game.view === 'forge',
-    text: () => 'Pick a weapon or armor from the list. If you can\'t afford it yet, click Track: its materials are then flagged on the Hunt Board and in the Shop, so you know what to hunt next.',
+    text: () => 'Pick a weapon or armor from the list. If you can\'t afford it yet, select Track: its materials are then flagged on the Hunt Board and in the Shop, so you know what to hunt next.',
     done: () => !!game.save.tracked || Object.keys(game.save.weapons).length > 2 || Object.keys(game.save.armors).length > 1
   }
 ];
