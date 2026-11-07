@@ -48,6 +48,8 @@
   .pline:first-child { line-height: 1.2; }
   /* the bar gives way first: with a stance chip beside the tag, a narrow part keeps both chips and loses the bar */
   .pline .pbar { flex: 1 1 40px; min-width: 0; }
+  /* two chips that don't fit side by side (its tag and Exposed, on a narrow part): the second drops under (Nov 2026) */
+  .pline:nth-child(2) { flex-wrap: wrap; row-gap: 4px; }
   /* four parts (the Wanderer Sovereign) still fit on one row */
   .parts.row.four { flex-wrap: nowrap; }
   .parts.row.four .part { flex: 1 1 0; }
