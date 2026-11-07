@@ -22,7 +22,7 @@
   const nWeapons = $derived(L.weapons.filter(Boolean).length);
   // the Foothills (the tutorial island): one weapon, nothing else to choose yet
   const isl = $derived(!E.islandDone(game.save));
-  const need = $derived(isl ? 1 : 2);
+  const need = $derived(E.twoWeapons(game.save) ? 2 : 1);
   const openBounties = $derived(E.BOUNTIES_ON ? E.bountiesFor(mon).filter(b => E.bountyOpen(game.save, b.id) && !game.save.bounties[b.id]).length : 0);
   const B = $derived(L.bounty && E.BOUNTIES[L.bounty]?.mon === mon && E.bountyOpen(game.save, L.bounty) ? E.BOUNTIES[L.bounty] : null);
   const breaks = $derived(B ? E.loadoutBreaks(game.save) : null);
@@ -107,21 +107,21 @@
 
   {#if !picker}
     <div class="slots">
-      {#each (isl ? ['w0'] : ['w0', 'w1']) as ('w0' | 'w1')[] as slot, idx}
+      {#each (need === 1 ? ['w0'] : ['w0', 'w1']) as ('w0' | 'w1')[] as slot, idx}
         {@const id = L.weapons[idx]}
         {#if !id}
-          <button class="slot empty" data-slot={slot} onclick={() => open(slot)}><span class="sl">{SLOT_LABEL[slot]}</span><span><span class="nm">Empty</span></span><span class="chg">Choose</span></button>
+          <button class="slot empty" data-slot={slot} data-coach="slot-{slot}" onclick={() => open(slot)}><span class="sl">{SLOT_LABEL[slot]}</span><span><span class="nm">Empty</span></span><span class="chg">Choose</span></button>
         {:else}
           {@const w = E.ownedWeapon(game.save, id)}
           {@const sg = E.SIGNATURES[w.type]}
-          {#if isl}
+          {#if need === 1}
           <!-- the Foothills: one weapon and nothing to compare yet -->
-          <div class="slot" data-slot={slot}>
+          <div class="slot" data-slot={slot} data-coach="slot-{slot}">
             <span class="sl">Weapon</span>
             <span><span class="nm"><WeaponArt id={id} size={34} />{w.name}</span><span class="sub2"><span>{w.type}</span></span></span>
           </div>
           {:else}
-          <button class="slot" data-slot={slot} onclick={() => open(slot)}>
+          <button class="slot" data-slot={slot} data-coach="slot-{slot}" onclick={() => open(slot)}>
             <span class="sl">{SLOT_LABEL[slot]}</span>
             <span>
               <span class="nm"><WeaponArt id={id} size={34} />{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}{' '}<span class="avg">{weaponVs(game.save, id, mon)} avg</span></span>
@@ -133,6 +133,10 @@
         {/if}
       {/each}
       {#if isl}
+        {#if E.itemSlot(game.save) && L.item}
+          {@const it = E.ITEMS[L.item]}
+          <div class="slot" data-slot="item"><span class="sl">Item</span><span><span class="nm"><Icon id={L.item} />{it.name}</span><span class="sub2"><span>Carry {Math.min(game.save.items[L.item] ?? 0, it.max)}</span></span></span></div>
+        {/if}
       {:else}
       {#if L.armor}
         {@const a = E.ownedArmor(game.save, L.armor)}
@@ -320,7 +324,7 @@
       <span class="ital">{E.unlockHint(M.id)} to unlock it.</span>
       <button class="btn primary" disabled>Locked</button>
     {:else}
-      <span class="ital">{isl ? '' : nWeapons === 2 ? (full() ? 'Swap weapons mid-hunt for 1 die.' : '') : 'Choose two weapons to bring.'}</span>
+      <span class="ital">{isl ? (need === 2 && nWeapons < 2 ? 'Take the maul too.' : '') : nWeapons === 2 ? (full() ? 'Swap weapons mid-hunt for 1 die.' : '') : 'Choose two weapons to bring.'}</span>
       <button class="btn primary" data-sound data-coach="begin" disabled={nWeapons !== need} onclick={() => game.begin(coach.scriptFirstHunt())}>Hunt the {M.short}</button>
     {/if}
   </div>

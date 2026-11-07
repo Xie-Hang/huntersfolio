@@ -32,7 +32,9 @@
 {#if ALL_MONSTERS[mon]?.variantOf}<Variant {mon} {hunt} />
 <!-- the Foothills (Nov 2026): placeholders until their plates are drawn, posed still -->
 {:else if mon === 'scuttlehog'}<div class="young" style="--k:.68"><Gorehorn hunt={null} /></div>
-{:else if mon === 'snapclaw'}<div class="young" style="--k:.82"><Cinderback hunt={null} /></div>
+{:else if mon === 'snapclaw'}<div class="young" style="--k:.8"><Emberwhelk hunt={null} /></div>
+{:else if mon === 'tuskling'}<div class="young" style="--k:.84"><Gorehorn hunt={null} /></div>
+{:else if mon === 'burrowmole'}<div class="young" style="--k:.82"><Cinderback hunt={null} /></div>
 {:else if mon === 'gorehorn'}<Gorehorn {hunt} />
 {:else if mon === 'galeshrike'}<Galeshrike {hunt} />
 {:else if mon === 'cinderback'}<Cinderback {hunt} />

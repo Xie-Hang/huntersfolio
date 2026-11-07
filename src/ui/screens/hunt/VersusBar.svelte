@@ -22,8 +22,8 @@
 <section class="panel vs" aria-label="Health">
   <div class="vside mon">
     <div class="vtop">
-      <h2 class="vnm">{#if shows(h, 'parts')}<span class="vkind" title="{el.elem} monster"><Elem e={el.elem} /></span>{/if}{M.panelName ?? M.name}</h2>
-      {#if shows(h, 'parts')}<span class="chip sm gale"><Elem e={el.weak} />Weak to {el.weak}</span><span class="chip sm"><Elem e={el.resist} />Resists {el.resist}</span>{/if}
+      <h2 class="vnm">{#if shows(h, 'elements')}<span class="vkind" title="{el.elem} monster"><Elem e={el.elem} /></span>{/if}{M.panelName ?? M.name}</h2>
+      {#if shows(h, 'elements')}<span class="chip sm gale"><Elem e={el.weak} />Weak to {el.weak}</span><span class="chip sm"><Elem e={el.resist} />Resists {el.resist}</span>{/if}
       <span class="vnum">{m.hp} / {m.max}</span>
     </div>
     <div class="vhb" role="img" aria-label="{M.name}: {m.hp} of {m.max} HP"><i class="vfill" style="width:{pct(m.hp, m.max)}%"></i></div>

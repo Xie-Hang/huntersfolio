@@ -369,9 +369,9 @@ export interface Hunt {
 }
 
 export interface MonsterDef {
-  /** a Foothills monster (the tutorial island, Nov 2026): how many dice you roll against it, which faces they can
-   *  show, and which parts of the hunt screen it teaches (see ui/reveal.ts). Everything else stays hidden. */
-  island?: { dice: number; faces: Face[]; show: string[] };
+  /** a Foothills monster (the tutorial island, Nov 2026): how many dice you roll against it and which faces they can
+   *  show. What the hunt screen shows comes from the island step (engine/island.ts, ui/reveal.ts). */
+  island?: { dice: number; faces: Face[] };
   /** a shorter name for the hunt screen's header, when the full one doesn't fit beside its chips */
   panelName?: string;
   /** a variant of this monster (the changed Ashfall Ridge, Nov 2026): same body, new element and mechanic */

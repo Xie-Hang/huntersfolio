@@ -18,7 +18,9 @@
 
   // only items for monsters you can hunt (Nov 2026 text audit: rank F saw the Mirewood's cures)
   const reach = $derived(Math.max(1, ...Object.values(E.MONSTERS).filter(M => E.isUnlocked(s, M.id)).map(M => M.tier)));
-  const buyRows = $derived(Object.values(E.ITEMS).filter(it => it.price && (full() || (it.tier ?? 1) <= reach)));
+  // the Foothills (the tutorial island): the Shop sells only the salve, and there's nothing to craft yet
+  const isl = $derived(!E.islandDone(s));
+  const buyRows = $derived(Object.values(E.ITEMS).filter(it => it.price && (isl ? it.id === 'salve' : full() || (it.tier ?? 1) <= reach)));
   const craftRows = $derived(Object.values(E.ITEMS).filter(it => it.craft));
   const sellRows = $derived(
     Object.values(E.MATERIALS).filter(m => (s.mats[m.id] ?? 0) > 0).map(m => {
@@ -50,8 +52,8 @@
     <div class="ph"><h2>The Shop</h2><span class="label">{E.trackedLine(s)}</span></div>
     <div class="tabs" role="tablist">
       <button role="tab" aria-selected={tab === 'buy'} onclick={() => setTab('buy')}>Buy</button>
-      <button role="tab" aria-selected={tab === 'craft'} onclick={() => setTab('craft')}>Craft items</button>
-      <button role="tab" aria-selected={tab === 'sell'} onclick={() => setTab('sell')}>Sell</button>
+      {#if !isl}<button role="tab" aria-selected={tab === 'craft'} onclick={() => setTab('craft')}>Craft items</button>{/if}
+      <button role="tab" aria-selected={tab === 'sell'} data-coach="shop-sell" onclick={() => setTab('sell')}>Sell</button>
     </div>
     <div class="toast" aria-live="polite">{toast}</div>
     <!-- A grid of cards (Mekkman, Nov 2026: the one-column rows left most of a wide screen empty). Each card puts
@@ -72,7 +74,7 @@
             <div class="sc-top"><Icon id={it.id} size={34} /><span class="sc-nm"><span class="nm">{it.name}</span><span class="have">Have {s.items[it.id] ?? 0} · max {it.max}</span></span></div>
             {#if it.short && !full()}<p class="md"><span use:detail={it.desc}>{it.short}</span></p>{:else}<p class="md">{it.desc}</p>{/if}
             <div class="sc-ctl">{@render stepper(it.id, max)}</div>
-            <button class="btn sc-go" data-sound disabled={s.coin < it.price! * q} onclick={() => run(sv => E.buyItem(sv, it.id, q), it.id)}>Buy {q} · {it.price! * q} coin</button>
+            <button class="btn sc-go" data-sound data-coach="buy-{it.id}" disabled={s.coin < it.price! * q} onclick={() => run(sv => E.buyItem(sv, it.id, q), it.id)}>Buy {q} · {it.price! * q} coin</button>
           </article>
         {/each}
       {:else if tab === 'craft'}

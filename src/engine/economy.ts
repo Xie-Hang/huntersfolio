@@ -193,7 +193,7 @@ export function forgeDo(s: Save, kind: RecipeKind, id: string): string | null {
     if (r.action === 'reinforce') { s.armors[id].lv++; msg = `${ARMORS[id].name} reinforced to +${s.armors[id].lv}.`; }
   }
   if (s.tracked === `${kind}:${id}` && r.action !== 'reinforce') s.tracked = null;
-  if (kind === 'w' && r.action === 'craft' && advanceIsland(s, { made: id })) msg += ' The maul is yours too, a gift from the lodge. Ashfall Ridge is open.';
+  if (kind === 'w' && r.action === 'craft') advanceIsland(s, { made: id });
   return msg;
 }
 
@@ -239,6 +239,7 @@ export function usedIn(s: Save, mat: string): string[] {
 export function buyItem(s: Save, id: string, n: number): string | null {
   const it = ITEMS[id]; if (!it.price || n < 1 || s.coin < it.price * n) return null;
   s.coin -= it.price * n; s.items[id] = (s.items[id] ?? 0) + n;
+  if (advanceIsland(s, { bought: id })) return `Bought ${n} ${it.name}. It's in your item slot, and the lodge gave you a Snare.`;
   return `Bought ${n} ${it.name}.`;
 }
 export function craftItem(s: Save, id: string): string | null {

@@ -18,13 +18,16 @@ export const LAYER = {
 
 /** Foothills hunts (the tutorial island, Nov 2026) name exactly what they show (MonsterDef.island.show); these are
  *  the extra keys they can name. Every other hunt shows them all. */
-export type Show = keyof typeof LAYER | 'intent' | 'block' | 'reroll' | 'undo';
+export type Show = keyof typeof LAYER | 'intent' | 'block' | 'reroll' | 'undo' | 'capture' | 'daze' | 'flow' | 'rend' | 'elements';
 
 const base = (h: Hunt | null | undefined, k: keyof typeof LAYER) => (h?.lesson ?? 99) >= LAYER[k];
 /** Swap also shows early against a flier or a burrower: there, one weapon can't reach it and you'd be stuck. */
 export const shows = (h: Hunt | null | undefined, k: Show): boolean => {
   if (h?.show) return h.show.includes(k) && (k !== 'swap' || h.weps.length > 1);
-  if (k === 'intent' || k === 'block' || k === 'reroll' || k === 'undo') return true;
+  if (k === 'intent' || k === 'block' || k === 'reroll' || k === 'undo' || k === 'rend') return true;
+  // outside the Foothills: Capture comes with the parts layer, Daze meters and move tags with everything
+  if (k === 'capture' || k === 'elements') return base(h, 'parts');
+  if (k === 'daze' || k === 'flow') return base(h, 'all');
   if (k === 'swap' && h && h.weps.length < 2) return false;
   return base(h, k) || (k === 'swap' && !!h && (h.lesson ?? 99) >= 2 && !!(MONSTERS[h.mid]?.flier || MONSTERS[h.mid]?.burrower));
 };

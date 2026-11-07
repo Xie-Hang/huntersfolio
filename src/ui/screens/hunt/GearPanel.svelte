@@ -55,17 +55,17 @@
   /** gold: the dice you've selected are exactly what this move would use (Nov 2026: grey = can't make it with the
    *  dice left, plain = can, gold = your picked dice make it) */
   const picks = (need: string) => { if (!n) return false; const p = E.pickDice(h, need, game.sel); return !!p && game.sel.every(i => p.includes(i)); };
-  const bestReady = $derived(w.moves.reduce((b, mv, i) => (E.canUseMove(h, i) && (b < 0 || mv.dmg > w.moves[b].dmg) ? i : b), -1));
+  const bestReady = $derived(w.moves.reduce((b, mv, i) => (E.canUseMove(h, i) && (i < 2 || shows(h, 'rend')) && (b < 0 || mv.dmg > w.moves[b].dmg) ? i : b), -1));
 </script>
 
 <section class="panel gearpanel" aria-label="Your gear">
   <div class="wname">
     <div class="ph" style="gap:8px">
       <h2 style="margin:0;font-weight:600;font-size:var(--fs-lg);display:flex;align-items:center;gap:8px"><WeaponArt id={w.id} size={34} />{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}</h2>
-      {#if shows(h, 'parts')}<span class="avg">{E.avgVs(w, h.mid)} avg</span>{/if}
+      {#if shows(h, 'elements')}<span class="avg">{E.avgVs(w, h.mid)} avg</span>{/if}
     </div>
     <div class="elemrow">
-      {#if !shows(h, 'parts')}<span class="elem" style="color:var(--muted)">{w.type}</span>{:else}<span class="elem" style="color:{elemColor}">{w.type} · <Elem e={markOf(w)} />{elemLabel(w)}{em > 1 ? ' · hits weakness' : em < 1 ? ' · resisted' : ''}{halfAir ? ' · half damage in the air' : ''}</span>{/if}
+      {#if !shows(h, 'elements')}<span class="elem" style="color:var(--muted)">{w.type}</span>{:else}<span class="elem" style="color:{elemColor}">{w.type} · <Elem e={markOf(w)} />{elemLabel(w)}{em > 1 ? ' · hits weakness' : em < 1 ? ' · resisted' : ''}{halfAir ? ' · half damage in the air' : ''}</span>{/if}
       <!-- status weapons (Nov 2026): the meter your hits fill on the monster, one per status you carry -->
       {#each smeters as sm (sm.st)}
         <span class="smeter" title="{sm.st}: each hit fills it by the dice the move used. Full: {SWHAT[sm.st]}. Each fill makes the next one take longer." aria-label="{sm.st} meter {sm.value} of {sm.max}">
@@ -78,16 +78,19 @@
   {#if !over && E.cantHitReason(h, w)}<p class="cant">{E.cantHitReason(h, w)} {full ? 'Swap, Block or Charge instead.' : 'Swap or Block instead.'}</p>{/if}
 
   {#each w.moves as mv, i}
+    <!-- the Foothills show a weapon's third move (Rend, Skullcrack) from the Burrowmole, where Reroll is taught -->
+    {#if i < 2 || shows(h, 'rend')}
     {@const ok = E.canUseMove(h, i)}
     {@const marks = needMarks(mv.need, freeFaces)}
     {@const miss = marks.filter(x => !x.have).map(x => (x.c === 'C' ? 'circle' : 'triangle'))}
     <button class="move {ok ? 'ready' : 'no'}" class:pick={ok && picks(mv.need)} data-coach={i === bestReady ? 'move' : undefined} aria-disabled={!ok} onclick={() => ok && game.move(i)}>
       <span>
-        <span class="mn"><Key k={MOVE_KEYS[i]} />{mv.name}{#if full}{#if mv.flow}<span class="tag flow" use:detail={E.SIGNATURES.Cut.text}>Flow</span>{/if}{#if mv.daze}<span class="tag daze" use:detail={E.SIGNATURES.Blunt.text}>Daze</span>{/if}{#if mv.expose}<span class="tag expose" use:detail={E.SIGNATURES.Pierce.text}>Expose</span>{/if}{/if}{#if !over && tipText?.includes(mv.name)}<span class="tag counter">Counter</span>{/if}</span>
-        <span class="md">{#if iceNow}{iceLine}{:else}{shownDmg(mv.dmg)} damage{halfAir ? ', halved in the air' : ''}{exposedNow ? ', exposed' : ''}{full && mv.part ? ` · ×${mv.part} toward breaks` : ''}{full && mv.daze ? ` · Daze +${mv.daze}` : ''}{full && mv.flow ? ' · +1 reroll' : ''}{/if}</span>
+        <span class="mn"><Key k={MOVE_KEYS[i]} />{mv.name}{#if mv.flow && shows(h, 'flow')}<span class="tag flow" use:detail={E.SIGNATURES.Cut.text}>Flow</span>{/if}{#if mv.daze && shows(h, 'daze')}<span class="tag daze" use:detail={E.SIGNATURES.Blunt.text}>Daze</span>{/if}{#if full && mv.expose}<span class="tag expose" use:detail={E.SIGNATURES.Pierce.text}>Expose</span>{/if}{#if !over && tipText?.includes(mv.name)}<span class="tag counter">Counter</span>{/if}</span>
+        <span class="md">{#if iceNow}{iceLine}{:else}{shownDmg(mv.dmg)} damage{halfAir ? ', halved in the air' : ''}{exposedNow ? ', exposed' : ''}{shows(h, 'rend') && shows(h, 'parts') && mv.part ? ` · ×${mv.part} toward breaks` : ''}{shows(h, 'daze') && mv.daze ? ` · Daze +${mv.daze}` : ''}{shows(h, 'flow') && mv.flow ? ' · +1 reroll' : ''}{/if}</span>
       </span>
       <span class="need dice" aria-label="Needs {needLabel(mv.need)}{miss.length && !over ? `; missing ${miss.join(', ')}` : ''}">{#each mv.need as c}<CostDie {c} />{/each}</span>
     </button>
+    {/if}
   {/each}
 
   {#if shows(h, 'block')}
@@ -107,7 +110,7 @@
   {/if}
   <!-- With everything on it's always shown, so players learn it exists before it's available. In the second and third
        hunts it appears only once the monster is weak enough (it's the escape from a hunt going badly). -->
-  {#if full || (shows(h, 'parts') && capLive)}
+  {#if full || (shows(h, 'capture') && capLive)}
   <button data-coach="capture" class="move capture {capLive && E.captureReady(h) ? 'live' : ''} {capOk ? 'ready' : 'no'}" aria-disabled={!capOk} onclick={() => capOk && game.capture()}>
     <span>
       <span class="mn"><Key k="X" />Capture</span>

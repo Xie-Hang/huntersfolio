@@ -14,7 +14,7 @@ export const scuttlehog: MonsterDef = {
   resist: 'Ember',
   hp: 60,
   tier: 0.5,
-  island: { dice: 2, faces: ['C'], show: [] },
+  island: { dice: 2, faces: ['C'] },
   head: 'body',
   common: 'tuft',
   rarePart: 'body',

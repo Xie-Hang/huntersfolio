@@ -97,6 +97,9 @@ const mats: MaterialDef[] = [
   // the Foothills (the tutorial island, Nov 2026)
   { id: 'tuft', base: 'Bristle Tuft', src: 'Scuttlehog', sell: 5, how: 'Every Scuttlehog hunt' },
   { id: 'shell', base: 'Crab Shell', src: 'Snapclaw', sell: 10, how: 'Every Snapclaw hunt' },
+  { id: 'tuskhide', base: 'Tuskling Hide', src: 'Tuskling', sell: 10, how: 'Every Tuskling hunt, or break its hide' },
+  { id: 'milktusk', base: 'Milk Tusk', src: 'Tuskling', sell: 20, how: 'Break the Tuskling\u2019s tusks (a maul)' },
+  { id: 'moleclaw', base: 'Mole Claw', src: 'Burrowmole', sell: 10, how: 'Every Burrowmole hunt' },
   { id: 'hide', base: 'Hide', src: 'Gorehorn', sell: 20, how: 'Every Gorehorn hunt' },
   { id: 'tusk', base: 'Tusk', src: 'Gorehorn', sell: 60, how: 'Break the Gorehorn’s tusks (Blunt best)' },
   { id: 'pelt', base: 'Bristled Pelt', src: 'Gorehorn', sell: 60, how: 'Break the Gorehorn’s hide (Cut best)' },

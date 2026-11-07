@@ -91,6 +91,13 @@ async function forgeAll(p: Page) {
       console.log(`island: blade made, done=${E.islandDone(s)}`);
       await p.click('[data-coach="nav-board"]');
     }
+    if (s && !E.islandDone(s) && E.islandStep(s) === 6) {
+      await p.click('[data-coach="nav-shop"]'); await p.click('[data-coach="buy-salve"]'); await p.waitForTimeout(150);
+      await check(p, 'island shop');
+      s = await getJSON(p, SAVE) as E.Save;
+      console.log(`island: salve bought, step=${E.islandStep(s)}`);
+      await p.click('[data-coach="nav-board"]');
+    }
     if (s && E.islandDone(s)) {
       const beaten = (id: string) => (s.record[id]?.wins ?? 0) > 0;
       if (t1.every(beaten) && endSeenAt) break;

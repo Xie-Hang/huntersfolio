@@ -106,8 +106,9 @@ class Game {
   begin(scripted = false) {
     E.fixLoadout(this.save);
     const L = this.save.loadout;
-    // two weapons, except in the Foothills (the Training Blade alone)
-    if (!L.weapons.length || (L.weapons.length !== 2 && E.islandDone(this.save)) || !E.isUnlocked(this.save, L.target)) return;
+    // two weapons, except early in the Foothills (one, until the lodge gives you the maul)
+    if (L.weapons.length !== (E.twoWeapons(this.save) ? 2 : 1) || !E.isUnlocked(this.save, L.target)) return;
+    E.advanceIsland(this.save, { loadout: true }); // the lodge step: setting out with both weapons
     // the first three hunts each add one layer of the hunt screen (see reveal.ts); "Show every action" skips that.
     // Foothills hunts name what they show themselves (MonsterDef.island) and don't count toward the Ridge's layers.
     const isl = !!E.MONSTERS[L.target]?.island, prior = E.ISLAND_MONSTERS.reduce((n, id) => n + (this.save.record[id]?.hunts ?? 0), 0);
@@ -168,6 +169,7 @@ class Game {
   }
   move(i: number) {
     const h0 = this.hunt; if (!h0) return;
+    if (i >= 2 && !shows(h0, 'rend')) return; // the Foothills: the third move isn't shown yet
     // what the hit did, read by comparing before and after
     const w = E.currentWeapon(h0), ice0 = h0.mon.plating, intent0 = h0.intent, rr0 = h0.rerolls;
     const exposed0 = Object.values(h0.mon.parts).filter(p => p.exposed > 0).length;
@@ -201,7 +203,7 @@ class Game {
   charge() { if (!shows(this.hunt, 'all')) return; const d = this.diceFor('charge'); if (this.act(h => E.charge(h, d), ok => ok)) sfx('charge'); }
   swap() { if (!shows(this.hunt, 'swap')) return; const d = this.diceFor('swap'); if (this.act(h => E.swap(h, d), ok => ok)) sfx('swap'); }
   capture() {
-    if (!shows(this.hunt, 'parts')) return;
+    if (!shows(this.hunt, 'capture')) return;
     // the engine logs a reason when capture is blocked (airborne); keep that on screen
     const d = this.diceFor('capture');
     const r = this.act(h => E.capture(h, d), ok => ok);

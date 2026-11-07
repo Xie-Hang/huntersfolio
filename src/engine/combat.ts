@@ -7,6 +7,7 @@ import { unearth } from './data/monsters/cinderback';
 import { CHARMS, ITEMS } from './data/gear';
 import { armorInst, elemMult, fixLoadout, lvOf, weaponInst } from './economy';
 import { rollFace } from './rng';
+import { islandDone, islandShow } from './island';
 import { BOUNTIES } from './data/bounties';
 import { bountyOpen } from './bounty';
 import { CHARGED_HIT } from './status';
@@ -118,7 +119,9 @@ export function startHunt(s: Save, seed: number, script?: Face[][], lesson?: num
     ...(bountyFor(s, MD.id) ? { bounty: bountyFor(s, MD.id)! } : {}),
     ...(script?.length ? { script: script.map(t => [...t]) } : {}),
     ...(lesson ? { lesson } : {}),
-    ...(MD.island ? { ndice: MD.island.dice, faces: [...MD.island.faces], show: [...MD.island.show] } : {})
+    ...(MD.island ? { ndice: MD.island.dice, faces: [...MD.island.faces] } : {}),
+    // a Foothills hunt shows what the island has taught by now (engine/island.ts); afterwards, everything
+    ...(MD.island && !islandDone(s) ? { show: islandShow(s) } : {})
   };
   // the first layer hides the parts row: aim where the first weapon does best
   if (lesson === 1) { h.mon.hp = h.mon.max = Math.round(MD.hp * LESSON1.hp); }

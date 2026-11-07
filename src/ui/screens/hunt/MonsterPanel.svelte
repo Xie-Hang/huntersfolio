@@ -65,7 +65,7 @@
             {/if}
           </div>
         {/if}
-        {#if !shows(h, 'all')}
+        {#if !shows(h, 'daze')}
         {:else if E.carries(h, 'Blunt') && M.heads}
           <div class="hpline">
             <div class="heads">

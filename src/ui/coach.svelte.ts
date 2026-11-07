@@ -91,15 +91,76 @@ const ISLAND: Tip[] = [
     text: () => 'Make the Hunter\'s Blade.',
     done: () => E.islandDone(game.save)
   },
+  // ---- slice 2: the Tuskling, the lodge, the Burrowmole, the Shop, the Tuskling again ----
+  {
+    id: 'i-aim', guide: true, learn: true, at: ['parts'],
+    when: () => { const h = onIsland('tuskling'); return !!h && E.islandStep(game.save) === 3 && h.target !== 'hide' && !h.mon.parts.hide.broken; },
+    text: () => 'Blades can\u2019t break tusks. Tap the Hide.',
+    done: () => hunt()?.target === 'hide'
+  },
+  {
+    id: 'i-maul', guide: true, info: true, at: ['slot-w1'],
+    when: () => game.view === 'board' && E.islandStep(game.save) === 4 && !(game.hunt && !game.hunt.over),
+    text: () => 'A gift from the lodge: a maul. Carry both.',
+    next: 'Got it'
+  },
+  {
+    id: 'i-swap', guide: true, learn: true, at: ['swap'],
+    when: () => { const h = onIsland('burrowmole'); return !!h && h.mon.under && E.currentWeapon(h).type !== 'Blunt' && freeDice(h) > 0; },
+    text: () => 'It\u2019s underground. Swap to your maul.',
+    done: () => { const h = hunt(); return !!h && E.currentWeapon(h).type === 'Blunt'; }
+  },
+  {
+    id: 'i-pick', guide: true, at: ['dice'],
+    when: () => { const h = onIsland('burrowmole'); return !!h && h.turn >= 2 && h.rerolls > 0 && unusedTurn(h) && !game.sel.length && h.dice.some(d => d.face === 'B'); },
+    text: () => 'Don\u2019t like a die? Tap it.',
+    done: () => game.sel.length > 0 || (hunt()?.stats.rerollsUsed ?? 0) > 0
+  },
+  {
+    id: 'i-reroll', guide: true, learn: true, at: ['reroll'], side: 'right',
+    when: () => { const h = onIsland('burrowmole'); return !!h && h.rerolls > 0 && unusedTurn(h) && game.sel.length > 0 && game.save.tips.includes('i-pick'); },
+    text: () => 'Now Reroll it. New face, same turn.',
+    done: () => (hunt()?.stats.rerollsUsed ?? 0) > 0
+  },
+  {
+    id: 'i-shop', guide: true, learn: true, at: ['to-shop', 'nav-shop'],
+    when: () => E.islandStep(game.save) === 6 && game.view !== 'shop' && !(game.view === 'hunt' && game.hunt && !game.hunt.over),
+    text: () => 'The Shop is open. Buy a salve.',
+    done: () => game.view === 'shop'
+  },
+  {
+    id: 'i-buy', guide: true, learn: true, at: ['buy-salve'],
+    when: () => E.islandStep(game.save) === 6 && game.view === 'shop',
+    text: () => 'A salve heals you mid-hunt. Buy one.',
+    done: () => E.islandStep(game.save) >= 7
+  },
+  {
+    id: 'i-sell', info: true, at: ['shop-sell'],
+    when: () => E.islandStep(game.save) === 7 && game.view === 'shop' && (game.save.mats.tuft ?? 0) > 0,
+    text: () => 'Spare tufts sell for coin, on Sell.',
+    next: 'Got it'
+  },
+  {
+    id: 'i-salve', guide: true, learn: true, at: ['item'],
+    when: () => { const h = onIsland('tuskling'); return !!h && !!h.item && E.itemUsable(h) && h.php <= h.pmax * 0.75; },
+    text: () => 'Hurt? Use your salve. It costs no dice.',
+    done: () => !!hunt()?.itemUsed
+  },
+  {
+    id: 'i-snare', guide: true, learn: true, at: ['capture'],
+    when: () => { const h = onIsland('tuskling'); return !!h && E.canCapture(h) && E.captureReady(h) && !h.snareSet; },
+    text: () => 'It\u2019s weak. Set a Snare to catch it.',
+    done: () => !!hunt()?.snareSet || !!game.hunt?.captured
+  },
   {
     id: 'i-ridge', guide: true, info: true, at: ['begin', 'nav-board'],
-    when: () => E.islandDone(game.save) && game.save.tips.includes('i-make') && game.view !== 'hunt' && !(game.save.record.gorehorn?.hunts ?? 0),
-    text: () => 'A gift: the maul. Ashfall Ridge is open.',
+    when: () => E.islandDone(game.save) && game.save.tips.includes('i-begin') && game.view !== 'hunt' && !(game.save.record.gorehorn?.hunts ?? 0),
+    text: () => 'You know the basics. Ashfall Ridge is open.',
     next: 'Got it'
   }
 ];
 /** the first Ridge hunt's basics, already taught in the Foothills */
-const ISLAND_TAUGHT = ['begin', 'g-next', 'g-hp', 'move', 'guard', 'end'];
+const ISLAND_TAUGHT = ['begin', 'g-next', 'g-hp', 'move', 'guard', 'end', 'aim', 'g-pick', 'reroll', 'g-free', 'item'];
 
 export const TIPS: Tip[] = [
   // ---- the guided first hunt ----
@@ -304,7 +365,7 @@ class Coach {
   current = $derived.by<Tip | null>(() => {
     if (!settings.prefs.tips) return null;
     const seen = game.save.tips;
-    if (!E.islandDone(game.save) || (game.save.tips.includes('i-make') && !seen.includes('i-ridge'))) return ISLAND.find(t => !seen.includes(t.id) && t.when()) ?? null;
+    if (!E.islandDone(game.save) || (seen.includes('i-begin') && !seen.includes('i-ridge'))) return ISLAND.find(t => !seen.includes(t.id) && t.when()) ?? null;
     const did = seen.includes('i-begin');
     return TIPS.find(t => !seen.includes(t.id) && !(did && ISLAND_TAUGHT.includes(t.id)) && t.when()) ?? null;
   });
