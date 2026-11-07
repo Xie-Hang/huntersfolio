@@ -142,8 +142,8 @@
   /* condition badges under the picture (not over it: the art stays clear): solid, named, the effect always visible */
   .conds { flex: 0 1 auto; display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; align-items: center; margin-left: auto; }
   .cond { all: unset; pointer-events: auto; position: relative; box-sizing: border-box; cursor: help; display: inline-flex; align-items: baseline; gap: 6px; padding: 4px 8px; border-radius: 3px; background: var(--c, var(--bone)); color: var(--ink); font-family: var(--f-body); font-size: var(--fs-sm); line-height: 1.2; box-shadow: 0 2px 0 rgba(0, 0, 0, .45), 0 0 0 1px rgba(0, 0, 0, .35); }
-  .cond b { font-weight: 700; text-transform: uppercase; letter-spacing: .04em; font-size: 12px; }
-  .cond .sh { font-weight: 500; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .cond b { font-weight: 700; text-transform: uppercase; letter-spacing: .04em; font-size: 14px; }
+  .cond .sh { font-weight: 500; font-size: 13px; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   .cond { max-width: 100%; white-space: nowrap; }
   .cond b { flex: none; }
   .cond .i { flex: none; align-self: center; width: 15px; height: 15px; font-size: 0; background-color: currentColor; -webkit-mask: var(--icon-i) center/contain no-repeat; mask: var(--icon-i) center/contain no-repeat; opacity: .85; }
