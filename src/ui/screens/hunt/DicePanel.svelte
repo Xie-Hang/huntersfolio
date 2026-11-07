@@ -1,22 +1,23 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import FaceMark from '../../parts/FaceMark.svelte';
-  import { ROLL_MS, ROLL_STAGGER } from '../../game.svelte';
+  import { ROLL_STAGGER } from '../../game.svelte';
   import * as E from '../../../engine';
-  // while a die tumbles it flickers through the faces it can roll, then lands on its real one
-  let flick = $state<Record<number, string>>({});
-  $effect(() => {
-    const r = game.rolling; if (!r.length) { flick = {}; return; }
-    const faces = E.MONSTERS[h.mid]?.island?.faces ?? ['C', 'T', 'B'];
-    const tick = () => {
-      const t = performance.now() - game.rolledAt, f: Record<number, string> = {};
-      for (const i of r) if (t < i * ROLL_STAGGER + ROLL_MS * 0.6) f[i] = faces[Math.floor(Math.random() * faces.length)];
-      flick = f;
+  // A rolling die is a real cube (Nov 2026: "like rolling an actual dice"): thrown in from the left, it tumbles over
+  // its faces, bounces and lands with its rolled face up. The front of the cube is the face it lands on; the other
+  // five show faces it could have rolled. Each throw gets its own spin, so no two dice tumble alike.
+  const pool = $derived(E.MONSTERS[game.hunt!.mid]?.island?.faces ?? ['C', 'T', 'B']);
+  const throws = $derived.by(() => {
+    const out: Record<number, { sides: string[]; style: string }> = {};
+    const rnd = (a: number, b: number) => a + Math.random() * (b - a), sign = () => (Math.random() < .5 ? -1 : 1);
+    for (const i of game.rolling) out[i] = {
+      sides: Array.from({ length: 5 }, () => pool[Math.floor(Math.random() * pool.length)]),
+      // whole turns plus a quarter or so, so it lands square on the front face
+      style: `--rx:${sign() * (360 * Math.ceil(rnd(1, 3)) + 90 * Math.floor(rnd(0, 4)))}deg;--ry:${sign() * (360 * Math.ceil(rnd(1, 2)) + 90 * Math.floor(rnd(0, 4)))}deg;--rz:${rnd(-40, 40).toFixed(0)}deg;--dy:${rnd(-70, -40).toFixed(0)}px;--dx:${rnd(-170, -120).toFixed(0)}px`
     };
-    tick(); const id = setInterval(tick, 75);
-    return () => clearInterval(id);
+    return out;
   });
-  const shown = (i: number, face: string) => flick[i] ?? face;
+  const SIDE = ['back', 'right', 'left', 'top', 'bottom'];
   // pointing at a die (a real mouse move: the tumble slides dice under a still cursor) or at an action lands the dice
   // pointing at an action (its dice lift) lands the dice straight away
   $effect(() => { if (game.preview.length) untrack(() => game.settle()); });
@@ -55,7 +56,12 @@
           onclick={() => game.toggleDie(i)}
           onpointermove={(e) => (e.movementX || e.movementY) && game.settle()}
         >
-          {#if shown(i, d.face) === 'C' || shown(i, d.face) === 'T'}<FaceMark c={shown(i, d.face)} />
+          {#if throws[i]}
+            <span class="cube" style={throws[i].style} aria-hidden="true">
+              <span class="cf front">{#if d.face !== 'B'}<FaceMark c={d.face} />{/if}</span>
+              {#each throws[i].sides as f, k}<span class="cf {SIDE[k]}">{#if f !== 'B'}<FaceMark c={f} />{/if}</span>{/each}
+            </span>
+          {:else if d.face === 'C' || d.face === 'T'}<FaceMark c={d.face} />
           {:else}<span class="bl" aria-hidden="true"></span>{/if}<!-- a blank is an empty face, no word (Nov 2026) -->
         </button>
         <span class="dietag" class:used={!!d.used} class:charged={d.charged && !d.used}>{#if d.used || sel}{d.used || 'Selected'}{:else if d.charged}Charged{:else if !over}<Key k={String(i + 1)} />{/if}</span>
