@@ -110,7 +110,7 @@ const ISLAND: Tip[] = [
   },
   // ---- slice 2: the Tuskling, the lodge, the Burrowmole, the Shop, the Tuskling again ----
   {
-    id: 'i-aim', guide: true, learn: true, at: ['parts'],
+    id: 'i-aim', guide: true, learn: true, at: ['part-hide', 'parts'],
     when: () => { const h = onIsland('tuskling'); return !!h && E.islandStep(game.save) === 3 && h.target !== 'hide' && !h.mon.parts.hide.broken; },
     text: () => 'Blades can\u2019t break tusks. Click the Hide.',
     done: () => hunt()?.target === 'hide'
@@ -169,6 +169,19 @@ const ISLAND: Tip[] = [
     text: () => 'Spare tufts sell for coin, on Sell.',
     next: 'Got it'
   },
+  // the second Tuskling is the hunt for armor: its hide makes the vest (Mekkman, Nov 2026: make it guided)
+  {
+    id: 'i-hides', guide: true, info: true, at: ['begin'],
+    when: () => E.islandStep(game.save) === 7 && game.view === 'board' && game.boardMon && game.save.loadout.target === 'tuskling' && !huntOn(),
+    text: () => 'Hunt it for hides to make armor.',
+    next: 'Got it'
+  },
+  {
+    id: 'i-hide2', guide: true, learn: true, at: ['part-hide'],
+    when: () => { const h = onIsland('tuskling'); return !!h && E.islandStep(game.save) === 7 && h.target !== 'hide' && !h.mon.parts.hide.broken && E.currentWeapon(h).type === 'Cut'; },
+    text: () => 'Its Hide makes armor. Aim at the Hide.',
+    done: () => { const h = hunt(); return !!h && h.mid === 'tuskling' && E.islandStep(game.save) === 7 && h.target === 'hide'; }
+  },
   {
     id: 'i-salve', guide: true, learn: true, at: ['item'],
     when: () => { const h = onIsland('tuskling'); return !!h && !!h.item && E.itemUsable(h) && h.php <= h.pmax * 0.75; },
@@ -185,7 +198,7 @@ const ISLAND: Tip[] = [
   {
     id: 'i-vest', guide: true, learn: true, at: () => (game.view === 'hunt' ? ['to-forge'] : ['nav-forge']),
     when: () => E.islandStep(game.save) === 8 && game.view !== 'forge' && !huntOn(),
-    text: () => 'Two hides. Make a vest at the Forge.',
+    text: () => 'Enough hide. Make a vest at the Forge.',
     done: () => game.view === 'forge'
   },
   {

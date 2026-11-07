@@ -60,7 +60,7 @@
 
   // back to the grid with Escape (the pad's B already closes dialogs and clears selections)
   function onKey(e: KeyboardEvent) {
-    if (e.key === 'Escape' && game.view === 'board' && game.boardMon && !document.querySelector('dialog[open]')) { e.preventDefault(); game.go('board'); }
+    if (e.key === 'Escape' && game.view === 'board' && game.boardMon && !document.querySelector('dialog[open]')) { e.preventDefault(); game.boardMon = false; }
   }
 </script>
 
@@ -100,7 +100,7 @@
 {#if game.boardMon && M}
   <div class="monpage">
     <div class="backbar">
-      <button class="btn quiet" data-sound onclick={() => game.go('board')}><span aria-hidden="true">←</span> All monsters</button>
+      <button class="btn quiet" data-sound onclick={() => (game.boardMon = false)}><span aria-hidden="true">←</span> All monsters</button>
     </div>
     <div class="mongrid">
       <section class="panel monmain" aria-label="Bestiary entry"><Bestiary mon={M.id} /></section>

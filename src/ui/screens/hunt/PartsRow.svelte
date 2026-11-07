@@ -21,7 +21,7 @@
         {@const e = p.eff[w.type]}
         {@const reach = E.canHit(h, w) && E.reachable(h, p.id, w)}
         {@const note = M.partNote?.(h, p.id) ?? null}
-        <button class="part" class:on class:broken={st.broken} aria-pressed={on} disabled={!!h.over} onclick={() => game.target(p.id)}>
+        <button class="part" data-coach="part-{p.id}" class:on class:broken={st.broken} aria-pressed={on} disabled={!!h.over} onclick={() => game.target(p.id)}>
           <span class="pline"><span class="nm" title={p.name}>{p.name}</span><span class="mono" style="color:{st.broken ? 'var(--ember-soft)' : 'var(--soft)'}">{st.broken ? (note ? '' : 'Broken') : `${st.hp} / ${st.max}`}</span></span>
           <span class="pline">
             {#if !st.broken}

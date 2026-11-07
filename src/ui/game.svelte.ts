@@ -93,7 +93,8 @@ class Game {
     if (this.inHunt) return;
     E.fixLoadout(this.save);
     if (shopTab) this.shopTab = shopTab;
-    if (v === 'board') this.boardMon = false;
+    // on the island the Hunt Board opens straight on the next monster's page (one less click to find it)
+    if (v === 'board') this.boardMon = !E.islandDone(this.save) && E.isUnlocked(this.save, this.save.loadout.target);
     if (v === 'shop' && E.advanceIsland(this.save, { shop: true })) this.persist(); // the Foothills: visit the Shop before the exam
     this.view = v;
   }
