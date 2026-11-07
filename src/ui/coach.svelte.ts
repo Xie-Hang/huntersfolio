@@ -246,6 +246,12 @@ const ISLAND: Tip[] = [
     done: () => { const h = hunt(); return !!h && h.mid === 'tuskling' && E.islandStep(game.save) === 7 && h.target === 'hide'; }
   },
   {
+    // the item slot, said even if it hasn't been hit yet (Nov 2026 playtest: items went untaught)
+    id: 'i-item', head: 'Items', guide: true, info: true, at: ['item'],
+    when: () => { const h = onIsland('tuskling'); return !!h && E.islandStep(game.save) === 7 && !!h.item && h.turn >= 2 && h.php >= h.pmax && unusedTurn(h); },
+    text: () => 'Items cost no dice. Your salve heals 30.'
+  },
+  {
     id: 'i-salve', head: 'Items', guide: true, learn: true, at: ['item'],
     when: () => { const h = onIsland('tuskling'); return !!h && E.islandStep(game.save) === 7 && !!h.item && E.itemUsable(h) && h.php < h.pmax && h.turn >= 2; },
     text: () => 'Items cost no dice. Use your salve.',
