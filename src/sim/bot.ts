@@ -95,7 +95,10 @@ function bestPlan(h: Hunt, p: Policy): Plan {
   for (let a = 0; a <= 4; a++) for (let b = 0; b <= 2; b++) for (let c = 0; c <= 1; c++) {
     const C = a * n[0].C + b * n[1].C + c * n[2].C, T = a * n[0].T + b * n[1].T + c * n[2].T;
     if (C > fc.C || T > fc.T) continue;
-    const moves = [...Array(c).fill(2), ...Array(b).fill(1), ...Array(a).fill(0)];
+    // a setup move (Expose: Quick Shot) goes first, so the hits after it land on the exposed part, as the hint says
+    const ws = w.moves.map((m, i) => i).sort((x, y) => (w.moves[y].expose ? 1 : 0) - (w.moves[x].expose ? 1 : 0));
+    const cnt = [a, b, c];
+    const moves = ws.flatMap(i => Array(cnt[i]).fill(i)).sort((x, y) => (w.moves[x].expose ? 0 : 1) - (w.moves[y].expose ? 0 : 1) || y - x);
     // leftover dice after these moves, blanks first (best for guarding)
     const usedC = C, usedT = T; let rc = usedC, rt = usedT;
     const left = free.filter(i => { const f = h.dice[i].face; if (f === 'C' && rc > 0) { rc--; return false; } if (f === 'T' && rt > 0) { rt--; return false; } return true; })

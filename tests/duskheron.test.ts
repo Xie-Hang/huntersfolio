@@ -23,7 +23,7 @@ describe('Tier 2: the Duskheron', () => {
     h.intent = 'upper:thrust|lower:peck'; h.target = 'upper'; h.weapon = 0;
     h.mon.headDaze = { upper: E.HEAD_DAZE_MAX - 1, lower: 0 };
     h.dice = [{ face: 'C', used: null }, { face: 'T', used: null }, { face: 'T', used: null }, { face: 'C', used: null }];
-    E.useMove(h, 1);
+    E.useMove(h, 2); // Skullcrack: only the strongest move dazes
     expect(h.mon.reel?.upper).toBe(2);
     expect(E.intentInfo(h).dmg).toBe(14); // only the lower head's peck is left
     E.endTurn(h);

@@ -37,7 +37,7 @@ import { MAX_TIER, EDITION } from '../../edition';
  *  Mirewood gear of its weakness at +3 with resist armor wins ~95%, and Stormspire gear wins 90%+. A flat multiplier
  *  didn't work: it walled the Monolith while the Slagwyrm and Gorhydra stayed easy. */
 export const TIER3_TUNE: Record<string, { hp: number; dmg: number }> = {
-  monolith: { hp: 1.1, dmg: 1.1 }, stormroc: { hp: 1.2, dmg: 1.25 }, slagwyrm: { hp: 1.2, dmg: 1.2 }, gorhydra: { hp: 1.25, dmg: 1.25 },
+  monolith: { hp: 1.05, dmg: 1.1 }, stormroc: { hp: 1.2, dmg: 1.25 }, slagwyrm: { hp: 1.2, dmg: 1.2 }, gorhydra: { hp: 1.25, dmg: 1.25 },
 };
 for (const [M, t] of [[monolith, TIER3_TUNE.monolith], [stormroc, TIER3_TUNE.stormroc], [slagwyrm, TIER3_TUNE.slagwyrm], [gorhydra, TIER3_TUNE.gorhydra]] as const) {
   M.hp = Math.round(M.hp * t.hp);

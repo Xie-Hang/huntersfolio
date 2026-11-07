@@ -110,7 +110,7 @@ describe('the Gloamhollow', () => {
     expect(E.MONSTERS.sovereign.requires).not.toContain('rotcap');
   });
   it('a status pair is forgiving at the apex but doesn’t beat a planned elemental pair (simulated)', () => {
-    const run = (w: [string, number][]) => matchup({ weapons: w, armor: 'slagplate', armorLv: 1, item: 'salve', items: 3, target: 'sovereign' }, { skill: 'casual', capture: false }, 80, 3).win;
+    const run = (w: [string, number][]) => matchup({ weapons: w, armor: 'slagplate', armorLv: 1, item: 'salve', items: 3, target: 'sovereign' }, { skill: 'casual', capture: false }, 200, 3).win; // 200 runs: at 80 the status pair swung ±6 points (Nov 2026)
     const elem = run([['slaghammer', 1], ['monolithbow', 1]]), status = run([['fevermaul', 1], ['heronbow', 1]]);
     expect(status).toBeGreaterThan(0.45); expect(status).toBeLessThanOrEqual(elem + 0.05);
   });

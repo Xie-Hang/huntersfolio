@@ -44,7 +44,7 @@ describe('Tier 2: the Bogjaw', () => {
     const h = E.startHunt(ready(), 5);
     h.intent = 'gape'; h.mon.daze = h.mon.dazeMax - 1; h.target = 'jaw'; h.weapon = 1;
     h.dice = [{ face: 'C', used: null }, { face: 'T', used: null }, { face: 'T', used: null }, { face: 'C', used: null }];
-    E.useMove(h, 1);
+    E.useMove(h, 2); // Skullcrack: only the strongest move dazes
     expect(h.intent).toBe('dazed');
     E.endTurn(h);
     expect(h.intent).not.toBe('swallow');

@@ -18,7 +18,7 @@ export const CHARGE_BREAK = 30;        // damage that breaks a pending charge
 export const CAPTURE_AT = 0.2;         // capture allowed at or below this share of the monster's HP
 /** Pierce's Expose: a hit leaves the part exposed for 2 turns; any weapon's hits there get these bonuses. Tuned by simulation (4 Nov 2026). */
 export const MEND = 6, BRACE = 12, FINISHER = 1.25, SWAP_WHET = 0.3, AIR_PIERCE = 1.2, BIG_HIT = 40;
-export const EXPOSE_TURNS = 2, EXPOSE_DMG = 1.15, EXPOSE_BREAK = 2;
+export const EXPOSE_TURNS = 2, EXPOSE_DMG = 1.2, EXPOSE_BREAK = 2;
 export const DAZE_START = 60, DAZE_STEP = 30, DAZE_LOCK = 2;
 /** each head's meter, for monsters with several heads */
 export const HEAD_DAZE_MAX = 50;
@@ -393,7 +393,7 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
   if (wasCapturable && charmFx(h) === 'finisher') { dmg = Math.round(dmg * FINISHER); notes.push('Finisher’s Charm +25%'); }
   const p = m.parts[h.target], pdef = MD.parts.find(x => x.id === h.target)!;
   const exposed = (p.exposed > 0 || (!!mv.expose && charmFx(h) === 'exposeSelf' && reachable(h, h.target, w))) && !p.broken;
-  if (exposed) { dmg = Math.round(dmg * EXPOSE_DMG); notes.push('exposed +15%'); }
+  if (exposed) { dmg = Math.round(dmg * EXPOSE_DMG); notes.push('exposed +20%'); }
   const mod = MD.hitMod?.(h, h.target, w);
   if (mod) { dmg = Math.round(dmg * mod.mult); notes.push(mod.note); }
   const soak = MD.absorb?.(h, dmg, w);
@@ -443,7 +443,7 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
     addDaze(h, dz);
   }
   if (mv.expose && reach && !p.broken && m.hp > 0) {
-    if (!p.exposed) log(h, `Expose: the ${pdef.name.toLowerCase()} ${pdef.name.endsWith('s') ? 'are' : 'is'} exposed. Hits there deal +15% and count double toward the break for 2 turns.`, 'gold');
+    if (!p.exposed) log(h, `Expose: the ${pdef.name.toLowerCase()} ${pdef.name.endsWith('s') ? 'are' : 'is'} exposed. Hits there deal +20% and count double toward the break for 2 turns.`, 'gold');
     p.exposed = EXPOSE_TURNS + (charmFx(h) === 'longExpose' ? 1 : 0);
   }
   if (mv.pin) { const t = MD.onPin?.(h); if (t) log(h, t, 'gold'); }

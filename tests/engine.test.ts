@@ -189,7 +189,8 @@ describe('charms', () => {
   });
   it('Tusk Charm heals 20 when you daze', () => {
     const h = withCharm('tuskcharm', ['maul', 'blade']); h.target = 'tusks'; h.php = 100; h.mon.daze = h.mon.dazeMax - 1;
-    E.useMove(h, 0);
+    h.dice = [{ face: 'C', used: null }, { face: 'T', used: null }, { face: 'T', used: null }, { face: 'C', used: null }];
+    E.useMove(h, 2); // Skullcrack
     expect(h.intent).toBe('dazed');
     expect(h.php).toBe(120);
   });
@@ -300,8 +301,8 @@ describe('achievements', () => {
     const s = starter(); s.loadout.weapons = ['maul', 'blade'];
     const h = E.startHunt(s, 3);
     h.intent = 'charge'; h.target = 'tusks'; h.mon.daze = h.mon.dazeMax - 5;
-    h.dice = h.dice.map(() => ({ face: 'C' as const, used: null }));
-    E.useMove(h, 0);
+    h.dice = [{ face: 'C', used: null }, { face: 'T', used: null }, { face: 'T', used: null }, { face: 'C', used: null }];
+    E.useMove(h, 2); // Skullcrack
     expect(h.feats).toEqual(expect.arrayContaining(['daze', 'interrupt']));
   });
   it('every id is a valid Steam API name and unique', () => {

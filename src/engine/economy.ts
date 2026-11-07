@@ -74,7 +74,7 @@ export function elemMult(elem: Element | null, monsterId: string, h?: Hunt | nul
 
 const avgCache = new Map<string, number>();
 /** Expose's damage bonus, mirrored here to avoid an import cycle with combat.ts (kept equal by a test). */
-export const EXPOSE_DMG_FOR_AVG = 1.15;
+export const EXPOSE_DMG_FOR_AVG = 1.2;
 /** Expected damage per turn if all 4 dice go to attacking, without rerolls. */
 export function avgDmg(moves: Move[]): number {
   // a weapon with fewer than three moves (the Foothills' Training Blade): pad with moves that never fit

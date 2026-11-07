@@ -158,5 +158,5 @@ export const TREES: { type: DamageType; nodes: [string, number][] }[] = (['Cut',
 export const SIGNATURES: Record<DamageType, { tag: 'flow' | 'daze' | 'expose'; name: string; text: string }> = {
   Cut: { tag: 'flow', name: 'Flow', text: 'The middle move adds 1 to your rerolls left. Its dice are still spent.' },
   Blunt: { tag: 'daze', name: 'Daze', text: 'The strongest move, on the head, fills a daze meter. Full meter: the monster loses its action, then recovers for a turn.' },
-  Pierce: { tag: 'expose', name: 'Expose', text: 'The light shot exposes the part for 2 turns: every hit there, from either weapon, deals +15% and counts double toward breaking it.' }
+  Pierce: { tag: 'expose', name: 'Expose', text: 'The light shot exposes the part for 2 turns: every hit there, from either weapon, deals +20% and counts double toward breaking it.' }
 };

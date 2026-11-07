@@ -64,7 +64,7 @@ const charms: CharmDef[] = [
   { id: 'tuskcharm', name: 'Tusk Charm', src: 'Gorehorn', perk: 'When you daze the monster, you heal 20.', effect: 'dazeHeal', craft: { coin: 150, tusk: 1, hide: 2 } },
   { id: 'plumecharm', name: 'Plume Charm', src: 'Galeshrike', perk: 'The hit that exposes a part gets Expose’s bonus too.', effect: 'exposeSelf', craft: { coin: 150, pinion: 1, plume: 2 } },
   { id: 'kilncharm', name: 'Kiln Charm', src: 'Cinderback', perk: 'Charge costs 1 die instead of 2.', effect: 'charge1', craft: { coin: 150, ventgland: 1, cinderscale: 2 } },
-  { id: 'rimecharm', name: 'Rime Charm', src: 'Rimetail', perk: 'Light Cut moves deal 4 more damage.', effect: 'lightCut', craft: { coin: 150, barbtail: 1, rimescale: 2 } }
+  { id: 'rimecharm', name: 'Rime Charm', src: 'Rimetail', perk: 'Slash and Gust Cut deal 4 more damage.', effect: 'lightCut', craft: { coin: 150, barbtail: 1, rimescale: 2 } }
 ];
 charms.push({ id: 'cragcharm', tier: 1.5, name: 'Crag Charm', src: 'Cragwing', perk: 'When you bring a monster down from the air or up out of the ground, your next hit deals +50%.', effect: 'landWhet', craft: { coin: 175, craghorn: 1, cragslate: 2 } });
 charms.push({ id: 'fencharm', tier: 2.4, name: 'Fen Charm', src: 'Fenmother', perk: 'Your first hit each turn deals +15%.', effect: 'firstHit', craft: { coin: 200, fengill: 1, fenhide: 2 } });
