@@ -739,3 +739,12 @@ html[data-input="pad"] body{cursor:none}
 /* Capture and the item: their second line stays one line (Nov 2026: it ran into Capture's title) */
 .lay .gearpanel > .move.capture > span:first-child,.lay .gearpanel > .move.pocket > span:first-child{min-width:0}
 .lay .gearpanel > .move.capture .md,.lay .gearpanel > .move.pocket .md{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Capture states (Nov 2026): a set Snare reads as done, not blocked; no Snares / out of reach read as a problem to fix */
+.gearpanel .move.capture.no.set{opacity:1;border-style:solid;border-color:var(--gold);background:var(--raise)}
+.gearpanel .move.capture.no.set .md{color:var(--gold-hi)}
+.gearpanel .move.capture.no.set .mn{color:var(--fg)}
+.gearpanel .move.capture.no.warn{opacity:1;border-color:var(--ember)}
+.gearpanel .move.capture.no.warn .md{color:var(--ember-soft)}
+/* Text detail: Full wraps a button's second line instead of cutting it */
+.lay .gearpanel.fulltext > .move .md{white-space:normal}

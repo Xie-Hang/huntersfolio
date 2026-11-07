@@ -60,7 +60,7 @@
   const bestReady = $derived(w.moves.reduce((b, mv, i) => (E.canUseMove(h, i) && (i < 2 || shows(h, 'rend')) && (b < 0 || mv.dmg > w.moves[b].dmg) ? i : b), -1));
 </script>
 
-<section class="panel gearpanel" aria-label="Your gear">
+<section class="panel gearpanel" class:fulltext={fullText()} aria-label="Your gear">
   <div class="wname">
     <div class="ph" style="gap:8px">
       <h2 style="margin:0;font-weight:600;font-size:var(--fs-lg);display:flex;align-items:center;gap:8px"><WeaponArt id={w.id} size={34} />{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}</h2>
@@ -114,18 +114,16 @@
   <!-- With everything on it's always shown, so players learn it exists before it's available. In the second and third
        hunts it appears only once the monster is weak enough (it's the escape from a hunt going badly). -->
   {#if full || (shows(h, 'capture') && capLive)}
-  <button onmouseenter={() => (game.preview = n ? [...game.sel] : auto.capture ?? [])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = n ? [...game.sel] : auto.capture ?? [])} onblur={() => (game.preview = [])} data-coach="capture" data-key="x" class="move capture {capLive && E.captureReady(h) ? 'live' : ''} {capOk ? 'ready' : 'no'}" aria-disabled={!capOk} onclick={() => capOk && game.capture()}>
+  <button onmouseenter={() => (game.preview = n ? [...game.sel] : auto.capture ?? [])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = n ? [...game.sel] : auto.capture ?? [])} onblur={() => (game.preview = [])} data-coach="capture" data-key="x" class="move capture {capLive && E.captureReady(h) ? 'live' : ''} {capOk ? 'ready' : 'no'}" class:set={h.snareSet} class:warn={capLive && !h.snareSet && (!h.snares || E.captureBlocked(h))} aria-disabled={!capOk} onclick={() => capOk && game.capture()}>
     <span>
       <span class="mn"><Key k="X" />Capture</span>
-      <span class="md">
-        {#if h.snareSet}Snare set: it closes when you end your turn, unless the hit you take is {E.CHARGE_BREAK} or more
-        {:else if !capLive}At {capAt} HP · {h.snares ? `${h.snares} Snare${h.snares > 1 ? 's' : ''}` : 'no Snares'}
-        {:else if !h.snares}You have no Snare left. Buy them in the Shop
-        {:else if E.captureBlocked(h)}{h.mon.air ? 'Bring it down first' : h.mon.under ? 'Drive it to the surface first' : 'It can’t be snared right now'}
-        {:else if n === 0 && auto.capture}Holds unless its move hits you for {E.CHARGE_BREAK}+ · {h.snares} Snare{h.snares > 1 ? 's' : ''}
-        {:else if n !== 2}Select 2 dice. Holds unless its move hits you for {E.CHARGE_BREAK}+ · {h.snares} Snare{h.snares > 1 ? 's' : ''}
-        {:else}Holds unless its move hits you for {E.CHARGE_BREAK}+. Double part materials{/if}
-      </span>
+      <!-- one short line, the key fact first; the full rule one step away (tip on hover or focus; Text detail: Full
+           shows it wrapped). Nov 2026: the old lines ran out of room and cut off the part that mattered -->
+      {#if h.snareSet}<span class="md" use:detail={`It closes when you end your turn, unless the hit you take is ${E.CHARGE_BREAK} or more.`}>Snare set ✓</span>
+      {:else if !capLive}<span class="md" use:detail={`At ${Math.round(E.CAPTURE_AT * 100)}% HP or less you can set a Snare (2 dice). A capture gives double part materials.`}>At {capAt} HP · {h.snares ? `${h.snares} Snare${h.snares > 1 ? 's' : ''}` : 'no Snares'}</span>
+      {:else if !h.snares}<span class="md">No Snares: buy at the Shop</span>
+      {:else if E.captureBlocked(h)}<span class="md">{h.mon.air ? 'Bring it down first' : h.mon.under ? 'Drive it up first' : 'Can’t be snared now'}</span>
+      {:else}<span class="md" use:detail={`Set a Snare with 2 dice. It closes when you end your turn, unless its move hits you for ${E.CHARGE_BREAK} or more. A capture gives double part materials.`}>{n === 0 || n === 2 ? `${h.snares} Snare${h.snares > 1 ? 's' : ''} · fails on a ${E.CHARGE_BREAK}+ hit` : 'Select 2 dice'}</span>{/if}
     </span>
     <span class="need dice"><span class="x">2×</span><CostDie c="any" /></span>
   </button>
