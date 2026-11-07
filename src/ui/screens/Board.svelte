@@ -6,25 +6,23 @@
   import Elem from '../parts/Elem.svelte';
   import * as E from '../../engine';
   import { game } from '../game.svelte';
-  import { ELEMS, record } from '../fmt';
+  import { record } from '../fmt';
   import Plate from '../parts/Plate.svelte';
   import Bestiary from './board/Bestiary.svelte';
   import Loadout from './board/Loadout.svelte';
   import WorldMap from './board/WorldMap.svelte';
   import { full } from '../detail.svelte';
 
-  let filter = $state<'All' | E.Element>('All');
   const M = $derived(E.MONSTERS[game.save.loadout.target]);
 
-  const pass = (N: E.MonsterDef) => filter === 'All' || N.elem === filter || !!N.elemOf;
   // A group's unlock condition is said once, on its heading, when every locked card in it shares it
   // (Nov 2026 playtest: the same long line on four cards was noise). The cards then just say Locked.
   const groupOf = (t: number) => {
-    const known = Object.values(E.MONSTERS).filter(N => N.tier === t && pass(N));
+    const known = Object.values(E.MONSTERS).filter(N => N.tier === t);
     const hints = known.filter(N => !E.isUnlocked(game.save, N.id)).map(N => E.unlockParts(N.id).base);
     return {
       known,
-      unknown: E.UNKNOWN.filter(u => u.tier === t && (filter === 'All' || u.elem === filter || !u.elem)),
+      unknown: E.UNKNOWN.filter(u => u.tier === t),
       // only when the whole group is shut: on Ashfall Ridge the Gorehorn is open, so its locked cards say why themselves
       lockHint: hints.length > 1 && hints.length === known.length && hints.every(h => h === hints[0]) ? hints[0] : null
     };
@@ -49,7 +47,7 @@
   const places = $derived(REGIONS.map(r => {
     const mons = Object.values(E.MONSTERS).filter(N => tiersOf(r).includes(N.tier));
     const open = isl ? r.id === 'foothills' : mons.some(N => E.isUnlocked(game.save, N.id));
-    const fresh = open && mons.some(N => E.isUnlocked(game.save, N.id) && !record(game.save, N.id).wins);
+    const fresh = open ? mons.filter(N => E.isUnlocked(game.save, N.id) && !record(game.save, N.id).wins).length : 0;
     const tgt = game.save.loadout.target;
     const here = isl ? r.id === 'foothills' : regionOf(tgt) === r.id && E.isUnlocked(game.save, tgt);
     return { id: r.id, name: r.name, tag: r.tag, open, fresh, here };
@@ -110,13 +108,6 @@
           </div>
           {#if foothills.length > footOpen.length}<p class="rankfold" style="padding-left:2px">{foothills.length - footOpen.length} more {foothills.length - footOpen.length === 1 ? 'monster' : 'monsters'} to meet in the Foothills</p>{/if}
         {:else}
-          <div class="filters" aria-label="Filter by element">
-            {#each ['All', ...ELEMS] as f}
-              <button aria-pressed={filter === f} onclick={() => (filter = f as typeof filter)}>
-                {#if f !== 'All'}<Elem e={f as E.Element} />{/if}{f}
-              </button>
-            {/each}
-          </div>
           {#each curGroups as g, gi (gi)}
             <div class="region">
               {#if g.label || g.lockHint}<h4 class="group">{#if g.label}{g.label}{/if}{#if g.lockHint}<span class="lockline" class:solo={!g.label}><svg class="lk" viewBox="0 0 12 14" width="11" height="13" aria-hidden="true"><path d="M3 6V4.2a3 3 0 0 1 6 0V6" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="1.5" y="6" width="9" height="7" rx="1.2" fill="currentColor"/></svg>{g.lockHint}</span>{/if}</h4>{/if}
@@ -137,7 +128,7 @@
               {/if}
             </div>
           {:else}
-            <p class="ital p0">{filter === 'All' ? 'Nothing sighted here yet.' : 'No monsters of that element here.'}</p>
+            <p class="ital p0">Nothing sighted here yet.</p>
           {/each}
         {/if}
         {/if}

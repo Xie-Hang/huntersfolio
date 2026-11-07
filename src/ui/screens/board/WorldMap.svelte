@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  export type Place = { id: string; name: string; tag: string; open: boolean; fresh: boolean; here: boolean };
+  export type Place = { id: string; name: string; tag: string; open: boolean; fresh: number; here: boolean };
 </script>
 
 <script lang="ts">
@@ -58,6 +58,7 @@
   <!-- the places -->
   {#each places as p (p.id)}
     {@const a = AT[p.id]}
+    {@const w = Math.max(p.name.length * 14, ((p.open ? p.tag : `${p.tag} · fogged`) + (p.fresh ? ` · ${p.fresh} new` : '')).length * 8.6) + 36}
     <g class="place" class:open={p.open} class:sel={sel === p.id} role="button" tabindex="0" aria-pressed={sel === p.id}
       aria-label="{p.name}, {p.tag}{p.open ? '' : ', not open yet'}" data-region={p.id}
       onclick={() => onpick(p.id)} onkeydown={(e) => key(e, p.id)}>
@@ -100,10 +101,10 @@
         <ellipse class="foghatch" cx={a.x} cy={a.y} rx={a.rx * .7} ry={a.ry * .6} />
       {/if}
       <g class="label" transform="translate({a.lx} {a.ly})">
-        <rect x={-p.name.length * 7 - 18} y="-24" width={p.name.length * 14 + 36} height="50" rx="3" class="plaque" />
+        <rect x={-w / 2} y="-24" width={w} height="50" rx="3" class="plaque" />
         <text class="nm" y="0" text-anchor="middle">{p.name}</text>
-        <text class="tg" y="18" text-anchor="middle">{p.open ? p.tag : `${p.tag} · fogged`}</text>
-        {#if p.fresh}<circle class="fresh" cx={p.name.length * 7 + 14} cy="-18" r="7" />{/if}
+        <!-- monsters not yet hunted are said in words, not a dot (Mekkman, Nov 2026: "what is the yellow circle?") -->
+        <text class="tg" y="18" text-anchor="middle">{p.open ? p.tag : `${p.tag} · fogged`}{#if p.fresh}<tspan class="new">&#160;· {p.fresh} new</tspan>{/if}</text>
       </g>
       {#if p.here}
         <!-- your next hunt is here: a small flag -->
@@ -146,12 +147,10 @@
   .tg { font-family: var(--f-body); font-size: 15px; font-weight: 600; letter-spacing: .04em; fill: var(--muted); }
   .place.sel .nm { fill: var(--gold-hi); }
   .place:not(.open) .nm { fill: var(--muted); }
-  .fresh { fill: var(--gold); stroke: var(--panel); stroke-width: 2; animation: freshpulse 1.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
-  @keyframes freshpulse { 50% { transform: scale(1.35); } }
+  .tg .new { fill: var(--gold-hi); }
   .flag path { stroke: var(--bone); stroke-width: 2.5; fill: none; }
   .flag .cloth { fill: var(--ember); stroke: var(--ember); }
   .compass circle { fill: none; stroke: var(--bone-edge); stroke-width: 1.5; }
   .compass path { fill: var(--bone-edge); }
   .compass text { font-family: 'IM Fell English', Georgia, serif; font-size: 16px; fill: var(--muted); }
-  @media (prefers-reduced-motion: reduce) { .fresh { animation: none; } }
 </style>
