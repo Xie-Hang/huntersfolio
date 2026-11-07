@@ -102,8 +102,8 @@
   </button>
   {/if}
   {#if shows(h, 'charge')}
-  <button class="move dash {cOk ? 'ready' : 'no'}" onmouseenter={() => (game.preview = n ? [...game.sel] : auto.charge ?? [])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = n ? [...game.sel] : auto.charge ?? [])} onblur={() => (game.preview = [])} data-coach="charge" data-key="c" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
-    <span><span class="mn"><Key k="C" />Charge</span><span class="md">{chargeRisk ? `The −${inc?.net} coming would break it: block all of it first` : `Next hit ×2 · any hit breaks it`}</span></span><span class="need dice"><span class="x">{cd}×</span><CostDie c="any" /></span>
+  <button class="move dash {cOk ? 'ready' : 'no'}" class:warn={chargeRisk} onmouseenter={() => (game.preview = n ? [...game.sel] : auto.charge ?? [])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = n ? [...game.sel] : auto.charge ?? [])} onblur={() => (game.preview = [])} data-coach="charge" data-key="c" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
+    <span><span class="mn"><Key k="C" />Charge</span><span class="md" use:detail={chargeRisk ? `The −${inc?.net} coming would break it: block all of it first.` : 'Your first hit next turn deals double. Any hit that gets past your block breaks it.'}>{chargeRisk ? `−${inc?.net} breaks it` : 'Next hit ×2 · any hit breaks it'}</span></span><span class="need dice"><span class="x">{cd}×</span><CostDie c="any" /></span>
   </button>
   {/if}
   {#if shows(h, 'swap')}
@@ -134,7 +134,10 @@
     {@const it = E.ITEMS[h.item]}
     <div class="divider"><span class="label">Item · Free action</span><span class="label">{h.itemCharges} left</span></div>
     <button class="move pocket {iOk ? 'ready' : 'no'}" data-coach="item" data-key="f" aria-disabled={!iOk} onclick={() => iOk && game.item()}>
-      <span><span class="mn"><Key k="F" /><Icon id={h.item} size={20} />{it.name}</span><span class="md">{#if E.itemBlockReason(h)}<span class="why">{E.itemBlockReason(h)}</span>{:else if it.effect === 'trapRush' || it.effect === 'trapLand'}{#if E.trapCatches(it.effect, h.intent)}<span class="good">Catches this {E.intentInfo(h).name}: no damage, held {E.TRAP_HOLD[it.effect]} turns{E.canCapture(h) ? ', and it’s weak enough: captured' : ''}</span>{:else}<span class="why">Won’t catch its {E.intentInfo(h).name}: wasted if set now</span>{/if}{:else}{it.desc}{/if}</span></span>
+      <span><span class="mn"><Key k="F" /><Icon id={h.item} size={20} />{it.name}</span><!-- one short line (orange when there's something to do about it, gold when set); the full sentence in the tip -->
+      {#if E.itemBlockReason(h)}{@const why = E.itemBlockReason(h)!}<span class="md {E.ITEM_SHORT[why] === 'Set ✓' ? 'iset' : why.includes('next turn') ? 'iwarn' : 'iinfo'}" use:detail={why}>{E.ITEM_SHORT[why] ?? why}</span>
+      {:else if it.effect === 'trapRush' || it.effect === 'trapLand'}{#if E.trapCatches(it.effect, h.intent)}<span class="md good" use:detail={`Catches this ${E.intentInfo(h).name}: no damage, and it’s held ${E.TRAP_HOLD[it.effect]} turns${E.canCapture(h) ? '. It’s weak enough: that captures it' : ''}.`}>{E.canCapture(h) ? 'Catches it · captures it' : `Catches it · held ${E.TRAP_HOLD[it.effect]} turns`}</span>{:else}<span class="md iwarn" use:detail={`Won’t catch its ${E.intentInfo(h).name}: set now, the trap is wasted.`}>Wasted on this move</span>{/if}
+      {:else}<span class="md" use:detail={it.line ? it.desc : ''}>{it.line ?? it.desc}</span>{/if}</span>
       <span class="need ileft"><span>Free</span><small>{h.itemCharges} left</small></span>
     </button>
   {:else}

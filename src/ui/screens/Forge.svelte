@@ -146,7 +146,7 @@
           </button>
         {/each}
         {/if}
-        {#if g.folded}<button class="ffold" onclick={() => (opened[`${tab}:${g.group}`] = true)}>+{g.folded} more {kind === 'w' ? 'in these lines' : 'from monsters you haven’t hunted'}</button>{/if}
+        {#if g.folded}<button class="ffold" onclick={() => (opened[`${tab}:${g.group}`] = true)}>+{g.folded} more {kind === 'w' ? 'in these lines' : 'not hunted yet'}</button>{/if}
       {:else}
         <p class="ital" style="padding:12px;margin:0">Nothing is ready to make yet. Untick "Ready to make" to see everything.</p>
       {/each}

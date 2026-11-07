@@ -120,6 +120,8 @@ export interface ItemDef {
   desc: string;
   /** one line for the Shop card when desc runs long; desc then opens on hover (Nov 2026 text audit) */
   short?: string;
+  /** the hunt button's line (about 30 characters) when desc is longer; desc goes in the tip (Nov 2026) */
+  line?: string;
   effect: ItemEffect;
   /** carried automatically, outside the item slot (Snares) */
   pouch?: boolean;
@@ -133,6 +135,8 @@ export interface CharmDef {
   tier?: number;
   id: string;
   name: string;
+  /** the perk in about 30 characters, for slots and buttons; the full perk goes in the tip (Nov 2026) */
+  short?: string;
   /** monster whose materials make it */
   src: string;
   perk: string;

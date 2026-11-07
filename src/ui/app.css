@@ -748,3 +748,14 @@ html[data-input="pad"] body{cursor:none}
 .gearpanel .move.capture.no.warn .md{color:var(--ember-soft)}
 /* Text detail: Full wraps a button's second line instead of cutting it */
 .lay .gearpanel.fulltext > .move .md{white-space:normal}
+
+/* Charge: when the hit coming would break it, its line shows, in orange (Nov 2026 audit: the warning was hidden) */
+.lay .gearpanel > .move.dash.warn{border-color:var(--ember)}
+.lay .gearpanel > .move.dash.warn .md{display:block;color:var(--ember-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lay .gearpanel > .move.dash.warn > span:first-child{min-width:0}
+/* item lines: orange when there's something to do about it, gold when set, green when a trap will catch */
+.gearpanel .move.pocket .md.iwarn{color:var(--ember-soft)}
+.gearpanel .move.pocket .md.iset{color:var(--gold-hi)}
+.gearpanel .move.pocket.no:has(.iset){opacity:1;border-color:var(--gold)}
+.gearpanel .move.pocket.ready:has(.iwarn),.gearpanel .move.pocket.no:has(.iwarn){opacity:1;border-color:var(--ember)}
+.gearpanel .move.pocket .md.iinfo{color:var(--muted)}

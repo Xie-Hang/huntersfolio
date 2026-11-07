@@ -208,6 +208,19 @@ export const freeDice = (h: Hunt) => h.dice.map((d, i) => (d.used ? -1 : i)).fil
 /** Why the carried item can't be used right now (null when it can, or when the reason is simply "used up").
  *  Playtest (Nov 2026): two players threw the Net while the Galeshrike was "Taking off" and nothing happened:
  *  the telegraph is what it does AFTER your turn, so it was still on the ground. Say so on the button. */
+/** itemBlockReason, in about 30 characters, for the item button; the full reason goes in its tip (Nov 2026) */
+export const ITEM_SHORT: Record<string, string> = {
+  'Set: it springs when you end your turn': 'Set ✓',
+  'One item per turn: used this turn': 'Used this turn',
+  'Only works while it flies. It takes off after this turn: throw it next turn': 'Throw it next turn',
+  'Only works while it flies, and it’s on the ground now': 'Only while it flies',
+  'Only works while it’s underground. It digs in after this turn: throw it next turn': 'Throw it next turn',
+  'Only works while it’s underground': 'Only while it’s underground',
+  'Its scales are already burning: a Firepot does nothing': 'Does nothing: already burning',
+  'Only works while it has plating (ice or slate)': 'Only while it has ice or slate',
+  'Only works while you’re infected': 'Only while you’re infected',
+  'Only works with Spark pips on you or charged dice': 'Only with Spark on you',
+};
 export function itemBlockReason(h: Hunt): string | null {
   if (!h.item || h.over || itemUsable(h)) return null;
   const fx0 = ITEMS[h.item].effect;

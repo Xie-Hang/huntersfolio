@@ -11,7 +11,7 @@
   import Bestiary from './board/Bestiary.svelte';
   import Loadout from './board/Loadout.svelte';
   import WorldMap from './board/WorldMap.svelte';
-  import { full } from '../detail.svelte';
+  import { full, detail } from '../detail.svelte';
 
   const M = $derived(E.MONSTERS[game.save.loadout.target]);
 
@@ -157,7 +157,7 @@
     {#if open}
       <span class="st" class:new={!r.wins}>{r.wins ? `Hunted ×${r.wins}` : 'Not yet hunted'}{#if E.BOUNTIES_ON && r.wins && E.bountiesFor(N.id).length}{@const b = done(N.id)}{' '}· Bounties {b.n}/{b.of}{/if}</span>
     {:else}
-      <span class="st"><svg class="lk" viewBox="0 0 12 14" width="11" height="13" aria-hidden="true"><path d="M3 6V4.2a3 3 0 0 1 6 0V6" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="1.5" y="6" width="9" height="7" rx="1.2" fill="currentColor"/></svg>{#if lockHint}{@const x = E.unlockParts(N.id).extra}Locked{x ? ` · also the ${x}` : ''}{:else}Locked · {E.unlockHint(N.id).replace(/ first$/, '')}{/if}</span>
+      <span class="st"><svg class="lk" viewBox="0 0 12 14" width="11" height="13" aria-hidden="true"><path d="M3 6V4.2a3 3 0 0 1 6 0V6" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="1.5" y="6" width="9" height="7" rx="1.2" fill="currentColor"/></svg>{#if lockHint}{@const x = E.unlockParts(N.id).extra}Locked{x ? ` · also the ${x}` : ''}{:else}<span use:detail={E.unlockHint(N.id)}>Locked · {E.unlockShort(N.id).replace(/ first$/, '')}</span>{/if}</span>
     {/if}
   </button>
 {/snippet}
@@ -174,7 +174,7 @@
       <span class="meta"><span>{#if N.elemOf}By stance{:else}<Elem e={N.elem} />{N.elem}{/if}</span><span>{N.elemOf ? 'Weakness changes' : `Weak to ${N.weak}`}</span></span>
       {#if r.wins}<span class="st">Passed · hunted ×{r.wins}</span>
       {:else if open}<span class="st new">Ready: win it to become a rank {N.promotion} hunter</span>
-      {:else}<span class="st"><svg class="lk" viewBox="0 0 12 14" width="11" height="13" aria-hidden="true"><path d="M3 6V4.2a3 3 0 0 1 6 0V6" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="1.5" y="6" width="9" height="7" rx="1.2" fill="currentColor"/></svg>Locked · {E.unlockHint(N.id)}</span>{/if}
+      {:else}<span class="st"><svg class="lk" viewBox="0 0 12 14" width="11" height="13" aria-hidden="true"><path d="M3 6V4.2a3 3 0 0 1 6 0V6" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="1.5" y="6" width="9" height="7" rx="1.2" fill="currentColor"/></svg><span use:detail={E.unlockHint(N.id)}>Locked · {E.unlockShort(N.id)}</span></span>{/if}
     </span>
   </button>
 {/snippet}

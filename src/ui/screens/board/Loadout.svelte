@@ -140,7 +140,7 @@
         {/if}
         {#if E.charmSlot(game.save) && L.charm}
           {@const c = E.CHARMS[L.charm]}
-          <div class="slot" data-slot="charm" data-coach="slot-charm"><span class="sl">Charm</span><span><span class="nm"><Icon id={L.charm} />{c.name}</span><span class="sub2"><span>{c.perk}</span></span></span></div>
+          <div class="slot" data-slot="charm" data-coach="slot-charm"><span class="sl">Charm</span><span><span class="nm"><Icon id={L.charm} />{c.name}</span><span class="sub2"><span use:detail={c.perk}>{c.short ?? c.perk}</span></span></span></div>
         {/if}
         {#if E.itemSlot(game.save) && L.item}
           {@const it = E.ITEMS[L.item]}
@@ -164,13 +164,13 @@
         {@const c = E.CHARMS[L.charm]}
         <button class="slot" data-slot="charm" onclick={() => open('charm')}>
           <span class="sl">Charm</span>
-          <span><span class="nm"><Icon id={L.charm} />{c.name}</span><span class="sub2"><span>{c.perk}</span></span></span>
+          <span><span class="nm"><Icon id={L.charm} />{c.name}</span><span class="sub2"><span use:detail={c.perk}>{c.short ?? c.perk}</span></span></span>
           <span class="chg">Change</span>
         </button>
       {:else}
         <button class="slot empty" data-slot="charm" onclick={() => open('charm')}>
           <span class="sl">Charm</span>
-          <span><span class="nm">No charm</span><span class="sub2"><span>{Object.keys(game.save.charms).length ? 'Choose one of your charms.' : 'Craft charms at the Forge from monster materials.'}</span></span></span>
+          <span><span class="nm">No charm</span><span class="sub2"><span>{Object.keys(game.save.charms).length ? 'Choose one of your charms' : 'Make one at the Forge'}</span></span></span>
           <span class="chg">Choose</span>
         </button>
       {/if}
@@ -208,7 +208,7 @@
               {#if breaks}<span class="bad">{breaks}: change a weapon or it won’t pay.</span>{/if}
             {:else}
               <span class="bnrow"><span class="nm">{openBounties ? `${openBounties} bounties open` : 'All done'}</span><span class="chg">Choose</span></span>
-              <span class="sub">{openBounties ? 'Take one for extra coin. Each new one counts toward the bounty charms.' : 'Repeat any of them for half the coin.'}</span>
+              <span class="sub">{openBounties ? 'Take one for extra coin' : 'All done · repeats pay half'}</span>
             {/if}
           </button>
         {/if}
@@ -298,7 +298,7 @@
           {#each ids as id (id)}
             {@const c = E.CHARMS[id]}
             <button class="prow" aria-current={id === L.charm} onclick={() => choose(id)}>
-              <span><span class="nm"><Icon id={id} />{c.name}{#if id === L.charm}<span class="badge">Equipped</span>{/if}</span><span class="ty">{c.perk}</span></span><span class="num"></span>
+              <span><span class="nm"><Icon id={id} />{c.name}{#if id === L.charm}<span class="badge">Equipped</span>{/if}</span><span class="ty" use:detail={c.perk}>{c.short ?? c.perk}</span></span><span class="num"></span>
             </button>
           {/each}
           {#if !ids.length}<p class="ital" style="padding:12px;margin:0">No charms yet. Craft them at the Forge from monster materials.</p>{/if}

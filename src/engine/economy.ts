@@ -319,6 +319,16 @@ export function unlockHint(id: string): string {
   return `Beat ${reqs.map(r => MONSTERS[r].short).join(', ')} first`;
 }
 
+/** unlockHint in about 30 characters, for cards and buttons; the full hint goes in the tip (Nov 2026) */
+export function unlockShort(id: string): string {
+  const h = unlockHint(id);
+  return h.replace(/^Beat every monster on Ashfall Ridge first$/, 'Clear Ashfall Ridge')
+    .replace(/^Beat every monster in the Mirewood and the (.+) first$/, 'Mirewood + the $1')
+    .replace(/^Beat every monster in the Mirewood first$/, 'Clear the Mirewood')
+    .replace(/^Beat every monster on the Stormspire first$/, 'Clear the Stormspire')
+    .replace(/^Pass the (.+) promotion hunt first$/, 'Pass the $1');
+}
+
 /** The unlock hint split for the Hunt Board: the condition a whole region shares, and what this monster adds to it
  *  (the changed Mirewood: every Mirewood monster, plus one from the Gloamhollow). */
 export function unlockParts(id: string): { base: string; extra: string | null } {
