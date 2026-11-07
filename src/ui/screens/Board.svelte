@@ -53,7 +53,9 @@
     return { id: r.id, name: r.name, tag: r.tag, open, fresh, here };
   }));
   // opens on the place of the monster you last picked (or the Foothills)
-  let region = $state(E.islandDone(game.save) ? regionOf(game.save.loadout.target) ?? 'ridge' : 'foothills');
+  // (derived, so it follows the save as it loads and the monster you last picked; a place you select overrides it)
+  let picked = $state<string | null>(null);
+  const region = $derived(picked ?? (isl ? 'foothills' : regionOf(game.save.loadout.target) ?? 'ridge'));
   const cur = $derived(REGIONS.find(r => r.id === region));
   const curGroups = $derived((cur?.parts ?? []).map(p => {
     const g = groupOf(p.t);
@@ -84,7 +86,7 @@
   <section class="panel boardpanel world" aria-label="Monsters">
     <div class="ph"><h2>Choose a monster</h2></div>
     <div class="worldgrid">
-      <div class="mapcol"><WorldMap {places} sel={region} onpick={(id) => (region = id)} /></div>
+      <div class="mapcol"><WorldMap {places} sel={region} onpick={(id) => (picked = id)} /></div>
       <div class="regionpane" aria-live="polite">
         {#if cur}
         <div class="rphead">

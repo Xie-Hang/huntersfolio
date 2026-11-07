@@ -96,9 +96,9 @@ const ISLAND: Tip[] = [
   {
     // its next move, in the first hunt, at the start of turn 2: it has just hit you once, so the panel means something.
     // A Got it button: the panel can't be selected (Mekkman, Nov 2026 playtest)
-    id: 'i-tele', guide: true, info: true, gotit: true, at: ['tele'], head: 'Its next move',
+    id: 'i-tele', guide: true, info: true, gotit: true, at: ['tele'], head: 'Next move',
     when: () => { const h = onIsland('scuttlehog'); return !!h && h.turn === 2 && unusedTurn(h) && !game.sel.length; },
-    text: () => 'Its next move and damage show here.'
+    text: () => 'What it does next, and its damage.'
   },
   {
     // the shortcut (Mekkman, Nov 2026): a move picks its own dice when none are selected. Turn 2, once the long way

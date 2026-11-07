@@ -694,67 +694,41 @@ html[data-input="pad"] body{cursor:none}
 .helpsecs summary:focus-visible{outline:2px solid var(--gold-hi);outline-offset:-2px}
 .helpsecs .helplist{margin:0;padding:0 14px 12px 32px}
 
-/* hunt layout drafts (Nov 2026): monster left, player right */
+/* the hunt screen (Nov 2026 playtest: "a bit everywhere"): the monster on the left, you on the right */
 .grid.hunt.lay{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 .grid.hunt.lay.done{grid-template-columns:minmax(0,1fr)!important}
 .lay .mcol,.lay .pcol{display:flex;flex-direction:column;gap:12px;min-width:0}
+@media (max-width:900px){.grid.hunt.lay{grid-template-columns:minmax(0,1fr)}}
+/* the monster: its picture over its next move, meters beside the picture when there are any */
 .lay .stage .stagebody{grid-template-columns:minmax(0,1fr)}
 .lay .stage .platecol{flex-direction:row;align-items:flex-start}
-.lay .stage .platecol > .plate{flex:1 1 60%}
-.lay .stage .platecol > .metarow{flex:0 1 40%;min-width:0}
-.lay .stage .platecol > .metarow:empty{display:none}
-.lay .diceline .tray{gap:10px}
-.lay-a .gearpanel .move{min-height:44px;padding-block:6px}
-.lay-b .gearpanel,.lay-c .gearpanel,.lay-d .gearpanel,.lay-e .gearpanel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-auto-flow:row dense;column-gap:10px;align-items:start}
-.lay-b .gearpanel > *,.lay-c .gearpanel > *,.lay-d .gearpanel > *,.lay-e .gearpanel > *{grid-column:1 / -1}
-.lay-b .gearpanel > .move:not(.dash):not(.capture):not(.pocket),.lay-c .gearpanel > .move:not(.dash):not(.capture):not(.pocket),.lay-d .gearpanel > .move:not(.dash):not(.capture):not(.pocket),.lay-e .gearpanel > .move:not(.dash):not(.capture):not(.pocket){grid-column:1}
-.lay-d .gearpanel > .move.dash,.lay-d .gearpanel > .move.capture,.lay-d .gearpanel > .move.pocket,.lay-e .gearpanel > .move.dash,.lay-e .gearpanel > .move.capture,.lay-e .gearpanel > .move.pocket,.lay-b .gearpanel > .move.dash,.lay-b .gearpanel > .move.capture,.lay-b .gearpanel > .move.pocket,.lay-c .gearpanel > .move.dash,.lay-c .gearpanel > .move.capture,.lay-c .gearpanel > .move.pocket{grid-column:2}
-.lay-b .gearpanel > .divider,.lay-c .gearpanel > .divider,.lay-d .gearpanel > .divider,.lay-e .gearpanel > .divider{grid-column:2}
-.lay-d .gearpanel .move,.lay-e .gearpanel .move{min-height:46px;padding-block:6px}
-.lay-d .gearpanel,.lay-e .gearpanel{row-gap:6px;padding-block:10px}
-.lay-e .dtop .rrwrap :global(.btn),.lay-e .dtop .rrwrap .btn{min-height:40px}
-.lay .dend{padding:10px 14px}
-/* the item sits under the moves, so both columns are four rows (Nov 2026 drafts) */
-.lay-d .gearpanel > .move.pocket,.lay-d .gearpanel > .divider,.lay-e .gearpanel > .move.pocket,.lay-e .gearpanel > .divider{grid-column:1}
-.lay-d .gearpanel .move .md,.lay-e .gearpanel .move .md{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lay-d .gearpanel .move > span:first-child,.lay-e .gearpanel .move > span:first-child{min-width:0}
-.lay-e .dtop .die{width:68px;height:68px;--s:68px}
-.lay-e .dtop .die svg{width:32px;height:32px}
-.lay-e .dtop .diceline{gap:8px}
-.lay-e .dtop{padding-block:10px}
-.lay-e .dtop .tray{gap:12px}
-
-/* drafts F and G (Nov 2026): the three attacks in one row, then Block · Charge · Swap, then Capture · item */
-.lay-f .gearpanel,.lay-g .gearpanel{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;padding-block:12px}
-.lay-f .gearpanel > *,.lay-g .gearpanel > *{grid-column:1 / -1}
-.lay-f .gearpanel > .divider,.lay-g .gearpanel > .divider{display:none}
-.lay-f .gearpanel > .move.dash,.lay-g .gearpanel > .move.dash{grid-column:span 2;min-height:48px;padding:6px 10px;gap:6px}
-.lay-f .gearpanel > .move.capture,.lay-f .gearpanel > .move.pocket,.lay-g .gearpanel > .move.capture,.lay-g .gearpanel > .move.pocket{grid-column:span 3;min-height:48px;padding:6px 10px}
-.lay-f .gearpanel > .move.dash .md,.lay-g .gearpanel > .move.dash .md{display:none}
-.lay-f .gearpanel > .move.dash .mn,.lay-g .gearpanel > .move.dash .mn{font-size:15px;line-height:1.2}
-.lay-f .gearpanel > .move:not(.dash):not(.capture):not(.pocket),.lay-g .gearpanel > .move:not(.dash):not(.capture):not(.pocket){grid-column:span 2;min-height:0}
-.lay-f .gearpanel .md .dw,.lay-f .gearpanel .md .dx,.lay-g .gearpanel .md .dw,.lay-g .gearpanel .md .dx{display:none}
-.lay-f .gearpanel .md .dn,.lay-g .gearpanel .md .dn{font-weight:700;color:var(--fg)}
-.lay-f .gearpanel .move.no .md .dn,.lay-g .gearpanel .move.no .md .dn{color:var(--muted)}
-/* F: a card: name, a big number, the dice under it */
-.lay-f .gearpanel > .move:not(.dash):not(.capture):not(.pocket){flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:4px;padding:10px 12px}
-.lay-f .gearpanel > .move:not(.dash):not(.capture):not(.pocket) > span:first-child{display:flex;flex-direction:column;gap:2px}
-.lay-f .gearpanel .md .dn{font-size:30px;line-height:1.05}
-/* G: one line: name and dice on the left, the number big on the right */
-.lay-g .gearpanel > .move:not(.dash):not(.capture):not(.pocket){display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;column-gap:8px;row-gap:6px;padding:9px 12px}
-.lay-g .gearpanel > .move:not(.dash):not(.capture):not(.pocket) > span:first-child{display:contents}
-.lay-g .gearpanel > .move:not(.dash):not(.capture):not(.pocket) .mn{grid-column:1;grid-row:1}
-.lay-g .gearpanel > .move:not(.dash):not(.capture):not(.pocket) .md{grid-column:2;grid-row:1 / span 2;align-self:center}
-.lay-g .gearpanel > .move:not(.dash):not(.capture):not(.pocket) .need{grid-column:1;grid-row:2;justify-self:start}
-.lay-g .gearpanel .md .dn{font-size:28px}
-
-/* F, revised (Nov 2026): compact attacks, no weapon average, no "Aim", "Swap" alone */
-.lay-f .gearpanel .avg,.lay-f .partspanel .aimword,.lay-f .gearpanel .swapto{display:none}
-.lay-f .partspanel .ph{justify-content:flex-end}
-.lay-f .gearpanel > .move:not(.dash):not(.capture):not(.pocket){display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:6px;row-gap:4px;padding:7px 10px;flex-direction:initial}
-.lay-f .gearpanel > .move:not(.dash):not(.capture):not(.pocket) > span:first-child{display:contents}
-.lay-f .gearpanel > .move:not(.dash):not(.capture):not(.pocket) .mn{grid-column:1 / -1;grid-row:1;white-space:nowrap;overflow:hidden}
-.lay-f .gearpanel > .move:not(.dash):not(.capture):not(.pocket) .need{grid-column:1;grid-row:2;justify-self:start}
-.lay-f .gearpanel > .move:not(.dash):not(.capture):not(.pocket) .md{grid-column:2;grid-row:2;justify-self:end}
-.lay-f .gearpanel .md .dn{font-size:24px;line-height:1}
-.lay-f .gearpanel > .move:not(.dash):not(.capture):not(.pocket) .need .cd{width:24px;height:24px}
+.lay .stage .platecol > .plate{flex:1 1 auto;min-width:0}
+.lay .stage .platecol > .metarow{flex:0 1 auto;max-width:40%;min-width:0}
+/* meters showing (daze, heads, statuses): they get a readable share beside the picture */
+.lay .stage .platecol > .metarow:has(.hpline,.heads,.conds > *){flex:0 0 36%;max-width:36%}
+.lay .partspanel .aimword{display:none}
+.lay .partspanel .ph{justify-content:flex-end}
+/* you: attacks in a row, then Block · Charge · Swap, then Capture · item */
+.lay .gearpanel{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;padding-block:12px}
+.lay .gearpanel > *{grid-column:1 / -1}
+.lay .gearpanel > .divider,.lay .gearpanel .avg,.lay .gearpanel .swapto{display:none}
+.lay .gearpanel > .move.dash{grid-column:span 2;min-height:48px;padding:6px 10px;gap:6px}
+.lay .gearpanel > .move.capture,.lay .gearpanel > .move.pocket{grid-column:span 3;min-height:48px;padding:6px 10px}
+.lay .gearpanel > .move.dash .md{display:none}
+.lay .gearpanel > .move.dash .mn{font-size:15px;line-height:1.2}
+.lay .gearpanel > .move.atk{grid-column:span 2;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:6px;row-gap:4px;padding:7px 10px;min-height:0}
+.lay .gearpanel > .move.atk > span:first-child{display:contents}
+.lay .gearpanel > .move.atk .mn{grid-column:1 / -1;grid-row:1;white-space:nowrap;overflow:hidden}
+.lay .gearpanel > .move.atk .need{grid-column:1;grid-row:2;justify-self:start}
+.lay .gearpanel > .move.atk .md{grid-column:2;grid-row:2;justify-self:end}
+.lay .gearpanel > .move.atk .need .cd{width:24px;height:24px}
+/* the damage is the number, bold, with no word (Mekkman, Nov 2026) */
+.lay .gearpanel .md .dw,.lay .gearpanel .md .dx{display:none}
+.lay .gearpanel .md .dn{font-size:24px;line-height:1;font-weight:700;color:var(--fg)}
+.lay .gearpanel .move.no .md .dn{color:var(--muted)}
+/* ice up: the card says how much ice the hit breaks, in the ice colour, where the number goes */
+.lay .gearpanel .md .dn.ice{font-size:18px;color:#b9d3f0}
+/* the room the new layout frees goes to the dice: full size even on a Steam Deck */
+.lay .dtop .die{width:80px;height:80px;--s:80px}
+.lay .dtop .die svg{width:38px;height:38px}
+.lay .dtop .diebox{width:84px}
