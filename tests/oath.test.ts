@@ -42,3 +42,12 @@ describe('Flow', () => {
     if (!h.over) { h.dice = h.dice.map(() => ({ face: 'C' as const, used: null })); const r1 = h.rerolls; E.useMove(h, 0); expect(h.rerolls).toBe(r1 + 1); }
   });
 });
+
+describe('dice patterns (Nov 2026)', () => {
+  it('each weapon type has its own pattern: blades Fangs, bows Claws, mauls a mix', () => {
+    expect(E.WEAPONS.blade.moves.map(m => m.need)).toEqual(['C', 'CC', 'CCT']);
+    expect(E.WEAPONS.bow.moves.map(m => m.need)).toEqual(['T', 'TT', 'TTC']);
+    expect(E.WEAPONS.maul.moves.map(m => m.need)).toEqual(['C', 'CT', 'CTT']);
+    expect(E.WEAPONS.gale.moves.map(m => m.need)).toEqual(['C', 'CC', 'CCT']); // curved blades cost what blades cost
+  });
+});

@@ -46,6 +46,8 @@
   const cOk = $derived(!over && !h.chargePending && (n === cd || (n === 0 && !!auto.charge)));
   const buried = $derived(E.swapBuried(h));
   const sOk = $derived(!over && !buried && (n === 1 || (n === 0 && !!auto.swap)));
+  // the other weapon suits this roll better: say which move (Nov 2026: how players learn the dice patterns)
+  const fits = $derived(n === 0 ? E.swapFits(h) : null);
   const capLive = $derived(!over && E.canCapture(h));
   const capOk = $derived(capLive && E.captureReady(h) && (n === 2 || (n === 0 && !!auto.capture)));
   const capAt = $derived(Math.floor(h.mon.max * E.CAPTURE_AT));
@@ -105,8 +107,8 @@
   </button>
   {/if}
   {#if shows(h, 'swap')}
-  <button class="move dash {sOk ? 'ready' : 'no'}" onmouseenter={() => (game.preview = n ? [...game.sel] : auto.swap ?? [])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = n ? [...game.sel] : auto.swap ?? [])} onblur={() => (game.preview = [])} data-coach="swap" data-key="s" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
-    <span><span class="mn"><Key k="S" pad="RT" /><WeaponArt id={other.id} size={22} />Swap to {other.name}{#if swapCounter}<span class="tag counter">Counter</span>{/if}</span><span class="md">{#if buried}Buried by the rockslide: no swapping this turn{:else}{other.type} · <Elem e={markOf(other)} />{elemLabel(other)}{/if}</span></span><span class="need dice">{#if E.freeSwap(h)}Free{:else}<CostDie c="any" />{/if}</span>
+  <button class="move dash {sOk ? 'ready' : 'no'}" class:fits={!!fits && sOk} onmouseenter={() => (game.preview = n ? [...game.sel] : auto.swap ?? [])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = n ? [...game.sel] : auto.swap ?? [])} onblur={() => (game.preview = [])} data-coach="swap" data-key="s" aria-disabled={!sOk} onclick={() => sOk && game.swap()}>
+    <span><span class="mn"><Key k="S" pad="RT" /><WeaponArt id={other.id} size={22} />Swap to {other.name}{#if swapCounter}<span class="tag counter">Counter</span>{/if}{#if fits && sOk && !buried}<span class="tag fit">{fits} fits</span>{/if}</span><span class="md">{#if buried}Buried by the rockslide: no swapping this turn{:else}{other.type} · <Elem e={markOf(other)} />{elemLabel(other)}{/if}</span></span><span class="need dice">{#if E.freeSwap(h)}Free{:else}<CostDie c="any" />{/if}</span>
   </button>
   {/if}
   <!-- With everything on it's always shown, so players learn it exists before it's available. In the second and third
@@ -150,4 +152,6 @@
   .elemrow { display: flex; gap: 6px 12px; align-items: center; flex-wrap: wrap; }
   .smeter { flex: 1 1 110px; display: flex; gap: 6px; align-items: center; font-size: var(--fs-sm); min-width: 0; }
   .smeter .bar { flex: 1; height: 6px; }
+  .move.fits { border-color: var(--gold); }
+  .tag.fit { color: var(--gold-hi); border-color: var(--gold); }
 </style>

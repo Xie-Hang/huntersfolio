@@ -20,6 +20,8 @@ const STARTER = ['blade', 'maul', 'bow'];
 function avail(kind: 'w' | 'a', id: string, M: E.MonsterDef) {
   const src = E.gearSource(kind, id), st = E.MONSTERS[src]?.tier ?? 1;
   if (kind === 'w' && STARTER.includes(id)) return true;
+  // the Oath line costs coin and bounties, not parts: count it from past its own tier (bounties take hunting to earn)
+  if (kind === 'w' && WEAPONS[id].bounties) return M.tier > (WEAPONS[id].tier ?? 1);
   if (kind === 'a' && id === 'jerkin') return true;
   if (M.tier < 1.5) return src === 'gorehorn' && M.id !== 'gorehorn';
   return st < M.tier && src !== M.id;

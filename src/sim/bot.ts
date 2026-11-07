@@ -12,7 +12,7 @@ import * as E from '../engine';
 import { nextRandom } from '../engine/rng';
 
 export type Skill = 'skilled' | 'casual';
-export interface Policy { skill: Skill; capture: boolean; goal?: string[]; noCharge?: boolean; noGuard?: boolean }
+export interface Policy { skill: Skill; capture: boolean; goal?: string[]; noCharge?: boolean; noGuard?: boolean; /** never swap to fit a roll */ noRollSwap?: boolean }
 
 const clone = (h: Hunt): Hunt => JSON.parse(JSON.stringify(h));
 const ICE_VALUE = 15;
@@ -146,7 +146,7 @@ function tryExposeCombo(h: Hunt, p: Policy): boolean {
  *  so an awkward roll for one is often a good one for the other). Paid with a blank when there is one. */
 function tryRollSwap(h: Hunt, p: Policy): boolean {
   // casual players don't swap to fit a roll (7 Nov playtest: none of the four ever swapped)
-  if (p.skill !== 'skilled' || h.over || E.freeDice(h).length < 2) return false;
+  if (p.skill !== 'skilled' || p.noRollSwap || h.over || E.freeDice(h).length < 2) return false;
   const oth = E.otherWeapon(h);
   if (!E.canHit(h, oth) || effFor(h, oth, h.target) === 0) return false;
   const pay = E.autoDice(h, 'swap'); if (!pay) return false;
