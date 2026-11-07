@@ -1,4 +1,4 @@
-// The Tuskling — the Foothills, steps 3 and 7 (the tutorial island, Nov 2026). A young Gorehorn.
+// The Tuskling — the Foothills, steps 3 and 7 (the tutorial island, Nov 2026). A Gorehorn calf: the island's exam is its parent.
 // First hunt: aim at a part, and a broken part drops its material. It has two: its Hide (blades break it) and its
 // Tusks (blades can't). Second hunt: use your salve, and Snare it once it's weak; it tires when hurt, which gives the
 // capture a clear window. Four dice, any face.
@@ -8,7 +8,8 @@ export const tuskling: MonsterDef = {
   id: 'tuskling',
   name: 'The Tuskling',
   short: 'Tuskling',
-  kind: 'Young Gorehorn',
+  kind: 'Gorehorn calf',
+  youngOf: 'gorehorn',
   elem: 'Stone',
   weak: 'Gale',
   resist: 'Ember',
@@ -20,7 +21,7 @@ export const tuskling: MonsterDef = {
   common: 'tuskhide',
   rarePart: 'tusks',
   rare: 'milktusk',
-  habits: 'A young Gorehorn, all hide and little tusks. It jabs twice, then bites. When it’s badly hurt it tires and stands still.',
+  habits: 'A Gorehorn calf, all hide and little tusks. It jabs twice, then bites. When it’s badly hurt it tires and stands still.',
   intro: 'A Tuskling trots out of the ferns, little tusks first.',
   enrageText: 'It squeals and stamps.',
   // the tusks come first: the hunt opens aimed at the part a blade can't break, so aiming is the thing to learn

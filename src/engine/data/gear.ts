@@ -60,7 +60,7 @@ export const ITEMS: Record<string, ItemDef> = Object.fromEntries(items.filter(in
 /** One charm per monster: a single small perk that deepens a playstyle. Crafted, never reinforced. */
 const charms: CharmDef[] = [
   // the Foothills' charm (Mekkman, Nov 2026: 'deal small damage when you block')
-  { id: 'clawcharm', tier: 0.5, foothills: true, name: 'Claw Charm', src: 'Burrowmole', perk: 'When you Block, you hit back for 3 a die.', effect: 'blockBite', craft: { coin: 60, moleclaw: 2 } },
+  { id: 'clawcharm', tier: 0.5, foothills: true, name: 'Claw Charm', src: 'Cinderpup', perk: 'When you Block, you hit back for 3 a die.', effect: 'blockBite', craft: { coin: 60, moleclaw: 2 } },
   { id: 'tuskcharm', name: 'Tusk Charm', src: 'Gorehorn', perk: 'When you daze the monster, you heal 20.', effect: 'dazeHeal', craft: { coin: 150, tusk: 1, hide: 2 } },
   { id: 'plumecharm', name: 'Plume Charm', src: 'Galeshrike', perk: 'The hit that exposes a part gets Expose’s bonus too.', effect: 'exposeSelf', craft: { coin: 150, pinion: 1, plume: 2 } },
   { id: 'kilncharm', name: 'Kiln Charm', src: 'Cinderback', perk: 'Charge costs 1 die instead of 2.', effect: 'charge1', craft: { coin: 150, ventgland: 1, cinderscale: 2 } },
@@ -99,13 +99,13 @@ export const CHARMS: Record<string, CharmDef> = Object.fromEntries(charms.filter
 
 const mats: MaterialDef[] = [
   // the Foothills (the tutorial island, Nov 2026)
-  { id: 'tuft', base: 'Bristle Tuft', src: 'Scuttlehog', sell: 5, how: 'Every Scuttlehog hunt' },
-  { id: 'shell', base: 'Crab Shell', src: 'Snapclaw', sell: 10, how: 'Every Snapclaw hunt' },
+  { id: 'tuft', base: 'Hatchling Down', src: 'Cragling', sell: 5, how: 'Every Cragling hunt' },
+  { id: 'shell', base: 'Kit Scale', src: 'Rimekit', sell: 10, how: 'Every Rimekit hunt' },
   { id: 'tuskhide', base: 'Tuskling Hide', src: 'Tuskling', sell: 10, how: 'Every Tuskling hunt, or break its hide' },
   { id: 'milktusk', base: 'Milk Tusk', src: 'Tuskling', sell: 20, how: 'Break the Tuskling\u2019s tusks (a maul)' },
-  { id: 'moleclaw', base: 'Mole Claw', src: 'Burrowmole', sell: 10, how: 'Every Burrowmole hunt' },
-  { id: 'marmotfur', base: 'Marmot Fur', src: 'Gustmarmot', sell: 10, how: 'Every Gustmarmot hunt' },
-  { id: 'galegland', base: 'Gale Gland', src: 'Gustmarmot', sell: 40, how: 'Rare: break the Gustmarmot\u2019s cheeks (always, the first time you need one)' },
+  { id: 'moleclaw', base: 'Cinder Claw', src: 'Cinderpup', sell: 10, how: 'Every Cinderpup hunt' },
+  { id: 'marmotfur', base: 'Shrike Down', src: 'Shrikelet', sell: 10, how: 'Every Shrikelet hunt' },
+  { id: 'galegland', base: 'Gale Gland', src: 'Shrikelet', sell: 40, how: 'Rare: break the Shrikelet\u2019s beak (always, the first time you need one)' },
   { id: 'hide', base: 'Hide', src: 'Gorehorn', sell: 20, how: 'Every Gorehorn hunt' },
   { id: 'tusk', base: 'Tusk', src: 'Gorehorn', sell: 60, how: 'Break the Gorehorn’s tusks (Blunt best)' },
   { id: 'pelt', base: 'Bristled Pelt', src: 'Gorehorn', sell: 60, how: 'Break the Gorehorn’s hide (Cut best)' },

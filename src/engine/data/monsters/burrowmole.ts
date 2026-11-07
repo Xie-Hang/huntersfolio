@@ -1,4 +1,5 @@
-// The Burrowmole — the Foothills, step 5 (the tutorial island, Nov 2026). A mole that digs under the trail.
+// The Cinderpup (id burrowmole: ids kept so saves carry over) — the Foothills, step 5 (the tutorial island, Nov 2026).
+// A Cinderback pup: it digs like its parent, without the molten shell yet.
 // It teaches swapping: it scratches twice, then digs in, and while it's underground only a Blunt weapon reaches it.
 // Any maul hit drives it back up (stunned, its tunnel bite lost). Its Snout breaks to a maul. Reroll and Daze are
 // taught here too: four dice, and Rend appears on the blade as the reason to reroll.
@@ -6,13 +7,14 @@ import type { Intent, MonsterDef } from '../../types';
 
 export const burrowmole: MonsterDef = {
   id: 'burrowmole',
-  name: 'The Burrowmole',
-  short: 'Burrowmole',
-  kind: 'Trail mole',
+  name: 'The Cinderpup',
+  short: 'Cinderpup',
+  kind: 'Cinderback pup',
+  youngOf: 'cinderback',
   burrower: true,
-  elem: 'Stone',
-  weak: 'Gale',
-  resist: 'Ember',
+  elem: 'Ember',
+  weak: 'Stone',
+  resist: 'Frost',
   hp: 120,
   tier: 0.5,
   requires: 'tuskling',
@@ -21,9 +23,9 @@ export const burrowmole: MonsterDef = {
   common: 'moleclaw',
   rarePart: 'snout',
   rare: 'moleclaw',
-  habits: 'Scratches twice, then digs under the trail and bites from below. Underground, only a maul reaches it, and a maul hit drives it back up.',
-  intro: 'The trail heaves. A Burrowmole pokes its snout out.',
-  enrageText: 'It chitters angrily.',
+  habits: 'A Cinderback pup, its shell still cool. It scratches twice, then digs under the trail and bites from below. Underground, only a maul reaches it, and a maul hit drives it back up.',
+  intro: 'The trail heaves, warm underfoot. A Cinderpup pokes its snout out.',
+  enrageText: 'It snorts little sparks.',
   parts: [{ id: 'snout', name: 'Snout', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: 'Break it for a claw', mat: 'moleclaw', hp: 70, brk: 'Its snout is bruised flat.' }],
 
   intent(h, type): Intent {

@@ -2,21 +2,23 @@
 // here with a Training Blade and one move, and each step adds one thing. Save.island is the step reached; absent
 // means done (saves from before the island, and anyone who skipped it). See the island plan doc for the full ladder.
 //
+// Its monsters are the young of the Ridge's (Mekkman, Nov 2026); their ids predate that and are kept so saves carry
+// over: scuttlehog = the Cragling, snapclaw = the Rimekit, burrowmole = the Cinderpup, gustmarmot = the Shrikelet.
 // The steps (all three slices built, Nov 2026):
-//   0 hunt the Scuttlehog          dice into a move, end the turn
-//   1 hunt the Snapclaw            faces, its next move, Block (Undo, no prompt)
+//   0 hunt the Cragling            dice into a move, end the turn
+//   1 hunt the Rimekit             faces, its next move, Block (Undo, no prompt)
 //   2 the Forge: the Hunter's Blade
 //   3 hunt the Tuskling            aim at a part, breaks drop materials
 //   4 the lodge: take the maul     two weapons
-//   5 hunt the Burrowmole          swap, Reroll, Daze (and Rend, the reason to reroll)
+//   5 hunt the Cinderpup           swap, Reroll, Daze (and Rend, the reason to reroll)
 //   6 the Shop: buy a salve        items (selling is offered once you have one)
 //   7 hunt the Tuskling again      use an item, Snare capture, Flow
 //   8 the Forge: a Hide Vest        armor (and bounties, in the full game)
-//   9 hunt the Gustmarmot          wind-ups, Charge, Enraged
+//   9 hunt the Shrikelet           wind-ups, Charge, Enraged
 //  10 the Forge: track a recipe     elements (the Whistling Blade is Gale; the Gorehorn is weak to Gale), tracking
-//  11 hunt the Gustmarmot again    a rare drop (its Gale Gland, always, this once)
+//  11 hunt the Shrikelet again     a rare drop (its Gale Gland, always, this once)
 //  12 the Forge: make it            the blade, a charm, reinforcing (the vest)
-//  13 hunt the Snapclaw again      nothing new: practice, on your own
+//  13 hunt the Rimekit again       nothing new: practice, on your own
 //  14 the Shop                      Smoke Pouch and Whetstone
 //  15 the Gorehorn: promotion hunt  no prompts; winning makes you a Hunter (rank F) and opens Ashfall Ridge
 import type { Save } from './types';

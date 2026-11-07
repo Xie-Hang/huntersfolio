@@ -3,6 +3,11 @@
   // With no hunt (Hunt Board thumbnail, bestiary) they're drawn still. A new monster needs a plate here.
   import type { Hunt } from '../../engine';
   import Gorehorn from './plates/Gorehorn.svelte';
+  import Tuskling from './plates/Tuskling.svelte';
+  import Cragling from './plates/Cragling.svelte';
+  import Rimekit from './plates/Rimekit.svelte';
+  import Cinderpup from './plates/Cinderpup.svelte';
+  import Shrikelet from './plates/Shrikelet.svelte';
   import Galeshrike from './plates/Galeshrike.svelte';
   import Cinderback from './plates/Cinderback.svelte';
   import Rimetail from './plates/Rimetail.svelte';
@@ -30,12 +35,12 @@
 <div class="plate-stage">
 {#if scene}<Scene region={(ALL_MONSTERS[mon]?.tier ?? 1) === 2.2 ? 'hollow' : (ALL_MONSTERS[mon]?.tier ?? 1) === 3.2 ? 'mire' : (ALL_MONSTERS[mon]?.tier ?? 1) === 4 ? 'caldera' : (ALL_MONSTERS[mon]?.tier ?? 1) === 3 ? 'spire' : [2, 2.4].includes(ALL_MONSTERS[mon]?.tier ?? 1) ? 'mire' : 'ridge'} />{/if}
 {#if ALL_MONSTERS[mon]?.variantOf}<Variant {mon} {hunt} />
-<!-- the Foothills (Nov 2026): placeholders until their plates are drawn, posed still -->
-{:else if mon === 'scuttlehog'}<div class="young" style="--k:.68"><Gorehorn hunt={null} /></div>
-{:else if mon === 'snapclaw'}<div class="young" style="--k:.8"><Emberwhelk hunt={null} /></div>
-{:else if mon === 'tuskling'}<div class="young" style="--k:.84"><Gorehorn hunt={null} /></div>
-{:else if mon === 'burrowmole'}<div class="young" style="--k:.82"><Cinderback hunt={null} /></div>
-{:else if mon === 'gustmarmot'}<div class="young" style="--k:.8"><Galeshrike hunt={null} /></div>
+<!-- the Foothills (Nov 2026): the young of the Ridge's monsters (ids kept from before they were recast) -->
+{:else if mon === 'scuttlehog'}<Cragling {hunt} />
+{:else if mon === 'snapclaw'}<Rimekit {hunt} />
+{:else if mon === 'tuskling'}<Tuskling {hunt} />
+{:else if mon === 'burrowmole'}<Cinderpup {hunt} />
+{:else if mon === 'gustmarmot'}<Shrikelet {hunt} />
 {:else if mon === 'gorehorn'}<Gorehorn {hunt} />
 {:else if mon === 'galeshrike'}<Galeshrike {hunt} />
 {:else if mon === 'cinderback'}<Cinderback {hunt} />
@@ -59,6 +64,5 @@
 
 <style>
   .plate-stage { position: relative; }
-  .young { transform: scale(var(--k)); transform-origin: 50% 85%; }
   .plate-stage :global(svg.wc) { position: relative; }
 </style>

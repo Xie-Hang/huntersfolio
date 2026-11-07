@@ -193,7 +193,7 @@ export interface PartState { hp: number; max: number; broken: boolean; exposed: 
 export interface MonsterState {
   /** a counter stance's one-off punishment already happened this turn */
   stanceUsed?: boolean;
-  /** the Burrowmole (the Foothills) has dug in at least once this hunt */
+  /** the Cinderpup (id burrowmole, the Foothills) has dug in at least once this hunt */
   dug?: boolean;
   /** turns it's still held by a trap */
   trapped?: number;
@@ -382,6 +382,8 @@ export interface MonsterDef {
   /** a Foothills monster (the tutorial island, Nov 2026): how many dice you roll against it and which faces they can
    *  show. What the hunt screen shows comes from the island step (engine/island.ts, ui/reveal.ts). */
   island?: { dice: number; faces: Face[] };
+  /** a Foothills monster is the young of a Ridge monster (Mekkman, Nov 2026): that monster's id */
+  youngOf?: string;
   /** a shorter name for the hunt screen's header, when the full one doesn't fit beside its chips */
   panelName?: string;
   /** a variant of this monster (the changed Ashfall Ridge, Nov 2026): same body, new element and mechanic */

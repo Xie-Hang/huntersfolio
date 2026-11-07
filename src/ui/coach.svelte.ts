@@ -59,7 +59,7 @@ const ISLAND: Tip[] = [
   {
     id: 'i-begin', guide: true, learn: true, at: ['begin'],
     when: () => game.view === 'board' && !game.hunt && E.islandStep(game.save) === 0,
-    text: () => 'Your first hunt: a Scuttlehog. Click Hunt.',
+    text: () => 'Your first hunt: a Cragling. Click Hunt.',
     done: () => game.view === 'hunt'
   },
   {
@@ -251,7 +251,7 @@ const ISLAND: Tip[] = [
   {
     id: 'i-tracked', guide: true, info: true, at: ['begin'],
     when: () => E.islandStep(game.save) === 11 && game.view === 'board' && game.boardMon && !huntOn(),
-    text: () => 'Tracked. Its rare gland drops from Gustmarmots.',
+    text: () => 'Tracked. Its rare gland drops from Shrikelets.',
     next: 'Got it'
   },
   {
