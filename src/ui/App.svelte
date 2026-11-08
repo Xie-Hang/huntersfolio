@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Help from './screens/Help.svelte';
+  import { help } from './notes.svelte';
   import * as E from '../engine';
   import { game, type View } from './game.svelte';
   import Modal from './parts/Modal.svelte';
@@ -49,7 +51,6 @@
     const r = Object.values(game.save.record);
     return { captures: r.reduce((n, x) => n + x.captures, 0), breaks: r.reduce((n, x) => n + Object.values(x.breaks).reduce((a, b) => a + b, 0), 0) };
   });
-  let helpOpen = $state(false);
   let resetArmed = $state(false);
   let setToast = $state('');
   let resetTimer: ReturnType<typeof setTimeout>;
@@ -114,6 +115,14 @@
     settingsOpen = false; introOpen = !navigator.webdriver;
     setToast = 'Save reset. You start again in the Foothills.';
   }
+  // Help opens where you are (Nov 2026): in a hunt on How to hunt; at the Forge or Shop on your gear notes; on the
+  // board on the monster states you've met
+  function openHelp() {
+    if (game.view === 'hunt' || !game.save.hunts) return help.show('hunt');
+    const group = game.view === 'forge' || game.view === 'shop' ? 'Gear' : 'Monster states';
+    const first = Object.values(E.NOTES).find(n => n.group === group && (n.always || help.seen.includes(n.id)));
+    help.show('notes', first?.id ?? null);
+  }
 </script>
 
 <svelte:window onpointerdown={() => music.unlock()} onkeydown={() => music.unlock()} onclickcapture={uiClick} />
@@ -147,7 +156,7 @@
       {#if game.inHunt}
         <button class="btn quiet" onclick={() => game.abandon()}>Abandon hunt</button>
       {/if}
-      <button class="iconbtn" aria-label="How to play" aria-expanded={helpOpen} onclick={() => (helpOpen = true)}>
+      <button class="iconbtn" aria-label="How to play" aria-expanded={help.open} onclick={openHelp}>
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5" /><path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.8" /><circle cx="12" cy="17.2" r=".6" fill="currentColor" /></svg>
       </button>
       <button class="iconbtn" aria-label="Settings" aria-expanded={settingsOpen} onclick={() => (settingsOpen = true)}>
@@ -236,49 +245,7 @@
     </div>
   </Modal>
 
-  <Modal bind:open={helpOpen} title="How to play" wide>
-    <!-- Nov 2026 text audit: was one 466-word list. Now short sections, one open at a time, each line one rule -->
-    <div class="helpsecs">
-      <details name="help" open><summary>The loop</summary><ul class="helplist">
-        <li>Pick a monster and gear at the Hunt Board, hunt it, bring back coin and materials.</li>
-        <li>Make and reinforce gear at the Forge; buy items at the Shop.</li>
-        <li>Progress saves itself. Reset it in Settings.</li>
-      </ul></details>
-      <details name="help"><summary>A turn</summary><ul class="helplist">
-        <li>You roll 4 dice: fangs, claws and blanks. Each move needs certain faces.</li>
-        <li>The panel by the monster shows its next move and how much it will hurt.</li>
-        <li>Spend dice on moves, <strong>Block</strong> with the rest (a blank blocks best), then end the turn.</li>
-        <li><strong>Reroll</strong> the dice you select; rerolls are counted for the whole hunt.</li>
-        <li><strong>Charge</strong>: spend 2 dice, and your first hit next turn deals double.</li>
-        <li><strong>Capture</strong> at 20% HP or less: a Snare closes at the end of your turn. Double part materials.</li>
-      </ul></details>
-      <details name="help"><summary>Parts and breaks</summary><ul class="helplist">
-        <li>Aim at a part under the monster. Its chip says how fast the weapon in your hand breaks it; every hit still hurts the monster.</li>
-        <li>A broken part weakens the monster and drops its material.</li>
-        <li>Rare materials get likelier with every miss, and drop for sure on the 12th break of their part.</li>
-      </ul></details>
-      <details name="help"><summary>Weapons</summary><ul class="helplist">
-        <li><span class="tag flow" style="margin:0">Flow</span> Cut: the middle move (Cleave) gives back a reroll, once a turn.</li>
-        <li><span class="tag daze" style="margin:0">Daze</span> Blunt: Skullcrack to the head fills a daze meter; full, it loses a turn.</li>
-        <li><span class="tag expose" style="margin:0">Expose</span> Pierce: Quick Shot exposes the part: it takes +20% and breaks twice as fast for 2 turns, from either weapon.</li>
-        <li>You carry two weapons. Swapping costs 1 die (a blank is fine). <strong>Avg</strong> is damage a turn with all 4 dice.</li>
-      </ul></details>
-      <details name="help"><summary>Monster states</summary><ul class="helplist">
-        <li><strong>Airborne:</strong> only <b>Pierce</b> reaches it. <b>Pinning Shot</b> or a <b>Weighted Net</b> brings it down.</li>
-        <li><strong>Underground:</strong> only <b>Blunt</b> reaches it, and some take ½. A heavy <b>Blunt</b> hit or <b>Blast Powder</b> forces it up.</li>
-        <li><strong>Ice plating:</strong> takes your hits before HP. Each hit breaks a layer, <b>Cut</b> breaks two, a <b>Firepot</b> all.</li>
-        <li><strong>Molten:</strong> <b>Cut</b> and <b>Blunt</b> hits burn you.</li>
-      </ul></details>
-      <details name="help"><summary>Gear</summary><ul class="helplist">
-        <li>Armor sets your HP and Block. Resist armor cuts one element's attacks by 30%.</li>
-        <li>Charms give one small perk each. Items are a free action once a turn.</li>
-        <li>Each reinforcement (+1 to +3) adds 5% damage, or 10 HP and 1 block to armor. Upgrades keep it.</li>
-      </ul></details>
-      <details name="help"><summary>Controls</summary><ul class="helplist">
-        <li><strong>Controller:</strong> d-pad moves, <kbd>A</kbd> selects, <kbd>B</kbd> back. In a hunt: <kbd>Y</kbd> end turn · <kbd>X</kbd> reroll · <kbd>LB</kbd> <kbd>RB</kbd> aim · <kbd>LT</kbd> undo · <kbd>RT</kbd> swap. Elsewhere <kbd>LB</kbd> <kbd>RB</kbd> switch screens. <kbd>Menu</kbd> settings, <kbd>View</kbd> this help.</li>
-      </ul></details>
-    </div>
-  </Modal>
+  <Modal bind:open={help.open} title="How to play" wide><Help /></Modal>
 
   {#if game.view === 'board'}<Board />
   {:else if game.view === 'forge'}<Forge />

@@ -8,6 +8,7 @@
   import { shake } from '../../fx';
   import Plate from '../../parts/Plate.svelte';
   import Rich from '../../parts/Rich.svelte';
+  import { met } from '../../notes.svelte';
   import Telegraph from './Telegraph.svelte';
 
   const h = $derived(game.hunt!);
@@ -47,7 +48,9 @@
     out.push(...(M.badges?.(h) ?? []));
     if (E.canCapture(h) && shows(h, 'capture')) out.push({ key: 'cap', label: 'Capturable', short: h.snareSet ? '**Snare** closes at turn end' : h.snares ? `ready to **Snare** · ${h.snares} left` : 'no **Snares** left', cls: 'gold', desc: `It’s weak enough to catch.\nSet a **Snare** with 2 dice.\nIt closes at the end of your turn, unless it hits you for ${E.CHARGE_BREAK} or more.\nA capture gives double part materials.` });
     return out;
-  });
+  })
+  // a tag on screen counts as meeting its Hunter's Notes entry
+  $effect(() => { for (const st of statuses) met(st.label); });;
   // A status arriving mid-hunt gets a moment on the stage, not just a tag (Nov 2026 playtest: Enraged went unnoticed):
   // its name across the picture for a couple of seconds, and Enraged shakes the stage. Once per status per hunt.
   let seenSt = new Set<string>(), seenFor = '', banner = $state<{ label: string; short: string; cls: string; n: number } | null>(null), bn = 0;

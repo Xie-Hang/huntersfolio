@@ -12,6 +12,7 @@ export * from './achievements';
 export * from './edition';
 export * from './behaviour';
 export * from './bounty';
+export * from './data/glossary';
 export * from './rank';
 export * from './advice';
 export * from './island';
