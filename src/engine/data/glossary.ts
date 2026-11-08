@@ -37,7 +37,7 @@ const notes: NoteDef[] = [
     lines: ['You carry two weapons. **Swap** costs 1 die, and a blank is fine.'] },
   { id: 'charge', name: 'Charge', group: 'Your turn', aka: ['Charged'],
     head: 'Your next hit does double',
-    lines: ['Spend 2 dice. Your first hit next turn does double.', 'Any hit that gets through your **Block** breaks it.'] },
+    lines: ['Spend 2 dice. Your first hit next turn does double.', 'If its attack hurts you, the charge is lost.'] },
   // Damage types
   { id: 'cut', name: 'Cut', group: 'Damage types',
     head: 'Blades',

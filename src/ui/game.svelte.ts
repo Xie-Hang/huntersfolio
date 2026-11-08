@@ -349,7 +349,9 @@ class Game {
     PL.turnEnd(h);
     if (E.intentInfo(h).dmg > 0) { this.pulse.actIntent = h.intent; this.pulse.act++; }
     // everything you lost this end of turn, not only the attack: a Spark going off or slime used to land with no number
-    const t0 = h.stats.taken; E.endTurn(h); const taken = h.stats.taken - t0;
+    const t0 = h.stats.taken, charging = h.chargePending; E.endTurn(h); const taken = h.stats.taken - t0;
+    // the charge, seen: lost to its attack, or ready for this turn's first hit (Mekkman, 8 Nov 2026)
+    if (charging && !h.over) setTimeout(() => this.float('player', h.chargeReady ? 'Charged! Next hit ×2' : 'Charge lost', h.chargeReady ? 'heal' : 'hurt'), taken ? 500 : 0);
     if (taken) { this.float('player', `−${taken}`, 'hurt'); if (taken >= E.CHARGE_BREAK) this.shake('player'); }
     if (taken) sfx(taken >= E.CHARGE_BREAK ? 'hurtHeavy' : 'hurt');
     if (!h.over) setTimeout(() => sfx('diceRoll'), taken ? 260 : 0); // the new roll lands after the hit

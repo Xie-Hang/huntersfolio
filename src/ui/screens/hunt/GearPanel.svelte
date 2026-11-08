@@ -37,7 +37,7 @@
   const iceLine = $derived.by(() => { const n = Math.min(h.mon.plating, E.plateBreak(h, w)), word = E.monsterOf(h).plateWord ?? 'ice', hot = (E.monsterOf(h).burn?.(h, w) ?? 0) > 0 && !h.arm.burnproof ? `, burns you ${E.monsterOf(h).burn!(h, w)}` : ''; return n >= h.mon.plating ? `Breaks all the ${word === 'scale' ? 'scales' : word} (${n} layer${n > 1 ? 's' : ''})${hot}` : `Only breaks ${n} layer${n > 1 ? 's' : ''} of ${word}${hot}`; });
   const exposedNow = $derived(h.mon.parts[h.target]?.exposed > 0 && !h.mon.parts[h.target].broken);
   /** the number the move will roughly deal now: air halves it, an exposed target adds Expose's bonus */
-  const shownDmg = (d: number) => { let x = halfAir ? Math.round(d / 2) : d; if (exposedNow) x = Math.round(x * E.EXPOSE_DMG); return x; };
+  const shownDmg = (d: number) => { let x = halfAir ? Math.round(d / 2) : d; if (exposedNow) x = Math.round(x * E.EXPOSE_DMG); if (h.chargeReady) x *= 2; return x; };
   /** the status meters of the status weapons you carry (one per status) */
   const smeters = $derived([...new Set(h.weps.map(x => x.status).filter(Boolean))].map(st => ({ st: st!, ...E.statusOf(h, st!) })));
   const STONE: Record<string, string> = { Infect: '#9fc062', Spark: '#f0dd6e', Drain: '#d0545b' };
@@ -92,7 +92,7 @@
     {@const miss = marks.filter(x => !x.have).map(x => (x.c === 'C' ? 'fang' : 'claw'))}
     <button class="move atk {ok ? 'ready' : 'no'}" class:pick={ok && (reps > 0 || picks(mv.need))} onmouseenter={() => (game.preview = ok ? (reps > 0 ? [...game.sel] : E.pickDice(h, mv.need, game.sel) ?? []) : [])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = ok ? (reps > 0 ? [...game.sel] : E.pickDice(h, mv.need, game.sel) ?? []) : [])} onblur={() => (game.preview = [])} data-coach={i === bestReady ? 'move' : mv.flow ? 'move-flow' : undefined} data-key={MOVE_KEYS[i]?.toLowerCase()} aria-disabled={!ok} onclick={() => ok && game.move(i)}>
       <span>
-        <span class="mn"><Key k={MOVE_KEYS[i]} />{mv.name}{#if reps > 1}<span class="reps"> ×{reps}</span>{/if}{#if mv.flow && shows(h, 'flow')}<span class="tag flow" use:detail={E.SIGNATURES.Cut.text}>Flow</span>{/if}{#if mv.daze && shows(h, 'daze')}<span class="tag daze" use:detail={E.SIGNATURES.Blunt.text}>Daze</span>{/if}{#if full && mv.expose}<span class="tag expose" use:detail={E.SIGNATURES.Pierce.text}>Expose</span>{/if}{#if !over && tipText?.includes(mv.name)}<span class="tag counter">Counter</span>{/if}</span>
+        <span class="mn"><Key k={MOVE_KEYS[i]} />{mv.name}{#if reps > 1}<span class="reps"> ×{reps}</span>{/if}{#if h.chargeReady && ok}<span class="tag chg">Charged ×2</span>{/if}{#if mv.flow && shows(h, 'flow')}<span class="tag flow" use:detail={E.SIGNATURES.Cut.text}>Flow</span>{/if}{#if mv.daze && shows(h, 'daze')}<span class="tag daze" use:detail={E.SIGNATURES.Blunt.text}>Daze</span>{/if}{#if full && mv.expose}<span class="tag expose" use:detail={E.SIGNATURES.Pierce.text}>Expose</span>{/if}{#if !over && tipText?.includes(mv.name)}<span class="tag counter">Counter</span>{/if}</span>
         <span class="md">{#if iceNow}<b class="dn ice" title={iceLine}>{iceShort}</b><span class="dx">{iceLine}</span>{:else}<b class="dn">{shownDmg(mv.dmg)}</b><span class="dw"> damage{reps > 1 ? ' each' : ''}</span><span class="dx">{halfAir ? ', ½ in the air' : ''}{exposedNow ? ', Exposed' : ''}{shows(h, 'rend') && shows(h, 'parts') && mv.part ? ` · ×${mv.part} toward breaks` : ''}{shows(h, 'daze') && mv.daze ? ` · Daze +${mv.daze}` : ''}{shows(h, 'flow') && mv.flow ? (h.flowUsed ? ' · Reroll used this turn' : ' · +1 Reroll') : ''}{full && mv.expose && !exposedNow && !h.mon.parts[h.target]?.broken ? ' · use first, later hits +20%' : ''}</span>{/if}</span>
       </span>
       <span class="need dice" aria-label="Needs {needLabel(mv.need)}{miss.length && !over ? `; missing ${miss.join(', ')}` : ''}">{#each mv.need as c}<CostDie {c} />{/each}</span>
@@ -107,7 +107,7 @@
   {/if}
   {#if shows(h, 'charge')}
   <button class="move dash {cOk ? 'ready' : 'no'}" class:warn={chargeRisk} onmouseenter={() => (game.preview = n ? [...game.sel] : auto.charge ?? [])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = n ? [...game.sel] : auto.charge ?? [])} onblur={() => (game.preview = [])} data-coach="charge" data-key="c" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
-    <span><span class="mn"><Key k="C" />Charge</span><span class="md" use:detail={chargeRisk ? `The −${inc?.net} coming breaks it.` : 'Your first hit next turn does double.\nAny hit that gets through your **Block** breaks it.'}>{chargeRisk ? `−${inc?.net} breaks it` : 'Next hit ×2 · any hit breaks it'}</span></span><span class="need dice"><span class="x">{cd}×</span><CostDie c="any" /></span>
+    <span><span class="mn"><Key k="C" />Charge</span><span class="md" use:detail={h.chargePending ? 'Your first hit next turn does double.\nIf its attack hurts you, the charge is lost.' : chargeRisk ? 'Its attack this turn will hurt you, and that would lose the charge.' : 'Your first hit next turn does double.\nIf its attack hurts you, the charge is lost.'}>{h.chargePending ? 'Charging · next hit ×2' : chargeRisk ? 'Lost to its attack' : 'Next hit ×2 · lost if hurt'}</span></span><span class="need dice"><span class="x">{cd}×</span><CostDie c="any" /></span>
   </button>
   {/if}
   {#if shows(h, 'swap')}
@@ -160,4 +160,6 @@
   .md .dn { font-weight: inherit; }
   .ileft { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.15; }
   .ileft small { font-size: var(--fs-sm); color: var(--soft); font-weight: 500; }
+  /* a charge that took: every attack shows it (Mekkman, 8 Nov 2026: "need more visual cues for charge") */
+  .tag.chg { color: #1e140c; background: var(--gold-hi); border-color: var(--gold-hi); }
 </style>

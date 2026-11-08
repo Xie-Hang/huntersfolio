@@ -119,7 +119,7 @@ const ISLAND: Tip[] = [
     // turn 3 rolls two blanks (game.rerollLesson): Reroll, after two turns of fixed rolls (Mekkman, 8 Nov 2026)
     id: 'i-pick', head: 'Reroll', guide: true, learn: true, at: ['dice'],
     when: () => { const h = onIsland('scuttlehog'); return !!h && h.turn >= 3 && h.rerolls > 0 && h.stats.rerollsUsed === 0 && unusedTurn(h) && h.dice.some((d, i) => d.face === 'B' && !game.sel.includes(i)); },
-    text: () => "Two blanks. They don’t fit any move. Select both of them.",
+    text: () => "Two blanks. They’re not wild, so they don’t fit any move. Select both of them.",
     // (only once there are blanks: the all-Fang turns before must not count as having done it)
     done: () => { const h = hunt(); return !!h && (h.stats.rerollsUsed > 0 || (h.dice.some(d => d.face === 'B') && h.dice.every((d, i) => d.face !== 'B' || game.sel.includes(i)))); }
   },
@@ -307,8 +307,8 @@ const ISLAND: Tip[] = [
     done: () => game.view === 'board' && E.islandStep(game.save) === n
   })),
   // ---- the town tour, right after the promotion hunt (Mekkman, 8 Nov 2026): tracking, charms, reinforcing, selling
-  // and bounties, in one go, instead of one a hunt on the Ridge. The explaining ones aren't locked (Got it), so a
-  // missing target (nothing selected at the Forge) can't hold the tour up
+  // and bounties, in one go, instead of one a hunt on the Ridge. Locked like the island (testers wandered off and the
+  // cards landed in the wrong place): selecting what each points at moves on
   {
     id: 'i-tforge', head: 'Town', guide: true, learn: true, at: () => (game.view === 'hunt' ? ['to-forge', 'nav-forge'] : ['nav-forge']),
     when: () => tour() && game.view !== 'forge' && !huntOn(),
@@ -316,28 +316,29 @@ const ISLAND: Tip[] = [
     done: () => tour() && game.view === 'forge'
   },
   {
-    id: 'i-ttrack', head: 'Tracking', info: true, gotit: true, at: ['track', 'forge-act'],
+    id: 'i-ttrack', head: 'Tracking', guide: true, info: true, at: ['track'],
     when: () => tour() && game.view === 'forge',
     text: () => 'Can’t afford something yet? Select Track, and its materials get flagged on the Hunt Board and in the Shop.'
   },
+
   {
-    id: 'i-tcharm', head: 'Charms', info: true, gotit: true, at: ['tab-charms'],
+    // (Got it, not the button: selecting it would spend coin and materials)
+    id: 'i-treinf', head: 'Reinforcing', guide: true, info: true, gotit: true, at: ['forge-act'],
+    when: () => tour() && game.view === 'forge' && game.forgeTab === 'weapons',
+    text: () => 'Reinforcing makes gear you love even better. A weapon hits 5% harder, or armour gets 10 more HP and 1 more **Block**. You can do it up to 3 times.'
+  },  {
+    id: 'i-tcharm', head: 'Charms', guide: true, info: true, at: ['tab-charms'],
     when: () => tour() && game.view === 'forge',
     text: () => 'Charms give one small perk, and you wear one at a time. You’ll find them here.'
   },
   {
-    id: 'i-treinf', head: 'Reinforcing', info: true, gotit: true, at: ['forge-act'],
-    when: () => tour() && game.view === 'forge',
-    text: () => 'Reinforcing makes gear you love even better. A weapon hits 5% harder, or armour gets 10 more HP and 1 more **Block**. You can do it up to 3 times.'
-  },
-  {
     id: 'i-tshop', head: 'Town', guide: true, learn: true, at: ['nav-shop'],
-    when: () => tour() && game.view !== 'shop' && !huntOn() && game.save.tips.includes('i-treinf'),
+    when: () => tour() && game.view !== 'shop' && !huntOn() && game.save.tips.includes('i-tcharm'),
     text: () => 'Next, the Shop.',
     done: () => tour() && game.view === 'shop'
   },
   {
-    id: 'i-tsell', head: 'Selling', info: true, gotit: true, at: ['shop-sell'],
+    id: 'i-tsell', head: 'Selling', guide: true, info: true, at: ['shop-sell'],
     when: () => tour() && game.view === 'shop',
     text: () => 'Materials no recipe needs sell here for coin. Handy when you’re short.'
   },
@@ -348,7 +349,7 @@ const ISLAND: Tip[] = [
     done: () => tour() && game.view === 'board' && game.save.tips.includes('i-tsell')
   },
   {
-    id: 'i-tbounty', head: 'Bounties', info: true, gotit: true, at: ['bounties'],
+    id: 'i-tbounty', head: 'Bounties', guide: true, info: true, at: ['bounties'],
     when: () => tour() && E.BOUNTIES_ON && game.view === 'board' && game.save.tips.includes('i-tsell'),
     text: () => 'Bounties! Pick one before you hunt a monster you’ve beaten. Meet its goals and win for extra coin. They unlock three charms at the Forge too.'
   },
@@ -448,7 +449,7 @@ export const TIPS: Tip[] = [
     // (any turn from 2 on without a big hit coming: it used to wait for a turn with no attack at all, which some monsters
     // rarely give, and the Charge button now waits for this lesson)
     when: () => { const h = hunt(); return !!h && shows(h, 'all') && h.turn >= 2 && unusedTurn(h) && E.intentInfo(h).threat < 3 && !h.chargePending && !h.chargeReady; },
-    text: () => `${game.save.tips.includes('capture') ? 'Here’s another Hunter technique,' : 'Now that you’re a Hunter, I can show you this one,'} **Charge**. Spend ${E.chargeDice(hunt()!)} dice now and your first hit next turn does double. Careful, any hit that gets through your **Block** breaks it.`,
+    text: () => `${game.save.tips.includes('capture') ? 'Here’s another Hunter technique,' : 'Now that you’re a Hunter, I can show you this one,'} **Charge**. Spend ${E.chargeDice(hunt()!)} dice now and your first hit next turn does double. Careful, if its attack hurts you, the charge is lost.`,
     done: () => !!hunt()?.chargePending
   },
   {

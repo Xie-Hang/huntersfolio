@@ -49,6 +49,8 @@
   /** Nov 2026 text audit: a line shows what you own and its next step; the rest of the line, and gear from monsters
    *  you haven't hunted, folds into "+N more" (a click opens it in place). Text detail: Full shows everything. */
   let opened = $state<Record<string, boolean>>({});
+  /** lines folded away by their header */
+  let shut = $state<Record<string, boolean>>({});
   function fold<G extends { group: string; rows: { id: string; depth: number }[] }>(g: G): G & { folded: number } {
     if (full() || readyOnly || opened[`${tab}:${g.group}`]) return { ...g, folded: 0 };
     const keep = g.rows.filter(r => {
@@ -117,7 +119,9 @@
     {/if}
     <div class="flist">
       {#each groups as g (g.group)}
-        <div class="fgroup"><span>{g.group}</span>{#if g.sig}<span class="tag {g.sig.tag}" style="margin:0">{g.sig.name}</span>{/if}</div>
+        <!-- a line folds away with its header (Mekkman, 8 Nov 2026) -->
+        <button class="fgroup fgbtn" aria-expanded={!shut[`${tab}:${g.group}`]} onclick={() => (shut[`${tab}:${g.group}`] = !shut[`${tab}:${g.group}`])}><span><span class="chev" aria-hidden="true">{shut[`${tab}:${g.group}`] ? '▸' : '▾'}</span>{g.group}</span>{#if g.sig}<span class="tag {g.sig.tag}" style="margin:0">{g.sig.name}</span>{/if}</button>
+        {#if !shut[`${tab}:${g.group}`]}
         {#if kind !== 'w'}
           <div class="ftiles">
             {#each g.rows as r (r.id)}
@@ -152,7 +156,9 @@
           </button>
         {/each}
         {/if}
-        {#if g.folded}<button class="ffold" onclick={() => (opened[`${tab}:${g.group}`] = true)}>+{g.folded} more {kind === 'w' ? 'in these lines' : 'not hunted yet'}</button>{/if}
+        <!-- (a count only: the rest of a line shows as you get closer to it, Mekkman 8 Nov 2026) -->
+        {#if g.folded}<p class="ffold">+{g.folded} more {kind === 'w' ? 'in these lines' : 'not hunted yet'}</p>{/if}
+        {/if}
       {:else}
         <p class="ital" style="padding:12px;margin:0">Nothing is ready to make yet. Untick "Ready to make" to see everything.</p>
       {/each}
@@ -261,9 +267,10 @@
 </div>
 
 <style>
-  .ffold { all: unset; cursor: pointer; display: block; padding: 6px 12px 10px; font-size: var(--fs-sm); color: var(--muted); }
-  .ffold:hover, .ffold:focus-visible { color: var(--fg); text-decoration: underline; }
-  .ffold:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: -2px; }
+  .ffold { margin: 0; padding: 6px 12px 10px; font-size: var(--fs-sm); color: var(--muted); }
+  .fgbtn { width: 100%; background: none; border: 0; border-bottom: 1px solid var(--line); font: inherit; cursor: pointer; text-align: left; }
+  .fgbtn:hover { color: var(--fg); }
+  .fgbtn .chev { display: inline-block; width: 1.2em; }
   /* armor and charms are compared side by side, so the tile grid gets the wider share (three columns); the
      weapon trees keep the even split */
   @media (min-width: 1100px) { .forgegrid.wide { grid-template-columns: minmax(0, 1.75fr) minmax(340px, 1fr); } }
