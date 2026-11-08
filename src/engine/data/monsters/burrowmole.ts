@@ -32,7 +32,7 @@ export const burrowmole: MonsterDef = {
   intent(h, type): Intent {
     switch (type) {
       case 'scratch': return { name: 'Scratch', text: 'It rakes at you with its claws.', dmg: 14, threat: 1 };
-      case 'dig': return { name: 'Digging', text: 'It tears into the trail.', dmg: 0, threat: 0, note: 'After your turn it’s underground. **Blunt** only' };
+      case 'dig': return { name: 'Digging', text: 'It tears into the trail.', dmg: 0, threat: 0, note: 'After your turn it’s underground. Only **Blunt** reaches it' };
       case 'bite': return { name: 'Tunnel Bite', text: 'The ground bulges under your feet.', dmg: 24, threat: 2, note: 'A **Blunt** hit drives it up' };
       case 'stunned': return { name: 'Stunned', text: 'It blinks in the daylight.', dmg: 0, threat: 0, note: 'Its bite is stopped' };
       case 'dazed': return { name: 'Dazed', text: 'It wobbles, dizzy.', dmg: 0, threat: 0, note: 'It loses its turn' };
@@ -53,7 +53,7 @@ export const burrowmole: MonsterDef = {
     return null;
   },
   canHit(h, w) { return !h.mon.under || w.type === 'Blunt'; },
-  cantHitReason() { return 'It’s underground. **Blunt** only.'; },
+  cantHitReason() { return 'It’s underground. Only **Blunt** reaches it.'; },
   onHit(h, _mv, w) {
     if (h.mon.under && w.type === 'Blunt') { h.mon.under = false; h.intent = 'stunned'; return 'Your maul shakes the ground. It pops up, stunned!'; }
     return null;

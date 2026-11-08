@@ -46,7 +46,7 @@ export const quakeback: MonsterDef = {
     switch (type) {
       case 'swipe': return { name: 'Stone Swipe', text: 'It scrapes forward, claws grinding on the rock.', dmg: enr ? 30 : 24, threat: 1 };
       case 'rockfall': return { name: 'Rockfall', text: 'It hunches and shrugs its back ridge: the slope above you starts to slide!', dmg: enr ? 68 : 58, threat: enr ? 4 : 3, note: 'Breaking its back ridge stops this' };
-      case 'burrow': return { name: 'Burrowing', text: 'It claws into the ground and vanishes in a burst of grit.', dmg: 0, threat: 0, note: 'After your turn it’s underground. **Blunt** only then' };
+      case 'burrow': return { name: 'Burrowing', text: 'It claws into the ground and vanishes in a burst of grit.', dmg: 0, threat: 0, note: 'After your turn it’s underground. Only **Blunt** reaches it then' };
       case 'tremor': return { name: 'Tremor', text: 'The ground bucks under your feet.', dmg: enr ? 50 : 42, threat: 2, note: h.arm.steadyfoot ? 'Your boots hold. All your dice next turn' : '1 fewer die next turn' };
       // enraged (Nov 2026): its tremor turned up, two dice knocked loose
       case 'quake': return { name: 'Great Tremor', text: 'The whole slope lurches under you.', dmg: enr ? 50 : 42, threat: 3, isNew: !m.newSeen, note: h.arm.steadyfoot ? 'Your boots hold. All your dice next turn' : '2 fewer dice next turn. A 3-dice **Blunt** move drives it up and stops it' };
@@ -98,7 +98,7 @@ export const quakeback: MonsterDef = {
   },
 
   canHit(h, w) { return !h.mon.under || w.type === 'Blunt'; },
-  cantHitReason() { return 'It’s underground. **Blunt** only.'; },
+  cantHitReason() { return 'It’s underground. Only **Blunt** reaches it.'; },
   hitMod(h) { return h.mon.under ? { mult: 0.5, note: 'through the ground ½' } : null; },
   onHit(h, mv, w) {
     // deeper than the Cinderback: only the heaviest Blunt move (3 dice) drives it up
@@ -111,7 +111,7 @@ export const quakeback: MonsterDef = {
     if (m.under) {
       if (carries(h, 'Blunt')) return null; // the badge and the weapon panel already say only Blunt reaches it
       if (h.item === 'blast' && h.itemCharges > 0) return '**Blast Powder** forces it up.';
-      return 'It’s underground. **Blunt** only. Tremors next.';
+      return 'It’s underground. Only **Blunt** reaches it. Tremors next.';
     }
     if (type === 'burrow' && !m.parts.claws.broken && carries(h, 'Cut')) return `Its claws dig it in. Your ${carryingName(h, 'Cut')} breaks them.`;
     return null;

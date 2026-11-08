@@ -35,15 +35,15 @@
     if (m.enraged && shows(h, 'enraged')) out.push({ key: 'enr', label: 'Enraged', short: 'hits harder', cls: 'hot', desc: 'Below half HP it gets angry.\nSome of its moves change too.' });
     if (mud) out.push({ key: 'mud', n: m.wallow, label: 'Mud-caked', short: `hide takes ½ · ${tn(m.wallow)}`, cls: 'mud', desc: 'Mud covers its hide until it dries.\n**Pierce** goes through mud.' });
     if (h.intent === 'trapped') out.push({ key: 'trap', n: m.trapped ?? 1, label: 'Trapped', short: `loses ${tn(m.trapped ?? 1)}`, cls: 'gold', desc: 'It’s caught in your trap.\nA **Snare** set now always closes.' });
-    if (m.air) out.push({ key: 'air', label: 'Airborne', short: '**Pierce** only', cls: 'gale', desc: `It’s flying.${isFlier ? '\n**Pinning Shot** or a **Weighted Net** brings it down.' : ''}` });
+    if (m.air) out.push({ key: 'air', label: 'Airborne', short: 'Only **Pierce** reaches it', cls: 'gale', desc: `It’s flying.${isFlier ? '\n**Pinning Shot** or a **Weighted Net** brings it down.' : ''}` });
     if (m.under) { const half = M.hitMod?.(h, h.target, E.currentWeapon(h))?.mult === 0.5;
-      out.push({ key: 'under', label: 'Underground', short: half ? '**Blunt** only, takes ½' : '**Blunt** only', cls: 'mud', desc: `It’s dug in.\nA heavy **Blunt** hit or **Blast Powder** forces it up, dazed, and stops its next move.` }); }
+      out.push({ key: 'under', label: 'Underground', short: half ? 'Only **Blunt** reaches it, takes ½' : 'Only **Blunt** reaches it', cls: 'mud', desc: `It’s dug in.\nA heavy **Blunt** hit or **Blast Powder** forces it up, dazed, and stops its next move.` }); }
     // every plated monster gets the badge but the Ashtail, whose burning scales have their own (Nov 2026 bug hunt: the Cragwing's slate had none)
     if (m.plating > 0 && !M.plateHot) { const pw = M.plateWord ?? 'ice'; out.push({ key: 'ice', label: `${pw[0].toUpperCase() + pw.slice(1)} ×${m.plating}`, short: 'takes hits before HP', cls: 'ice', desc: `Each hit breaks a layer of ${pw}, and **Cut** breaks two.\n**Charge** and whetstone bonuses go into the ${pw}.\nA **Firepot** ${pw === 'ice' ? 'melts' : 'cracks'} it all.` }); }
     if (m.molten > 0) out.push({ key: 'molt', n: m.molten, label: 'Molten', short: `**Cut**/**Blunt** burn you ${m.enraged ? 8 : 5} · ${tn(m.molten)}`, cls: 'hot', desc: 'Its shell is red-hot until it cools.' });
     if ((m.shell ?? 0) > 0) out.push({ key: 'shell', label: 'In its shell', short: 'takes ½ until it acts', cls: 'stone', desc: 'It’s pulled into its shell.' });
     if ((m.slime ?? 0) > 0 && M.inflicts !== 'Drain') out.push({ key: 'slime', n: m.slime, label: 'Slime', short: `burns you · ${tn(m.slime!)}`, cls: 'hot', desc: 'It burns you a little at the end of each turn.\nBreaking its foot ends it for good.' });
-    if ((m.mirage ?? 0) > 0 && M.id !== 'fenmother') out.push({ key: 'mir', n: m.mirage, label: 'Images', short: `1st hit only · ${tn(m.mirage!)}`, cls: 'ice', desc: `Mirror images surround it.\nYour later hits each turn break an image.${(m.hits ?? 0) > 0 ? '\nYour hit this turn has landed.' : ''}` });
+    if ((m.mirage ?? 0) > 0 && M.id !== 'fenmother') out.push({ key: 'mir', n: m.mirage, label: 'Images', short: `Only your 1st hit lands · ${tn(m.mirage!)}`, cls: 'ice', desc: `Mirror images surround it.\nYour later hits each turn break an image.${(m.hits ?? 0) > 0 ? '\nYour hit this turn has landed.' : ''}` });
     if ((m.infected ?? 0) > 0) out.push({ key: 'inf', n: m.infected, label: 'Infected', short: `takes ${m.infectDmg} a turn · ${tn(m.infected!)}`, cls: 'inf', desc: 'Your weapon’s **Infect** has taken hold.\nIt ticks at the end of each turn.' });
     out.push(...(M.badges?.(h) ?? []));
     if (E.canCapture(h) && shows(h, 'capture')) out.push({ key: 'cap', label: 'Capturable', short: h.snareSet ? '**Snare** closes at turn end' : h.snares ? `ready to **Snare** · ${h.snares} left` : 'no **Snares** left', cls: 'gold', desc: `It’s weak enough to catch.\nSet a **Snare** with 2 dice.\nIt closes at the end of your turn, unless it hits you for ${E.CHARGE_BREAK} or more.\nA capture gives double part materials.` });
@@ -111,7 +111,7 @@
           </div>
         {:else if E.carries(h, 'Blunt')}
           <div class="hpline" data-coach="daze">
-            <div class="ph"><span class="label" style="color:var(--daze)">Daze · Blunt hits to the {headName}</span><span class="mono">{m.dazeLock ? 'Recovering' : `${m.daze} / ${m.dazeMax}`}</span></div>
+            <div class="ph"><span class="label" style="color:var(--daze)">Daze · Daze moves on the {headName}</span><span class="mono">{m.dazeLock ? 'Recovering' : `${m.daze} / ${m.dazeMax}`}</span></div>
             <div class="bar" class:locked={m.dazeLock > 0}><i style="width:{pct(m.daze, m.dazeMax)}%;background:var(--daze)"></i></div>
           </div>
         {/if}

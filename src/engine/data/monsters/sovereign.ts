@@ -87,10 +87,10 @@ export const sovereign: MonsterDef = {
       case 'slam': return { name: 'Body Slam', text: 'It rears up and falls on you.', dmg: d(34), threat: 2 };
       case 'windup': return { name: 'Lowering its tusks', text: 'Rock crusts over it as the tusks swing forward.', dmg: 0, threat: 0, note: 'Charges next turn' };
       case 'charge': return { name: 'Sovereign Charge', text: 'The whole mass comes at you behind the tusks!', dmg: d(90), threat: 4 };
-      case 'takeoff': return { name: 'Spreading its wings', text: 'The swallowed wings unfold from its back and beat.', dmg: 0, threat: 0, note: 'After your turn it’s airborne. **Pierce** only then' };
+      case 'takeoff': return { name: 'Spreading its wings', text: 'The swallowed wings unfold from its back and beat.', dmg: 0, threat: 0, note: 'After your turn it’s airborne. Only **Pierce** reaches it then' };
       case 'gust': return { name: 'Downdraft', text: 'It beats a gale down on you.', dmg: d(37), threat: 2, halfGuard: true, note: 'Your **Block** is ½' };
       case 'dive': return { name: 'Wing Dive', text: 'It folds the wings and drops!', dmg: d(83), threat: 4, note: 'Then it lands' };
-      case 'burrow': return { name: 'Sinking', text: 'It melts down into the crater floor.', dmg: 0, threat: 0, note: 'After your turn it’s underground. **Blunt** only then' };
+      case 'burrow': return { name: 'Sinking', text: 'It melts down into the crater floor.', dmg: 0, threat: 0, note: 'After your turn it’s underground. Only **Blunt** reaches it then' };
       case 'erupt': return { name: 'Caldera Eruption', text: 'The ground glows and swells under you!', dmg: d(83), threat: 4, note: 'A 2-dice **Blunt** move drives it up and stops it' };
       case 'swipe': return { name: 'Molten Lash', text: 'It lashes out, dripping fire.', dmg: d(35), threat: 2 };
       case 'coat': return { name: 'Freezing over', text: 'Frost runs along its tail and across its back.', dmg: 0, threat: 0, note: 'After your turn it has 2 layers of ice' };
@@ -166,7 +166,7 @@ export const sovereign: MonsterDef = {
   },
 
   canHit(h, w) { return h.mon.air ? w.type === 'Pierce' : h.mon.under ? w.type === 'Blunt' : true; },
-  cantHitReason(h) { return h.mon.air ? 'It’s airborne. **Pierce** only.' : 'It’s underground. **Blunt** only.'; },
+  cantHitReason(h) { return h.mon.air ? 'It’s airborne. Only **Pierce** reaches it.' : 'It’s underground. Only **Blunt** reaches it.'; },
   reachable(h, partId, w) {
     if (partId === 'wings' && h.mon.air) return w.type === 'Pierce';
     return true;

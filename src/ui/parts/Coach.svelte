@@ -63,7 +63,7 @@
     const done = () => { if (ack && t) setTimeout(() => coach.markSeen(t.id), 0); }; // (by id: using the target often moves on to another screen first)
     const block = (e: Event) => {
       if (!allowed(e.target)) { e.preventDefault(); e.stopImmediatePropagation(); return; }
-      if (e.type === 'click' && !cardEl?.contains(e.target as Node)) done();
+      if (e.type === 'click' && !cardEl?.contains(e.target as Node) && !!target?.contains(e.target as Node)) done();
     };
     // a key passes when it's focus on the target, or the shortcut for the target (1 for the first die, Q for a move…)
     const keys = (e: KeyboardEvent) => { if (e.key === 'Tab' || e.key === 'Shift') return;

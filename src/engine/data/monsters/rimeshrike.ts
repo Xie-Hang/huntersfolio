@@ -44,12 +44,12 @@ export const rimeshrike: MonsterDef = {
     const m = h.mon, enr = m.enraged, tb = m.parts.talons.broken;
     switch (type) {
       case 'rake': return { name: 'Icicle Rake', text: tb ? 'It hops forward, slashing with its one good foot.' : 'It hops forward, iced talons spread wide.', dmg: tb ? 26 : 37, threat: 2 };
-      case 'takeoff': { const n = airTurns(h); return { name: 'Taking off', text: 'It shakes the ice off its wings and leaps into the wind.', dmg: 0, threat: 0, note: `After your turn it’s airborne for ${n} turn${n > 1 ? 's' : ''}. **Pierce** only then` }; }
+      case 'takeoff': { const n = airTurns(h); return { name: 'Taking off', text: 'It shakes the ice off its wings and leaps into the wind.', dmg: 0, threat: 0, note: `After your turn it’s airborne for ${n} turn${n > 1 ? 's' : ''}. Only **Pierce** reaches it then` }; }
       case 'gust': return { name: 'Hail Buffet', text: 'It beats its wings and drives a sheet of hail at you.', dmg: enr ? 48 : 39, threat: 2, halfGuard: true, note: 'Your **Block** is ½' };
       case 'circle': return { name: 'Circling high', text: 'It climbs into a wide circle, frost trailing from its wings.', dmg: 0, threat: 0, note: 'Dives next turn' };
       case 'dive': return { name: 'Frost Dive', text: 'It folds its wings and drops, wrapped in freezing air!', dmg: tb ? (enr ? 88 : 78) : (enr ? 112 : 100), threat: enr ? 4 : 3, note: m.parts.crest.broken ? 'Then it’s stuck for a turn' : 'Then it’s stuck, and **Frost-shrouded**' };
       // enraged (Nov 2026): its ice shroud turned up, shed as shards and grown back thicker
-      case 'flare': return { name: 'Frost Flare', text: 'It shrugs, and ice shards burst off its feathers.', dmg: 30, threat: 2, isNew: !m.newSeen, note: 'Its ice regrows and it stays down a turn longer. **Cut**/**Blunt** only' };
+      case 'flare': return { name: 'Frost Flare', text: 'It shrugs, and ice shards burst off its feathers.', dmg: 30, threat: 2, isNew: !m.newSeen, note: 'Its ice regrows and it stays down a turn longer. **Cut**/Only **Blunt** reaches it' };
       case 'stuck': return { name: 'Beak stuck', text: 'Its beak is buried in the frozen ground. It thrashes to pull free.', dmg: 0, threat: 0, note: 'On the ground' };
       case 'crashed': return { name: 'Brought down', text: 'It crashes to the ground in a spray of ice.', dmg: 0, threat: 0, note: 'On the ground, shroud gone. It loses its turn' };
       case 'dazed': return { name: 'Dazed', text: 'It reels, eyes unfocused, swaying on its feet.', dmg: 0, threat: 0, note: 'It loses its turn' };
@@ -100,8 +100,8 @@ export const rimeshrike: MonsterDef = {
   },
   cantHitReason(h) {
     return h.mon.air
-      ? 'It’s airborne. **Pierce** only.'
-      : 'It’s **Frost-shrouded**. **Cut** and **Blunt** only.';
+      ? 'It’s airborne. Only **Pierce** reaches it.'
+      : 'It’s **Frost-shrouded**. Only **Cut** and **Blunt** reach it.';
   },
 
   reachable(h, partId, w) {
@@ -115,7 +115,7 @@ export const rimeshrike: MonsterDef = {
 
   badges(h) {
     const s = h.mon.shroud ?? 0;
-    return s > 0 ? [{ key: 'shroud', n: s, label: 'Frost-shrouded', short: `**Cut**/**Blunt** only · ${s} action${s > 1 ? 's' : ''}`, cls: 'ice', desc: 'Ice covers its feathers.\nThe ice melts after it acts twice on the ground.\nBreaking its crest ends it for good.' }] : [];
+    return s > 0 ? [{ key: 'shroud', n: s, label: 'Frost-shrouded', short: `Only **Cut** and **Blunt** reach it · ${s} action${s > 1 ? 's' : ''}`, cls: 'ice', desc: 'Ice covers its feathers.\nThe ice melts after it acts twice on the ground.\nBreaking its crest ends it for good.' }] : [];
   },
 
   tip(h, type) {
@@ -123,7 +123,7 @@ export const rimeshrike: MonsterDef = {
     if (m.air && carries(h, 'Pierce')) return `**Pinning Shot** brings it down without its shroud (${carryingName(h, 'Pierce')}).`;
     if (m.air && h.item === 'net' && h.itemCharges > 0) return 'A **Weighted Net** brings it down without its shroud.';
     if ((m.shroud ?? 0) > 0 && carries(h, 'Blunt')) return `${dazeTag} It’s on the ground, dazed and **Frost-shrouded**. Its crest is open.`;
-    if (m.air) return 'It’s airborne. **Pierce** only.';
+    if (m.air) return 'It’s airborne. Only **Pierce** reaches it.';
     if (type === 'takeoff') return 'Its shroud is gone. Every weapon reaches it this turn.';
     return null;
   },

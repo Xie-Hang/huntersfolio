@@ -51,7 +51,7 @@ export const arcmoth: MonsterDef = {
     switch (type) {
       case 'rake': return { name: 'Wing Rake', text: 'It beats low and drags a dusty wing edge across you.', dmg: enr ? 30 : 24, threat: 1, note: spark ? 'If it hits, 1 **Spark** on you' : 'No **Spark** this time' };
       case 'dust': return { name: 'Dust Cloud', text: 'It shakes its torn wings and the dust pours off it.', dmg: enr ? 14 : 10, threat: 1, note: spark ? 'If it hits, 1 **Spark** on you' : 'No **Spark** this time' };
-      case 'takeoff': return { name: 'Taking off', text: 'Its wings snap open.', dmg: 0, threat: 0, note: `After your turn it’s airborne for ${MOTH_AIR} turns. **Pierce** only then` };
+      case 'takeoff': return { name: 'Taking off', text: 'Its wings snap open.', dmg: 0, threat: 0, note: `After your turn it’s airborne for ${MOTH_AIR} turns. Only **Pierce** reaches it then` };
       case 'beat': return { name: 'Wingbeat', text: 'It hangs above you, fanning dust down.', dmg: enr ? 20 : 16, threat: 1, note: spark ? 'If it hits, 1 **Spark** on you' : 'No **Spark** this time' };
       // enraged (Nov 2026): the first wingbeat of each flight is a Static Surge: two Spark pips at once
       case 'surge': return { name: 'Static Surge', text: 'Its wings flare white and the dust crackles down in a sheet.', dmg: enr ? 20 : 16, threat: 2, isNew: !m.newSeen, note: 'If it hits, 2 **Spark** on you. A **Blunt** move grounds 1, **Pierce** brings it down' };
@@ -94,7 +94,7 @@ export const arcmoth: MonsterDef = {
   },
 
   canHit(h, w) { return !h.mon.air || w.type === 'Pierce'; },
-  cantHitReason() { return 'It’s airborne. **Pierce** only.'; },
+  cantHitReason() { return 'It’s airborne. Only **Pierce** reaches it.'; },
   onPin(h) { if (h.mon.air) { groundFlier(h); return 'Pin: the arrow pins a wing. It comes fluttering down!'; } return null; },
 
   tip(h) {

@@ -222,7 +222,7 @@ const ISLAND: Tip[] = [
     // the maul's trick, straight after the blade's (Mekkman, 8 Nov 2026)
     id: 'i-dazemaul', head: 'Daze', guide: true, info: true, gotit: true, at: ['slot-w1'],
     when: () => E.islandStep(game.save) === 4 && beforePractice() && game.view === 'board' && game.boardMon && !huntOn() && !game.lesson && game.save.tips.includes('i-flow'),
-    text: () => 'Your maul’s trick is **Daze**. **Skullcrack** fills its **Daze** meter, and when the meter is full, it loses its turn.'
+    text: () => 'Your maul’s trick is **Daze**. Moves tagged **Daze** fill its **Daze** meter, and when the meter is full, it loses its turn.'
   },
   {
     // no Got it: selecting Hunt is the way on (Mekkman, 8 Nov 2026)

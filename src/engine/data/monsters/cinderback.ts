@@ -51,7 +51,7 @@ export const cinderback: MonsterDef = {
     const m = h.mon, enr = m.enraged, pb = m.parts.plate.broken;
     switch (type) {
       case 'swipe': return { name: enr ? 'Raking Swipes' : 'Claw Swipe', text: enr ? 'It rears up, claws glowing, and slashes twice.' : 'It scrapes forward, claws dragging sparks from the rock.', dmg: enr ? 34 : 26, threat: enr ? 2 : 1 };
-      case 'burrow': return { name: 'Burrowing', text: 'It tears into the ground and vanishes in a spray of hot grit.', dmg: 0, threat: 0, note: 'After your turn it’s underground, then erupts. **Blunt** only then' };
+      case 'burrow': return { name: 'Burrowing', text: 'It tears into the ground and vanishes in a spray of hot grit.', dmg: 0, threat: 0, note: 'After your turn it’s underground, then erupts. Only **Blunt** reaches it then' };
       case 'erupt': return { name: 'Eruption', text: 'The ground under your feet glows and bulges. Something is coming up!', dmg: pb ? (enr ? 60 : 48) : (enr ? 80 : 64), threat: enr ? 4 : 3, note: m.parts.vents.broken ? 'A heavy **Blunt** hit drives it up and stops it' : 'Driving it up stops it. Then its shell is molten for 2 turns' };
       // enraged (Nov 2026): every other time under, it sprays magma up through the cracks: Block can't stop it, but a
       // heavy Blunt hit drives it up and cancels it like an eruption
@@ -92,7 +92,7 @@ export const cinderback: MonsterDef = {
   },
 
   canHit(h, w) { return !h.mon.under || w.type === 'Blunt'; },
-  cantHitReason() { return 'It’s underground. **Blunt** only.'; },
+  cantHitReason() { return 'It’s underground. Only **Blunt** reaches it.'; },
 
   hitMod(h) {
     return h.mon.under ? { mult: 0.5, note: 'through the ground ½' } : null;
@@ -112,7 +112,7 @@ export const cinderback: MonsterDef = {
     if (m.under) {
       if (carries(h, 'Blunt')) return `${dazeTag} **Smash** or **Skullcrack** drives it up and stops the ${type === 'spray' ? 'spray' : 'eruption'} (${carryingName(h, 'Blunt')}).`;
       if (h.item && h.itemCharges > 0 && h.item === 'blast') return '**Blast Powder** forces it up.';
-      return 'It’s underground. **Blunt** only. It erupts next.';
+      return 'It’s underground. Only **Blunt** reaches it. It erupts next.';
     }
     if (m.molten > 0) return `Its shell is molten. **Cut** and **Blunt** hits burn you for ${moltenBurn(m.enraged)}.`;
     if (type === 'burrow' && carries(h, 'Blunt')) return `It digs in after this. Your ${carryingName(h, 'Blunt')} reaches it there.`;

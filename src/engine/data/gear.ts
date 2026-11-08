@@ -147,7 +147,7 @@ mats.push(
   { id: 'glasseye', tier: 2, base: 'Glass Eye', src: 'Mistglass', sell: 90, how: 'Break the Mistglass’s eyes (Pierce best)' },
   { id: 'mirrorheart', tier: 2, base: 'Mirror Heart', src: 'Mistglass', rare: true, sell: 450, how: 'Rare from Mistglass eye breaks' },
   { id: 'wardenstone', tier: 3, base: 'Wardenstone', src: 'Monolith Warden', sell: 45, how: 'Every Monolith Warden hunt' },
-  { id: 'wardenplate', tier: 3, base: 'Warden Plate', src: 'Monolith Warden', sell: 130, how: 'Break the Warden’s stone plates (Blunt only)' },
+  { id: 'wardenplate', tier: 3, base: 'Warden Plate', src: 'Monolith Warden', sell: 130, how: 'Break the Warden’s stone plates (only Blunt breaks them)' },
   { id: 'wardenarm', tier: 3, base: 'Boulder Fist', src: 'Monolith Warden', sell: 130, how: 'Break the Warden’s boulder arms (Cut best)' },
   { id: 'coreshard', tier: 3, base: 'Core Shard', src: 'Monolith Warden', sell: 130, how: 'Break the Warden’s core while it’s exposed (Pierce best)' },
   { id: 'wardencore', tier: 3, base: 'Warden Core', src: 'Monolith Warden', rare: true, sell: 650, how: 'Rare from Monolith Warden core breaks' },
