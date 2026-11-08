@@ -33,13 +33,13 @@ export const archeron: MonsterDef = {
   common: 'archplume',
   rarePart: 'wings',
   rare: 'stormquill',
-  habits: 'A Duskheron from the frozen pools, both heads crackling. A spear that lands leaves Spark on you; at 3 it goes off, and block can’t stop it. Its cry charges your dice: a charged die can only attack. Daze a head and its strike carries nothing.',
-  enragedHabit: 'Both heads cry together, a Static Field that charges three of your dice.',
+  habits: 'A Duskheron from the frozen pools, both heads crackling. A spear that lands leaves Spark on you; at 3 it goes off, and block can’t stop it. Its cry puts Static on your dice: a Static die can only attack. Daze a head and its strike carries nothing.',
+  enragedHabit: 'Both heads cry together, a Static Field that puts Static on three of your dice.',
   intro: 'Ice creaks in the reeds. Two heads rise, and the air between them snaps with static.',
   enrageText: 'Sparks run up both necks. The Archeron is enraged!',
   parts: [
-    { id: 'upper', name: 'Upper Head', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: '**Daze** here stops its strike. Breaking it ends its **Spark** for good', mat: 'archbeak', hp: 280, brk: 'The upper beak cracks. Its charge is gone.' },
-    { id: 'lower', name: 'Lower Head', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: '**Daze** here stops its strike. Breaking it ends its **Spark** for good', mat: 'archcrest', hp: 280, brk: 'The lower beak cracks. Its charge is gone.' },
+    { id: 'upper', name: 'Upper Head', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: '**Daze** here stops its strike. Breaking it ends its **Spark** for good', mat: 'archbeak', hp: 280, brk: 'The upper beak cracks. Its static is gone.' },
+    { id: 'lower', name: 'Lower Head', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: '**Daze** here stops its strike. Breaking it ends its **Spark** for good', mat: 'archcrest', hp: 280, brk: 'The lower beak cracks. Its static is gone.' },
     { id: 'wings', name: 'Wings', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Breaking them stops **Twin Spear**', mat: 'archpinion', hp: 300, brk: 'Its wings tear. It can’t rear up any more.' }
   ],
 
@@ -47,7 +47,7 @@ export const archeron: MonsterDef = {
     const r = duskheron.intent.call(this, h, type), acts = parse(type);
     const out = r.dmg ? { ...r, dmg: Math.round(r.dmg * HIT) } : { ...r };
     // enraged (Nov 2026): its cry turned up, a field that charges three of your dice
-    if (type === 'field') return { name: 'Static Field', text: 'Both heads cry out together. The air crackles around your hands.', dmg: 18, threat: 1, isNew: !h.mon.newSeen, note: h.arm.chargeProof ? 'Your armour keeps the charge off' : 'Charges 3 of your dice next turn. A charged die can only attack' };
+    if (type === 'field') return { name: 'Static Field', text: 'Both heads cry out together. The air crackles around your hands.', dmg: 18, threat: 1, isNew: !h.mon.newSeen, note: h.arm.chargeProof ? 'Your armour keeps the **Static** off' : '**Static** on 3 of your dice next turn. A **Static** die can only attack' };
     if (type === 'twin') return { ...out, note: 'Each head that hits puts 1 **Spark** on you' };
     if (!acts) return out;
     const cry = live(h, acts, 'screech') > 0 && !h.arm.chargeProof, thrusts = live(h, acts, 'thrust');
@@ -76,15 +76,15 @@ export const archeron: MonsterDef = {
     if (acts) {
       const thrusts = live(h, acts, 'thrust');
       if (landed && thrusts) lines.push(sparkPlayer(h, thrusts, sparkHit(h)));
-      if (live(h, acts, 'screech') && !h.arm.chargeProof) { h.mon.charge = CRY_DICE; lines.push(`The cry charges ${CRY_DICE} of your dice.`); }
+      if (live(h, acts, 'screech') && !h.arm.chargeProof) { h.mon.charge = CRY_DICE; lines.push(`The cry puts Static on ${CRY_DICE} of your dice.`); }
     }
-    if (type === 'field') { h.mon.newSeen = true; if (!h.arm.chargeProof) { h.mon.charge = 3; lines.push('The field charges 3 of your dice.'); } }
+    if (type === 'field') { h.mon.newSeen = true; if (!h.arm.chargeProof) { h.mon.charge = 3; lines.push('The field puts Static on 3 of your dice.'); } }
     if (type === 'dazed') lines.push('Both heads shake off the daze.');
     return lines.join(' ') || null;
   },
 
   tip(h, type) {
-    if (h.dice.some(d => d.charged && !d.used)) return 'A charged die can only attack. Blocking with it or leaving it sets it off.';
+    if (h.dice.some(d => d.charged && !d.used)) return 'A **Static** die can only attack. Blocking with it or leaving it sets it off.';
     if ((h.mon.pSpark ?? 0) >= 2 && carries(h, 'Blunt')) return `2 **Spark** on you. **Daze** to the thrusting head from your ${carryingName(h, 'Blunt')} stops it, and any **Blunt** move grounds 1.`;
     return duskheron.tip!.call(this, h, type);
   }

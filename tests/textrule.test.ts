@@ -6,10 +6,13 @@ import * as E from '../src/engine';
 const MAX = 30;
 describe('button text rule', () => {
   it('every charm has a short perk of 30 characters or fewer', () => {
-    for (const c of Object.values(E.CHARMS)) { expect(c.short, c.id).toBeTruthy(); expect(c.short!.length, `${c.id}: ${c.short}`).toBeLessThanOrEqual(MAX); }
+    for (const c of Object.values(E.CHARMS)) { expect(c.short, c.id).toBeTruthy(); expect(c.short!.replace(/\*\*/g, '').length, `${c.id}: ${c.short}`).toBeLessThanOrEqual(MAX); }
   });
   it('every item’s hunt-button line fits', () => {
     for (const it of Object.values(E.ITEMS)) if (!it.pouch && it.effect !== 'trapRush' && it.effect !== 'trapLand') { const l = it.line ?? it.desc; expect(l.length, `${it.id}: ${l}`).toBeLessThanOrEqual(MAX); }
+  });
+  it('every armour has a short perk of 30 characters or fewer (bold marks don’t count)', () => {
+    for (const a of Object.values(E.ARMORS)) { expect(a.short, a.id).toBeTruthy(); expect(a.short!.replace(/\*\*/g, '').length, `${a.id}: ${a.short}`).toBeLessThanOrEqual(MAX); }
   });
   it('every short item reason fits', () => {
     for (const v of Object.values(E.ITEM_SHORT)) expect(v.length, v).toBeLessThanOrEqual(MAX);

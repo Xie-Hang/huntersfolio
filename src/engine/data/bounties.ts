@@ -81,7 +81,7 @@ const ALL: BountyDef[] = [
   { id: 'fang2', mon: 'hollowfang', name: 'Cut loose', hard: true, goals: [{ k: 'feat', f: 'tornoff', text: 'Tear it off with a blade' }, { k: 'break', part: 'fangs' }], reward: hardV('bloodpearl') },
   { id: 'fever1', mon: 'feverjaw', name: 'Quick incision', goals: [{ k: 'feat', f: 'escape', text: 'Cut your way out of it' }, { k: 'noItem' }], reward: easy3 },
   { id: 'fever2', mon: 'feverjaw', name: 'Fever breaks', hard: true, goals: [{ k: 'break', part: 'sac' }, { k: 'turns', n: 12 }], reward: hard3('feverstone') },
-  { id: 'arch1', mon: 'archeron', name: 'Steady hands', goals: [{ k: 'never', f: 'chargehit', text: 'Never let a charged die go off' }], reward: easy3 },
+  { id: 'arch1', mon: 'archeron', name: 'Steady hands', goals: [{ k: 'never', f: 'chargehit', text: 'Never let a Static die go off' }], reward: easy3 },
   { id: 'arch2', mon: 'archeron', name: 'Storm quill', hard: true, goals: [{ k: 'feat', f: 'reelboth', text: 'Set both heads reeling' }, { k: 'break', part: 'wings' }], reward: hard3('stormquill') },
   { id: 'blood1', mon: 'bloodwhelk', name: 'Dry gills', goals: [{ k: 'break', part: 'gills' }, { k: 'turns', n: 12 }], reward: easy3 },
   { id: 'blood2', mon: 'bloodwhelk', name: 'Heart of the bog', hard: true, goals: [{ k: 'break', part: 'shell' }, { k: 'never', f: 'leeched', text: 'Never let its slime drink from you' }], reward: hard3('heartpearl') },

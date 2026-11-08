@@ -66,6 +66,8 @@ export interface ArmorDef {
   rerolls: number;
   resist: Element | null;
   perk: string;
+  /** one line, 30 characters or fewer, for the loadout slot and picker (8 Nov 2026) */
+  short?: string;
   blankx2?: boolean;
   breakHeal?: boolean;
   /** immune to burns from hitting a molten monster */

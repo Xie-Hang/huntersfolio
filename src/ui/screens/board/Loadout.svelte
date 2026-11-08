@@ -87,14 +87,14 @@
 {#snippet armorNote(a: E.ArmorInst)}
   {#if a.burnproof && M.burn}<span class="good">Immune to its {M.plateHot ? 'burning scales' : 'burns'}</span>{' · '}{/if}
   {#if a.infectLess && M.inflicts === 'Infect'}<span class="good">Shorter infections</span>{' · '}{/if}
-  {#if (a.sparkLess || a.chargeProof) && M.inflicts === 'Spark'}<span class="good">{a.chargeProof && M.id === 'archeron' ? 'Your dice can’t be charged' : 'Weaker Discharge'}</span>{' · '}{/if}
+  {#if (a.sparkLess || a.chargeProof) && M.inflicts === 'Spark'}<span class="good">{a.chargeProof && M.id === 'archeron' ? 'Static-proof dice' : 'Weaker Spark'}</span>{' · '}{/if}
   {#if a.latchMax && M.id === 'hollowfang'}<span class="good">Shorter latches</span>{' · '}{/if}
   {#if a.leechProof && M.id === 'bloodwhelk'}<span class="good">The slime can’t drain you</span>{' · '}{/if}
   {#if a.adaptive}<span class="good">Resists whatever element it attacks with −30%</span>
   {:else if !a.resist}<span class="neutral">No resistance</span>
-  {:else if M.elemOf}<span class="neutral">Resists its {a.resist} stance's attacks</span>
-  {:else if a.resist === M.elem}{#if full() || !M.elemental?.length}<span class="good">Resists its {M.elem} attacks −30%{M.elemental?.length ? ` (${M.elemental.join(', ')}; not its physical ones)` : ''}</span>{:else}<span class="good" use:detail={`${M.elemental.join(', ')}. Its other attacks are physical, and resist doesn’t touch those.`}>Resists {M.elemental.length} of its moves −30%</span>{/if}
-  {:else}<span class="bad">{a.resist} resist does nothing here</span>{/if}
+  {:else if M.elemOf}<span class="neutral">Resists its <b>{a.resist}</b> stance’s attacks</span>
+  {:else if a.resist === M.elem}{#if full() || !M.elemental?.length}<span class="good">Resists its <b>{M.elem}</b> attacks −30%{M.elemental?.length ? ` (${M.elemental.join(', ')}; not its physical ones)` : ''}</span>{:else}<span class="good" use:detail={`${M.elemental.join(', ')}. Its other attacks are physical, and resist doesn’t touch those.`}>Resists {M.elemental.length} of its moves −30%</span>{/if}
+  {:else}<span class="bad"><b>{a.resist}</b> resist unused here</span>{/if}
 {/snippet}
 
 {#snippet delta(v: number, cur: number)}
@@ -137,11 +137,11 @@
         <!-- the island fills these slots for you as you make things (no Change yet) -->
         {#if E.armorSlot(game.save) && L.armor && game.save.armors[L.armor]}
           {@const a = E.ownedArmor(game.save, L.armor)}
-          <div class="slot" data-slot="armor" data-coach="slot-armor"><span class="sl">Armor</span><span><span class="nm">{a.name}{#if a.lv}{' '}<span class="lv">+{a.lv}</span>{/if}</span><span class="sub2"><span>{a.hp} HP · block {a.guard} · {a.rerolls} rerolls</span></span></span></div>
+          <div class="slot" data-slot="armor" data-coach="slot-armor"><span class="sl">Armor</span><span><span class="nm">{a.name}{#if a.lv}{' '}<span class="lv">+{a.lv}</span>{/if}</span><span class="sub2"><span>{a.hp} HP · Block {a.guard} · {a.rerolls} Rerolls</span></span></span></div>
         {/if}
         {#if E.charmSlot(game.save) && L.charm}
           {@const c = E.CHARMS[L.charm]}
-          <div class="slot" data-slot="charm" data-coach="slot-charm"><span class="sl">Charm</span><span><span class="nm"><Icon id={L.charm} />{c.name}</span><span class="sub2"><span use:detail={c.perk}>{c.short ?? c.perk}</span></span></span></div>
+          <div class="slot" data-slot="charm" data-coach="slot-charm"><span class="sl">Charm</span><span><span class="nm"><Icon id={L.charm} />{c.name}</span><span class="sub2"><span use:detail={c.perk}><Rich text={c.short ?? c.perk} /></span></span></span></div>
         {/if}
         {#if E.itemSlot(game.save) && L.item}
           {@const it = E.ITEMS[L.item]}
@@ -157,7 +157,7 @@
         {@const a = E.ownedArmor(game.save, L.armor)}
         <button class="slot" data-slot="armor" onclick={() => open('armor')}>
           <span class="sl">Armor</span>
-          <span><span class="nm">{a.name}{#if a.lv}{' '}<span class="lv">+{a.lv}</span>{/if}</span><span class="sub2"><span>{a.hp} HP · block {a.guard} · {a.rerolls} rerolls</span><span>{@render armorNote(a)}</span></span></span>
+          <span><span class="nm">{a.name}{#if a.lv}{' '}<span class="lv">+{a.lv}</span>{/if}</span><span class="sub2"><span>{a.hp} HP · Block {a.guard} · {a.rerolls} Rerolls</span><span>{@render armorNote(a)}</span></span></span>
           <span class="chg">Change</span>
         </button>
       {/if}
@@ -165,7 +165,7 @@
         {@const c = E.CHARMS[L.charm]}
         <button class="slot" data-slot="charm" onclick={() => open('charm')}>
           <span class="sl">Charm</span>
-          <span><span class="nm"><Icon id={L.charm} />{c.name}</span><span class="sub2"><span use:detail={c.perk}>{c.short ?? c.perk}</span></span></span>
+          <span><span class="nm"><Icon id={L.charm} />{c.name}</span><span class="sub2"><span use:detail={c.perk}><Rich text={c.short ?? c.perk} /></span></span></span>
           <span class="chg">Change</span>
         </button>
       {:else}
@@ -282,7 +282,7 @@
             <button class="prow" aria-current={eq} onclick={() => choose(id)}>
               <span>
                 <span class="nm">{a.name}{#if a.lv}{' '}<span class="lv">+{a.lv}</span>{/if}{#if eq}<span class="badge">Equipped</span>{/if}</span>
-                <span class="ty">{a.perk}</span><span class="note">{@render armorNote(a)}</span>
+                <span class="ty"><span use:detail={a.perk}><Rich text={a.short ?? a.perk} /></span></span><span class="note">{@render armorNote(a)}</span>
               </span>
               <span class="num">{a.hp}{#if eq}<small>—</small>{:else}{@render delta(a.hp, cur.hp)}{/if}</span>
               <span class="num">{a.guard}{#if eq}<small>—</small>{:else}{@render delta(a.guard, cur.guard)}{/if}</span>
@@ -299,7 +299,7 @@
           {#each ids as id (id)}
             {@const c = E.CHARMS[id]}
             <button class="prow" aria-current={id === L.charm} onclick={() => choose(id)}>
-              <span><span class="nm"><Icon id={id} />{c.name}{#if id === L.charm}<span class="badge">Equipped</span>{/if}</span><span class="ty" use:detail={c.perk}>{c.short ?? c.perk}</span></span><span class="num"></span>
+              <span><span class="nm"><Icon id={id} />{c.name}{#if id === L.charm}<span class="badge">Equipped</span>{/if}</span><span class="ty" use:detail={c.perk}><Rich text={c.short ?? c.perk} /></span></span><span class="num"></span>
             </button>
           {/each}
           {#if !ids.length}<p class="ital" style="padding:12px;margin:0">No charms yet. Craft them at the Forge from monster materials.</p>{/if}

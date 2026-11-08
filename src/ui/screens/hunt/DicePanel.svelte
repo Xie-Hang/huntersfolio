@@ -50,7 +50,7 @@
           class:rolling={game.rolling.includes(i)}
           style="--d:{i * ROLL_STAGGER}ms"
           aria-pressed={sel}
-          aria-label="{label(d.face)} die{d.charged && !d.used ? ', charged: attack with it or it goes off' : ''}{d.used ? `, used for ${d.used}` : ''}"
+          aria-label="{label(d.face)} die{d.charged && !d.used ? ', Static: attack with it or it goes off' : ''}{d.used ? `, used for ${d.used}` : ''}"
           disabled={!!d.used || over}
           onclick={() => game.toggleDie(i)}
           onpointermove={(e) => (e.movementX || e.movementY) && game.settle()}
@@ -63,7 +63,7 @@
           {:else if d.face === 'C' || d.face === 'T'}<FaceMark c={d.face} />
           {:else}<span class="bl" aria-hidden="true"></span>{/if}<!-- a blank is an empty face, no word (Nov 2026) -->
         </button>
-        <span class="dietag" class:used={!!d.used} class:charged={d.charged && !d.used}>{#if d.used || sel}{d.used || 'Selected'}{:else if d.charged}Charged{:else if !over}<Key k={String(i + 1)} />{/if}</span>
+        <span class="dietag" class:used={!!d.used} class:charged={d.charged && !d.used}>{#if d.used || sel}{d.used || 'Selected'}{:else if d.charged}Static{:else if !over}<Key k={String(i + 1)} />{/if}</span>
       </div>
     {/each}
   </div>

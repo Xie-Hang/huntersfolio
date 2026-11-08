@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Rich from '../parts/Rich.svelte';
   import CostDie from '../parts/CostDie.svelte';
   import Icon from '../parts/Icon.svelte';
   import WeaponArt from '../parts/WeaponArt.svelte';
@@ -191,7 +192,7 @@
           
         {:else if kind === 'c'}
           {@const c = E.CHARMS[sel]}
-          <p class="fd-perk">{c.perk}</p>
+          <p class="fd-perk"><Rich text={c.perk} /></p>
           <span class="fd-sig">{c.bounties ? `Unlocked by ${c.bounties} different bounties, then crafted for coin.` : `Made from ${c.src} materials.`}{full() ? ' Goes in the charm slot; one charm at a time.' : ''}</span>
         {:else}
           {@const a = E.ownedArmor(s, sel)}
@@ -204,7 +205,7 @@
             <span>Block {owned ? a.guard : base.guard} per die</span><span class="sep">·</span><span>{base.rerolls} rerolls</span><span class="sep">·</span>
             <span>{#if base.resist}<Elem e={base.resist} />Resists {base.resist}{:else}No resistance{/if}</span>
           </div>
-          <p class="fd-sig">{base.perk}</p>
+          <p class="fd-sig"><Rich text={base.perk} /></p>
         {/if}
 
         <!-- 4. Can I make it? Cost and action, close to the top -->

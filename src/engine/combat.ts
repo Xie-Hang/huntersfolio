@@ -219,7 +219,7 @@ export const ITEM_SHORT: Record<string, string> = {
   'Its scales are already burning.': 'Scales already burning',
   'Works only on ice or slate.': 'Ice or slate only',
   'Works only with **Infect** on you.': 'With Infect on you only',
-  'Works only with **Spark** on you or charged dice.': 'With Spark on you only',
+  'Works only with **Spark** on you or **Static** dice.': 'With Spark on you only',
 };
 export function itemBlockReason(h: Hunt): string | null {
   if (!h.item || h.over || itemUsable(h)) return null;
@@ -232,7 +232,7 @@ export function itemBlockReason(h: Hunt): string | null {
   if (fx === 'blast') return next === 'burrow' ? 'Works only while it’s underground. It digs in after this turn.' : 'Works only while it’s underground.';
   if (fx === 'thaw') return def(h).plateHot ? 'Its scales are already burning.' : 'Works only on ice or slate.';
   if (fx === 'cureInfect') return 'Works only with **Infect** on you.';
-  if (fx === 'cureSpark') return 'Works only with **Spark** on you or charged dice.';
+  if (fx === 'cureSpark') return 'Works only with **Spark** on you or **Static** dice.';
   if (fx === 'trapRush' || fx === 'trapLand') return h.trapSet ? 'Set. It springs at the end of your turn.' : 'It’s already held.';
   return null;
 }
@@ -281,7 +281,7 @@ export function turnPreview(h: Hunt): { attack: number; extra: number; why: stri
   const taken0 = c.stats.taken, { taken } = endTurn(c);
   const extra = Math.max(0, c.stats.taken - taken0 - taken), why: string[] = [];
   if (extra) for (const { t } of [...c.log].reverse()) {
-    const w = /spark on you discharges/i.test(t) ? 'your **Spark**' : /charged d(ie|ice)/i.test(t) && /discharge|go(es)? off/i.test(t) ? 'unused charged dice'
+    const w = /spark on you discharges/i.test(t) ? 'your **Spark**' : /(charged|static) d(ie|ice)/i.test(t) && /discharge|go(es)? off/i.test(t) ? 'unused **Static** dice'
       : /infection eats at you/i.test(t) ? '**Infect**' : /slime (burns|drinks|stings)/i.test(t) ? 'its slime' : /magma burns you/i.test(t) ? 'the magma' : null;
     if (w && !why.includes(w)) why.push(w);
   }
@@ -496,7 +496,7 @@ export function guard(h: Hunt, idx: number[]): boolean {
   if (zap) {
     for (const i of sel) h.dice[i].charged = false;
     const d = zap * CHARGED_HIT; h.php = Math.max(1, h.php - d); h.stats.taken += d; feat(h, 'chargehit');
-    log(h, `The charged ${zap > 1 ? 'dice go' : 'die goes'} off in your hand as you brace: ${d} damage.`, 'ember');
+    log(h, `The Static ${zap > 1 ? 'dice go' : 'die goes'} off in your hand as you brace: ${d} damage.`, 'ember');
   }
   // the Claw Charm (the Foothills): blocking hits back a little
   if (charmFx(h) === 'blockBite' && !h.over) {
@@ -622,7 +622,7 @@ export function endTurn(h: Hunt): TurnResult {
   const live = h.dice.filter(d => d.charged && !d.used).length;
   if (live) {
     const d = live * CHARGED_HIT; h.php = Math.max(0, h.php - d); h.stats.taken += d; feat(h, 'chargehit');
-    log(h, `${live} charged ${live > 1 ? 'dice' : 'die'} you didn’t use discharge${live > 1 ? '' : 's'} into you for ${d}.`, 'ember');
+    log(h, `${live} Static ${live > 1 ? 'dice' : 'die'} you didn’t use go${live > 1 ? '' : 'es'} off into you for ${d}.`, 'ember');
     if (h.php <= 0) { finish(h, 'lose'); return { taken: 0 }; } // its attack never came: `taken` is the attack only
   }
   let caught = false;
