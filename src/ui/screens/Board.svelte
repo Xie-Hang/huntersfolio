@@ -154,7 +154,10 @@
     {:else}
       <span class="meta"><span>{#if N.elemOf}By stance{:else}<Elem e={N.elem} />{N.elem}{/if}</span><span>{N.elemOf ? 'Weakness changes' : `Weak to ${N.weak}`}</span></span>
     {/if}
-    {#if open}
+    {#if !open && E.islandRest(game.save, N.id)}
+      <!-- the island: hunted, and closed until the practice hunts (or the Ridge) -->
+      <span class="st">Hunted ×{r.wins || r.hunts} · Again later</span>
+    {:else if open}
       <span class="st" class:new={!r.wins}>{r.wins ? `Hunted ×${r.wins}` : 'Not yet hunted'}{#if E.BOUNTIES_ON && r.wins && E.bountiesFor(N.id).length}{@const b = done(N.id)}{' '}· Bounties {b.n}/{b.of}{/if}</span>
     {:else}
       <span class="st"><svg class="lk" viewBox="0 0 12 14" width="11" height="13" aria-hidden="true"><path d="M3 6V4.2a3 3 0 0 1 6 0V6" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="1.5" y="6" width="9" height="7" rx="1.2" fill="currentColor"/></svg>{#if lockHint}{@const x = E.unlockParts(N.id).extra}Locked{x ? ` · also the ${x}` : ''}{:else}<span use:detail={E.unlockHint(N.id)}>Locked · {E.unlockShort(N.id).replace(/ first$/, '')}</span>{/if}</span>

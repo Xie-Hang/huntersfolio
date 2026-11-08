@@ -6,7 +6,7 @@ import { MONSTERS } from './data/monsters';
 import { nextRandom } from './rng';
 import { settleBounty } from './bounty';
 import { rankAtLeast, hunterRank } from './rank';
-import { islandDone, advanceIsland, islandStep, onExam, ISLAND_OPENS } from './island';
+import { islandDone, advanceIsland, islandStep, onExam, ISLAND_OPENS, EXAM_STEP, PRACTICE } from './island';
 
 /* ---------- tuning constants ---------- */
 export const REWARD = { base: 100, perPart: 40, capture: 60 };
@@ -295,15 +295,26 @@ export function isUnlocked(s: Save, id: string): boolean {
   const reqs = req ? (Array.isArray(req) ? req : [req]) : [];
   // a promotion hunt counts as passed once you hold its rank (older saves earn their rank from their records)
   const met = (r: string) => (s.record[r]?.wins ?? 0) > 0 || (!!MONSTERS[r]?.promotion && rankAtLeast(s, MONSTERS[r].promotion!));
+  // the Foothills (the tutorial island): one hunt at a time, the one the step asks for (Mekkman, 8 Nov 2026: no
+  // wandering off mid-lesson; a beaten monster can't be hunted again yet). The break is the practice step, where any
+  // island monster opened so far can be hunted. Getting ready also opens the practice hunts if you're short of coin
+  // for the vest or the salve (spent it on the Whistling Blade, say), so you can't get stuck.
+  if (!islandDone(s)) return islandHuntable(s, id);
   if ((s.record[id]?.hunts ?? 0) > 0) return true;
-  // the Foothills (the tutorial island): its monsters open one step at a time, the Gorehorn for the exam, and the
-  // Ridge and everything past it wait until it's done
-  if (!islandDone(s)) {
-    if (id in ISLAND_OPENS) return islandStep(s) >= ISLAND_OPENS[id];
-    return false;
-  }
   return reqs.every(met);
 }
+
+const ISLAND_HUNT: Record<number, string> = { 0: 'scuttlehog', 1: 'snapclaw', 3: 'tuskling', [EXAM_STEP]: 'gorehorn' };
+function islandHuntable(s: Save, id: string): boolean {
+  const st = islandStep(s);
+  if (!(id in ISLAND_OPENS)) return false;
+  if (st === 4) return ISLAND_OPENS[id] <= 4 && id !== 'gorehorn';
+  if (st === 5 && !canPay(s, ARMORS.hidevest.craft!)) return PRACTICE.includes(id);
+  if (st === 6 && s.coin < ITEMS.salve.price! && !canPay(s, ITEMS.salve.craft!)) return PRACTICE.includes(id);
+  return ISLAND_HUNT[st] === id;
+}
+/** a Foothills monster you've hunted that the island has closed for now */
+export const islandRest = (s: Save, id: string) => !islandDone(s) && id in ISLAND_OPENS && (s.record[id]?.hunts ?? 0) > 0;
 
 /** How to unlock a locked monster, in words: "Beat the Gorehorn first" or "Beat every monster on Ashfall Ridge first". */
 export function unlockHint(id: string): string {

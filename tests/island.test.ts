@@ -79,6 +79,25 @@ describe('the Foothills', () => {
     expect(E.islandDone(s)).toBe(true);
     expect(s.loadout.weapons).toEqual(['blade', 'maul']);
   });
+  it('only the hunt the step asks for, except on the practice step (no wandering off mid-lesson)', () => {
+    const s = E.newPlayerSave();
+    win(s, 'scuttlehog');
+    expect(E.isUnlocked(s, 'scuttlehog')).toBe(false);
+    expect(E.islandRest(s, 'scuttlehog')).toBe(true);
+    expect(E.isUnlocked(s, 'snapclaw')).toBe(true);
+    win(s, 'snapclaw');
+    expect(['scuttlehog', 'snapclaw', 'tuskling'].some(id => E.isUnlocked(s, id))).toBe(false); // the Forge first
+    E.forgeDo(s, 'w', 'blade');
+    expect(E.isUnlocked(s, 'tuskling') && !E.isUnlocked(s, 'snapclaw')).toBe(true);
+    win(s, 'tuskling');
+    for (const id of ['scuttlehog', 'snapclaw', 'tuskling', 'burrowmole', 'gustmarmot']) expect(E.isUnlocked(s, id)).toBe(true);
+    expect(E.isUnlocked(s, 'gorehorn')).toBe(false);
+    win(s, 'burrowmole'); win(s, 'gustmarmot');
+    expect(s.island).toBe(5);
+    expect(E.isUnlocked(s, 'burrowmole')).toBe(s.coin < 60); // only when short of coin for the vest
+    s.coin = 10;
+    expect(E.isUnlocked(s, 'burrowmole') && E.isUnlocked(s, 'gustmarmot') && !E.isUnlocked(s, 'tuskling')).toBe(true);
+  });
   it('get ready skips what you already have: a vest made in practice, a salve made from Hatchling Down', () => {
     const s = E.newPlayerSave();
     s.island = 4; s.weapons = { blade: { lv: 0 }, maul: { lv: 0 } }; s.loadout.weapons = ['blade', 'maul']; s.coin = 300; s.mats.tuskhide = 2; s.mats.tuft = 3;

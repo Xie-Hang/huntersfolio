@@ -54,7 +54,7 @@
     {:else}<button class="btn primary" onclick={() => game.go('board')}>Hunt Board</button>{/if}
     {#if game.save.hunts > 1 && E.shopOpen(game.save) && town !== 'shop' && E.islandDone(game.save)}<button class="btn" data-coach="to-shop" onclick={() => game.go('shop', E.surplusValue(game.save) > 0 ? 'sell' : undefined)}>{E.surplusValue(game.save) > 0 ? 'Sell at the Shop' : 'Shop'}</button>{/if}
     <!-- straight back to this monster's page, loadout ready (one click from hunting it again) -->
-    <button class="btn" onclick={() => game.openMonster(h.mid)}>Hunt the {M.short} again</button>
+    {#if E.isUnlocked(game.save, h.mid)}<button class="btn" onclick={() => game.openMonster(h.mid)}>Hunt the {M.short} again</button>{/if}
     {#if forgeNext}<button class="btn" onclick={() => game.go('board')}>Hunt Board</button>
     {:else if E.islandDone(game.save) && E.forgeOpen(game.save) && E.forgeReady(game.save)}<button class="btn" data-coach="to-forge" onclick={() => game.go('forge')}>Forge</button>{/if}
     {/if}
