@@ -7,7 +7,7 @@
 import * as E from '../engine';
 import { game } from './game.svelte';
 import { settings } from './settings.svelte';
-import { shows } from './reveal';
+import { shows, techHold } from './reveal';
 
 export interface Tip {
   id: string;
@@ -438,9 +438,11 @@ export const TIPS: Tip[] = [
   },
   // ---- the first big attack: the most important lesson ----
   {
-    // the fourth hunt's layer: Charge (Capture has its own tip when it's ready)
+    // Mell's first Hunter technique: Charge (Capture has its own tip when it's ready)
     id: 'chargeNew', lesson: true, learn: true, at: ['charge'],
-    when: () => { const h = hunt(); return !!h && shows(h, 'all') && h.turn >= 2 && unusedTurn(h) && (E.incoming(h)?.net ?? 0) === 0 && !h.chargePending && !h.chargeReady; },
+    // (any turn from 2 on without a big hit coming: it used to wait for a turn with no attack at all, which some monsters
+    // rarely give, and the Charge button now waits for this lesson)
+    when: () => { const h = hunt(); return !!h && shows(h, 'all') && h.turn >= 2 && unusedTurn(h) && E.intentInfo(h).threat < 3 && !h.chargePending && !h.chargeReady; },
     text: () => `${game.save.tips.includes('capture') ? 'Here’s another Hunter technique,' : 'Now that you’re a Hunter, I can show you this one,'} **Charge**. Spend ${E.chargeDice(hunt()!)} dice now and your first hit next turn does double. Careful, any hit that gets through your **Block** breaks it.`,
     done: () => !!hunt()?.chargePending
   },
@@ -624,6 +626,12 @@ class Coach {
 }
 
 export const coach = new Coach();
+
+// the Hunter techniques show from Mell's lesson on (for island graduates with tips on; everyone else sees them as before)
+techHold.untaught = k => {
+  const id = k === 'charge' ? 'chargeNew' : 'capture', s = game.save;
+  return settings.prefs.tips && s.tips.includes('i-begin') && !s.tips.includes(id) && coach.current?.id !== id;
+};
 
 /** A weapon type's trick tag (Flow, Daze, Expose) shows once Mell has taught it: on the island, from her line about it
  *  (Mekkman, 8 Nov 2026); after the island, always */

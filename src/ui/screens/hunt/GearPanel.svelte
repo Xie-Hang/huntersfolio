@@ -117,7 +117,7 @@
   {/if}
   <!-- With everything on it's always shown, so players learn it exists before it's available. In the second and third
        hunts it appears only once the monster is weak enough (it's the escape from a hunt going badly). -->
-  {#if full || (shows(h, 'capture') && capLive)}
+  {#if shows(h, 'capture') && (full || capLive)}
   <button onmouseenter={() => (game.preview = n ? [...game.sel] : auto.capture ?? [])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = n ? [...game.sel] : auto.capture ?? [])} onblur={() => (game.preview = [])} data-coach="capture" data-key="x" class="move capture {capLive && E.captureReady(h) ? 'live' : ''} {capOk ? 'ready' : 'no'}" class:set={h.snareSet} class:warn={capLive && !h.snareSet && (!h.snares || E.captureBlocked(h))} aria-disabled={!capOk} onclick={() => capOk && game.capture()}>
     <span>
       <span class="mn"><Key k="X" />Capture</span>

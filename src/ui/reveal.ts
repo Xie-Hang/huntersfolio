@@ -22,7 +22,11 @@ export type Show = keyof typeof LAYER | 'intent' | 'block' | 'reroll' | 'undo' |
 
 const base = (h: Hunt | null | undefined, k: keyof typeof LAYER) => (h?.lesson ?? 99) >= LAYER[k];
 /** Swap also shows early against a flier or a burrower: there, one weapon can't reach it and you'd be stuck. */
+/** Charge and Capture, the Hunter techniques, appear when Mell teaches them (Mekkman, 8 Nov 2026: the Capture button
+ *  was already there before her lesson). The coach registers which aren't taught yet. */
+export const techHold: { untaught: (k: 'charge' | 'capture') => boolean } = { untaught: () => false };
 export const shows = (h: Hunt | null | undefined, k: Show): boolean => {
+  if (!h?.show && (k === 'charge' || k === 'capture') && techHold.untaught(k)) return false;
   if (h?.show) return h.show.includes(k) && (k !== 'swap' || h.weps.length > 1);
   if (k === 'intent' || k === 'block' || k === 'reroll' || k === 'undo' || k === 'rend' || k === 'enraged') return true;
   // outside the Foothills: Capture comes with the parts layer, Daze meters and move tags with everything
