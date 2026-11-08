@@ -175,7 +175,7 @@ const ISLAND: Tip[] = [
   {
     id: 'i-maul', guide: true, info: true, gotit: true, at: ['slot-w1'], head: 'Two weapons',
     when: () => game.view === 'board' && E.islandStep(game.save) === 3 && !huntOn(),
-    text: () => 'I asked the lodge to lend you a maul. You can now carry two weapons into hunts.'
+    text: () => 'Here, take my spare maul. You can now carry two weapons into hunts.'
   },
   // ---- the Tuskling: aim and Swap ----
   {
@@ -228,7 +228,8 @@ const ISLAND: Tip[] = [
     id: 'i-vest', head: 'Get ready', guide: true, learn: true, at: toForge,
     when: () => E.islandStep(game.save) === 5 && game.view !== 'forge' && !huntOn(),
     text: () => "You’re nearly ready for your promotion hunt! First, let’s get you some armour.",
-    done: () => game.view === 'forge'
+    // (only on this step: the Forge visit for the blade must not count)
+    done: () => E.islandStep(game.save) === 5 && game.view === 'forge'
   },
   {
     id: 'i-vest2', head: 'Armour', guide: true, learn: true, at: () => (game.forgeTab === 'armor' ? ['forge-act'] : ['tab-armor']),
@@ -284,7 +285,7 @@ const ISLAND: Tip[] = [
   {
     id: 'i-go', head: 'Next', guide: true, side: 'right', at: () => (game.hunt?.over === 'lose' ? ['to-retry'] : ['to-next', 'to-forge', 'to-shop']),
     when: () => !game.lesson && !!game.hunt?.over && game.view === 'hunt' && !!game.hunt.reward && !E.islandDone(game.save),
-    text: () => game.hunt?.over === 'lose' ? 'That one got away. It happens to the best of us. Try again.' : E.islandTown(game.save) === 'forge' ? "You’ve got materials now. Let’s visit the Forge." : E.islandTown(game.save) === 'shop' ? "Let’s visit the Shop." : game.hunt?.mid === 'tuskling' && E.islandStep(game.save) === 4 ? 'Nicely done! Next up, some practice hunts.' : `Nicely done! The ${E.MONSTERS[game.save.loadout.target]?.short} is next.`
+    text: () => game.hunt?.over === 'lose' ? (game.hunt.reward?.lost ? 'That one got away, and the items you carried are gone. It happens to the best of us. Try again.' : 'That one got away. It happens to the best of us. Try again.') : E.islandTown(game.save) === 'forge' ? "You’ve got materials now. Let’s visit the Forge." : E.islandTown(game.save) === 'shop' ? "Let’s visit the Shop." : game.hunt?.mid === 'tuskling' && E.islandStep(game.save) === 4 ? 'Nicely done! Next up, some practice hunts.' : `Nicely done! The ${E.MONSTERS[game.save.loadout.target]?.short} is next.`
   },
   {
     id: 'i-hunt', head: 'Next hunt', guide: true, at: ['begin'],
@@ -504,7 +505,7 @@ export const TIPS: Tip[] = [
     id: 'track', lesson: true, guide: true, learn: true, at: ['track', 'forge-act'],
     when: () => game.view === 'forge',
     text: () => "Pick a weapon or armour you like. Can’t afford it yet? Select Track, and its materials get flagged on the Hunt Board and in the Shop.",
-    done: () => !!game.save.tracked || Object.keys(game.save.weapons).length > 2 || Object.keys(game.save.armors).length > 1
+    done: () => !!game.save.tracked || Object.keys(game.save.weapons).filter(id => !E.WEAPONS[id]?.foothills).length > 2 || Object.keys(game.save.armors).filter(id => !E.ARMORS[id]?.foothills).length > 1
   },
   {
     id: 'charmNew', lesson: true, info: true, at: ['tab-charms'], next: 'Got it',
@@ -533,7 +534,8 @@ class Coach {
 
   /** Call from an effect: retires the tip on screen once it's done or its moment has passed. */
   sync() {
-    if (settings.prefs.tips || game.lesson) for (const t of [...ISLAND, ...TIPS]) if (t.learn && !game.save.tips.includes(t.id) && t.done?.()) this.markSeen(t.id);
+    // (the Ridge's tips only count as learned on the Ridge: a Shop visit on the island isn't the selling lesson)
+    if (settings.prefs.tips || game.lesson) for (const t of [...ISLAND, ...(E.islandDone(game.save) ? TIPS : [])]) if (t.learn && !game.save.tips.includes(t.id) && t.done?.()) this.markSeen(t.id);
     const cur = this.current;
     // an island prompt waits for its moment: one shown and not yet done stays pending (only retire it once done)
     if (this.shown && this.shown !== cur?.id && !this.shown.startsWith('i-')) this.markSeen(this.shown);

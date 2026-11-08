@@ -59,8 +59,8 @@
       return !!target && target.isConnected && target.contains(n);
     };
     // an island prompt that only explains has no button (Nov 2026 playtest): selecting the highlighted thing moves on
-    const ack = !!t?.info && t.id.startsWith('i-') && !t.gotit;
-    const done = () => { if (ack) setTimeout(() => { if (coach.current === t) coach.dismiss(); }, 0); };
+    const ack = !!t?.info && t.id.startsWith('i-'); // (a Got it prompt also goes when its highlighted thing is used, so it can't come back)
+    const done = () => { if (ack && t) setTimeout(() => coach.markSeen(t.id), 0); }; // (by id: using the target often moves on to another screen first)
     const block = (e: Event) => {
       if (!allowed(e.target)) { e.preventDefault(); e.stopImmediatePropagation(); return; }
       if (e.type === 'click' && !cardEl?.contains(e.target as Node)) done();
