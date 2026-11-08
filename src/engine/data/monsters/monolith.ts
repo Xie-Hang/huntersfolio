@@ -91,7 +91,7 @@ export const monolith: MonsterDef = {
   onBreak(h, partId) {
     if (partId !== 'plates') return null;
     h.mon.core = coreTurns(h);
-    return `Core exposed! For ${coreTurns(h) + 1} turns Pierce hits on the core deal double. Swap to your bow.`;
+    return `Core open! For ${coreTurns(h) + 1} turns Pierce hits on the core do double.`;
   },
 
   onPhase(h) {

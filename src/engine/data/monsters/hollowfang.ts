@@ -20,14 +20,14 @@ export function tearOff(h: Hunt, mv: Move, w: WeaponInst): string | null {
 export function drink(h: Hunt, amount: number) {
   const m = h.mon, heal = Math.min(amount, m.max - m.hp);
   m.hp += heal; m.drank = (m.drank ?? 0) + heal; m.latch = Math.max(0, (m.latch ?? 0) - 1);
-  return `It drinks ${amount} and heals ${heal}.${m.latch ? '' : ' It lets go, gorged.'}`;
+  return `It drains ${amount} and heals ${heal}.${m.latch ? '' : ' It lets go, gorged.'}`;
 }
 /** the sac bursts: it loses what it drank this latch */
 export function burstSac(h: Hunt): string | null {
   const m = h.mon, d = Math.min(m.drank ?? 0, m.hp - 1); m.drank = 0;
   if (d <= 0) return null;
   m.hp -= d; h.stats.dealt += d;
-  return `What it drank pours out of the sac: it loses ${d}.`;
+  return `What it drained pours out of the sac: it loses ${d}.`;
 }
 
 export const hollowfang: MonsterDef = {

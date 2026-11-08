@@ -94,7 +94,7 @@
     {#if !isl || isTabs}
     <div class="tabs" role="tablist">
       <button role="tab" data-coach="tab-weapons" aria-selected={tab === 'weapons'} onclick={() => setTab('weapons')}>Weapons</button>
-      <button role="tab" data-coach="tab-armor" aria-selected={tab === 'armor'} onclick={() => setTab('armor')}>Armor</button>
+      <button role="tab" data-coach="tab-armor" aria-selected={tab === 'armor'} onclick={() => setTab('armor')}>Armour</button>
       {#if !isl || E.islandForge(s).c.length}<button role="tab" data-coach="tab-charms" aria-selected={tab === 'charms'} onclick={() => setTab('charms')}>Charms</button>{/if}
     </div>
     {/if}

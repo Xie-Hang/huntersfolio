@@ -180,7 +180,7 @@ export const sovereign: MonsterDef = {
   onPin(h) {
     const m = h.mon;
     if (m.air) { m.air = false; m.airLeft = 0; h.intent = 'crashed'; return 'Pin: the arrow tears through a wing. It comes down!'; }
-    if (h.intent === 'windup') { h.intent = 'pinned'; return 'Pin: the arrow pins its front. The charge is cancelled!'; }
+    if (h.intent === 'windup') { h.intent = 'pinned'; return 'Pin: the arrow pins its front. The charge is stopped!'; }
     return null;
   },
 

@@ -91,14 +91,14 @@ export const squallhorn: MonsterDef = {
 
   onBreak(h, partId) {
     const m = h.mon;
-    if (partId === 'legs' && (m.wind ?? 0) > 0) { m.wind = Math.min(2, Math.max(0, (m.wind ?? 0) - 1)); return `A pip of wind slips away: ${m.wind} of 2.`; }
+    if (partId === 'legs' && (m.wind ?? 0) > 0) { m.wind = Math.min(2, Math.max(0, (m.wind ?? 0) - 1)); return `1 Wind slips away: ${m.wind} of 2.`; }
     if (partId === 'hide' && m.tailwind) { m.tailwind = false; return 'The Tailwind falls away.'; }
     return null;
   },
 
   onPin(h) {
     const m = h.mon;
-    if (h.intent === 'gather' && (m.wind ?? 0) > 0) { m.wind = (m.wind ?? 0) - 1; return `Pin: it staggers, and a pip of wind slips away (${m.wind} of ${windCap(h)}).`; }
+    if (h.intent === 'gather' && (m.wind ?? 0) > 0) { m.wind = (m.wind ?? 0) - 1; return `Pin: it staggers, and 1 Wind slips away (${m.wind} of ${windCap(h)}).`; }
     return null;
   },
 

@@ -61,9 +61,9 @@ describe('after a lost hunt', () => {
     const h = E.startHunt(s, 1);
     const f = E.lossFacts(h, s);
     expect(f.length).toBe(3);
-    expect(f[0]).toContain('only Pierce');
-    expect(f.join(' ')).toContain('weak to Frost');
+    expect(f[0]).toContain('only **Pierce**');
+    expect(f.join(' ')).toContain('weak to **Frost**');
     s.weapons = { ...s.weapons, rimeshot: { lv: 0 } }; s.loadout.weapons = ['rimeshot', 'maul'];
-    expect(E.lossFacts(E.startHunt(s, 1), s).join(' ')).not.toContain('only Pierce');
+    expect(E.lossFacts(E.startHunt(s, 1), s).join(' ')).not.toContain('only **Pierce**');
   });
 });

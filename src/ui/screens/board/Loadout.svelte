@@ -137,7 +137,7 @@
         <!-- the island fills these slots for you as you make things (no Change yet) -->
         {#if E.armorSlot(game.save) && L.armor && game.save.armors[L.armor]}
           {@const a = E.ownedArmor(game.save, L.armor)}
-          <div class="slot" data-slot="armor" data-coach="slot-armor"><span class="sl">Armor</span><span><span class="nm">{a.name}{#if a.lv}{' '}<span class="lv">+{a.lv}</span>{/if}</span><span class="sub2"><span>{a.hp} HP · Block {a.guard} · {a.rerolls} Rerolls</span></span></span></div>
+          <div class="slot" data-slot="armor" data-coach="slot-armor"><span class="sl">Armour</span><span><span class="nm">{a.name}{#if a.lv}{' '}<span class="lv">+{a.lv}</span>{/if}</span><span class="sub2"><span>{a.hp} HP · Block {a.guard} · {a.rerolls} Rerolls</span></span></span></div>
         {/if}
         {#if E.charmSlot(game.save) && L.charm}
           {@const c = E.CHARMS[L.charm]}
@@ -156,7 +156,7 @@
       {#if L.armor}
         {@const a = E.ownedArmor(game.save, L.armor)}
         <button class="slot" data-slot="armor" onclick={() => open('armor')}>
-          <span class="sl">Armor</span>
+          <span class="sl">Armour</span>
           <span><span class="nm">{a.name}{#if a.lv}{' '}<span class="lv">+{a.lv}</span>{/if}</span><span class="sub2"><span>{a.hp} HP · Block {a.guard} · {a.rerolls} Rerolls</span><span>{@render armorNote(a)}</span></span></span>
           <span class="chg">Change</span>
         </button>
@@ -204,7 +204,7 @@
             {#if B}
               {@const pay = E.bountyPay(game.save, B.id)}
               <span class="bnrow"><span class="nm">{B.name}{#if B.hard}{' '}<span class="tag hard">Hard</span>{/if}</span><span class="chg">Change</span></span>
-              <span class="sub">Win, and: {B.goals.map(g => E.goalText(g, mon)).join(' · ')}</span>
+              <span class="sub">Win, and: <Rich text={B.goals.map(g => E.goalText(g, mon)).join(' · ')} /></span>
               <span class="pay">Pays {pay.coin} coin{#if pay.mat}{' · '}<Icon id={pay.mat} size={16} />{E.matName(pay.mat)}{/if}</span>
               {#if breaks}<span class="bad">{breaks}: change a weapon or it won’t pay.</span>{/if}
             {:else}
@@ -226,7 +226,7 @@
           {@const pay = E.bountyPay(game.save, b.id)}
           <button class="prow" aria-current={L.bounty === b.id} onclick={() => takeB(b.id)}>
             <span><span class="nm">{b.name}{#if b.hard}{' '}<span class="tag hard">Hard</span>{/if}{#if L.bounty === b.id}<span class="badge">Chosen</span>{:else if done}<span class="badge">Done</span>{/if}</span>
-            <span class="ty">Win, and: {b.goals.map(g => E.goalText(g, mon)).join(' · ')}</span>
+            <span class="ty">Win, and: <Rich text={b.goals.map(g => E.goalText(g, mon)).join(' · ')} /></span>
             <span class="note"><span class="pay">{pay.coin} coin{#if pay.mat}{' · '}<Icon id={pay.mat} size={16} />{E.matName(pay.mat)}{/if}{pay.repeat ? ' (repeat: half the coin)' : ''}</span></span></span>
             <span class="num"></span>
           </button>
@@ -274,7 +274,7 @@
       {:else if picker.slot === 'armor'}
         {@const cur = E.ownedArmor(game.save, L.armor)}
         {@const ids = Object.keys(game.save.armors)}
-        <div class="plisthead"><span>{ids.length} armor</span><span>HP</span><span>Block</span></div>
+        <div class="plisthead"><span>{ids.length} armour</span><span>HP</span><span>Block</span></div>
         <div class="plist">
           {#each ids as id (id)}
             {@const a = E.ownedArmor(game.save, id)}

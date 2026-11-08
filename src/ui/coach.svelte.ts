@@ -240,14 +240,14 @@ const ISLAND: Tip[] = [
     text: () => 'Moves tagged **Flow** give +1 **Reroll**.'
   },
   {
-    id: 'i-hides', guide: true, info: true, at: ['begin'], head: 'Armor',
+    id: 'i-hides', guide: true, info: true, at: ['begin'], head: 'Armour',
     when: () => E.islandStep(game.save) === 7 && game.view === 'board' && game.boardMon && game.save.loadout.target === 'tuskling' && !huntOn(),
-    text: () => 'Its hides make armor. Select Hunt.'
+    text: () => 'Its hides make armour. Select Hunt.'
   },
   {
     id: 'i-hide2', head: 'Aim', guide: true, learn: true, at: ['part-hide'],
     when: () => { const h = onIsland('tuskling'); return !!h && E.islandStep(game.save) === 7 && h.target !== 'hide' && !h.mon.parts.hide.broken && E.currentWeapon(h).type === 'Cut'; },
-    text: () => 'Its Hide makes armor. Aim at the Hide.',
+    text: () => 'Its Hide makes armour. Aim at the Hide.',
     done: () => { const h = hunt(); return !!h && h.mid === 'tuskling' && E.islandStep(game.save) === 7 && h.target === 'hide'; }
   },
   {
@@ -270,15 +270,15 @@ const ISLAND: Tip[] = [
   },
   // ---- slice 3: the vest, the Gustmarmot, tracking, the three makes, the Snapclaw again, the Shop, the exam ----
   {
-    id: 'i-vest', head: 'Armor', guide: true, learn: true, at: () => (game.view === 'hunt' ? ['to-forge'] : ['nav-forge']),
+    id: 'i-vest', head: 'Armour', guide: true, learn: true, at: () => (game.view === 'hunt' ? ['to-forge'] : ['nav-forge']),
     when: () => E.islandStep(game.save) === 8 && game.view !== 'forge' && !huntOn(),
     text: () => 'Enough hide. Make a vest at the Forge.',
     done: () => game.view === 'forge'
   },
   {
-    id: 'i-vest2', head: 'Armor', guide: true, learn: true, at: () => (game.forgeTab === 'armor' ? ['forge-act'] : ['tab-armor']),
+    id: 'i-vest2', head: 'Armour', guide: true, learn: true, at: () => (game.forgeTab === 'armor' ? ['forge-act'] : ['tab-armor']),
     when: () => E.islandStep(game.save) === 8 && game.view === 'forge' && canMake(),
-    text: () => (game.forgeTab === 'armor' ? 'Make the Hide Vest. You wear it.' : 'Select Armor.'),
+    text: () => (game.forgeTab === 'armor' ? 'Make the Hide Vest. You wear it.' : 'Select Armour.'),
     done: () => E.islandStep(game.save) >= 9
   },
   {
@@ -345,7 +345,7 @@ const ISLAND: Tip[] = [
   {
     id: 'i-reinforce', head: 'Reinforcing', guide: true, learn: true, at: () => (game.forgeTab === 'armor' ? ['forge-act'] : ['tab-armor']),
     when: () => E.islandStep(game.save) === 12 && game.view === 'forge' && !!game.save.weapons.whistle && !!game.save.charms.clawcharm && canMake(),
-    text: () => (game.forgeTab === 'armor' ? 'Reinforce the vest. It gets tougher.' : 'Last, your vest. Select Armor.'),
+    text: () => (game.forgeTab === 'armor' ? 'Reinforce the vest. It gets tougher.' : 'Last, your vest. Select Armour.'),
     done: () => E.islandStep(game.save) >= 13
   },
   {
@@ -399,7 +399,7 @@ export const TIPS: Tip[] = [
   {
     id: 'begin', guide: true, learn: true, at: ['begin'],
     when: () => game.view === 'board' && game.save.hunts === 0 && !game.hunt,
-    text: () => 'Your first hunt is the Gorehorn, a ridge boar. You start with a blade, a maul and leather armor. Select Hunt the Gorehorn.',
+    text: () => 'Your first hunt is the Gorehorn, a ridge boar. You start with a blade, a maul and leather armour. Select Hunt the Gorehorn.',
     done: () => game.view === 'hunt'
   },
   {
@@ -520,7 +520,7 @@ export const TIPS: Tip[] = [
     when: () => { const h = hunt(); const inc = h && E.incoming(h); return !!h && shows(h, 'all') && !!inc && inc.wearsResist && inc.elem === 0 && inc.raw > 0; },
     text: () => {
       const h = hunt()!, M = E.MONSTERS[h.mid], i = E.intentInfo(h);
-      return `Your ${h.arm.name} resists **${M.elem}** attacks only. **${i.name}** is a physical attack, so it hits in full. It's the ${M.elemental?.join(' and ') ?? 'elemental attacks'} your armor cuts by 30%.`;
+      return `Your ${h.arm.name} resists **${M.elem}** attacks only. **${i.name}** is a physical attack, so it hits in full. It's the ${M.elemental?.join(' and ') ?? 'elemental attacks'} your armour cuts by 30%.`;
     }
   },
   // ---- moments the Gorehorn creates ----
@@ -573,7 +573,7 @@ export const TIPS: Tip[] = [
   {
     id: 'failed', at: ['tele'],
     when: () => game.view === 'hunt' && game.hunt?.over === 'lose',
-    text: () => 'Hunts can fail. You keep your weapons, armor and the materials of any part you broke. You lose the coin and the items you carried. **Block** its big hits, and break the part that powers them.'
+    text: () => 'Hunts can fail. You keep your weapons, armour and the materials of any part you broke. You lose the coin and the items you carried. **Block** its big hits, and break the part that powers them.'
   },
   {
     id: 'forge', guide: true, learn: true, at: () => (game.view === 'hunt' ? ['to-forge'] : ['nav-forge']),
@@ -585,7 +585,7 @@ export const TIPS: Tip[] = [
   {
     id: 'track', guide: true, learn: true, at: ['track', 'forge-act'],
     when: () => game.view === 'forge',
-    text: () => 'Pick a weapon or armor from the list. If you can\'t afford it yet, select Track. Its materials are then flagged on the Hunt Board and in the Shop, so you know what to hunt next.',
+    text: () => 'Pick a weapon or armour from the list. If you can\'t afford it yet, select Track. Its materials are then flagged on the Hunt Board and in the Shop, so you know what to hunt next.',
     done: () => !!game.save.tracked || Object.keys(game.save.weapons).length > 2 || Object.keys(game.save.armors).length > 1
   }
 ];

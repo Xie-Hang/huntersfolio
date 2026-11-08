@@ -91,7 +91,7 @@ export const slagwyrm: MonsterDef = {
     m.stoked = type === 'stoke';
     if ((m.shatter ?? 0) > 0) { m.shatter!--; if (!m.shatter && !m.melt) lines.push('Its armour flows back together.'); }
     if (armourUp(h)) m.armour = soakMax(h);
-    if (type === 'stoke') lines.push(`Its armour swells: it soaks ${soakMax(h)} next turn.`);
+    if (type === 'stoke') lines.push(`Its armour swells: it takes the first ${soakMax(h)} next turn.`);
     if (type === 'dazed') lines.push('It shakes off the daze.');
     return lines.join(' ') || null;
   },

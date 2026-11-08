@@ -25,5 +25,5 @@ export function sparkPlayer(h: Hunt, n: number, hit: number): string {
 /** The monster latches on for up to `turns` turns (armor caps it). */
 export function latchPlayer(h: Hunt, turns: number) {
   h.mon.latch = Math.min(turns, h.arm.latchMax ?? turns); h.mon.drank = 0; feat(h, 'latched');
-  return `It latches on! It will drink from you for ${h.mon.latch} turn${h.mon.latch > 1 ? 's' : ''}.`;
+  return `It latches on! It will drain you for ${h.mon.latch} turn${h.mon.latch > 1 ? 's' : ''}.`;
 }

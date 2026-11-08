@@ -18,7 +18,7 @@ export function goalText(g: Goal, mon: string): string {
     case 'break': return `Break its ${M?.parts.find(p => p.id === g.part)?.name.toLowerCase() ?? g.part}`;
     case 'capture': return 'Capture it';
     case 'turns': return `Win in ${g.n} turns or fewer`;
-    case 'taken': return `Take ${g.n} damage or less`;
+    case 'taken': return `Lose ${g.n} HP or less`;
     case 'noItem': return 'Use no items';
     case 'without': return `Bring no ${g.type} weapon`;
     case 'feat': case 'never': return g.text;

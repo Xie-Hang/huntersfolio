@@ -19,10 +19,10 @@ function platingFact(h: Hunt): string | null {
   const probe = (type: WeaponInst['type'], elem: Element | null) => plateBreak(h, { ...h.weps[0], type, elem });
   const base = Math.min(...TYPES.map(t => probe(t, null)));
   const whole: string[] = [], more: string[] = [];
-  for (const t of TYPES) { const k = probe(t, null); if (k >= n) whole.push(t); else if (k > base) more.push(`a ${t} hit clears ${k}`); }
+  for (const t of TYPES) { const k = probe(t, null); if (k >= n) whole.push(t); else if (k > base) more.push(`a ${t} hit breaks ${k}`); }
   for (const e of ELEMS) if (TYPES.every(t => probe(t, e) >= n) && !TYPES.every(t => probe(t, null) >= n)) whole.push(e);
-  const how = [whole.length ? `One ${whole.join(' or ')} hit clears all of ${word.endsWith('s') ? 'them' : 'it'}` : null, ...more].filter(Boolean).join('; ');
-  return `Its ${word} ${word.endsWith('s') ? 'have' : 'has'} ${n} layers. ${how ? `${how}; ` : ''}any other hit clears ${base}. Your weapons clear ${mine} layer${mine === 1 ? '' : 's'} a hit.`;
+  const how = [whole.length ? `One ${whole.join(' or ')} hit breaks all of ${word.endsWith('s') ? 'them' : 'it'}` : null, ...more].filter(Boolean).join('; ');
+  return `Its ${word} ${word.endsWith('s') ? 'have' : 'has'} ${n} layers. ${how ? `${how}; ` : ''}any other hit breaks ${base}. Your weapons break ${mine} layer${mine === 1 ? '' : 's'} a hit.`;
 }
 
 export function lossFacts(h: Hunt, s: Save): string[] {
@@ -30,12 +30,12 @@ export function lossFacts(h: Hunt, s: Save): string[] {
   const types = new Set(h.weps.map(w => w.type)), elems = h.weps.map(w => w.elem);
   const losses = Math.max(0, (s.record[h.mid]?.hunts ?? 0) - (s.record[h.mid]?.wins ?? 0));
   const out: string[] = [];
-  if (M.flier && !types.has('Pierce')) out.push('In the air, only Pierce (a bow) reaches it. Neither of your weapons could hit it up there.');
-  if (M.burrower && !types.has('Blunt')) out.push('Underground, only Blunt (a maul) reaches it, and a heavy Blunt hit drives it up. Neither of your weapons could.');
+  if (M.flier && !types.has('Pierce')) out.push('In the air, only **Pierce** reaches it. Neither of your weapons could.');
+  if (M.burrower && !types.has('Blunt')) out.push('Underground, only **Blunt** reaches it, and a heavy **Blunt** hit drives it up. Neither of your weapons could.');
   const plate = platingFact(h); if (plate) out.push(plate);
-  if (!M.elemOf && !elems.includes(M.weak)) out.push(`It’s weak to ${M.weak}: ${/^[AEIOU]/.test(M.weak) ? 'an' : 'a'} ${M.weak} weapon deals ×1.5.${elems.includes(M.resist) ? ` It resists ${M.resist}: ×0.75.` : ''}`);
+  if (!M.elemOf && !elems.includes(M.weak)) out.push(`It’s weak to **${M.weak}**, so ${/^[AEIOU]/.test(M.weak) ? 'an' : 'a'} **${M.weak}** weapon hits for ×1.5.${elems.includes(M.resist) ? ` It resists **${M.resist}**, ×0.75.` : ''}`);
   if (losses >= 2 && elems.every(e => !e)) out.push('Neither of your weapons carries an element. Elemental weapons are forged at the Forge.');
-  if (M.elemental?.length && h.arm.resist !== M.elem && !h.arm.adaptive && !M.elemOf) out.push(`Armor that resists ${M.elem} cuts its ${M.elemental.join(' and ')} by 30%.`);
+  if (M.elemental?.length && h.arm.resist !== M.elem && !h.arm.adaptive && !M.elemOf) out.push(`Armour that resists **${M.elem}** takes 30% off its ${M.elemental.join(' and ')}.`);
   return out.slice(0, 3);
 }
 

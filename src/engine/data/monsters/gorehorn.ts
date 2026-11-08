@@ -105,7 +105,7 @@ export const gorehorn: MonsterDef = {
   },
 
   onPin(h) {
-    if (h.intent === 'windup') { h.intent = 'pinned'; return 'Pin: the arrow pins it mid-stride. The charge is cancelled!'; }
+    if (h.intent === 'windup') { h.intent = 'pinned'; return 'Pin: the arrow pins it mid-stride. The charge is stopped!'; }
     return null;
   },
 

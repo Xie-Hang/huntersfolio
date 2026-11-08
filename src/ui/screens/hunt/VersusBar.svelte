@@ -40,7 +40,7 @@
       {#if net}<i class="vghost" style="right:{pct(after, h.pmax)}%;width:{pct(net, h.pmax)}%"></i>{/if}
     </div>
     <div class="vst">
-      {#if h.arm.ward && shows(h, 'all')}<span>Armor −{h.arm.ward} a hit</span>{/if}
+      {#if h.arm.ward && shows(h, 'all')}<span>Armour −{h.arm.ward} a hit</span>{/if}
       {#if h.chargeReady}<span class="gold">Charged: first hit ×2</span>{:else if h.chargePending}<span class="gold">Charging for next turn</span>{/if}
       {#if h.whet}<span class="gold">Sharpened: next hit +{Math.round(h.whet * 100)}%</span>{/if}
       {#if h.evade}<span class="gold">Hidden in smoke</span>{/if}

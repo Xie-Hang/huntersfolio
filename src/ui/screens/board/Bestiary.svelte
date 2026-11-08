@@ -80,7 +80,7 @@
     <div role="tabpanel" id="mp-habits" aria-labelledby="mt-habits"><dl class="facts">
       <dt>Habits</dt><dd><Rich text={M.habits} /></dd>{#if M.enragedHabit}<dt>When enraged</dt><dd><Rich text={M.enragedHabit} /></dd>{/if}
       {#if M.elemOf}<dt>Stances</dt><dd>Stone (weak to Gale), Gale (weak to Frost), Ember (weak to Stone), Frost (weak to Ember). Each stance's big attack is of that element: Sovereign Charge, Wing Dive, Caldera Eruption, Glacier Sweep.</dd>
-      {:else if M.elemental?.length}<dt>{M.elem} attacks</dt><dd>{M.elemental.join(', ')}. Its other attacks are physical: armor that resists {M.elem} only cuts these.</dd>{/if}
+      {:else if M.elemental?.length}<dt>{M.elem} attacks</dt><dd>{M.elemental.join(', ')}. Its other attacks are physical: armour that resists {M.elem} only cuts these.</dd>{/if}
       <dt>Reward</dt><dd><b>{E.REWARD.base} coin</b>, +{E.REWARD.perPart} per part broken, +{E.REWARD.capture} for a capture.</dd>
     </dl></div>
   {/if}

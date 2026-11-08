@@ -201,7 +201,7 @@ export const canHit = (h: Hunt, w: WeaponInst) => def(h).canHit?.(h, w) ?? true;
 export const cantHitReason = (h: Hunt, w: WeaponInst) => (canHit(h, w) ? null : def(h).cantHitReason?.(h, w) ?? 'It can’t be hit right now.');
 export const reachable = (h: Hunt, partId: string, w: WeaponInst) => def(h).reachable?.(h, partId, w) ?? true;
 /** Crag Charm: bringing a monster down from the air or up out of the ground whets your next hit */
-function landWhet(h: Hunt) { h.whet = Math.max(h.whet, 0.5); log(h, 'Crag Charm: your next hit deals +50%.', 'gold'); }
+function landWhet(h: Hunt) { h.whet = Math.max(h.whet, 0.5); log(h, 'Crag Charm: your next hit +50%.', 'gold'); }
 export const airborneHalf = (h: Hunt, w: WeaponInst) => h.mon.air && w.type !== 'Pierce';
 export const freeDice = (h: Hunt) => h.dice.map((d, i) => (d.used ? -1 : i)).filter(i => i >= 0);
 
@@ -359,7 +359,7 @@ export function addDaze(h: Hunt, n: number): string | null {
   m.daze = 0; m.dazeMax += DAZE_STEP; m.dazeLock = DAZE_LOCK;
   if (intentInfo(h).steady) { m.dazeQueued = true; log(h, `Daze: it reels, but the ${intentInfo(h).name} is already coming. It loses its next action instead.`, 'daze'); }
   else { h.intent = 'dazed'; log(h, 'Daze: the blow rattles its skull. It loses its action!', 'daze'); }
-  if (charmFx(h) === 'dazeWhet') { h.whet = Math.max(h.whet, 0.5); log(h, 'Dusk Charm: your next hit deals +50%.', 'gold'); }
+  if (charmFx(h) === 'dazeWhet') { h.whet = Math.max(h.whet, 0.5); log(h, 'Dusk Charm: your next hit +50%.', 'gold'); }
   if (charmFx(h) === 'dazeHeal') { const heal = Math.min(DAZE_HEAL, h.pmax - h.php); if (heal) { h.php += heal; log(h, `Tusk Charm: +${heal} HP.`, 'gold'); } }
   return 'it reels!';
 }
@@ -435,7 +435,7 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
       if (p.hp === 0) {
         p.broken = true; p.cracks = (p.cracks ?? 0) + 1; h.stats.broken++; broke = true; log(h, pdef.brk, 'ember');
         { const t = MD.onBreak?.(h, h.target, w); if (t) log(h, t, 'gold'); }
-        if (charmFx(h) === 'breakWhet') { h.whet = Math.max(h.whet, 0.5); log(h, 'Sovereign Charm: your next hit deals +50%.', 'gold'); }
+        if (charmFx(h) === 'breakWhet') { h.whet = Math.max(h.whet, 0.5); log(h, 'Sovereign Charm: your next hit +50%.', 'gold'); }
         if (charmFx(h) === 'breakFree') { const d = h.dice.find(x => x.used === SHAKEN || x.used === FROZEN); if (d) { d.used = null; log(h, 'Quake Charm: a locked die comes free.', 'gold'); } }
         if (charmFx(h) === 'salvage') { const heal = Math.min(15, h.pmax - h.php); h.php += heal; h.rerolls++; log(h, `Salvager’s Charm: +${heal} HP, +1 reroll.`, 'gold'); }
         if (h.arm.breakHeal) { const heal = Math.min(25, h.pmax - h.php); h.php += heal; h.rerolls++; log(h, `${h.arm.name}: +${heal} HP, +1 reroll.`, 'gold'); }
@@ -450,14 +450,14 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
     if (r.dazed) {
       feat(h, 'daze'); feat(h, `reel:${h.target}`);
       if (MD.heads!.every(x => h.feats!.includes(`reel:${x}`))) feat(h, 'reelboth');
-      if (charmFx(h) === 'dazeWhet') { h.whet = Math.max(h.whet, 0.5); log(h, 'Dusk Charm: your next hit deals +50%.', 'gold'); }
+      if (charmFx(h) === 'dazeWhet') { h.whet = Math.max(h.whet, 0.5); log(h, 'Dusk Charm: your next hit +50%.', 'gold'); }
       if (charmFx(h) === 'dazeHeal') { const heal = Math.min(DAZE_HEAL, h.pmax - h.php); if (heal) { h.php += heal; log(h, `Tusk Charm: +${heal} HP.`, 'gold'); } }
     }
   } else if (dz && h.target === MD.head && reach && m.hp > 0 && m.dazeLock === 0) {
     addDaze(h, dz);
   }
   if (mv.expose && reach && !p.broken && m.hp > 0) {
-    if (!p.exposed) log(h, `Expose: the ${pdef.name.toLowerCase()} ${pdef.name.endsWith('s') ? 'are' : 'is'} exposed. Hits there deal +20% and count double toward the break for 2 turns.`, 'gold');
+    if (!p.exposed) log(h, `Expose: the ${pdef.name.toLowerCase()} ${pdef.name.endsWith('s') ? 'are' : 'is'} Exposed. Hits there get +20% and count double toward breaking ${pdef.name.endsWith('s') ? 'them' : 'it'} for 2 turns.`, 'gold');
     p.exposed = EXPOSE_TURNS + (charmFx(h) === 'longExpose' ? 1 : 0);
   }
   if (mv.pin) { const t = MD.onPin?.(h); if (t) log(h, t, 'gold'); }
@@ -470,7 +470,7 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
     if (b > 0) { h.php -= b; h.stats.taken += b; log(h, `The molten shell sears you for ${b}.`, 'ember'); }
   }
   if (dmg > 0) buildStatus(h, w, mv.need.length);
-  if (w.type === 'Blunt' && (m.pSpark ?? 0) > 0) { m.pSpark!--; log(h, `You ground yourself: a Spark pip goes into the earth (${m.pSpark} left).`, 'gold'); }
+  if (w.type === 'Blunt' && (m.pSpark ?? 0) > 0) { m.pSpark!--; log(h, `You ground yourself: 1 Spark goes into the earth (${m.pSpark} left).`, 'gold'); }
   if (h.intent === 'dazed' && before.intent !== 'dazed') feat(h, 'daze');
   if (before.threat >= 3 && h.intent !== before.intent) feat(h, 'interrupt');
   if (before.air && !m.air) feat(h, 'grounded');
@@ -496,7 +496,7 @@ export function guard(h: Hunt, idx: number[]): boolean {
   if (zap) {
     for (const i of sel) h.dice[i].charged = false;
     const d = zap * CHARGED_HIT; h.php = Math.max(1, h.php - d); h.stats.taken += d; feat(h, 'chargehit');
-    log(h, `The Static ${zap > 1 ? 'dice go' : 'die goes'} off in your hand as you brace: ${d} damage.`, 'ember');
+    log(h, `The Static ${zap > 1 ? 'dice go' : 'die goes'} off in your hand as you brace, −${d}.`, 'ember');
   }
   // the Claw Charm (the Foothills): blocking hits back a little
   if (charmFx(h) === 'blockBite' && !h.over) {
@@ -564,7 +564,7 @@ export function swap(h: Hunt, idx: number[]): boolean {
   else h.dice[sel[0]].used = 'Swap';
   h.weapon = 1 - h.weapon;
   log(h, `You switch to the ${currentWeapon(h).name}.`);
-  if (charmFx(h) === 'swapWhet') { h.whet = Math.max(h.whet, SWAP_WHET); log(h, 'Core Charm: your next hit deals +30%.', 'gold'); }
+  if (charmFx(h) === 'swapWhet') { h.whet = Math.max(h.whet, SWAP_WHET); log(h, 'Core Charm: your next hit +30%.', 'gold'); }
   return true;
 }
 /** Weak enough, a Snare carried, none set yet this turn. */
@@ -649,7 +649,7 @@ export function endTurn(h: Hunt): TurnResult {
       taken = Math.max(0, raw - g - (h.arm.ward ?? 0)); landed = true;
       const blocked = raw - taken;
       h.php = Math.max(0, h.php - taken); h.stats.taken += taken; h.stats.guarded += blocked;
-      log(h, `${info.name} hits you for ${taken}${blocked ? ` (${blocked} blocked${info.halfGuard && !h.arm.steady ? ', block halved' : ''})` : ''}${res ? ` (${monElem(h)} resisted)` : ar.elem === 0 && ar.wearsResist ? ' (physical: your armor\u2019s resist doesn\u2019t apply)' : ''}.`, taken >= CHARGE_BREAK ? 'ember' : '');
+      log(h, `${info.name} hits you for ${taken}${blocked ? ` (${blocked} blocked${info.halfGuard && !h.arm.steady ? ', block halved' : ''})` : ''}${res ? ` (${monElem(h)} resisted)` : ar.elem === 0 && ar.wearsResist ? ' (physical: your armour\u2019s resist doesn\u2019t apply)' : ''}.`, taken >= CHARGE_BREAK ? 'ember' : '');
       // any hit that gets past your block breaks a charge (Nov 2026: charging is a read of a safe turn, not a habit)
       if (h.chargePending && taken > 0) { h.chargePending = false; log(h, 'The hit breaks your focus. Your charge is lost.', 'ember'); }
     }
@@ -681,7 +681,7 @@ export function endTurn(h: Hunt): TurnResult {
   if (m.molten > 0) m.molten--;
   for (const part of Object.values(m.parts)) if (part.exposed > 0) part.exposed--;
   if (h.php <= 0) { finish(h, 'lose'); return { taken }; }
-  if (h.arm.mend && h.php < h.pmax) { const heal = Math.min(MEND, h.pmax - h.php); h.php += heal; log(h, `Your armor knits shut: +${heal} HP.`, 'gold'); }
+  if (h.arm.mend && h.php < h.pmax) { const heal = Math.min(MEND, h.pmax - h.php); h.php += heal; log(h, `Your armour knits shut: +${heal} HP.`, 'gold'); }
   if (h.chargeReady) log(h, 'Your unused charge fades.');
   h.recap = { turn: h.turn, dealt, lines: h.log.filter(l => (l.n ?? 0) > mark).reverse() };
   h.dealtAtTurnStart = h.stats.dealt;

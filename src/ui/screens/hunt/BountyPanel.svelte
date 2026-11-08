@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Rich from '../../parts/Rich.svelte';
   // The bounty taken for this hunt: one strip across the top of the centre column, right above the monster
   // (Mekkman, playtest: on the HP line it wasn't obvious enough; Nov 2026: the left column is gone). Each goal ticks
   // or crosses itself live; the reward is shown so it's worth chasing.
@@ -20,7 +21,7 @@
     <h2>{B.name}</h2>
     <ul>
       <li class="g open"><b aria-hidden="true">○</b>Win the hunt</li>
-      {#each B.goals as g, i}{@const st = states[i]}<li class="g {st}"><b aria-hidden="true">{MARK[st]}</b>{E.goalText(g, h.mid)}<span class="sr">{st === 'met' ? ' (done)' : st === 'failed' ? ' (missed)' : ''}</span></li>{/each}
+      {#each B.goals as g, i}{@const st = states[i]}<li class="g {st}"><b aria-hidden="true">{MARK[st]}</b><Rich text={E.goalText(g, h.mid)} /><span class="sr">{st === 'met' ? ' (done)' : st === 'failed' ? ' (missed)' : ''}</span></li>{/each}
     </ul>
     <span class="pay">{#if failed}<span class="miss">Missed</span>{:else}{pay?.coin} coin{#if pay?.mat}{' · '}<Icon id={pay.mat} size={16} />{E.matName(pay.mat)}{/if}{/if}</span>
   </section>

@@ -76,14 +76,14 @@
           {#each Object.entries(r.mats) as [k, v], i (k)}<li class:rare={k === M.rare} style="--i:{i}"><Icon id={k} size={18} />{E.matName(k)} ×{v}</li>{/each}
         </ul>
       </div>
-      {#if full && E.surplusValue(game.save) > 0}<p class="ital p0">Materials no recipe needs can be sold: yours are worth <b style="color:var(--gold-hi);font-style:normal">{E.surplusValue(game.save)} coin</b> at the Shop.</p>{/if}
+      {#if full && E.surplusValue(game.save) > 0}<p class="ital p0">Materials no recipe needs sell at the Shop. Yours are worth <b style="color:var(--gold-hi);font-style:normal">{E.surplusValue(game.save)} coin</b>.</p>{/if}
       {#if full && h.mon.parts[M.rarePart].broken && !r.rare}
-        <p class="ital p0">No {E.matName(M.rare)} this time. Pity counter: {game.save.pity[M.rare] ?? 0} / {E.RARE.pityGuarantee}.</p>
+        <p class="ital p0">No {E.matName(M.rare)} this time. {game.save.pity[M.rare] ?? 0} of {E.RARE.pityGuarantee} breaks toward a sure drop.</p>
       {/if}
       {#if r.unlocked?.length}<p class="unlock p0">New hunts unlocked: {r.unlocked.map(id => E.MONSTERS[id].short).join(', ')}.</p>{/if}
       {#if r.bounty}{@const B = E.BOUNTIES[r.bounty.id]}
         {#if r.bounty.met}<p class="unlock p0">Bounty {r.bounty.repeat ? 'repeated' : 'complete'}: {B.name}. +{r.bounty.coin} coin{r.bounty.mat ? `, ${E.matName(r.bounty.mat)}` : ''}.{#if !r.bounty.repeat}{' '}{E.bountiesDone(game.save)} done{/if}{#if r.bounty.unlocked?.length}{' '}Unlocked at the Forge: {r.bounty.unlocked.join(', ')}.{:else if !r.bounty.repeat && E.nextBountyCharm(game.save)}{@const nx = E.nextBountyCharm(game.save)!}{' '}({nx.name} at {nx.need}).{/if}</p>
-        {:else}<p class="ital p0">Bounty not met ({B.name}): {(r.bounty.missed ?? "").toLowerCase()}. It stays on your board.</p>{/if}
+        {:else}<p class="ital p0">Bounty not met, {B.name}. <Rich text={r.bounty.missed ?? ""} />. It stays on your board.</p>{/if}
       {/if}
       {#if r.returned && h.item && shows(h, 'item')}<p class="ital p0">{r.returned} unused {E.ITEMS[h.item].name} returned to your stash.</p>{/if}
     {:else}
@@ -92,7 +92,7 @@
       {#if Object.keys(r.mats).length}<div><span class="label">You kept what you broke off</span><ul style="margin-top:6px">{#each Object.entries(r.mats) as [k, v] (k)}<li><Icon id={k} size={18} />{E.matName(k)} ×{v}</li>{/each}</ul></div>{/if}
       {#if E.lossFacts(h, game.save).length}
         <!-- facts about this monster against the gear you brought (no-handholding: never what to bring) -->
-        <div class="facts-after"><span class="label">What you learned</span><ul>{#each E.lossFacts(h, game.save) as f}<li>{f}</li>{/each}</ul></div>
+        <div class="facts-after"><span class="label">What you learned</span><ul>{#each E.lossFacts(h, game.save) as f}<li><Rich text={f} /></li>{/each}</ul></div>
       {/if}
       <p class="ital p0">It had {h.mon.hp} HP left. No coin.{Object.keys(r.mats).length ? '' : ' No materials: break a part and you keep its material even when a hunt fails.'}{h.item ? ` You lost ${r.lost} ${E.ITEMS[h.item].name} you carried.` : ''}{r.bounty ? ` The ${E.BOUNTIES[r.bounty.id].name} bounty stays on your board.` : ''}</p>
     {/if}
@@ -116,7 +116,7 @@
       <div class="calc">
         {#if inc.elem === 0}<b>{inc.raw}</b> physical{#if inc.wearsResist} <span class="nores">(resist is only for <b>{E.monElem(h)}</b>)</span>{/if}
         {:else if inc.phys === 0}<Elem e={E.monElem(h)} />{E.monElem(h)} <b>{inc.raw}</b>{#if inc.res} − your resist → <b>{inc.after}</b>{/if}
-        {:else}<b>{inc.phys}</b> physical + <Elem e={E.monElem(h)} />{E.monElem(h)} <b>{inc.elem}</b>{#if inc.res} − your resist → <b>{inc.after}</b>{/if}{/if}{#if inc.evade && !E.trapCatches(h.trapSet, h.intent)} · <b>Smoke</b>, it misses{:else if h.guard} · − <b>{inc.g}</b> block{inc.half ? ' (½)' : ''}{/if}{#if !inc.evade && inc.ward} · − <b>{inc.ward}</b> armor{/if}{#if !inc.evade && inc.net && inc.noGuard}. <span class="nores">Goes through <b>Block</b>.</span>{:else if !inc.evade && inc.net && inc.half} · <span style="color:var(--muted)"><b>Block</b> is ½</span>{/if}
+        {:else}<b>{inc.phys}</b> physical + <Elem e={E.monElem(h)} />{E.monElem(h)} <b>{inc.elem}</b>{#if inc.res} − your resist → <b>{inc.after}</b>{/if}{/if}{#if inc.evade && !E.trapCatches(h.trapSet, h.intent)} · <b>Smoke</b>, it misses{:else if h.guard} · − <b>{inc.g}</b> block{inc.half ? ' (½)' : ''}{/if}{#if !inc.evade && inc.ward} · − <b>{inc.ward}</b> armour{/if}{#if !inc.evade && inc.net && inc.noGuard}. <span class="nores">Goes through <b>Block</b>.</span>{:else if !inc.evade && inc.net && inc.half} · <span style="color:var(--muted)"><b>Block</b> is ½</span>{/if}
       </div>
     {/if}
     {#if tp?.extra}<div class="calc rider">+<b>{tp.extra}</b> at turn end from <Rich text={tp.why.join(' and ')} />. <span class="nores">Goes through <b>Block</b>.</span></div>{/if}

@@ -77,7 +77,7 @@ export const rimeshrike: MonsterDef = {
       case 'circle': return 'It wheels overhead, lining up a dive.';
       case 'dive':
         m.air = false; m.airLeft = 0;
-        if (!m.parts.crest.broken) { m.shroud = SHROUD_TURNS; return 'Ice locks over its feathers: arrows will glance off.'; }
+        if (!m.parts.crest.broken) { m.shroud = SHROUD_TURNS; return 'Ice locks over its feathers. It’s Frost-shrouded.'; }
         return null;
       case 'stuck': return 'It wrenches its beak free.' + thaw();
       case 'rake': { const t = thaw(); return t ? t.trim() : null; }
