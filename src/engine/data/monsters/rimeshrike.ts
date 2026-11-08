@@ -30,8 +30,8 @@ export const rimeshrike: MonsterDef = {
   common: 'rimeplume',
   rarePart: 'crest',
   rare: 'haileye',
-  habits: 'A Galeshrike iced over from crest to tail. In the air only bows reach it. When it dives and lands, ice locks over its feathers for two of its actions and arrows glance off: only Cut and Blunt reach it then.',
-  enragedHabit: 'On the ground under its ice, it sheds a Frost Flare and the ice grows back: arrows glance off for longer.',
+  habits: 'A Galeshrike iced over from crest to tail. **Airborne**, only **Pierce** reaches it. When it dives and lands, ice locks over its feathers for two of its actions, and only **Cut** and **Blunt** reach it then.',
+  enragedHabit: 'On the ground under its ice, it sheds a **Frost Flare** and the ice grows back, so it stays **Frost-shrouded** longer.',
   intro: 'Hail rattles across the ridge. A pale shrike settles on a frozen boulder, feathers clinking like glass.',
   enrageText: 'Sleet whirls off its wings. The Rimeshrike is enraged!',
   parts: [
@@ -44,7 +44,7 @@ export const rimeshrike: MonsterDef = {
     const m = h.mon, enr = m.enraged, tb = m.parts.talons.broken;
     switch (type) {
       case 'rake': return { name: 'Icicle Rake', text: tb ? 'It hops forward, slashing with its one good foot.' : 'It hops forward, iced talons spread wide.', dmg: tb ? 26 : 37, threat: 2 };
-      case 'takeoff': { const n = airTurns(h); return { name: 'Taking off', text: 'It shakes the ice off its wings and leaps into the wind.', dmg: 0, threat: 0, note: `Still on the ground now. After your turn it's airborne for ${n} turn${n > 1 ? 's' : ''}: only bows reach it then` }; }
+      case 'takeoff': { const n = airTurns(h); return { name: 'Taking off', text: 'It shakes the ice off its wings and leaps into the wind.', dmg: 0, threat: 0, note: `After your turn it’s airborne for ${n} turn${n > 1 ? 's' : ''}. **Pierce** only then` }; }
       case 'gust': return { name: 'Hail Buffet', text: 'It beats its wings and drives a sheet of hail at you.', dmg: enr ? 48 : 39, threat: 2, halfGuard: true, note: 'Your **Block** is ½' };
       case 'circle': return { name: 'Circling high', text: 'It climbs into a wide circle, frost trailing from its wings.', dmg: 0, threat: 0, note: 'Dives next turn' };
       case 'dive': return { name: 'Frost Dive', text: 'It folds its wings and drops, wrapped in freezing air!', dmg: tb ? (enr ? 88 : 78) : (enr ? 112 : 100), threat: enr ? 4 : 3, note: m.parts.crest.broken ? 'Then it’s stuck for a turn' : 'Then it’s stuck, and **Frost-shrouded**' };

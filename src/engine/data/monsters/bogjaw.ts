@@ -29,8 +29,8 @@ export const bogjaw: MonsterDef = {
   common: 'bogskin',
   rarePart: 'warts',
   rare: 'mirestone',
-  habits: 'Lies half-sunk in the mire with its mouth open. Every few turns it gapes wide and swallows its prey whole: two of your dice are stuck inside until you cut your way out. A heavy blow to the jaw while it gapes makes it choke on the swallow.',
-  enragedHabit: 'Once a hunt it swallows you deep: the Deep Gulp is deeper: more cutting to escape.',
+  habits: 'Lies half-sunk in the mire with its mouth open. Every few turns it gapes wide and swallows you whole, and 2 of your dice are stuck inside until you cut your way out. **Daze** to the jaw while it gapes makes it choke on the swallow.',
+  enragedHabit: 'Once a hunt it swallows you deeper, the **Deep Gulp**. Cutting free takes longer.',
   intro: 'The mire bubbles. Two eyes rise from the mud, then a mouth wide enough to swallow you.',
   enrageText: 'It bellows, and the whole bog shakes. The Bogjaw is enraged!',
   parts: [

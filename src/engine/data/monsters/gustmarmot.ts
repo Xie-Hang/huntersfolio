@@ -22,7 +22,7 @@ export const gustmarmot: MonsterDef = {
   common: 'marmotfur',
   rarePart: 'cheeks',
   rare: 'galegland',
-  habits: 'A Galeshrike chick, too young to fly. It pecks twice, then beats its wings: the gust it whips up hits hard the turn after. Hurt badly, it gets angry and the gust hits harder.',
+  habits: 'A Galeshrike chick, too young to fly. It pecks twice, then beats its wings, and the gust it whips up hits hard the turn after. Badly hurt, it gets angry and the gust hits harder.',
   intro: 'A Shrikelet hops onto a rock and spreads its wings. The grass flattens.',
   enrageText: 'It fluffs up, shrieking. The Shrikelet is enraged!',
   parts: [

@@ -34,8 +34,8 @@ export const ashtail: MonsterDef = {
   common: 'ashscale',
   rarePart: 'mantle',
   rare: 'ashheart',
-  habits: 'Wears glowing cinder scales across its back. Every hit breaks scales before it can do damage: Pierce clears two layers, anything else one, and a Cut through hot scales burns you. A Frost hit quenches them all at once. It rekindles them every few turns.',
-  enragedHabit: 'Its second pounce becomes a Flare-up: it flings its own burning scales at you, leaving its back thinner.',
+  habits: 'Wears glowing cinder scales across its back. The scales take your hits before its HP does. **Pierce** breaks two layers, anything else one, and **Cut** hits burn you. A **Frost** hit puts them all out. It regrows them every few turns.',
+  enragedHabit: 'Its second pounce becomes a **Flare-up**. It flings its own burning scales at you, and its back is left with fewer layers.',
   intro: 'Ash drifts up instead of down. The Ashtail slinks out of a smoking crack, its back glowing like coals.',
   enrageText: 'Its scales flare white. The Ashtail is enraged!',
   parts: [

@@ -28,8 +28,8 @@ export const bloodwhelk: MonsterDef = {
   common: 'bloodscale',
   rarePart: 'shell',
   rare: 'heartpearl',
-  habits: 'An Emberwhelk whose fire has gone out and whose slime has turned red. The slime clings and drinks: for a few turns it takes HP from you, past your block, and heals the snail. Its gills heal it too. Break the gills and it can’t keep anything it takes.',
-  enragedHabit: 'Its slime comes as a Blood Tide that drinks from you for longer.',
+  habits: 'An Emberwhelk whose fire has gone out and whose slime has turned red. The slime clings and drains you for a few turns, through your **Block**, and heals the snail. Its gills heal it too. Breaking its gills stops all its healing.',
+  enragedHabit: 'Its slime comes as a **Blood Tide** that drains you for longer.',
   intro: 'A dark shell slides out of the reeds on a trail of red slime.',
   enrageText: 'Its slime runs thick and dark. The Bloodwhelk is enraged!',
   parts: [

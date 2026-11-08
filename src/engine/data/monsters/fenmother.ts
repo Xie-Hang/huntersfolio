@@ -32,8 +32,8 @@ export const fenmother: MonsterDef = {
   common: 'fenhide',
   rarePart: 'head',
   rare: 'fenpearl',
-  habits: 'The test of every Mirewood lesson. It swallows you whole (cut your way out, or break its throat sac), its gills heal it every turn (break them), a blow to its head while it gapes stops the swallow, and at half HP its steam rises: then only your first hit each turn lands. Two weapons can’t answer all of it. Choose.',
-  enragedHabit: 'Sinks into the spring and raises a Steam Cloud: for 2 turns only your first hit each turn lands.',
+  habits: 'The test of every Mirewood lesson. It swallows you whole (cut your way out, or break its throat sac), its gills heal it every turn, **Daze** to its head while it gapes stops the swallow, and at half HP its steam rises and only your first hit each turn lands.',
+  enragedHabit: 'Sinks into the spring and raises a **Steam Cloud**. For 2 turns only your first hit each turn lands.',
   intro: 'The hot spring heaves. A toad the size of a hut rises out of the steam, gills fanning.',
   enrageText: 'It roars, and the spring boils over. The Fenmother is enraged!',
   parts: [

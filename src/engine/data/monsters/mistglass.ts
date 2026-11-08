@@ -30,8 +30,8 @@ export const mistglass: MonsterDef = {
   common: 'glassdust',
   rarePart: 'eyes',
   rare: 'mirrorheart',
-  habits: 'A fox of living glass that walks in its own mist. It splits into mirror images: while they stand, only your first hit each turn finds the real one. Make that hit count. Charge, then strike.',
-  enragedHabit: 'On their last turn its mirror images burst outward at you: the Shatter. Block it, then every hit lands again.',
+  habits: 'A fox of living glass that walks in its own mist. It splits into mirror images, and while they stand, only your first hit each turn lands.',
+  enragedHabit: 'On their last turn its mirror images burst outward at you, the **Shatter**. After it, every hit lands again.',
   intro: 'The mist thickens and catches the light. Something glassy steps out of it, and then there are three of it.',
   enrageText: 'Cracks of cold light race across its facets. The Mistglass is enraged!',
   parts: [

@@ -29,8 +29,8 @@ export const feverjaw: MonsterDef = {
   common: 'feverskin',
   rarePart: 'warts',
   rare: 'feverstone',
-  habits: 'A Bogjaw gone feverish, steaming in the warm mud. Its gut is rotten: being swallowed infects you, and every turn inside keeps the infection going after you get out. It belches spores, too. Cut your way out fast, or break its throat sac.',
-  enragedHabit: 'Its belches become Spore Bursts that keep you infected for five turns.',
+  habits: 'A Bogjaw gone feverish, steaming in the warm mud. Its gut is rotten. Swallowed, you get **Infect**, and every turn inside keeps it going after you’re out. It belches spores, too. Breaking its throat sac stops the swallow.',
+  enragedHabit: 'Its belches become **Spore Bursts**. **Infect** on you for 5 turns.',
   intro: 'The mud here is warm, and it stinks. A swollen, steaming jaw rises out of it.',
   enrageText: 'It belches a cloud of hot spores. The Feverjaw is enraged!',
   parts: [

@@ -33,8 +33,8 @@ export const archeron: MonsterDef = {
   common: 'archplume',
   rarePart: 'wings',
   rare: 'stormquill',
-  habits: 'A Duskheron from the frozen pools, both heads crackling. A spear that lands leaves Spark on you; at 3 it goes off, and block can’t stop it. Its cry puts Static on your dice: a Static die can only attack. Daze a head and its strike carries nothing.',
-  enragedHabit: 'Both heads cry together, a Static Field that puts Static on three of your dice.',
+  habits: 'A Duskheron from the frozen pools, both heads crackling. A spear that lands puts **Spark** on you, and at 3 it goes off through your **Block**. Its cry puts **Static** on your dice, and a **Static** die can only attack. **Daze** on a head stops its strike carrying anything.',
+  enragedHabit: 'Both heads cry together, a **Static Field** that puts **Static** on 3 of your dice.',
   intro: 'Ice creaks in the reeds. Two heads rise, and the air between them snaps with static.',
   enrageText: 'Sparks run up both necks. The Archeron is enraged!',
   parts: [
@@ -51,8 +51,8 @@ export const archeron: MonsterDef = {
     if (type === 'twin') return { ...out, note: 'Each head that hits puts 1 **Spark** on you' };
     if (!acts) return out;
     const cry = live(h, acts, 'screech') > 0 && !h.arm.chargeProof, thrusts = live(h, acts, 'thrust');
-    const notes = [thrusts ? `${thrusts} Spark pip${thrusts > 1 ? 's' : ''} on you if it lands` : '', cry ? `Charges ${CRY_DICE} of your dice next turn` : ''].filter(Boolean);
-    return { ...out, name: out.name.replace(/Screech/g, 'Static Cry'), text: out.text.replace(/screeches\. Your block will be halved next turn\./g, 'gives a crackling cry.'), halfGuard: false, note: notes.join('. ') || undefined };
+    const notes = [thrusts ? `If it hits, ${thrusts} **Spark** on you` : '', cry ? `Charges ${CRY_DICE} of your dice next turn` : ''].filter(Boolean);
+    return { ...out, name: out.name.replace(/Screech/g, 'Static Cry'), text: out.text.replace(/screeches\. Your Block is ½ next turn\./g, 'gives a crackling cry.'), halfGuard: false, note: notes.join('. ') || undefined };
   },
 
   next(h, prev) {

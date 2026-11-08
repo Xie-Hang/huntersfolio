@@ -35,8 +35,8 @@ export const slagwyrm: MonsterDef = {
   common: 'slagscale',
   rarePart: 'spine',
   rare: 'slagheart',
-  habits: 'A serpent of cooling slag. Its molten armour swallows the first blows each turn and reforms as fast as you chip it. One heavy hammer blow shatters it outright. Hurt badly, it melts down: no more armour, but it burns whatever touches it.',
-  enragedHabit: 'Its spit becomes Slag Rain: a shower of slag that burns you a turn longer.',
+  habits: 'A serpent of cooling slag. Its molten armour takes the first hits each turn and reforms as fast as you chip it. One heavy **Blunt** hit breaks it outright. Badly hurt, it melts down. No more armour, but **Cut** and **Blunt** hits burn you.',
+  enragedHabit: 'Its spit becomes **Slag Rain**, a shower of slag that burns you a turn longer.',
   intro: 'The scree at the foot of the spire is glowing. Then it lifts its head.',
   enrageText: 'Its armour runs like wax. The Slagwyrm is enraged!',
   parts: [
@@ -125,10 +125,10 @@ export const slagwyrm: MonsterDef = {
 
   meter(h) {
     const m = h.mon;
-    if (m.melt) return { label: 'Meltdown · your first melee hit each turn burns you', value: 1, max: 1, tone: 'ember', note: 'Armour broken' };
-    if ((m.shatter ?? 0) > 0) return { label: 'Armour shattered', value: m.shatter!, max: SHATTER_TURNS, tone: 'gold', pips: true, note: `${m.shatter} turn${m.shatter! > 1 ? 's' : ''}` };
+    if (m.melt) return { label: 'Meltdown · 1st **Cut**/**Blunt** hit a turn burns you', value: 1, max: 1, tone: 'ember', note: 'Armour broken' };
+    if ((m.shatter ?? 0) > 0) return { label: 'Armour broken', value: m.shatter!, max: SHATTER_TURNS, tone: 'gold', pips: true, note: `${m.shatter} turn${m.shatter! > 1 ? 's' : ''}` };
     const max = soakMax(h), v = m.armour ?? max;
-    return { label: `Molten armour · soaks ${v} more this turn`, value: v, max, tone: 'ember' };
+    return { label: `Molten armour · takes ${v} more this turn`, value: v, max, tone: 'ember' };
   },
 
   tip(h, type) {

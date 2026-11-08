@@ -40,8 +40,8 @@ export const cragwing: MonsterDef = {
   common: 'cragslate',
   rarePart: 'horn',
   rare: 'cragheart',
-  habits: 'The test of every Ashfall Ridge lesson. It winds up a charge, takes to the air (only bows reach it), burrows into the scree (only mauls reach it, and a heavy blow drives it up) and wears slate plating that a blade clears in one hit. It never flies and burrows back to back.',
-  enragedHabit: 'Kicks the scree down at you: after its Rockslide you can’t Swap for a turn.',
+  habits: 'The test of every Ashfall Ridge lesson. It winds up a charge, takes to the air (**Pierce** only), burrows into the scree (**Blunt** only, and a heavy hit drives it up) and wears slate that one **Cut** hit breaks. It never flies and burrows back to back.',
+  enragedHabit: 'Kicks the scree down at you. After its **Rockslide**, **Swap** is locked for a turn.',
   intro: 'Slate rattles down the scree. A drake with wings like split stone lands on the ridge and screams.',
   enrageText: 'The wind howls through its broken slates. The Cragwing is enraged!',
   parts: [
@@ -59,7 +59,7 @@ export const cragwing: MonsterDef = {
       case 'lash': return { name: 'Tail Lash', text: 'It swings round, its tail scattering loose slate.', dmg: enr ? 34 : 28, threat: 1 };
       case 'windup': return { name: 'Winding up', text: 'It drops its horned head and scrapes the scree, gathering itself.', dmg: 0, threat: 0, note: '**Shale Charge** next turn' };
       case 'charge': return { name: 'Shale Charge', text: 'It hurls itself down the slope, horn first!', dmg: enr ? 84 : 70, threat: enr ? 4 : 3 };
-      case 'takeoff': { const n = airTurns(h); return { name: 'Taking off', text: 'It spreads its stone wings and climbs into the ridge wind.', dmg: 0, threat: 0, note: `Still on the ground now. After your turn it's airborne for ${n} turn${n > 1 ? 's' : ''}: only bows reach it then` }; }
+      case 'takeoff': { const n = airTurns(h); return { name: 'Taking off', text: 'It spreads its stone wings and climbs into the ridge wind.', dmg: 0, threat: 0, note: `After your turn it’s airborne for ${n} turn${n > 1 ? 's' : ''}. **Pierce** only then` }; }
       case 'gust': return { name: 'Gust Buffet', text: 'It hangs in the wind and beats a gale down at you.', dmg: enr ? 38 : 30, threat: 1, halfGuard: true, note: 'Your **Block** is ½. Dives next turn' };
       case 'dive': return { name: 'Talon Dive', text: 'It folds its wings and drops out of the sky, talons first!', dmg: enr ? 76 : 64, threat: enr ? 4 : 3, note: 'Then it perches for a turn' };
       case 'perched': return { name: 'Perched', text: 'It lands hard on a boulder, catching its breath.', dmg: 0, threat: 0, note: 'On the ground. A free turn' };

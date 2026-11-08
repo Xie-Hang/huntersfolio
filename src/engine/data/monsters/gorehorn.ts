@@ -20,8 +20,8 @@ export const gorehorn: MonsterDef = {
   common: 'hide',
   rarePart: 'tusks',
   rare: 'heartstone',
-  habits: 'Winds up before every charge. Wallows in mud when hurt, which halves damage to its hide.',
-  enragedHabit: 'Charges straight out of the mud with no wind-up: the Mud Charge.',
+  habits: 'Winds up before every charge. Wallows in mud when hurt, and its hide takes ½ while the mud lasts.',
+  enragedHabit: 'Charges straight out of the mud with no wind-up, the **Mud Charge**.',
   intro: 'The Gorehorn bursts out of the brush on Ashfall Ridge.',
   enrageText: 'It bellows and stamps. The Gorehorn is enraged!',
   parts: [

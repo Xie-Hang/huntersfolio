@@ -36,8 +36,8 @@ export const rotcap: MonsterDef = {
   common: 'rotspore',
   rarePart: 'cap',
   rare: 'sporeheart',
-  habits: 'A squat cave beast under a fungus cap the size of a cart. Its spores infect you: a few HP every turn until it clears or you cure it. Every few turns the cap swells, then bursts. A solid arrow into the swollen cap pops it first.',
-  enragedHabit: 'Its spore puff becomes a Spore Storm: infected for 5 turns, and harder.',
+  habits: 'A squat cave beast under a fungus cap the size of a cart. Its spores put **Infect** on you, a few HP every turn until it clears or you cure it. Every few turns the cap swells, then bursts. A 2-dice **Pierce** move on the swollen cap stops it.',
+  enragedHabit: 'Its spore puff becomes a **Spore Storm**. **Infect** on you for 5 turns, and harder.',
   intro: 'The cave smells of wet earth and rot. Something heaves itself up out of the dark under a great pale cap.',
   enrageText: 'Its cap darkens and weeps spores. The Rotcap is enraged!',
   parts: [

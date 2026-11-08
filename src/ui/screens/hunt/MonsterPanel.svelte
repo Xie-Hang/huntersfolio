@@ -80,8 +80,8 @@
         <div class="metarow">
           <div class="meters">
         {#if meter}
-          <div class="hpline" aria-label="{meter.label}: {meter.value} of {meter.max}">
-            <div class="ph"><span class="label" style="color:{TONE[meter.tone ?? 'gold']}">{meter.label}</span><span class="mono">{meter.note ?? `${meter.value} / ${meter.max}`}</span></div>
+          <div class="hpline" aria-label="{meter.label.replace(/\*\*/g, '')}: {meter.value} of {meter.max}">
+            <div class="ph"><span class="label" style="color:{TONE[meter.tone ?? 'gold']}"><Rich text={meter.label} /></span><span class="mono"><Rich text={meter.note ?? `${meter.value} / ${meter.max}`} /></span></div>
             {#if meter.pips}
               <div class="pipbar">{#each Array(meter.max) as _, i}<i class:f={i < meter.value} style="--c:{TONE[meter.tone ?? 'gold']}"></i>{/each}</div>
             {:else}

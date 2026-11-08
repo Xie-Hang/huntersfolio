@@ -35,8 +35,8 @@ export const stormroc: MonsterDef = {
   common: 'rocplume',
   rarePart: 'crown',
   rare: 'stormheart',
-  habits: 'A storm bird the size of a barn. It fights from the air and lands only after a dive. Lightning gathers in its crown every turn until it breaks as a Thunderhead; arrows into the crown bleed the storm away. Hurt badly, it takes to the sky for good.',
-  enragedHabit: 'Once, it can’t hold the storm in: halfway to a Thunderhead, its crown flashes early as a Crown Flash.',
+  habits: 'A storm bird the size of a barn. It fights from the air and lands only after a dive. The storm gathers in its crown every turn until it breaks as a **Thunderhead**. **Pierce** hits on the crown drain the storm. Badly hurt, it stays **Airborne** for good.',
+  enragedHabit: 'Once, it can’t hold the storm in. Halfway to a **Thunderhead**, its crown flashes early as a **Crown Flash**.',
   intro: 'The clouds over the spire start to turn. Something in them is turning too, and it has a crown of lightning.',
   enrageText: 'Thunder rolls without a flash. The Stormcrown Roc is enraged!',
   parts: [

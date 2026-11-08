@@ -31,8 +31,8 @@ export const quakeback: MonsterDef = {
   common: 'quakescale',
   rarePart: 'plate',
   rare: 'quakeheart',
-  habits: 'A Cinderback gone cold and hard. It burrows, then shakes the ground from below: each tremor knocks one of your dice loose. Underground only Blunt reaches it. With its digging claws broken it can’t burrow at all.',
-  enragedHabit: 'Its last tremor underground is a Great Tremor: two dice shaken loose.',
+  habits: 'A Cinderback gone cold and hard. It burrows, then shakes the ground from below, and each tremor leaves you 1 fewer die. Underground, only **Blunt** reaches it. Breaking its digging claws ends burrowing for good.',
+  enragedHabit: 'Its last tremor underground is a **Great Tremor**. You have 2 fewer dice.',
   intro: 'The ridge shudders. A grey, rock-backed beast heaves itself out of a crack in the stone.',
   enrageText: 'The ground won’t stop shaking. The Quakeback is enraged!',
   parts: [

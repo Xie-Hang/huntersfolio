@@ -36,8 +36,8 @@ export const arcmoth: MonsterDef = {
   common: 'arcdust',
   rarePart: 'thorax',
   rare: 'sparkgland',
-  habits: 'A moth as wide as a wagon, its dust crackling. Each wingbeat leaves a Spark pip on you; at 3 the charge goes off through you and block can’t stop it. Any Blunt move grounds a pip. In the air only bows reach it.',
-  enragedHabit: 'The first wingbeat of each flight is a Static Surge: two Spark pips at once.',
+  habits: 'A moth as wide as a wagon, its dust crackling. Each wingbeat puts 1 **Spark** on you, and at 3 it goes off through your **Block**. Any **Blunt** move grounds 1. **Airborne**, only **Pierce** reaches it.',
+  enragedHabit: 'The first wingbeat of each flight is a **Static Surge**, 2 **Spark** at once.',
   intro: 'Pale dust drifts down in the dark and snaps against your armour. Wings unfold above you.',
   enrageText: 'Its dust glows white. The Arcmoth is enraged!',
   parts: [

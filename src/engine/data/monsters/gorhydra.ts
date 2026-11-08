@@ -58,8 +58,8 @@ export const gorhydra: MonsterDef = {
   common: 'hydrascale',
   rarePart: 'middle',
   rare: 'hydraheart',
-  habits: 'A three-headed frost serpent. Every head strikes on its own, so you face three attacks a turn. Cut one off and the stump grows a new head in two turns, unless you seal it with a blade, or with fire. Hurt badly, it regrows in one.',
-  enragedHabit: 'Every third turn its heads breathe together, a Frost Chain that freezes two of your dice.',
+  habits: 'A three-headed frost serpent. Every head strikes on its own, so it attacks three times a turn. **Cut** a head off and the stump grows a new one in two turns, unless **Cut** or **Ember** seals it. Badly hurt, it regrows in one.',
+  enragedHabit: 'Every third turn its heads breathe together, a **Frost Chain**. You have 2 fewer dice next turn.',
   intro: 'Three shapes rise out of the frozen tarn, then lean together. They share one body.',
   enrageText: 'All three heads scream. The Gorhydra is enraged!',
   parts: [
@@ -173,7 +173,7 @@ export const gorhydra: MonsterDef = {
     const stumps = HYDRA_HEADS.filter(x => stumped(h, x)), gone = HYDRA_HEADS.filter(x => sealed(h, x)).length;
     if (stumps.length) {
       const t = Math.min(...stumps.map(x => h.mon.stump![x]));
-      return { label: `Stump${stumps.length > 1 ? 's' : ''} regrowing`, value: t, max: regrowTurns(h), tone: 'ice', pips: true, note: `in ${t} · seal with Cut or Ember` };
+      return { label: `Stump${stumps.length > 1 ? 's' : ''} regrowing`, value: t, max: regrowTurns(h), tone: 'ice', pips: true, note: `in ${t} · **Cut** or **Ember** seals it` };
     }
     return gone ? { label: 'Heads sealed for good', value: gone, max: 3, tone: 'gold', pips: true, note: `${gone} / 3` } : null;
   },

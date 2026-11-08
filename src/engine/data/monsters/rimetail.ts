@@ -30,8 +30,8 @@ export const rimetail: MonsterDef = {
   common: 'rimescale',
   rarePart: 'mantle',
   rare: 'frostheart',
-  habits: 'Wears plates of ice across its back. Every hit breaks the ice before it can do damage: one Cut hit clears it, anything else takes two. It regrows the plating every few turns. Its barbed tail sweeps hard.',
-  enragedHabit: 'Breathes a freezing mist that ices one of your dice for a turn: the Frost Lock.',
+  habits: 'Wears plates of ice across its back. The ice takes your hits before its HP does. One **Cut** hit breaks it, anything else takes two. It regrows the ice every few turns. Its barbed tail sweeps hard.',
+  enragedHabit: 'Breathes a freezing mist, the **Frost Lock**. You have 1 fewer die next turn.',
   intro: 'Frost spreads across the rocks. The Rimetail slides out from behind a drift, plated in ice.',
   enrageText: 'Its breath turns to sleet. The Rimetail is enraged!',
   parts: [

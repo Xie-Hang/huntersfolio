@@ -35,8 +35,8 @@ export const monolith: MonsterDef = {
   common: 'wardenstone',
   rarePart: 'core',
   rare: 'wardencore',
-  habits: 'A hunched colossus that walks on its knuckles, plated in slabs of mountain. Its plates turn aside most of every blow; a hammer cracks them, and then its core shows through the crack, for a little while. Bring a hammer and a bow, and know when to swap.',
-  enragedHabit: 'Every other quake comes twice: a smaller Aftershock straight after.',
+  habits: 'A hunched colossus that walks on its knuckles, plated in slabs of mountain. Its plates take most of every hit. **Blunt** breaks them fastest, and then its core is open for a little while, where **Pierce** hits for double.',
+  enragedHabit: 'Every other quake comes twice, with a smaller **Aftershock** straight after.',
   intro: 'The ridge shrugs. What you took for a crag turns its head, and a crack of light opens in its chest.',
   enrageText: 'Rubble pours from its shoulders. The Monolith Warden is enraged!',
   parts: [
@@ -113,7 +113,7 @@ export const monolith: MonsterDef = {
     const P = h.mon.parts.plates;
     if (coreOut(h)) {
       const left = h.intent === 'reform' ? 1 : (h.mon.core ?? 0) + 1;
-      return { label: 'Core exposed', value: left, max: coreTurns(h) + 1, tone: 'ember', pips: true, note: `${left} turn${left > 1 ? 's' : ''} left` };
+      return { label: 'Core open', value: left, max: coreTurns(h) + 1, tone: 'ember', pips: true, note: `${left} turn${left > 1 ? 's' : ''} left` };
     }
     return { label: 'Stone plates · every hit ×0.4', value: P.hp, max: P.max, tone: 'stone' };
   },

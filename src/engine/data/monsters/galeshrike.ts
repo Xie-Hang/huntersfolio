@@ -34,8 +34,8 @@ export const galeshrike: MonsterDef = {
   common: 'plume',
   rarePart: 'crest',
   rare: 'tempesteye',
-  habits: 'Takes to the air every few turns. In the air only Pierce (bows) can hit it. It circles before every dive, then sits stuck for a turn.',
-  enragedHabit: 'Pulls out of its dive and drops again: the Twin Dive.',
+  habits: 'Takes to the air every few turns. **Airborne**, only **Pierce** reaches it. It circles before every dive, then sits stuck for a turn.',
+  enragedHabit: 'Pulls out of its dive and drops again, the **Twin Dive**.',
   intro: 'A shriek splits the wind. The Galeshrike drops onto a ridge-top boulder.',
   enrageText: 'Its feathers bristle with static. The Galeshrike is enraged!',
   parts: [
@@ -48,7 +48,7 @@ export const galeshrike: MonsterDef = {
     const m = h.mon, enr = m.enraged, tb = m.parts.talons.broken;
     switch (type) {
       case 'rake': return { name: 'Talon Rake', text: tb ? 'It hops forward, slashing with its one good foot.' : 'It hops forward, talons spread wide.', dmg: tb ? 18 : 28, threat: 1 };
-      case 'takeoff': { const n = airTurns(h); return { name: 'Taking off', text: 'It spreads its wings and leaps into the wind.', dmg: 0, threat: 0, note: `Still on the ground now. After your turn it's airborne for ${n} turn${n > 1 ? 's' : ''}: only bows reach it then` }; }
+      case 'takeoff': { const n = airTurns(h); return { name: 'Taking off', text: 'It spreads its wings and leaps into the wind.', dmg: 0, threat: 0, note: `After your turn it’s airborne for ${n} turn${n > 1 ? 's' : ''}. **Pierce** only then` }; }
       case 'gust': return { name: enr ? 'Gale Storm' : 'Gust Buffet', text: enr ? 'It hammers the air with both wings, again and again.' : 'It beats its wings hard, driving a wall of wind at you.', dmg: enr ? 38 : 28, threat: enr ? 2 : 1, halfGuard: true, note: 'Your **Block** is ½' };
       case 'circle': return { name: 'Circling high', text: 'It climbs into a wide circle overhead, watching you.', dmg: 0, threat: 0, note: 'Dives next turn' };
       case 'dive': return { name: 'Plunging Dive', text: 'It folds its wings and drops like a stone!', dmg: tb ? (enr ? 70 : 60) : (enr ? 95 : 80), threat: enr ? 4 : 3, note: 'Then it’s stuck for a turn' };

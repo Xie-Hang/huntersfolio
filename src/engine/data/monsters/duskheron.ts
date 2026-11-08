@@ -28,7 +28,7 @@ function headAct(h: Hunt, head: string, act: Act) {
   switch (act) {
     case 'peck': return { name: 'Peck', text: `The ${n} jabs down.`, dmg: broke ? 10 : enr ? 18 : 14 };
     case 'thrust': return { name: 'Spear Thrust', text: `The ${n} draws back its neck to spear you.`, dmg: broke ? 18 : enr ? 32 : 26 };
-    case 'screech': return { name: 'Screech', text: `The ${n} screeches. Your block will be halved next turn.`, dmg: 0 };
+    case 'screech': return { name: 'Screech', text: `The ${n} screeches. Your Block is ½ next turn.`, dmg: 0 };
     case 'reel': return { name: 'Reeling', text: `The ${n} reels, dazed.`, dmg: 0 };
   }
 }
@@ -52,8 +52,8 @@ export const duskheron: MonsterDef = {
   common: 'duskplume',
   rarePart: 'wings',
   rare: 'twilightquill',
-  habits: 'Wades the shallows on stilt legs, two necks rising from one body. Each head strikes on its own, so you face two attacks a turn. Every few turns both heads rear up together for a Twin Spear. A heavy blow to a head sets it reeling.',
-  enragedHabit: 'Both necks swing in from either side at once: the Scissor Strike halves your block.',
+  habits: 'Wades the shallows on stilt legs, two necks rising from one body. Each head strikes on its own, so it attacks twice a turn. Every few turns both heads rear up together for a **Twin Spear**. **Daze** on a head sets it reeling.',
+  enragedHabit: 'Both necks swing in from either side at once, the **Scissor Strike**. Your **Block** is ½ against it.',
   intro: 'Two long necks lift out of the reeds at once. The Duskheron turns both heads toward you.',
   enrageText: 'Both heads scream at once. The Duskheron is enraged!',
   parts: [

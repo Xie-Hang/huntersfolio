@@ -30,8 +30,8 @@ export const emberwhelk: MonsterDef = {
   common: 'whelkscale',
   rarePart: 'shell',
   rare: 'emberpearl',
-  habits: 'A snail the size of a cart, its shell glowing like a forge. Frilled gills behind its head heal it every turn, so a long fight is a losing one. Break the gills first. It pulls into its shell when hurt, and its slime burns.',
-  enragedHabit: 'Fans its gills open and heals a big chunk after your turn: the Gill Bloom. Broken gills stop it.',
+  habits: 'A snail the size of a cart, its shell glowing like a forge. Frilled gills behind its head heal it every turn. It pulls into its shell when hurt, and its slime burns you.',
+  enragedHabit: 'Fans its gills open and heals a big chunk after your turn, the **Gill Bloom**. Breaking its gills stops it.',
   intro: 'Steam rises from the bog. A glowing shell slides out of the mist on a trail of hissing slime.',
   enrageText: 'Its shell flares white-hot. The Emberwhelk is enraged!',
   parts: [

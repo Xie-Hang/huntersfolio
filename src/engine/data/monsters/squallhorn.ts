@@ -29,8 +29,8 @@ export const squallhorn: MonsterDef = {
   common: 'squallhide',
   rarePart: 'tusks',
   rare: 'galeheart',
-  habits: 'A Gorehorn that gathers the wind before it charges, a little more each turn, and lets go when it’s full. Dazing it scatters the wind. With its hind legs broken it can’t gather as much.',
-  enragedHabit: 'Every other jab is a Squall Jab that gathers wind as it lands.',
+  habits: 'A Gorehorn that gathers **Wind** before it charges, a little more each turn, and lets go when it’s full. **Daze** scatters the **Wind**. Breaking its hind legs caps it lower.',
+  enragedHabit: 'Every other jab is a **Squall Jab** that gathers **Wind** as it lands.',
   intro: 'The wind turns on the ridge. A Gorehorn with a mane like a storm cloud paws at the ash.',
   enrageText: 'The wind howls around it. The Squallhorn is enraged!',
   parts: [

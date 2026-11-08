@@ -37,8 +37,8 @@ export const cinderback: MonsterDef = {
   common: 'cinderscale',
   rarePart: 'plate',
   rare: 'kilnheart',
-  habits: 'Burrows every few turns, then erupts beneath you. Underground, only Blunt weapons reach it, and a heavy Blunt hit drives it back up. After erupting, its shell is molten for two turns and burns anyone who strikes it up close.',
-  enragedHabit: 'Every other time it digs in, it sprays magma up through the ground: Block can’t stop it, a heavy Blunt hit cancels it.',
+  habits: 'Burrows every few turns, then erupts beneath you. Underground, only **Blunt** reaches it, and a heavy **Blunt** hit drives it back up. After erupting, its shell is molten for two turns, and **Cut** and **Blunt** hits burn you.',
+  enragedHabit: 'Every other time it digs in, it sprays magma up through the ground. It goes through **Block**, and a heavy **Blunt** hit stops it.',
   intro: 'The ground splits with a hiss. The Cinderback heaves itself out of a seam of glowing rock.',
   enrageText: 'Its vents roar white-hot. The Cinderback is enraged!',
   parts: [

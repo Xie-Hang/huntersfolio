@@ -66,8 +66,8 @@ export const sovereign: MonsterDef = {
   common: 'sovgel',
   rarePart: 'tusks',
   rare: 'sovheart',
-  habits: 'A vast slime wearing parts of the monsters it swallowed. It fights in four stances (Stone, Gale, Ember, Frost), each using one of those parts and fighting like that monster, and it shifts into a new one at random, a turn after it warns you. Its weakness changes with the stance. Tear a part out and that stance is gone for good.',
-  enragedHabit: 'Each change of stance becomes a Lurching Shift that crashes into you as it changes.',
+  habits: 'A vast slime wearing parts of the monsters it swallowed. It fights in four stances (**Stone**, **Gale**, **Ember**, **Frost**), each using one of those parts and fighting like that monster, and it shifts to a new one at random, a turn after it warns you. Its weakness changes with the stance. Breaking a part ends that stance for good.',
+  enragedHabit: 'Each change of stance becomes a **Lurching Shift** that crashes into you as it changes.',
   intro: 'The ground sags. Something enormous slides over the crater rim, tusks and wings and tail bobbing in its body like driftwood.',
   enrageText: 'It heaves and quickens. The Sovereign wakes!',
   parts: [

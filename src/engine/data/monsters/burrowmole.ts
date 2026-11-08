@@ -23,7 +23,7 @@ export const burrowmole: MonsterDef = {
   common: 'moleclaw',
   rarePart: 'snout',
   rare: 'moleclaw',
-  habits: 'A Cinderback pup, its shell still cool. It scratches twice, then digs under the trail and bites from below. Underground, only a maul reaches it, and a maul hit drives it back up.',
+  habits: 'A Cinderback pup, its shell still cool. It scratches twice, then digs under the trail and bites from below. Underground, only **Blunt** reaches it, and a **Blunt** hit drives it back up.',
   intro: 'The trail heaves, warm underfoot. A Cinderpup pokes its snout out.',
   enrageText: 'It snorts little sparks.',
   parts: [{ id: 'snout', name: 'Snout', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: 'Breaking it drops a claw', mat: 'moleclaw', hp: 70, brk: 'Its snout is bruised flat.' }],

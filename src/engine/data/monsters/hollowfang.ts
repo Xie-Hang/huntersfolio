@@ -47,8 +47,8 @@ export const hollowfang: MonsterDef = {
   common: 'palehide',
   rarePart: 'fangs',
   rare: 'bloodpearl',
-  habits: 'A pale, eyeless thing, half bat and half leech. It latches on and drinks, and heals what it takes. Block can’t stop a latch drinking. A blade move of 2 or more dice tears it off; with its fangs broken it can’t latch at all.',
-  enragedHabit: 'Every other bite is a Blood Frenzy that heals it for half what it takes. Block starves it.',
+  habits: 'A pale, eyeless thing, half bat and half leech. It latches on and drains you through your **Block**, and heals what it drains. A 2-dice **Cut** move tears it off. Breaking its fangs ends the latch for good.',
+  enragedHabit: 'Every other bite is a **Blood Frenzy** that heals it for ½ of what it hits you for.',
   intro: 'Something drops from the cave roof without a sound and unfolds on the rock in front of you.',
   enrageText: 'It hisses, mouth wide. The Hollowfang is enraged!',
   parts: [
