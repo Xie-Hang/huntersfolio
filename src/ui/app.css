@@ -773,3 +773,4 @@ html[data-input="pad"] body{cursor:none}
 /* a replayed lesson (Help → How to hunt): what you're in, and the way out */
 .lessonbar{display:flex;align-items:center;gap:12px;padding:6px 8px 6px 14px;border:1px solid var(--gold-hi);border-radius:4px;background:var(--raise);font-size:var(--fs-sm);color:var(--soft)}
 .lessonbar b{color:var(--fg)}
+.coach .coach-topic{font-weight:500;color:#8a6a4a}

@@ -16,7 +16,7 @@
     {#if fresh}
       <p class="lead">Hunt monsters with dice.</p>
       <p>Put your dice into moves, watch what the monster does next, and break it down. Carry home what it drops and make better gear.</p>
-      <p>You start in the Foothills, where a few small monsters teach you one thing at a time. Each step points at what to press.</p>
+      <p>You start in the Foothills with me, Mell. I’m an S-rank hunter, and I’ll teach you one thing at a time until you’re ready for your promotion hunt.</p>
       <div class="intro-acts">
         <button class="btn primary" bind:this={btn} onclick={begin}>Begin</button>
         <button class="coach-skip" onclick={() => { music.unlock(); onskip(); }}>I've played before: skip the tutorial</button>

@@ -131,7 +131,8 @@
   {#if ring}<div class="coach-ring" class:guide={t.guide} style="left:{ring.x}px;top:{ring.y}px;width:{ring.w}px;height:{ring.h}px" aria-hidden="true"></div>{/if}
   <div class="coach" class:guide={t.guide} role="status" aria-live="polite" bind:this={cardEl} bind:clientHeight={cardH} style="left:{pos.x}px;top:{pos.y}px;width:min({W}px, calc(100vw - {EDGE * 2}px))">
     {#if arrow}<span class="coach-arrow {arrow.side}" style="{arrow.side === 'up' || arrow.side === 'down' ? 'left' : 'top'}:{arrow.at}px" aria-hidden="true"></span>{/if}
-    <span class="coach-head">{t.id.startsWith('i-') ? (t.head ?? 'The Foothills') : t.guide ? (game.inHunt ? (!game.save.hunts || game.hunt?.lesson === 1 ? 'Your first hunt' : game.hunt?.lesson ? 'New this hunt' : 'Tutorial') : 'Getting started') : t.text().startsWith('New:') ? 'New this hunt' : 'Tip'}</span>
+    <!-- Mell (8 Nov 2026): the S-rank hunter who teaches you speaks every prompt; the topic follows her name -->
+    <span class="coach-head">Mell{#if t.head}<span class="coach-topic">{' · '}{t.head}</span>{/if}</span>
     <p><Rich text={padWords(t.text())} /></p>
     <div class="coach-acts">
       {#if game.lesson}<button class="coach-skip" onclick={() => game.endLesson()}>End lesson</button>{:else}<button class="coach-skip" onclick={() => coach.skipAll(!!t.guide)}>{t.guide ? 'Skip tutorial' : 'Skip tips'}</button>{/if}
