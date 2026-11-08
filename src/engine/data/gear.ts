@@ -60,7 +60,6 @@ export const ITEMS: Record<string, ItemDef> = Object.fromEntries(items.filter(in
 /** One charm per monster: a single small perk that deepens a playstyle. Crafted, never reinforced. */
 const charms: CharmDef[] = [
   // the Foothills' charm (Mekkman, Nov 2026: 'deal small damage when you block')
-  { id: 'clawcharm', tier: 0.5, foothills: true, name: 'Claw Charm', src: 'Cinderpup', short: '**Block** hits back 3 a die', perk: 'When you **Block**, you hit back 3 a die.', effect: 'blockBite', craft: { coin: 60, moleclaw: 2 } },
   { id: 'tuskcharm', name: 'Tusk Charm', src: 'Gorehorn', short: 'Heal 20 on a **Daze**', perk: 'When you **Daze** it, you heal 20.', effect: 'dazeHeal', craft: { coin: 150, tusk: 1, hide: 2 } },
   { id: 'plumecharm', name: 'Plume Charm', src: 'Galeshrike', short: 'Exposing hit gets +20%', perk: 'The hit that **Exposes** a part gets the +20% too.', effect: 'exposeSelf', craft: { coin: 150, pinion: 1, plume: 2 } },
   { id: 'kilncharm', name: 'Kiln Charm', src: 'Cinderback', short: '**Charge** costs 1 die', perk: '**Charge** costs 1 die instead of 2.', effect: 'charge1', craft: { coin: 150, ventgland: 1, cinderscale: 2 } },

@@ -91,7 +91,7 @@ function graduate(s: Save) {
   s.items.salve = Math.max(s.items.salve ?? 0, 3);
   s.items.snare = Math.max(s.items.snare ?? 0, 2);
   const L = s.loadout;
-  // finished properly, you keep the loadout you built (the Whistling Blade, the vest, the Claw Charm)
+  // finished properly, you keep the loadout you built (the Whistling Blade, the vest)
   s.loadout = { ...L, weapons: L.weapons.length === 2 ? L.weapons : ['blade', 'maul'], item: L.item ?? 'salve', target: 'gorehorn' };
 }
 
@@ -137,7 +137,7 @@ export function advanceIsland(s: Save, ev: { won?: string; made?: string; bought
   const st = islandStep(s);
   if (st >= ISLAND_DONE) return false;
   const go = (n: number, target?: string) => { s.island = n; if (target) s.loadout.target = target; settle(s); return true; };
-  // gear made on the practice step is worn at once (the vest, the Claw Charm), so it's on for the next hunt
+  // gear made on the practice step is worn at once (the vest), so it's on for the next hunt
   if (ev.made === 'hidevest') s.loadout.armor = 'hidevest';
   if (st === 0 && ev.won === 'scuttlehog') return go(1, 'snapclaw');
   if (st === 1 && ev.won === 'snapclaw') return go(2);

@@ -128,7 +128,7 @@ export interface ItemDef {
   pouch?: boolean;
 }
 
-export type CharmEffect = 'blockBite' | 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet' | 'airPierce' | 'bigHeal' | 'sealHeal' | 'chargeDaze' | 'groundHit' | 'breakFree' | 'pierceStrip' | 'breakWhet' | 'landWhet' | 'firstHit' | 'infectBuild' | 'sparkBuild' | 'drainUp' | 'infectLong' | 'sparkBig' | 'drainTol';
+export type CharmEffect = 'dazeHeal' | 'exposeSelf' | 'charge1' | 'lightCut' | 'escapeHeal' | 'dazeWhet' | 'longExpose' | 'chargeBreak' | 'scout' | 'finisher' | 'salvage' | 'swapWhet' | 'airPierce' | 'bigHeal' | 'sealHeal' | 'chargeDaze' | 'groundHit' | 'breakFree' | 'pierceStrip' | 'breakWhet' | 'landWhet' | 'firstHit' | 'infectBuild' | 'sparkBuild' | 'drainUp' | 'infectLong' | 'sparkBig' | 'drainTol';
 export interface CharmDef {
   /** made in the Foothills (the tutorial island) */
   foothills?: boolean;

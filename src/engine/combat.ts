@@ -76,7 +76,7 @@ export const monsterOf = def;
 export const charmFx = (h: Hunt) => (h.charm ? CHARMS[h.charm]?.effect ?? null : null);
 /** dice a Charge costs (Kiln Charm: 1) */
 export const chargeDice = (h: Hunt) => (charmFx(h) === 'charge1' ? 1 : 2);
-export const LIGHT_CUT_BONUS = 4, DAZE_HEAL = 20, CLAW_BITE = 3;
+export const LIGHT_CUT_BONUS = 4, DAZE_HEAL = 20;
 export const currentWeapon = (h: Hunt) => h.weps[h.weapon];
 /** the weapon you aren't holding (the Foothills start with one weapon: then it's the same one) */
 export const otherWeapon = (h: Hunt) => h.weps[1 - h.weapon] ?? h.weps[h.weapon];
@@ -499,14 +499,6 @@ export function guard(h: Hunt, idx: number[]): boolean {
     for (const i of sel) h.dice[i].charged = false;
     const d = zap * CHARGED_HIT; h.php = Math.max(1, h.php - d); h.stats.taken += d; feat(h, 'chargehit');
     log(h, `The Static ${zap > 1 ? 'dice go' : 'die goes'} off in your hand as you brace, −${d}.`, 'ember');
-  }
-  // the Claw Charm (the Foothills): blocking hits back a little
-  if (charmFx(h) === 'blockBite' && !h.over) {
-    const m = h.mon, d = Math.min(m.hp, CLAW_BITE * sel.length);
-    m.hp -= d; h.stats.dealt += d;
-    log(h, `Claw Charm: you hit back for ${d}.`, 'gold');
-    checkEnrage(h);
-    if (m.hp <= 0) finish(h, 'win');
   }
   return true;
 }
