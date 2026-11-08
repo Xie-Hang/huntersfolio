@@ -60,6 +60,8 @@ const forgeNeed = (): [E.RecipeKind, string] | null => {
 };
 const canMake = () => { const n = forgeNeed(); return !n || !short(...n); };
 const huntOn = () => game.view === 'hunt' && !!game.hunt && !game.hunt.over;
+/** the town tour after the promotion hunt (the island is done, and its last prompt hasn't shown yet) */
+const tour = () => E.islandDone(game.save) && game.save.tips.includes('i-begin') && !game.save.tips.includes('i-ridge') && !game.lesson;
 const onIsland = (mid: string) => { const h = hunt(); return h && h.mid === mid ? h : null; };
 const toForge = () => (game.view === 'hunt' ? ['to-forge'] : ['nav-forge']);
 const toShop = () => (game.view === 'hunt' ? ['to-shop'] : ['nav-shop']);
@@ -299,15 +301,61 @@ const ISLAND: Tip[] = [
     text: () => `All done here. The ${E.MONSTERS[game.save.loadout.target]?.short ?? 'next hunt'} is next.`,
     done: () => game.view === 'board' && E.islandStep(game.save) === n
   })),
+  // ---- the town tour, right after the promotion hunt (Mekkman, 8 Nov 2026): tracking, charms, reinforcing, selling
+  // and bounties, in one go, instead of one a hunt on the Ridge. The explaining ones aren't locked (Got it), so a
+  // missing target (nothing selected at the Forge) can't hold the tour up
   {
-    id: 'i-ridge', guide: true, info: true, at: ['begin', 'nav-board'],
-    when: () => E.islandDone(game.save) && game.save.tips.includes('i-begin') && game.view !== 'hunt',
-    head: 'Rank F',
-    text: () => 'Rank F! I knew you could do it. Ashfall Ridge is open.'
+    id: 'i-tforge', head: 'Town', guide: true, learn: true, at: () => (game.view === 'hunt' ? ['to-forge', 'nav-forge'] : ['nav-forge']),
+    when: () => tour() && game.view !== 'forge' && !huntOn(),
+    text: () => 'Rank F! I knew you could do it. Before you head out, let me show you around town. First, the Forge.',
+    done: () => tour() && game.view === 'forge'
+  },
+  {
+    id: 'i-ttrack', head: 'Tracking', info: true, gotit: true, at: ['track', 'forge-act'],
+    when: () => tour() && game.view === 'forge',
+    text: () => 'Can’t afford something yet? Select Track, and its materials get flagged on the Hunt Board and in the Shop.'
+  },
+  {
+    id: 'i-tcharm', head: 'Charms', info: true, gotit: true, at: ['tab-charms'],
+    when: () => tour() && game.view === 'forge',
+    text: () => 'Charms give one small perk, and you wear one at a time. You’ll find them here.'
+  },
+  {
+    id: 'i-treinf', head: 'Reinforcing', info: true, gotit: true, at: ['forge-act'],
+    when: () => tour() && game.view === 'forge',
+    text: () => 'Reinforcing makes gear you love even better. A weapon hits 5% harder, or armour gets 10 more HP and 1 more **Block**. You can do it up to 3 times.'
+  },
+  {
+    id: 'i-tshop', head: 'Town', guide: true, learn: true, at: ['nav-shop'],
+    when: () => tour() && game.view !== 'shop' && !huntOn() && game.save.tips.includes('i-treinf'),
+    text: () => 'Next, the Shop.',
+    done: () => tour() && game.view === 'shop'
+  },
+  {
+    id: 'i-tsell', head: 'Selling', info: true, gotit: true, at: ['shop-sell'],
+    when: () => tour() && game.view === 'shop',
+    text: () => 'Materials no recipe needs sell here for coin. Handy when you’re short.'
+  },
+  {
+    id: 'i-tboard', head: 'Town', guide: true, learn: true, at: ['nav-board'],
+    when: () => tour() && E.BOUNTIES_ON && game.view !== 'board' && !huntOn() && game.save.tips.includes('i-tsell'),
+    text: () => 'Last stop, the Hunt Board.',
+    done: () => tour() && game.view === 'board' && game.save.tips.includes('i-tsell')
+  },
+  {
+    id: 'i-tbounty', head: 'Bounties', info: true, gotit: true, at: ['bounties'],
+    when: () => tour() && E.BOUNTIES_ON && game.view === 'board' && game.save.tips.includes('i-tsell'),
+    text: () => 'Bounties! Pick one before you hunt a monster you’ve beaten. Meet its goals and win for extra coin. They unlock three charms at the Forge too.'
+  },
+  {
+    id: 'i-ridge', guide: true, info: true, at: ['nav-board', 'begin'],
+    when: () => tour() && game.save.tips.includes('i-tsell') && (!E.BOUNTIES_ON || game.save.tips.includes('i-tbounty')) && !huntOn(),
+    head: 'Ashfall Ridge',
+    text: () => 'That’s the tour! Ashfall Ridge is open. Good luck out there, Hunter.'
   }
 ];
 /** the first Ridge hunt's basics, already taught in the Foothills */
-const ISLAND_TAUGHT = ['begin', 'g-next', 'g-hp', 'move', 'guard', 'end', 'aim', 'g-pick', 'reroll', 'g-free', 'swap', 'forge'];
+const ISLAND_TAUGHT = ['begin', 'g-next', 'g-hp', 'move', 'guard', 'end', 'aim', 'g-pick', 'reroll', 'g-free', 'swap', 'forge', 'track', 'charmNew', 'reinforceNew', 'sell', 'bounties'];
 
 export const tipTargets = (t: Tip | null | undefined) => (typeof t?.at === 'function' ? t.at() : t?.at ?? []);
 

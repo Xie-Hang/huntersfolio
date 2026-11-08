@@ -131,7 +131,9 @@ class Game {
     E.fixLoadout(this.save);
     if (shopTab) this.shopTab = shopTab;
     // on the island the Hunt Board opens straight on the next monster's page (one less click to find it)
-    if (v === 'board') this.boardMon = !E.islandDone(this.save) && E.isUnlocked(this.save, this.save.loadout.target);
+    // (and during the town tour after the promotion hunt, which ends on the Gorehorn's page, at its bounties)
+    const tour = E.islandDone(this.save) && this.save.tips.includes('i-begin') && !this.save.tips.includes('i-ridge');
+    if (v === 'board') this.boardMon = (!E.islandDone(this.save) || tour) && E.isUnlocked(this.save, this.save.loadout.target);
     this.view = v;
   }
   /** a monster's page on the Hunt Board: its entry and your loadout for it */

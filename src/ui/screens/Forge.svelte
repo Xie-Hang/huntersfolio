@@ -29,7 +29,7 @@
   const isl = $derived(!E.islandDone(game.save));
   /** charms show once they're taught (Mekkman, 8 Nov 2026): the Ridge's charm lesson fires when one can be made, so the
    *  tab appears then; with tips off, or once you own one, it's always there */
-  const charmsOpen = $derived(!isl && (!settings.prefs.tips || Object.keys(s.charms).length > 0 || s.tips.includes('charmNew')
+  const charmsOpen = $derived(!isl && (!settings.prefs.tips || Object.keys(s.charms).length > 0 || s.tips.includes('charmNew') || s.tips.includes('i-begin')
     || Object.keys(E.CHARMS).some(id => { const r = E.recipeOf(s, 'c', id); return r.action === 'craft' && !!r.cost && E.canPay(s, r.cost); })));
   /** the island's Forge grows tabs once it holds armor (step 8) */
   const isTabs = $derived(isl && E.islandForge(s).a.length > 0);
