@@ -201,7 +201,7 @@ export function forgeDo(s: Save, kind: RecipeKind, id: string): string | null {
     if (r.action === 'reinforce') { s.armors[id].lv++; msg = `${ARMORS[id].name} reinforced to +${s.armors[id].lv}.`; }
   }
   if (s.tracked === `${kind}:${id}` && r.action !== 'reinforce') s.tracked = null;
-  advanceIsland(s, r.action === 'reinforce' ? { reinforced: id } : { made: id });
+  if (r.action !== 'reinforce') advanceIsland(s, { made: id });
   return msg;
 }
 
@@ -247,12 +247,13 @@ export function usedIn(s: Save, mat: string): string[] {
 export function buyItem(s: Save, id: string, n: number): string | null {
   const it = ITEMS[id]; if (!it.price || n < 1 || s.coin < it.price * n) return null;
   s.coin -= it.price * n; s.items[id] = (s.items[id] ?? 0) + n;
-  if (advanceIsland(s, { bought: id })) return `Bought ${n} ${it.name}. It's in your item slot, and the lodge gave you a Snare.`;
+  if (advanceIsland(s, { bought: id })) return `Bought ${n} ${it.name}. It's in your item slot.`;
   return `Bought ${n} ${it.name}.`;
 }
 export function craftItem(s: Save, id: string): string | null {
   const it = ITEMS[id]; if (!it.craft || !canPay(s, it.craft)) return null;
   pay(s, it.craft); s.items[id] = (s.items[id] ?? 0) + (it.yields ?? 1);
+  if (advanceIsland(s, { bought: id })) return `Crafted ${it.yields ?? 1} ${it.name}. It's in your item slot.`;
   return `Crafted ${it.yields ?? 1} ${it.name}.`;
 }
 export function sellMat(s: Save, id: string, n: number): string | null {
@@ -357,16 +358,12 @@ export function settleHunt(s: Save, h: Hunt) {
     const mats: Record<string, number> = { [MD.common]: h.captured ? 3 : 2 };
     for (const p of MD.parts) if (h.mon.parts[p.id].broken || (h.mon.parts[p.id].cracks ?? 0) > 0) mats[p.mat] = (mats[p.mat] ?? 0) + mult;
     let rare = false;
-    // (the first Gustmarmot never drops it: the gland is the second one's lesson, after you've tracked the blade)
-    const holdRare = h.mid === 'gustmarmot' && islandStep(s) < 11;
-    if (h.mon.parts[MD.rarePart].broken && !holdRare) {
+    if (h.mon.parts[MD.rarePart].broken) {
       const pity = s.pity[MD.rare] ?? 0;
       const chance = Math.min(1, (h.captured ? RARE.captureChance : RARE.chance) + RARE.pityStep * pity);
       if (pity >= RARE.pityGuarantee || nextRandom(h) < chance) { rare = true; mats[MD.rare] = (mats[MD.rare] ?? 0) + 1; s.pity[MD.rare] = 0; }
       else s.pity[MD.rare] = pity + 1;
     }
-    // the Foothills' rare-drop lesson: the second Gustmarmot always drops its Gale Gland, cheeks broken or not
-    if (!rare && islandStep(s) === 11 && h.mid === 'gustmarmot') { rare = true; mats[MD.rare] = (mats[MD.rare] ?? 0) + 1; }
     // the Foothills pay less (Mekkman, Nov 2026: the island left players with ~850 coin): enough for what the island
     // asks you to make, with a little over, and not worth farming once you've left
     const R = MD.island ? FOOTHILLS_REWARD : REWARD;

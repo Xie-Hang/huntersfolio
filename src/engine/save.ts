@@ -6,6 +6,7 @@ import { WEAPONS } from './data/weapons';
 import { ARMORS } from './data/gear';
 import { MONSTERS } from './data/monsters';
 import { BOUNTIES } from './data/bounties';
+import { ISLAND_DONE, migrateIsland } from './island';
 
 export const SAVE_VERSION = 9;
 
@@ -110,9 +111,10 @@ export function loadSave(raw: unknown): Save {
     charms: Object.fromEntries(Object.keys(s.charms || {}).filter(k => CHARMS[k]).map(k => [k, true])) as Save['charms'],
     bounties: Object.fromEntries(Object.keys(s.bounties && typeof s.bounties === 'object' ? s.bounties : {}).filter(k => BOUNTIES[k]).map(k => [k, true])) as Save['bounties']
   };
+  migrateIsland(out); // the old 16-step island onto the new one (8 Nov 2026)
   // A hunt takes two weapons; only a damaged save can have fewer, so give back the starter pair.
   // (the Foothills start with one weapon, the Training Blade)
-  if (Object.keys(out.weapons).length < 2 && !(typeof out.island === 'number' && out.island < 16)) out.weapons = { ...base.weapons, ...out.weapons };
+  if (Object.keys(out.weapons).length < 2 && !(typeof out.island === 'number' && out.island < ISLAND_DONE)) out.weapons = { ...base.weapons, ...out.weapons };
   if (!Object.keys(out.armors).length) out.armors = base.armors;
   if (!MONSTERS[out.loadout.target]) out.loadout.target = 'gorehorn';
   if (!Array.isArray(out.loadout.weapons)) out.loadout.weapons = [...base.loadout.weapons];

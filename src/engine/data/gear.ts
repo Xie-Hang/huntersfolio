@@ -40,11 +40,11 @@ armors.push({ id: 'sovmantle', tier: 4, name: 'Sovereign Mantle', hp: 260, guard
 export const ARMORS: Record<string, ArmorDef> = Object.fromEntries(armors.filter(inEdition).map(a => [a.id, a]));
 
 const items: ItemDef[] = [
-  { id: 'salve', name: 'Bitterroot Salve', max: 3, price: 30, desc: 'Heals you 30.', short: 'Heal 30', effect: 'heal30' },
+  { id: 'salve', name: 'Bitterroot Salve', max: 3, price: 30, craft: { tuft: 3, coin: 10 }, desc: 'Heals you 30.', short: 'Heal 30', effect: 'heal30' },
   // Playtest (Nov 2026): capture was free and safe. A snare costs coin, and it can be torn free.
   { id: 'snare', name: 'Snare', max: 2, price: 40, desc: 'Needed to capture. You carry **Snares** on every hunt, outside your item slot, and each try uses one.', short: 'Needed to capture', effect: 'snare', pouch: true },
   { id: 'smoke', name: 'Smoke Pouch', max: 2, price: 50, desc: 'Its next attack misses.', short: 'Its next attack misses', effect: 'smoke' },
-  { id: 'whet', name: 'Whetstone', max: 2, price: 40, desc: 'Your next hit +50%.', short: 'Next hit +50%', effect: 'whet50' },
+  { id: 'whet', name: 'Whetstone', max: 2, price: 40, craft: { milktusk: 1, coin: 20 }, yields: 2, desc: 'Your next hit +50%.', short: 'Next hit +50%', effect: 'whet50' },
   { id: 'net', name: 'Weighted Net', max: 2, price: 50, desc: 'Brings an **Airborne** monster down, and it loses its turn.', short: 'Brings it down, loses a turn', effect: 'net' },
   { id: 'firepot', name: 'Firepot', max: 2, price: 50, desc: 'Melts all its ice, or cracks all its slate, at once.', short: 'Breaks all its ice or slate', effect: 'thaw' },
   { id: 'blast', name: 'Blast Powder', max: 2, price: 50, desc: 'Forces it up from underground, and it loses its turn.', short: 'Forces it up, loses a turn', effect: 'blast' },

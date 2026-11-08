@@ -51,6 +51,8 @@
     const allowed = (n: EventTarget | null) => {
       if (!(n instanceof Node)) return false;
       if (cardEl?.contains(n)) return true;
+      // a replayed lesson can always be left
+      if (n instanceof Element && n.closest('[data-coach="end-lesson"]')) return true;
       // the target as last placed (not re-checked here: a hover or press animation must not make it unclickable)
       return !!target && target.isConnected && target.contains(n);
     };
@@ -130,7 +132,7 @@
     <span class="coach-head">{t.id.startsWith('i-') ? (t.head ?? 'The Foothills') : t.guide ? (game.inHunt ? (!game.save.hunts || game.hunt?.lesson === 1 ? 'Your first hunt' : game.hunt?.lesson ? 'New this hunt' : 'Tutorial') : 'Getting started') : t.text().startsWith('New:') ? 'New this hunt' : 'Tip'}</span>
     <p><Rich text={padWords(t.text())} /></p>
     <div class="coach-acts">
-      <button class="coach-skip" onclick={() => coach.skipAll(!!t.guide)}>{t.guide ? 'Skip tutorial' : 'Skip tips'}</button>
+      {#if game.lesson}<button class="coach-skip" onclick={() => game.endLesson()}>End lesson</button>{:else}<button class="coach-skip" onclick={() => coach.skipAll(!!t.guide)}>{t.guide ? 'Skip tutorial' : 'Skip tips'}</button>{/if}
       {#if !t.guide}<button class="btn quiet" onclick={() => coach.dismiss()}>Got it</button>
       {:else if t.gotit}<button class="btn primary" onclick={() => coach.dismiss()}>Got it</button>
       {:else if t.info && !t.id.startsWith('i-')}<button class="btn primary" onclick={() => coach.dismiss()}>{t.next ?? 'Next'}</button>

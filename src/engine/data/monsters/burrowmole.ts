@@ -1,8 +1,9 @@
-// The Cinderpup (id burrowmole: ids kept so saves carry over) — the Foothills, step 5 (the tutorial island, Nov 2026).
+// The Cinderpup (id burrowmole: ids kept so saves carry over) — the Foothills, step 4: a practice hunt, no prompts
+// (the tutorial island, rebuilt 8 Nov 2026).
 // A Cinderback pup: it digs like its parent, without the molten shell yet.
-// It teaches swapping: it scratches twice, then digs in, and while it's underground only a Blunt weapon reaches it.
-// Any maul hit drives it back up (stunned, its tunnel bite lost). Its Snout breaks to a maul. Reroll and Daze are
-// taught here too: four dice, and Rend appears on the blade as the reason to reroll.
+// It tests swapping: it scratches twice, then digs in, and while it's underground only a Blunt weapon reaches it.
+// Any maul hit drives it back up (stunned, its tunnel bite lost). Its Snout breaks to a maul. Daze meets you here
+// (a Hunter's Notes notice, not a prompt).
 import type { Intent, MonsterDef } from '../../types';
 
 export const burrowmole: MonsterDef = {

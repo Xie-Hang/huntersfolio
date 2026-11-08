@@ -1,8 +1,8 @@
-// The Shrikelet (id gustmarmot: ids kept so saves carry over) — the Foothills, steps 9 and 11 (the tutorial island,
-// Nov 2026). A Galeshrike chick, too young to fly (so no bows yet): its flapping is the young form of the parent's
+// The Shrikelet (id gustmarmot: ids kept so saves carry over) — the Foothills, step 4: a practice hunt, no prompts
+// (the tutorial island, rebuilt 8 Nov 2026). A Galeshrike chick, too young to fly (so no bows yet): its flapping is the young form of the parent's
 // circling before a dive. It teaches wind-ups and Charge: it whistles (a safe turn: nothing hits you), then gusts hard the turn after,
-// so the whistle is the moment to Charge. Below half HP it's Enraged and its gust hits harder. Its second hunt always
-// drops a Gale Gland (rare), the last thing the Whistling Blade needs. Gale; weak to Stone.
+// so the flapping is the moment to Block it (Charge comes on the Ridge). Below half HP it's Enraged and its gust hits
+// harder. Its Gale Gland (rare) makes the Whistling Blade. Gale; weak to Frost.
 import type { Intent, MonsterDef } from '../../types';
 
 export const gustmarmot: MonsterDef = {

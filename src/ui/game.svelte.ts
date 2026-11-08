@@ -67,6 +67,7 @@ class Game {
     this.boardMon = this.save.hunts === 0;
   }
   persist() {
+    if (this.lesson) return; // a replayed lesson plays on a copy: nothing it does is kept
     write(SAVE_KEY, $state.snapshot(this.save));
     if (this.hunt && !this.hunt.over) write(HUNT_KEY, $state.snapshot(this.hunt));
     else remove(HUNT_KEY);
@@ -77,6 +78,24 @@ class Game {
     if (this.hunt && !this.hunt.over && E.MONSTERS[this.hunt.mid]?.island) { this.hunt = null; this.undoStack = []; this.sel = []; this.view = 'board'; }
     E.skipIsland(this.save);
     this.boardMon = true;
+    this.persist();
+  }
+  /* ---------- replayable lessons (Help → How to hunt) ---------- */
+  /** a lesson replayed from Help: it plays on a copy of a new player's save, and the real save waits here */
+  lesson = $state<{ n: number; real: E.Save; view: View } | null>(null);
+  startLesson(n: number) {
+    if (this.inHunt || this.lesson || !E.LESSONS[n]) return;
+    this.lesson = { n, real: this.save, view: this.view };
+    this.save = E.lessonSave(n);
+    this.hunt = null; this.undoStack = []; this.sel = [];
+    if (E.LESSONS[n].hunt) this.begin(); else { this.view = 'board'; this.boardMon = true; }
+  }
+  endLesson() {
+    const l = this.lesson; if (!l) return;
+    this.save = l.real; this.lesson = null;
+    this.hunt = null; this.undoStack = []; this.sel = [];
+    this.view = l.view === 'hunt' ? 'board' : l.view;
+    this.boardMon = !E.islandDone(this.save);
     this.persist();
   }
   reset() {
@@ -106,7 +125,6 @@ class Game {
     if (shopTab) this.shopTab = shopTab;
     // on the island the Hunt Board opens straight on the next monster's page (one less click to find it)
     if (v === 'board') this.boardMon = !E.islandDone(this.save) && E.isUnlocked(this.save, this.save.loadout.target);
-    if (v === 'shop' && E.advanceIsland(this.save, { shop: true })) this.persist(); // the Foothills: visit the Shop before the exam
     this.view = v;
   }
   /** a monster's page on the Hunt Board: its entry and your loadout for it */
@@ -124,7 +142,6 @@ class Game {
     const L = this.save.loadout;
     // two weapons, except early in the Foothills (one, until the lodge gives you the maul)
     if (L.weapons.length !== (E.twoWeapons(this.save) ? 2 : 1) || !E.isUnlocked(this.save, L.target)) return;
-    E.advanceIsland(this.save, { loadout: true }); // the lodge step: setting out with both weapons
     // the first three hunts each add one layer of the hunt screen (see reveal.ts); "Show every action" skips that.
     // Foothills hunts name what they show themselves (MonsterDef.island) and don't count toward the Ridge's layers.
     const isl = !!E.MONSTERS[L.target]?.island, prior = E.ISLAND_MONSTERS.reduce((n, id) => n + (this.save.record[id]?.hunts ?? 0), 0);
@@ -175,7 +192,7 @@ class Game {
   }
   private after() {
     const h = this.hunt!;
-    if (h.over) { PL.huntEnd(h, this.save); E.settleHunt(this.save, h); checkAchievements(this.save, h); E.fixLoadout(this.save); this.undoStack = []; this.sel = []; }
+    if (h.over) { PL.huntEnd(h, this.save); E.settleHunt(this.save, h); if (!this.lesson) checkAchievements(this.save, h); E.fixLoadout(this.save); this.undoStack = []; this.sel = []; }
     this.persist();
   }
 
@@ -252,26 +269,25 @@ class Game {
     // A reroll can't be undone, and neither can anything before it: undoing would rewind the dice seed and let
     // the player peek at what a reroll gives, then pick different dice (playtest: "you can cheese it").
     if (idx?.length) { this.undoStack = []; this.roll(idx); sfx('reroll'); }
-    this.rerollLesson(false);
   }
-  /** The Burrowmole's reroll lesson (the Foothills) is sure to happen, not left to the dice: the opening roll has a
-   *  blank to reroll, and after that first reroll the next turn rolls two blanks (with a reroll still in hand) for
-   *  "you can reroll several". Mekkman, Nov 2026. */
+  /** The island's rigged rolls (Mekkman, Nov 2026), so each prompt is sure to come up, not left to the dice. */
   rerollLesson(start: boolean) {
-    const h = this.hunt;
+    const h = this.hunt, st = E.islandStep(this.save);
     const seen = (id: string) => this.save.tips.includes(id);
-    // the Rimekit: one Fang on turn 1, two on turn 2 (the "Slash ×2" lesson), so it's still standing for the Block
-    // lesson on turn 3 (Nov 2026 playtest: teach using several dice for the same move on the second monster)
-    if (start && h && h.mid === 'snapclaw' && E.islandStep(this.save) === 1 && !seen('i-twice2')) {
+    if (!start || !h || h.over || !settings.prefs.tips && !this.lesson) return;
+    const turn = (t: number, f: E.Face[]) => { h.script = h.script ?? []; h.script[t - 1] = f; };
+    // the Cragling: two Fangs on turns 1 and 2 (its only face), then two blanks on turn 3 for Reroll (it can't be
+    // finished before then: 60 HP, 24 a turn)
+    if (h.mid === 'scuttlehog' && st === 0 && !seen('i-reroll')) turn(3, ['B', 'B']);
+    // the Rimekit: one Fang on turn 1, three on turn 2 (Slash ×3 reads as one per Fang), so it's still standing for
+    // the Block lesson on turn 3 (Nov 2026 playtest: teach using several dice for the same move on the second monster)
+    if (h.mid === 'snapclaw' && st === 1 && !seen('i-twice2')) {
       const f: E.Face[] = ['C', 'T', 'B']; h.dice.forEach((d, i) => { d.face = f[i] ?? d.face; });
-      h.script = h.script ?? []; h.script[1] = ['C', 'C', 'C']; // three Fangs: Slash ×3 reads as one per Fang
+      turn(2, ['C', 'C', 'C']);
     }
-    if (!h || h.over || h.mid !== 'burrowmole' || E.islandStep(this.save) !== 5) return;
-    if (start && !seen('i-pick')) { const f: E.Face[] = ['C', 'B', 'T', 'C']; h.dice.forEach((d, i) => { d.face = f[i] ?? d.face; }); }
-    // turn 3, when it's first underground: a blank for Swap to take (Swap takes a blank by itself; without one the
-    // player would have to pick a die first, and the swap prompt's lock would have them stuck)
-    if (start && !seen('i-swap')) { h.script = h.script ?? []; h.script[2] = ['C', 'T', 'B', 'C']; }
-    if (!start && h.stats.rerollsUsed === 1 && !seen('i-multi')) { h.script = h.script ?? []; h.script[h.turn] = ['B', 'C', 'B', 'T']; }
+    // the Tuskling: turn 3 has a blank for Swap to take on its own (without one the player would have to pick a die
+    // first, and the prompt's lock would leave them stuck)
+    if (h.mid === 'tuskling' && st === 3 && !seen('i-swap')) turn(3, ['C', 'T', 'B', 'C']);
   }
   item() {
     if (!shows(this.hunt, 'item')) return;
@@ -315,8 +331,6 @@ class Game {
     if (E.intentInfo(h).dmg > 0) { this.pulse.actIntent = h.intent; this.pulse.act++; }
     // everything you lost this end of turn, not only the attack: a Spark going off or slime used to land with no number
     const t0 = h.stats.taken; E.endTurn(h); const taken = h.stats.taken - t0;
-    // the reroll lesson's second step needs a reroll in hand on its turn
-    if (h.mid === 'burrowmole' && E.islandStep(this.save) === 5 && h.stats.rerollsUsed === 1 && !this.save.tips.includes('i-multi')) h.rerolls = Math.max(h.rerolls, 1);
     if (taken) { this.float('player', `−${taken}`, 'hurt'); if (taken >= E.CHARGE_BREAK) this.shake('player'); }
     if (taken) sfx(taken >= E.CHARGE_BREAK ? 'hurtHeavy' : 'hurt');
     if (!h.over) setTimeout(() => sfx('diceRoll'), taken ? 260 : 0); // the new roll lands after the hit
@@ -337,7 +351,7 @@ class Game {
   town(fn: (s: E.Save) => string | null, sound?: Sfx): string | null {
     const msg = fn(this.save);
     if (msg && sound) sfx(sound);
-    if (msg) checkAchievements(this.save);
+    if (msg && !this.lesson) checkAchievements(this.save);
     this.persist();
     return msg;
   }

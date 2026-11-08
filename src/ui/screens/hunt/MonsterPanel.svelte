@@ -50,7 +50,9 @@
     return out;
   })
   // a tag on screen counts as meeting its Hunter's Notes entry
-  $effect(() => { for (const st of statuses) met(st.label); });;
+  $effect(() => { for (const st of statuses) met(st.label); });
+  // Daze and the elements have no prompt (8 Nov 2026): meeting them puts a notice up (NoteNotice)
+  $effect(() => { if (shows(h, 'daze')) met('Daze'); if (shows(h, 'elements')) met('Elements'); });
   // A status arriving mid-hunt gets a moment on the stage, not just a tag (Nov 2026 playtest: Enraged went unnoticed):
   // its name across the picture for a couple of seconds, and Enraged shakes the stage. Once per status per hunt.
   let seenSt = new Set<string>(), seenFor = '', banner = $state<{ label: string; short: string; cls: string; n: number } | null>(null), bn = 0;

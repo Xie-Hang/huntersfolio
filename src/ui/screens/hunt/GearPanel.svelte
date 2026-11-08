@@ -9,6 +9,7 @@
   import Elem from '../../parts/Elem.svelte';
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
+  import { met } from '../../notes.svelte';
   import { needLabel, needMarks, elemLabel, markOf } from '../../fmt';
   import { shows } from '../../reveal';
   import { detail, full as fullText } from '../../detail.svelte';
@@ -27,6 +28,8 @@
   const over = $derived(!!h.over);
   const n = $derived(game.sel.length);
   const sg = $derived(E.SIGNATURES[w.type]);
+  // a Flow move on screen puts up its Hunter's Notes notice (no prompt teaches it any more)
+  $effect(() => { if (shows(h, 'flow') && w.moves.some(m => m.flow)) met('Flow'); });
   const halfAir = $derived(E.airborneHalf(h, w) && E.canHit(h, w)); // fliers (Nov 2026) block non-bows outright: the reason line says so instead
   const iceNow = $derived(h.mon.plating > 0);
   // the short form for the attack cards: what this weapon's hit breaks, where the damage number goes

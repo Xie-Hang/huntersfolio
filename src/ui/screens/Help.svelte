@@ -5,6 +5,7 @@
   import * as E from '../../engine';
   import Rich from '../parts/Rich.svelte';
   import { help, known } from '../notes.svelte';
+  import { game } from '../game.svelte';
 
   let q = $state('');
   const all = Object.values(E.NOTES);
@@ -47,6 +48,17 @@
       {#each STEPS as [h, t], i}<li><span class="n">{i + 1}</span><span><strong><Rich text={h} /></strong>{t}</span></li>{/each}
     </ol>
     <p class="loop">Hunt, break parts, bring the materials to the Forge, make better gear, hunt again. Progress saves itself.</p>
+    <!-- the island's lessons, to replay (8 Nov 2026): played on a copy, so nothing in them is kept -->
+    <section class="lessons" aria-labelledby="lessons-h">
+      <h3 id="lessons-h">Lessons</h3>
+      <p class="md">Replay a lesson from the Foothills. Nothing you do in one is kept.</p>
+      <ol>
+        {#each E.LESSONS as l, i}
+          <li><span><strong>{l.name}</strong><span class="md">{l.teaches}</span></span><button class="btn" disabled={game.inHunt || !!game.lesson} onclick={() => { help.open = false; game.startLesson(i); }}>Play</button></li>
+        {/each}
+      </ol>
+      {#if game.inHunt}<p class="md">Finish this hunt first.</p>{/if}
+    </section>
   </div>
 {:else if help.tab === 'notes'}
   <div class="notes" role="tabpanel">
@@ -98,6 +110,13 @@
   .steps .n { flex: none; width: 20px; height: 20px; border-radius: 50%; background: var(--gold-hi); color: #1e140c; font-weight: 700; font-size: 12px; display: grid; place-items: center; transform: translateY(3px); }
   .steps strong { color: var(--fg); display: block; }
   .loop { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: var(--fs-sm); }
+  .lessons { grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 14px; }
+  .lessons h3 { margin: 0 0 4px; font-size: 18px; }
+  .lessons > .md { margin: 0 0 10px; }
+  .lessons ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
+  .lessons li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--raise); }
+  .lessons li > span { display: flex; flex-direction: column; min-width: 0; }
+  .lessons strong { color: var(--fg); }
   .notes { display: grid; grid-template-columns: minmax(180px, 220px) minmax(0, 1fr); gap: 24px; min-height: 320px; }
   @media (max-width: 640px) { .notes { grid-template-columns: 1fr; } }
   .nl { display: flex; flex-direction: column; gap: 2px; max-height: 60vh; overflow: auto; padding-right: 4px; }

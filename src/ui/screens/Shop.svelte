@@ -20,10 +20,10 @@
 
   // only items for monsters you can hunt (Nov 2026 text audit: rank F saw the Mirewood's cures)
   const reach = $derived(Math.max(1, ...Object.values(E.MONSTERS).filter(M => E.isUnlocked(s, M.id)).map(M => M.tier)));
-  // the Foothills (the tutorial island): the Shop sells the salve, then the smoke pouch and whetstone (step 14); nothing to craft yet
+  // the Foothills (the tutorial island): the Shop sells the salve, and from "get ready" makes one from Hatchling Down
   const isl = $derived(!E.islandDone(s));
   const buyRows = $derived(Object.values(E.ITEMS).filter(it => it.price && (isl ? E.islandShop(s).includes(it.id) : full() || (it.tier ?? 1) <= reach)));
-  const craftRows = $derived(Object.values(E.ITEMS).filter(it => it.craft));
+  const craftRows = $derived(Object.values(E.ITEMS).filter(it => it.craft && (!isl || it.id === 'salve')));
   const sellRows = $derived(
     Object.values(E.MATERIALS).filter(m => (s.mats[m.id] ?? 0) > 0).map(m => {
       const have = s.mats[m.id], keep = Math.min(have, E.reserveFor(s, m.id));
@@ -54,7 +54,7 @@
     <div class="ph"><h2>The Shop</h2><span class="label">{E.trackedLine(s)}</span></div>
     <div class="tabs" role="tablist">
       <button role="tab" aria-selected={tab === 'buy'} onclick={() => setTab('buy')}>Buy</button>
-      {#if !isl}<button role="tab" aria-selected={tab === 'craft'} onclick={() => setTab('craft')}>Craft items</button>{/if}
+      {#if !isl || E.islandCraft(s)}<button role="tab" aria-selected={tab === 'craft'} onclick={() => setTab('craft')}>Craft items</button>{/if}
       <button role="tab" aria-selected={tab === 'sell'} data-coach="shop-sell" onclick={() => setTab('sell')}>Sell</button>
     </div>
     <div class="toast" aria-live="polite">{toast}</div>

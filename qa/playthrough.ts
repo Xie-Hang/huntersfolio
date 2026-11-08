@@ -96,19 +96,10 @@ async function forgeAll(p: Page) {
       console.log(`island: blade made, done=${E.islandDone(s)}`);
       await p.click('[data-coach="nav-board"]');
     }
-    if (s && !E.islandDone(s) && E.islandStep(s) === 6) {
-      await p.click('[data-coach="nav-shop"]'); await p.click('[data-coach="buy-salve"]'); await p.waitForTimeout(150);
-      await check(p, 'island shop');
-      s = await getJSON(p, SAVE) as E.Save;
-      console.log(`island: salve bought, step=${E.islandStep(s)}`);
-      await p.click('[data-coach="nav-board"]');
-    }
-    // slice 3's town steps, by the UI: the vest, tracking, the three makes, the Shop's new stock
+    // get ready (8 Nov 2026): the vest at the Forge, then a salve at the Shop
     const TOWN: Record<number, string[]> = {
-      8: ['nav-forge', 'tab-armor', 'forge-act'],
-      10: ['nav-forge', 'tab-weapons', 'row-whistle', 'track'],
-      12: ['nav-forge', 'tab-weapons', 'row-whistle', 'forge-act', 'tab-charms', 'forge-act', 'tab-armor', 'forge-act'],
-      14: ['nav-shop']
+      5: ['nav-forge', 'tab-armor', 'forge-act'],
+      6: ['nav-shop', 'buy-salve']
     };
     while (s && !E.islandDone(s) && TOWN[E.islandStep(s)]) {
       const st = E.islandStep(s);

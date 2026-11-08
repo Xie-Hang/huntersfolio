@@ -81,7 +81,6 @@
     if (!sel) return;
     const tk = `${kind}:${sel}`;
     s.tracked = s.tracked === tk ? null : tk;
-    if (s.tracked) E.advanceIsland(s, { tracked: tk }); // the Foothills: tracking the Whistling Blade
     game.persist();
     toast = s.tracked ? 'Tracking. Its materials are flagged on the Hunt Board and in the Shop.' : 'Stopped tracking.';
   }
@@ -185,7 +184,7 @@
           </div>
           <!-- 3. What kind of weapon -->
           <div class="fd-type">
-            {#if !isl || E.islandStep(s) >= 7}<span class="tag {sg.tag}" style="margin:0" use:detail={sg.about}>{sg.name}</span>{/if}
+            {#if !isl || E.islandStep(s) >= 4}<span class="tag {sg.tag}" style="margin:0" use:detail={sg.about}>{sg.name}</span>{/if}
             <span>{d.type}</span>{#if !isl}<span class="sep">·</span>
             <span>{#if d.elem || d.status}<Elem e={markOf(d)} />{elemLabel(d)}{:else}No element{/if}</span>{/if}
           </div>
@@ -226,7 +225,7 @@
           {:else if owned}
             <span class="pl">{kind === 'c' ? 'Owned. Equip it at the Hunt Board.' : 'Fully reinforced.'}</span>
           {/if}
-          {#if r.cost && (r.action || r.locked) && !(kind === 'c' && E.CHARMS[sel].bounties) && !(kind === 'w' && E.WEAPONS[sel].bounties && !r.action) && (!isl || E.islandStep(s) >= 10)}
+          {#if r.cost && (r.action || r.locked) && !(kind === 'c' && E.CHARMS[sel].bounties) && !(kind === 'w' && E.WEAPONS[sel].bounties && !r.action) && !isl}
             <button class="btn quiet" data-coach="track" aria-pressed={s.tracked === tk} onclick={track}>{s.tracked === tk ? 'Untrack' : 'Track'}</button>
           {/if}
           {#if r.action === 'upgrade'}
@@ -243,7 +242,7 @@
           <div class="fd-more">
             <div class="label rule">Moves and details</div>
             <ul class="fd-moves">
-              {#each E.movesAt(sel, wLevel(sel)).filter((_, i) => !isl || i < 2 || E.islandStep(s) >= 5) as m}
+              {#each E.movesAt(sel, wLevel(sel)).filter((_, i) => !isl || i < 2 || E.islandStep(s) >= 4) as m}
                 <li><span class="need" aria-label="Needs {needLabel(m.need)}">{#each [...m.need] as c}<CostDie {c} small />{/each}</span><span>{m.name}{#if (m.flow || m.daze || m.expose) && full()}{@const sg = E.SIGNATURES[d.type]} <span class="tag {sg.tag}" style="margin:0 0 0 6px" use:detail={sg.text}>{sg.name}</span>{/if}</span><span class="n">{m.dmg}</span></li>
               {/each}
             </ul>

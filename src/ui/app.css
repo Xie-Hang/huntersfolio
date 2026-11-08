@@ -770,3 +770,6 @@ html[data-input="pad"] body{cursor:none}
    the mark sits in its own space at the end, outside the cut */
 .gearpanel .move .md.dt{display:inline-block;max-width:100%;box-sizing:border-box;position:relative;padding-right:20px;vertical-align:top}
 .gearpanel .move .md.dt::after{position:absolute;right:0;top:50%;transform:translateY(-50%);margin:0}
+/* a replayed lesson (Help → How to hunt): what you're in, and the way out */
+.lessonbar{display:flex;align-items:center;gap:12px;padding:6px 8px 6px 14px;border:1px solid var(--gold-hi);border-radius:4px;background:var(--raise);font-size:var(--fs-sm);color:var(--soft)}
+.lessonbar b{color:var(--fg)}

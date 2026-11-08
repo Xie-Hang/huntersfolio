@@ -1,9 +1,9 @@
 // The Cragling (id scuttlehog: ids kept so saves carry over) — the Foothills, step 1 (the tutorial island, Nov 2026).
 // A Cragwing hatchling, wings still stubs: the Ridge's last test, met first as the island's first hunt (Mekkman, Nov
 // 2026: the Foothills monsters are the young of the Ridge's).
-// It teaches one thing: dice go into a move, then you end the turn. Two dice, both circles; the Training Blade has
+// It teaches your turn: dice go into a move, then you end the turn; turn 3 rolls two blanks for Reroll. Two dice, both circles; the Training Blade has
 // one move (Slash, one circle). It nudges you for a little every turn and its next move isn't shown yet (there's
-// nothing to do about it until Block arrives on the Snapclaw). About 3 turns.
+// nothing to do about it until Block arrives on the Snapclaw). Four turns: 60 HP, 24 a turn, and turn 3 is the blanks.
 import type { Intent, MonsterDef } from '../../types';
 
 export const scuttlehog: MonsterDef = {

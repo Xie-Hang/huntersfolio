@@ -45,6 +45,7 @@
     <span>Parts broken <b>{h.stats.broken} / {M.parts.length}</b></span><span>Rerolls used <b>{h.stats.rerollsUsed}</b></span>
   </div></details>{/if}
   <div style="display:flex;gap:10px;flex-wrap:wrap">
+    {#if game.lesson}<button class="btn primary" onclick={() => game.endLesson()}>End lesson</button>{:else}
     <!-- one clear next step (Nov 2026 playtest: the first win led straight into "more info"): the Forge is the gold
          button only when something there can be made; otherwise it's the Hunt Board, where new hunts are waiting -->
     {#if forgeNext}<button class="btn primary" data-coach="to-forge" onclick={() => game.go('forge')}>Go to the Forge</button>
@@ -56,6 +57,7 @@
     <button class="btn" onclick={() => game.openMonster(h.mid)}>Hunt the {M.short} again</button>
     {#if forgeNext}<button class="btn" onclick={() => game.go('board')}>Hunt Board</button>
     {:else if E.islandDone(game.save) && E.forgeOpen(game.save) && E.forgeReady(game.save)}<button class="btn" data-coach="to-forge" onclick={() => game.go('forge')}>Forge</button>{/if}
+    {/if}
   </div>
 {/snippet}
 

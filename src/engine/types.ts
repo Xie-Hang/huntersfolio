@@ -529,4 +529,8 @@ export interface Save {
   /** the Foothills (the tutorial island, Nov 2026): the step reached. Absent = done (saves from before the island,
    *  and players who skipped it). See engine/island.ts. */
   island?: number;
+  /** 2: the island's step numbers are the 8-step island (8 Nov 2026). Older saves are moved on load (migrateIsland) */
+  islandV?: number;
+  /** the hunt count when the last Ridge lesson tip showed: the next waits a hunt (8 Nov 2026) */
+  lessonAt?: number;
 }

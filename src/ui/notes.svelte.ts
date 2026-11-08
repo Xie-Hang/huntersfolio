@@ -11,10 +11,15 @@ class HelpState {
   tab = $state<'hunt' | 'notes' | 'controls'>('hunt');
   entry = $state<string | null>(null);
   seen = $state<string[]>(load());
+  /** terms just met for the first time that get a "New in Hunter's Notes" notice (8 Nov 2026: Daze, Enraged,
+   *  elements and Flow aren't taught by a prompt any more; the notice says where to read about them) */
+  fresh = $state<string[]>([]);
   show(tab: 'hunt' | 'notes' | 'controls', entry: string | null = null) { this.tab = tab; this.entry = entry; this.open = true; }
 }
 export const help = new HelpState();
 
+/** the groups whose new terms get a notice: the ones no prompt teaches */
+const NOTICE = ['Weapon tags', 'Monster states', 'On you'];
 let pending: string[] = [];
 /** note that the player has met this term (a bold word or a tag label); unknown words are ignored */
 export function met(term: string) {
@@ -23,7 +28,9 @@ export function met(term: string) {
   pending.push(id);
   queueMicrotask(() => {
     if (!pending.length) return;
-    help.seen = [...help.seen, ...pending.filter(p => !help.seen.includes(p))]; pending = [];
+    const add = pending.filter(p => !help.seen.includes(p)); pending = [];
+    help.seen = [...help.seen, ...add];
+    help.fresh = [...help.fresh, ...add.filter(id => NOTICE.includes(NOTES[id].group) || id === 'elements')];
     try { localStorage.setItem(KEY, JSON.stringify(help.seen)); } catch { /* storage full or blocked: still works this session */ }
   });
 }

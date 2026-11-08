@@ -1,7 +1,7 @@
-// The Tuskling — the Foothills, steps 3 and 7 (the tutorial island, Nov 2026). A Gorehorn calf: the island's exam is its parent.
-// First hunt: aim at a part, and a broken part drops its material. It has two: its Hide (blades break it) and its
-// Tusks (blades can't). Second hunt: use your salve, and Snare it once it's weak; it tires when hurt, which gives the
-// capture a clear window. Four dice, any face.
+// The Tuskling — the Foothills, step 3 (the tutorial island, rebuilt 8 Nov 2026). A Gorehorn calf: the island's exam
+// is its parent. It teaches aim and Swap: its Hide (blades break it) and its Tusks (only Blunt), so you aim at the
+// Hide with the blade, then Swap to the maul for the Tusks. A win always pays 2 Tusk Hides (its common drop): the vest.
+// It tires when badly hurt (a capture window, for re-hunts on the Ridge rules). Four dice, any face.
 import type { Intent, MonsterDef } from '../../types';
 
 export const tuskling: MonsterDef = {

@@ -13,6 +13,7 @@
   import * as PL from './playlog';
   import { saveTextFile } from './files';
   import { setReportExporter } from './crash';
+  import NoteNotice from './parts/NoteNotice.svelte';
   import { coach } from './coach.svelte';
   import Board from './screens/Board.svelte';
   import Forge from './screens/Forge.svelte';
@@ -137,6 +138,7 @@
       <div class="sub">{sub}</div>
     </div>
     {#if game.inHunt}<BountyPanel inhead />{/if}
+    {#if game.lesson}<div class="lessonbar" role="status"><span>Lesson: <b>{E.LESSONS[game.lesson.n].name}</b>. Nothing here is kept.</span><button class="btn" data-coach="end-lesson" onclick={() => game.endLesson()}>End lesson</button></div>{/if}
     <div class="top-right">
       {#if !game.inHunt}
         <nav class="nav" aria-label="Town">
@@ -153,10 +155,10 @@
       <span class="rankseal" title="Apprentice: finish the Foothills to become a Hunter"><RankMedal rank="F" size={46} dim /><span class="rl"><span>Rank</span><span>Apprentice</span></span></span>
       {/if}
       {#if E.forgeOpen(game.save)}<span class="purse">{game.save.coin} coin</span>{/if}
-      {#if game.inHunt}
+      {#if game.inHunt && !game.lesson}
         <button class="btn quiet" onclick={() => game.abandon()}>Abandon hunt</button>
       {/if}
-      <button class="iconbtn" aria-label="How to play" aria-expanded={help.open} onclick={openHelp}>
+      <button class="iconbtn" data-coach="help" aria-label="How to play" aria-expanded={help.open} onclick={openHelp}>
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5" /><path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.8" /><circle cx="12" cy="17.2" r=".6" fill="currentColor" /></svg>
       </button>
       <button class="iconbtn" aria-label="Settings" aria-expanded={settingsOpen} onclick={() => (settingsOpen = true)}>
@@ -204,6 +206,10 @@
       <button class="btn quiet" role="switch" aria-checked={settings.prefs.tips} onclick={() => coach.setEnabled(!settings.prefs.tips)}>{settings.prefs.tips ? 'On' : 'Off'}</button>
     </div>
     <div class="setrow">
+      <span><span class="nm">Show tips again</span><span class="md">The tips you've seen come back. Replay the first lessons from Help.</span></span>
+      <button class="btn quiet" onclick={() => { coach.showAgain(); settingsOpen = false; }}>Show again</button>
+    </div>
+    <div class="setrow">
       <span><span class="nm">Show every action</span><span class="md">From your first hunt, instead of a little more each hunt. From your next hunt.</span></span>
       <button class="btn quiet" role="switch" aria-checked={settings.prefs.showAll} onclick={() => { settings.prefs.showAll = !settings.prefs.showAll; settings.save(); }}>{settings.prefs.showAll ? 'On' : 'Off'}</button>
     </div>
@@ -246,6 +252,7 @@
   </Modal>
 
   <Modal bind:open={help.open} title="How to play" wide><Help /></Modal>
+  <NoteNotice />
 
   {#if game.view === 'board'}<Board />
   {:else if game.view === 'forge'}<Forge />
