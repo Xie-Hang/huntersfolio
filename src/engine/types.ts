@@ -385,6 +385,8 @@ export interface Hunt {
   ndice?: number;
   faces?: Face[];
   show?: string[];
+  /** actions held back until a turn (the island's prompts teach them then): key → turn */
+  held?: Record<string, number>;
   /** what happened last turn, for the line under the next move (Nov 2026: replaces the hunt log on screen) */
   recap?: { turn: number; dealt: number; lines: LogEntry[] };
   logSeq?: number;

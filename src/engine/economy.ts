@@ -126,6 +126,8 @@ export function recipeOf(s: Save, kind: RecipeKind, id: string): Recipe {
   // the Foothills' own gear is made on the island only; after it, Foothills drops just sell (Mekkman, Nov 2026)
   const foot = kind === 'w' ? WEAPONS[id]?.foothills : kind === 'a' ? ARMORS[id]?.foothills : CHARMS[id]?.foothills;
   if (foot && islandDone(s)) return { action: null, cost: null };
+  // no reinforcing on the island: it's taught in the town tour after the promotion (Mekkman, 8 Nov 2026)
+  if (!islandDone(s) && (kind === 'w' ? s.weapons[id] : kind === 'a' ? s.armors[id] : null)) return { action: null, cost: null };
   if (kind === 'w') {
     const d = WEAPONS[id];
     if (d.starter) return { action: null, cost: null };

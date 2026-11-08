@@ -18,6 +18,11 @@ type Panel = 'mon' | 'player';
 export interface Float { id: number; at: Panel; text: string; cls: string }
 
 let floatId = 0;
+/** The turn each held-back action arrives on, in the hunt that teaches it (Mekkman, 8 Nov 2026: nothing on screen
+ *  before Mell explains it): Reroll on the Cragling's turn 3, Block on the Rimekit's turn 3, Undo on the Tuskling's
+ *  turn 2 and Swap on its turn 3. */
+const ARRIVES: Record<string, number> = { reroll: 3, block: 3, undo: 2, swap: 3 };
+function hold(h: E.Hunt, k: string) { if (!h.show?.includes(k)) return; h.show = h.show.filter(x => x !== k); h.held = { ...(h.held ?? {}), [k]: ARRIVES[k] }; }
 /** each tutorial hunt's prompts: a lost hunt shows them again (coach.svelte.ts) */
 const ISLAND_HUNT_TIPS: Record<string, string[]> = {
   scuttlehog: ['i-die', 'i-move', 'i-again', 'i-end', 'i-tele', 'i-pick', 'i-reroll'],
@@ -290,7 +295,7 @@ class Game {
     const turn = (t: number, f: E.Face[]) => { h.script = h.script ?? []; h.script[t - 1] = f; };
     // the Cragling: two Fangs on turns 1 and 2 (its only face), then two blanks on turn 3 for Reroll (it can't be
     // finished before then: 60 HP, 24 a turn)
-    if (h.mid === 'scuttlehog' && st === 0 && !seen('i-reroll')) turn(3, ['B', 'B']);
+    if (h.mid === 'scuttlehog' && st === 0 && !seen('i-reroll')) { turn(3, ['B', 'B']); hold(h, 'reroll'); }
     // the Rimekit: one Fang on turn 1, three on turn 2 (Slash ×3 reads as one per Fang), so it's still standing for
     // the Block lesson on turn 3 (Nov 2026 playtest: teach using several dice for the same move on the second monster)
     if (h.mid === 'snapclaw' && st === 1 && !seen('i-twice2')) {
@@ -298,11 +303,12 @@ class Game {
       turn(2, ['C', 'C', 'C']);
       // Block comes after several dice (Mekkman, 8 Nov 2026): hidden until turn 3, its Tail Sweep, and turn 3 rolls no
       // Fang, so Block is the thing to do
-      if (!seen('i-block')) { h.show = (h.show ?? []).filter(k => k !== 'block'); turn(3, ['T', 'B', 'T']); }
+      if (!seen('i-block')) { hold(h, 'block'); turn(3, ['T', 'B', 'T']); }
     }
     // the Tuskling: turn 3 has a blank for Swap to take on its own (without one the player would have to pick a die
     // first, and the prompt's lock would leave them stuck)
-    if (h.mid === 'tuskling' && st === 3 && !seen('i-swap')) turn(3, ['C', 'T', 'B', 'C']);
+    if (h.mid === 'tuskling' && st === 3 && !seen('i-swap')) { turn(3, ['C', 'T', 'B', 'C']); hold(h, 'swap'); }
+    if (h.mid === 'tuskling' && st === 3 && !seen('i-undo')) hold(h, 'undo');
   }
   item() {
     if (!shows(this.hunt, 'item')) return;
@@ -349,8 +355,8 @@ class Game {
     if (taken) { this.float('player', `−${taken}`, 'hurt'); if (taken >= E.CHARGE_BREAK) this.shake('player'); }
     if (taken) sfx(taken >= E.CHARGE_BREAK ? 'hurtHeavy' : 'hurt');
     if (!h.over) setTimeout(() => sfx('diceRoll'), taken ? 260 : 0); // the new roll lands after the hit
-    // the Rimekit's Block arrives on turn 3 (rerollLesson)
-    if (h.mid === 'snapclaw' && h.turn >= 3 && h.show && !h.show.includes('block') && E.islandStep(this.save) === 1) h.show = [...h.show, 'block'];
+    // held-back actions arrive on the turn their prompt teaches them (rerollLesson)
+    for (const [k, t] of Object.entries(h.held ?? {})) if (h.turn >= t) { h.show = [...(h.show ?? []), k]; delete h.held![k]; }
     this.undoStack = [];
     this.sel = [];
     if (!h.over) this.roll(h.dice.map((_, i) => i));

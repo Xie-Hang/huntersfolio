@@ -55,7 +55,7 @@
     <div class="tabs" role="tablist">
       <button role="tab" aria-selected={tab === 'buy'} onclick={() => setTab('buy')}>Buy</button>
       {#if !isl || E.islandCraft(s)}<button role="tab" aria-selected={tab === 'craft'} onclick={() => setTab('craft')}>Craft items</button>{/if}
-      <button role="tab" aria-selected={tab === 'sell'} data-coach="shop-sell" onclick={() => setTab('sell')}>Sell</button>
+      {#if !isl}<button role="tab" aria-selected={tab === 'sell'} data-coach="shop-sell" onclick={() => setTab('sell')}>Sell</button>{/if}
     </div>
     <div class="toast" aria-live="polite">{toast}</div>
     <!-- A grid of cards (Mekkman, Nov 2026: the one-column rows left most of a wide screen empty). Each card puts
