@@ -82,7 +82,7 @@
 
 {#if part === 'all'}
 <section class="panel" aria-label="Your dice">
-  <div class="ph dph"><span class="label">Your dice · turn {h.turn}</span><span class="label">{input.mode === 'pad' ? 'Select any dice (A), then pick a move, or reroll them' : 'Select any dice, then pick a move, or reroll them'}</span></div>
+  <div class="ph dph"><span class="label">Your dice · turn {h.turn}</span><span class="label">{input.mode === 'pad' ? 'Select any dice (A), then pick a move' : 'Select any dice, then pick a move'}{shows(h, 'reroll') ? ', or reroll them' : ''}</span></div>
   <div class="diceline">
   {@render trayS()}
   <div class="acts">
@@ -99,7 +99,7 @@
 {:else if part === 'dice'}
 <!-- layout drafts (Nov 2026): the dice and Reroll on top of the player's side, where a turn starts -->
 <section class="panel dtop" class:below={rerollBelow} aria-label="Your dice">
-  <div class="ph dph"><span class="label">Your dice · turn {h.turn}</span><span class="label">{input.mode === 'pad' ? 'Select any dice (A), then pick a move, or reroll them' : 'Select any dice, then pick a move, or reroll them'}</span></div>
+  <div class="ph dph"><span class="label">Your dice · turn {h.turn}</span><span class="label">{input.mode === 'pad' ? 'Select any dice (A), then pick a move' : 'Select any dice, then pick a move'}{shows(h, 'reroll') ? ', or reroll them' : ''}</span></div>
   <div class="diceline">
   {@render trayS()}
   {#if shows(h, 'reroll')}<div class="rrwrap">{@render rerollS()}</div>{/if}

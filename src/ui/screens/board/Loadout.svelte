@@ -77,7 +77,8 @@
   {@const m = E.elemMult(w.elem, mon)}
   {@const best = bestParts(mon, w.type)}
   {#if M.elemOf}{#if w.elem}<span class="neutral">Hits its {w.elem === 'Stone' ? 'Ember' : w.elem === 'Gale' ? 'Stone' : w.elem === 'Ember' ? 'Frost' : 'Gale'} stance's weakness</span>{/if}{:else if m > 1}<span class="good">Hits weakness</span>{:else if m < 1}<span class="bad">Resisted</span>{/if}
-  {#if best.length}{m !== 1 ? ' · ' : ''}<span class="best">Breaks more: {best.join(', ')}</span>{/if}
+  <!-- (on the island, parts once aiming is taught: after the Tuskling's prompt) -->
+  {#if best.length && (E.islandDone(game.save) || E.islandStep(game.save) >= 4 || game.save.tips.includes('i-aim'))}{m !== 1 ? ' · ' : ''}<span class="best">Breaks more: {best.join(', ')}</span>{/if}
   {#if M.flier}{' · '}{#if w.type === 'Pierce'}<span class="good">Reaches it airborne</span>{:else}<span class="bad">Can’t reach it airborne</span>{/if}{/if}
   {#if M.plated}{@const n = M.plateBreak?.(w) ?? (w.type === 'Cut' ? 2 : 1)}{@const word = M.plateWord === 'scale' ? 'scales' : (M.plateWord ?? 'ice')}{' · '}{#if n >= M.plated}<span class="good">Clears its {word} in one hit</span>{:else}<span class="bad">Takes {Math.ceil(M.plated / n)} hits to clear its {word}</span>{/if}{#if M.plateHot && w.type === 'Cut'}{' · '}<span class="bad">Cut hits burn you</span>{/if}{/if}
   {#if M.id === 'rimeshrike' && w.type === 'Pierce'}{' · '}<span class="bad">Misses its shroud on the ground</span>{/if}
@@ -126,7 +127,7 @@
             <span class="sl">{SLOT_LABEL[slot]}</span>
             <span>
               <span class="nm"><WeaponArt id={id} size={34} />{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}{' '}<span class="avg">{weaponVs(game.save, id, mon)} avg</span></span>
-              <span class="sub2"><span>{#if w.moves.some(m => m.flow || m.daze || m.expose) && sigShown(w.type)}<span class="tag {sg.tag}" style="margin:0 4px 0 0">{sg.name}</span>{/if}{w.type} · <Elem e={markOf(w)} />{elemLabel(w)}</span><span>{@render weaponNotes(w)}</span></span>
+              <span class="sub2"><span>{#if w.moves.some(m => m.flow || m.daze || m.expose) && sigShown(w.type)}<span class="tag {sg.tag}" style="margin:0 4px 0 0">{sg.name}</span>{/if}{w.type}{#if E.islandDone(game.save) || E.islandStep(game.save) >= 4}{' · '}<Elem e={markOf(w)} />{elemLabel(w)}{/if}</span><span>{@render weaponNotes(w)}</span></span>
             </span>
             <span class="chg">Change</span>
           </button>
@@ -262,7 +263,7 @@
             <button class="prow" aria-current={id === cur} onclick={() => choose(id)}>
               <span>
                 <span class="nm"><WeaponArt id={id} size={28} />{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}{#if id === cur}<span class="badge">Equipped</span>{:else if id === other}<span class="badge">In {SLOT_LABEL[idx ? 'w0' : 'w1']}</span>{/if}</span>
-                <span class="ty">{w.type} · <Elem e={markOf(w)} />{elemLabel(w)}{#each w.moves as m} · <span class="mvl">{#each [...m.need] as c}<CostDie {c} small />{/each} {m.dmg}</span>{/each}</span>
+                <span class="ty">{w.type}{#if E.islandDone(game.save) || E.islandStep(game.save) >= 4}{' · '}<Elem e={markOf(w)} />{elemLabel(w)}{/if}{#each w.moves as m} · <span class="mvl">{#each [...m.need] as c}<CostDie {c} small />{/each} {m.dmg}</span>{/each}</span>
                 <span class="note">{@render weaponNotes(w)}</span>
               </span>
               <span class="num">{v}{#if id === cur}<small class="delta same">Equipped</small>{:else}{@render delta(v, curV)}{/if}</span>

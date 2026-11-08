@@ -101,7 +101,7 @@
       <span class="kicker">Hunt failed</span>
       <h2 style="margin:0;font-weight:600">{M.name} wins this one</h2>
       {#if Object.keys(r.mats).length}<div><span class="label">You kept what you broke off</span><ul style="margin-top:6px">{#each Object.entries(r.mats) as [k, v] (k)}<li><Icon id={k} size={18} />{E.matName(k)} ×{v}</li>{/each}</ul></div>{/if}
-      {#if E.lossFacts(h, game.save).length}
+      {#if E.islandDone(game.save) && E.lossFacts(h, game.save).length}
         <!-- facts about this monster against the gear you brought (no-handholding: never what to bring) -->
         <div class="facts-after"><span class="label">What you learned</span><ul>{#each E.lossFacts(h, game.save) as f}<li><Rich text={f} /></li>{/each}</ul></div>
       {/if}
