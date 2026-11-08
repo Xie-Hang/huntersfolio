@@ -51,6 +51,8 @@
     const allowed = (n: EventTarget | null) => {
       if (!(n instanceof Node)) return false;
       if (cardEl?.contains(n)) return true;
+      // an open dialog (Help, Settings) can always be used and closed
+      if (n instanceof Element && n.closest('dialog[open]')) return true;
       // a replayed lesson can always be left
       if (n instanceof Element && n.closest('[data-coach="end-lesson"]')) return true;
       // the target as last placed (not re-checked here: a hover or press animation must not make it unclickable)

@@ -284,6 +284,9 @@ class Game {
     if (h.mid === 'snapclaw' && st === 1 && !seen('i-twice2')) {
       const f: E.Face[] = ['C', 'T', 'B']; h.dice.forEach((d, i) => { d.face = f[i] ?? d.face; });
       turn(2, ['C', 'C', 'C']);
+      // Block comes after several dice (Mekkman, 8 Nov 2026): hidden until turn 3, its Tail Sweep, and turn 3 rolls no
+      // Fang, so Block is the thing to do
+      if (!seen('i-block')) { h.show = (h.show ?? []).filter(k => k !== 'block'); turn(3, ['T', 'B', 'T']); }
     }
     // the Tuskling: turn 3 has a blank for Swap to take on its own (without one the player would have to pick a die
     // first, and the prompt's lock would leave them stuck)
@@ -314,7 +317,7 @@ class Game {
     const h = this.hunt; if (!h || h.over) return 0;
     const free = E.freeDice(h).length; if (!free) return 0;
     const moveReady = E.currentWeapon(h).moves.some((_, i) => E.canUseMove(h, i));
-    return moveReady || (E.incoming(h)?.net ?? 0) > 0 ? free : 0;
+    return moveReady || ((E.incoming(h)?.net ?? 0) > 0 && shows(h, 'block')) ? free : 0;
   }
   /** End turn from a button or key. With dice still worth spending, the first press only warns.
    *  (Playtest: players ended turns with dice unspent and didn't notice.) */
@@ -334,6 +337,8 @@ class Game {
     if (taken) { this.float('player', `−${taken}`, 'hurt'); if (taken >= E.CHARGE_BREAK) this.shake('player'); }
     if (taken) sfx(taken >= E.CHARGE_BREAK ? 'hurtHeavy' : 'hurt');
     if (!h.over) setTimeout(() => sfx('diceRoll'), taken ? 260 : 0); // the new roll lands after the hit
+    // the Rimekit's Block arrives on turn 3 (rerollLesson)
+    if (h.mid === 'snapclaw' && h.turn >= 3 && h.show && !h.show.includes('block') && E.islandStep(this.save) === 1) h.show = [...h.show, 'block'];
     this.undoStack = [];
     this.sel = [];
     if (!h.over) this.roll(h.dice.map((_, i) => i));

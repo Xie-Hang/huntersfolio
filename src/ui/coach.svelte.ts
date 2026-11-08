@@ -92,7 +92,8 @@ const ISLAND: Tip[] = [
     // the first turn is played out to the end (Nov 2026 playtest): every die, then End turn
     id: 'i-again', guide: true, learn: true, at: ['move'], head: 'Moves',
     when: () => { const h = onIsland('scuttlehog'); return !!h && h.turn === 1 && !unusedTurn(h) && freeDice(h) > 0 && E.canUseMove(h, 0); },
-    text: () => 'One Fang left. Select **Slash** again.',
+    // the shortcut, taught here (Mekkman, 8 Nov 2026): with no die selected, a move picks its own
+    text: () => 'Now select **Slash** alone. It picks the Fang.',
     done: () => { const h = hunt(); return !!h && h.mid === 'scuttlehog' && (h.turn > 1 || freeDice(h) === 0); }
   },
   {
@@ -152,7 +153,8 @@ const ISLAND: Tip[] = [
   {
     id: 'i-block', head: 'Block', guide: true, learn: true, at: ['guard'],
     when: () => { const h = onIsland('snapclaw'); return !!h && h.intent === 'pinch' && h.guard === 0 && freeDice(h) > 0; },
-    text: () => 'A big hit is coming. **Block** it.',
+    // Block arrives here, after several dice (it's hidden until turn 3, game.rerollLesson); Any means any face
+    text: () => 'Big hit coming. **Block** takes any die.',
     done: () => (hunt()?.guard ?? 0) > 0
   },
   // ---- the Forge: the blade (and the maul) ----
@@ -171,7 +173,7 @@ const ISLAND: Tip[] = [
   {
     id: 'i-maul', guide: true, info: true, gotit: true, at: ['slot-w1'], head: 'Two weapons',
     when: () => game.view === 'board' && E.islandStep(game.save) === 3 && !huntOn(),
-    text: () => 'The lodge gave you a maul too.'
+    text: () => 'The lodge gave a maul. You carry two.'
   },
   // ---- the Tuskling: aim and Swap ----
   {

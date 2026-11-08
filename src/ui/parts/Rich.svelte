@@ -10,7 +10,7 @@
   $effect(() => { for (let i = 1; i < parts.length; i += 2) met(parts[i]); });
   /** a term link only where a select can reach it */
   function link(el: HTMLElement) {
-    if (el.closest('button, [role="button"], [role="tooltip"], .dtip, a')) { el.classList.remove('glink'); el.removeAttribute('tabindex'); el.removeAttribute('role'); }
+    if (el.closest('button, [role="button"], [role="tooltip"], .dtip, a, .coach')) { el.classList.remove('glink'); el.removeAttribute('tabindex'); el.removeAttribute('role'); }
   }
 </script>
 {#each parts as p, i}{#if i % 2}{#if noteFor(p) && noteFor(p) !== self}<span class="term glink" role="link" tabindex="0" use:link onclick={e => { e.stopPropagation(); openNote(p); }} onkeydown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openNote(p); } }}>{p}</span>{:else}<strong class="term">{p}</strong>{/if}{:else}{p}{/if}{/each}
