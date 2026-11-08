@@ -438,6 +438,53 @@ export const TIPS: Tip[] = [
   },
   // ---- the first big attack: the most important lesson ----
   {
+    // the fourth hunt's layer: Charge (Capture has its own tip when it's ready)
+    id: 'chargeNew', lesson: true, learn: true, at: ['charge'],
+    when: () => { const h = hunt(); return !!h && shows(h, 'all') && h.turn >= 2 && unusedTurn(h) && (E.incoming(h)?.net ?? 0) === 0 && !h.chargePending && !h.chargeReady; },
+    text: () => `Here’s a new one, **Charge**. Spend ${E.chargeDice(hunt()!)} dice now and your first hit next turn does double. Careful, any hit that gets through your **Block** breaks it.`,
+    done: () => !!hunt()?.chargePending
+  },
+  {
+    id: 'capture', lesson: true, at: ['capture'],
+    when: () => { const h = hunt(); return !!h && shows(h, 'parts') && E.captureReady(h); },
+    text: () => `It’s weak enough to capture! Set a **Snare** with 2 dice. It closes at the end of your turn, unless it hits you for ${E.CHARGE_BREAK} or more. Captures give double part materials.`
+  },
+  // ---- back in town ----
+  {
+    // playtest (Nov 2026): three testers never found out that materials sell for coin
+    id: 'sell', lesson: true, learn: true, at: () => (game.view === 'hunt' ? ['to-shop'] : ['nav-shop']),
+    when: () => game.save.hunts > 0 && game.save.tips.includes('track') && game.view !== 'shop' && !(game.view === 'hunt' && game.hunt && !game.hunt.over) && E.surplusValue(game.save) >= 40,
+    text: () => `Short on coin? Materials no recipe needs sell at the Shop. Yours are worth ${E.surplusValue(game.save)} coin right now.`,
+    done: () => game.view === 'shop'
+  },
+  {
+    id: 'bounties', lesson: true, learn: true, at: ['bounties'],
+    when: () => game.view === 'board' && game.boardMon && E.BOUNTIES_ON && game.save.tips.includes('track') && !game.save.loadout.bounty && E.bountiesFor(game.save.loadout.target).length > 0 && (game.save.record[game.save.loadout.target]?.wins ?? 0) > 0,
+    text: () => 'Bounties are open! Pick one before you hunt this monster again. Meet its goals and win for extra coin. They unlock three charms at the Forge too.',
+    done: () => !!game.save.loadout.bounty
+  },
+  {
+    id: 'track', lesson: true, guide: true, learn: true, at: ['track', 'forge-act'],
+    when: () => game.view === 'forge',
+    text: () => "Pick a weapon or armour you like. Can’t afford it yet? Select Track, and its materials get flagged on the Hunt Board and in the Shop.",
+    done: () => !!game.save.tracked || Object.keys(game.save.weapons).filter(id => !E.WEAPONS[id]?.foothills).length > 2 || Object.keys(game.save.armors).filter(id => !E.ARMORS[id]?.foothills).length > 1
+  },
+  {
+    id: 'charmNew', lesson: true, info: true, at: ['tab-charms'], next: 'Got it',
+    when: () => game.view === 'forge' && game.forgeTab !== 'charms' && Object.keys(E.CHARMS).some(id => { const r = E.recipeOf(game.save, 'c', id); return r.action === 'craft' && !!r.cost && E.canPay(game.save, r.cost); }),
+    text: () => 'You can make a charm now! Each one gives a small perk, and you wear one at a time.'
+  },
+  {
+    id: 'reinforceNew', lesson: true, info: true, at: ['forge-act'], next: 'Got it',
+    when: () => { if (game.view !== 'forge' || !game.forgeSel) return false; const k: E.RecipeKind = game.forgeTab === 'armor' ? 'a' : 'w'; const r = E.recipeOf(game.save, k, game.forgeSel); return r.action === 'reinforce' && !!r.cost && E.canPay(game.save, r.cost); },
+    text: () => 'Reinforcing makes gear you love even better. A weapon hits 5% harder, or armour gets 10 more HP and 1 more **Block**. You can do it up to 3 times.'
+  }
+];
+
+/** Ashfall Ridge moments: first-time reads (a wind-up, a big hit, mud, a part breaking…). Off for now (Mekkman,
+ *  8 Nov 2026: too many messages); kept here to bring back. Not in TIPS, so they never show. */
+export const MOMENTS: Tip[] = [
+  {
     id: 'windup', at: ['tele'],
     when: () => hunt()?.intent === 'windup',
     text: () => "It’s winding up for a big charge next turn. This turn is safe, so go all in!"
@@ -502,13 +549,6 @@ export const TIPS: Tip[] = [
     text: () => 'Mud on its hide! It takes half there for 2 turns. Aim somewhere else until it dries.'
   },
   {
-    // the fourth hunt's layer: Charge (Capture has its own tip when it's ready)
-    id: 'chargeNew', lesson: true, learn: true, at: ['charge'],
-    when: () => { const h = hunt(); return !!h && shows(h, 'all') && h.turn >= 2 && unusedTurn(h) && (E.incoming(h)?.net ?? 0) === 0 && !h.chargePending && !h.chargeReady; },
-    text: () => `Here’s a new one, **Charge**. Spend ${E.chargeDice(hunt()!)} dice now and your first hit next turn does double. Careful, any hit that gets through your **Block** breaks it.`,
-    done: () => !!hunt()?.chargePending
-  },
-  {
     id: 'open', at: ['move', 'tele'],
     when: () => { const h = hunt(); return !!h && E.intentInfo(h).threat === 0 && E.intentInfo(h).dmg === 0 && h.turn > 1 && h.intent !== 'windup'; },
     text: () => "It’s not attacking this turn. A free turn, so go all in!"
@@ -517,25 +557,6 @@ export const TIPS: Tip[] = [
     id: 'enraged', at: ['tele'],
     when: () => !!hunt()?.mon.enraged,
     text: () => "It’s enraged below half HP, so it hits harder now. Check its next move before you end each turn."
-  },
-  {
-    id: 'capture', lesson: true, at: ['capture'],
-    when: () => { const h = hunt(); return !!h && shows(h, 'parts') && E.captureReady(h); },
-    text: () => `It’s weak enough to capture! Set a **Snare** with 2 dice. It closes at the end of your turn, unless it hits you for ${E.CHARGE_BREAK} or more. Captures give double part materials.`
-  },
-  // ---- back in town ----
-  {
-    // playtest (Nov 2026): three testers never found out that materials sell for coin
-    id: 'sell', lesson: true, learn: true, at: () => (game.view === 'hunt' ? ['to-shop'] : ['nav-shop']),
-    when: () => game.save.hunts > 0 && game.save.tips.includes('track') && game.view !== 'shop' && !(game.view === 'hunt' && game.hunt && !game.hunt.over) && E.surplusValue(game.save) >= 40,
-    text: () => `Short on coin? Materials no recipe needs sell at the Shop. Yours are worth ${E.surplusValue(game.save)} coin right now.`,
-    done: () => game.view === 'shop'
-  },
-  {
-    id: 'bounties', lesson: true, learn: true, at: ['bounties'],
-    when: () => game.view === 'board' && game.boardMon && E.BOUNTIES_ON && game.save.tips.includes('track') && !game.save.loadout.bounty && E.bountiesFor(game.save.loadout.target).length > 0 && (game.save.record[game.save.loadout.target]?.wins ?? 0) > 0,
-    text: () => 'Bounties are open! Pick one before you hunt this monster again. Meet its goals and win for extra coin. They unlock three charms at the Forge too.',
-    done: () => !!game.save.loadout.bounty
   },
   {
     id: 'failed', at: ['tele'],
@@ -548,22 +569,6 @@ export const TIPS: Tip[] = [
     when: () => game.save.hunts > 1 && game.view !== 'forge' && !(game.view === 'hunt' && game.hunt && !game.hunt.over) && E.forgeReady(game.save),
     text: () => "You’ve got enough to make something. Let’s head to the Forge.",
     done: () => game.view === 'forge'
-  },
-  {
-    id: 'track', lesson: true, guide: true, learn: true, at: ['track', 'forge-act'],
-    when: () => game.view === 'forge',
-    text: () => "Pick a weapon or armour you like. Can’t afford it yet? Select Track, and its materials get flagged on the Hunt Board and in the Shop.",
-    done: () => !!game.save.tracked || Object.keys(game.save.weapons).filter(id => !E.WEAPONS[id]?.foothills).length > 2 || Object.keys(game.save.armors).filter(id => !E.ARMORS[id]?.foothills).length > 1
-  },
-  {
-    id: 'charmNew', lesson: true, info: true, at: ['tab-charms'], next: 'Got it',
-    when: () => game.view === 'forge' && game.forgeTab !== 'charms' && Object.keys(E.CHARMS).some(id => { const r = E.recipeOf(game.save, 'c', id); return r.action === 'craft' && !!r.cost && E.canPay(game.save, r.cost); }),
-    text: () => 'You can make a charm now! Each one gives a small perk, and you wear one at a time.'
-  },
-  {
-    id: 'reinforceNew', lesson: true, info: true, at: ['forge-act'], next: 'Got it',
-    when: () => { if (game.view !== 'forge' || !game.forgeSel) return false; const k: E.RecipeKind = game.forgeTab === 'armor' ? 'a' : 'w'; const r = E.recipeOf(game.save, k, game.forgeSel); return r.action === 'reinforce' && !!r.cost && E.canPay(game.save, r.cost); },
-    text: () => 'Reinforcing makes gear you love even better. A weapon hits 5% harder, or armour gets 10 more HP and 1 more **Block**. You can do it up to 3 times.'
   }
 ];
 
