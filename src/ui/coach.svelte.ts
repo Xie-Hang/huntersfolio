@@ -351,7 +351,7 @@ const ISLAND: Tip[] = [
     id: 'i-ridge', guide: true, info: true, at: ['nav-board', 'begin'],
     when: () => tour() && game.save.tips.includes('i-tsell') && (!E.BOUNTIES_ON || game.save.tips.includes('i-tbounty')) && !huntOn(),
     head: 'Ashfall Ridge',
-    text: () => 'That’s the tour! Ashfall Ridge is open. Good luck out there, Hunter.'
+    text: () => 'That’s the tour! Ashfall Ridge is open. I’ll tag along for your first few hunts out there. I’ve still got a trick or two to show you.'
   }
 ];
 /** the first Ridge hunt's basics, already taught in the Foothills */
@@ -441,13 +441,13 @@ export const TIPS: Tip[] = [
     // the fourth hunt's layer: Charge (Capture has its own tip when it's ready)
     id: 'chargeNew', lesson: true, learn: true, at: ['charge'],
     when: () => { const h = hunt(); return !!h && shows(h, 'all') && h.turn >= 2 && unusedTurn(h) && (E.incoming(h)?.net ?? 0) === 0 && !h.chargePending && !h.chargeReady; },
-    text: () => `Here’s a new one, **Charge**. Spend ${E.chargeDice(hunt()!)} dice now and your first hit next turn does double. Careful, any hit that gets through your **Block** breaks it.`,
+    text: () => `${game.save.tips.includes('capture') ? 'Here’s another Hunter technique,' : 'Now that you’re a Hunter, I can show you this one,'} **Charge**. Spend ${E.chargeDice(hunt()!)} dice now and your first hit next turn does double. Careful, any hit that gets through your **Block** breaks it.`,
     done: () => !!hunt()?.chargePending
   },
   {
     id: 'capture', lesson: true, at: ['capture'],
     when: () => { const h = hunt(); return !!h && shows(h, 'parts') && E.captureReady(h); },
-    text: () => `It’s weak enough to capture! Set a **Snare** with 2 dice. It closes at the end of your turn, unless it hits you for ${E.CHARGE_BREAK} or more. Captures give double part materials.`
+    text: () => `${game.save.tips.includes('chargeNew') ? 'Another Hunter technique!' : 'Now that you’re a Hunter, I can show you this one.'} It’s weak enough to capture. Set a **Snare** with 2 dice. It closes at the end of your turn, unless it hits you for ${E.CHARGE_BREAK} or more. Captures give double part materials.`
   },
   // ---- back in town ----
   {

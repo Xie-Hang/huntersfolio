@@ -78,7 +78,7 @@
       <h2 style="margin:0;font-weight:600">{M.name} is {h.captured ? 'captured' : 'down'}</h2>
       {#if r.rankUp}
         <!-- the rank-up moment: only when the hunt actually changed your rank, and new hunts are promised only if some opened -->
-        <div class="promoted" role="status"><RankMedal rank={r.rankUp} size={52} /><span><b>Promoted!</b> You're now a rank {r.rankUp} hunter.{r.unlocked?.length ? ' New hunts are open on the Hunt Board.' : r.rankUp === 'C' ? ' Low Rank is yours.' : ''}</span></div>
+        <div class="promoted" role="status"><RankMedal rank={r.rankUp} size={52} /><span><b>Promoted!</b> You're now a rank {r.rankUp} hunter.{#if r.rankUp === 'F' && h.exam}{' '}<Rich quiet text="You can now use the Hunter techniques **Charge** and **Capture**." />{/if}{r.unlocked?.length ? ' New hunts are open on the Hunt Board.' : r.rankUp === 'C' ? ' Low Rank is yours.' : ''}</span></div>
       {/if}
       <span class="coin">+{r.coin} coin</span>
       <div>
