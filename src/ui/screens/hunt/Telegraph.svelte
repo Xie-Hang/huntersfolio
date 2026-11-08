@@ -30,6 +30,8 @@
   const full = $derived(shows(h, 'all'));
   /** the Forge is the next step only from the second hunt on, and only when something there can be made */
   const town = $derived(E.islandTown(game.save));
+  /** the island until practice, and the promotion hunt: no side trips from the result screen */
+  const rails = $derived(E.onRails(game.save));
   const forgeNext = $derived(town === 'forge' || (!town && E.islandDone(game.save) && game.save.hunts > 1 && E.forgeOpen(game.save) && E.forgeReady(game.save)));
   /** the breakdown line only says something the big number doesn't (Nov 2026 playtest: "wordy"): armor resist, guard,
    *  halving, a split element. A plain physical hit with nothing on it gets no line at all. */
@@ -45,7 +47,14 @@
     <span>Parts broken <b>{h.stats.broken} / {M.parts.length}</b></span><span>Rerolls used <b>{h.stats.rerollsUsed}</b></span>
   </div></details>{/if}
   <div style="display:flex;gap:10px;flex-wrap:wrap">
-    {#if game.lesson}<button class="btn primary" onclick={() => game.endLesson()}>End lesson</button>{:else}
+    {#if game.lesson}<button class="btn primary" onclick={() => game.endLesson()}>End lesson</button>
+    {:else if rails}
+      <!-- the island until practice (8 Nov 2026): one way on. A lost hunt is tried again, with its prompts -->
+      {#if h.over === 'lose'}<button class="btn primary" data-coach="to-retry" onclick={() => game.openMonster(h.mid)}>Try again</button>
+      {:else if town === 'forge'}<button class="btn primary" data-coach="to-forge" onclick={() => game.go('forge')}>Go to the Forge</button>
+      {:else if town === 'shop'}<button class="btn primary" data-coach="to-shop" onclick={() => game.go('shop')}>Go to the Shop</button>
+      {:else}<button class="btn primary" data-coach="to-next" onclick={() => game.openMonster(game.save.loadout.target)}>Next: the {E.MONSTERS[game.save.loadout.target].short}</button>{/if}
+    {:else}
     <!-- one clear next step (Nov 2026 playtest: the first win led straight into "more info"): the Forge is the gold
          button only when something there can be made; otherwise it's the Hunt Board, where new hunts are waiting -->
     {#if forgeNext}<button class="btn primary" data-coach="to-forge" onclick={() => game.go('forge')}>Go to the Forge</button>

@@ -86,7 +86,9 @@ async function forgeAll(p: Page) {
   const COUNTER: Record<string, string> = { galeshrike: 'net', cinderback: 'blast', rimetail: 'firepot' };
   let streak = 0, endSeenAt = 0; const allTimes: number[] = [], mem: number[] = [];
   for (let n = 1; n <= 45; n++) {
-    await p.click('[data-coach="nav-board"]').catch(() => {});
+    // the island's guided steps have no Hunt Board button: the result screen's one way on
+    if (await p.locator('[data-coach="nav-board"]').count()) await p.click('[data-coach="nav-board"]').catch(() => {});
+    else await p.click('[data-coach="to-next"], [data-coach="to-retry"]', { timeout: 1500 }).catch(() => {});
     let s = await getJSON(p, SAVE) as E.Save | null;
     // the Foothills (the tutorial island, Nov 2026): play it as a new player does, then make the blade at the Forge
     if (s && !E.islandDone(s) && E.islandStep(s) === 2) {

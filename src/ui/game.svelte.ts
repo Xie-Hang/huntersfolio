@@ -18,6 +18,13 @@ type Panel = 'mon' | 'player';
 export interface Float { id: number; at: Panel; text: string; cls: string }
 
 let floatId = 0;
+/** each tutorial hunt's prompts: a lost hunt shows them again (coach.svelte.ts) */
+const ISLAND_HUNT_TIPS: Record<string, string[]> = {
+  scuttlehog: ['i-die', 'i-move', 'i-again', 'i-end', 'i-tele', 'i-pick', 'i-reroll'],
+  snapclaw: ['i-faces2', 'i-twice', 'i-twice2', 'i-block'],
+  tuskling: ['i-aim', 'i-undo', 'i-swap', 'i-tusks'],
+  gorehorn: ['i-salve']
+};
 
 class Game {
   save = $state<E.Save>(E.newSave());
@@ -192,6 +199,8 @@ class Game {
   }
   private after() {
     const h = this.hunt!;
+    // a lost tutorial hunt is tried again with its prompts (Mekkman, 8 Nov 2026)
+    if (h.over === 'lose' && !this.lesson && ISLAND_HUNT_TIPS[h.mid] && E.onRails(this.save)) this.save.tips = this.save.tips.filter(id => !ISLAND_HUNT_TIPS[h.mid].includes(id));
     if (h.over) { PL.huntEnd(h, this.save); E.settleHunt(this.save, h); if (!this.lesson) checkAchievements(this.save, h); E.fixLoadout(this.save); this.undoStack = []; this.sel = []; }
     this.persist();
   }

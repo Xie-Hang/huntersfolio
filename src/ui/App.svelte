@@ -118,6 +118,16 @@
   }
   // Help opens where you are (Nov 2026): in a hunt on How to hunt; at the Forge or Shop on your gear notes; on the
   // board on the monster states you've met
+  /** the town nav. On the island's guided steps only the place the step needs (Mekkman, 8 Nov 2026: no Hunt Board
+   *  until practice): the Forge for the blade, then the Hunt Board back from it */
+  function railNav(v: string) {
+    const s = game.save;
+    if (E.onRails(s) && !game.lesson) {
+      const st = E.islandStep(s);
+      return st === 2 ? v === 'forge' : st === 3 || st === E.EXAM_STEP ? v === 'board' && game.view !== 'board' : false;
+    }
+    return v === 'board' || (s.hunts > 0 && (v === 'forge' ? E.forgeOpen(s) : E.shopOpen(s)));
+  }
   function openHelp() {
     if (game.view === 'hunt' || !game.save.hunts) return help.show('hunt');
     const group = game.view === 'forge' || game.view === 'shop' ? 'Gear' : 'Monster states';
@@ -142,7 +152,7 @@
     <div class="top-right">
       {#if !game.inHunt}
         <nav class="nav" aria-label="Town">
-          {#each NAV.filter(([v]) => v === 'board' || (game.save.hunts > 0 && (v === 'forge' ? E.forgeOpen(game.save) : E.shopOpen(game.save)))) as [v, label]}
+          {#each NAV.filter(([v]) => railNav(v)) as [v, label]}
             <button aria-current={game.view === v ? 'page' : 'false'} data-coach="nav-{v}" onclick={() => game.go(v)}>{label}</button>
           {/each}
         </nav>
@@ -155,7 +165,7 @@
       <span class="rankseal" title="Apprentice: finish the Foothills to become a Hunter"><RankMedal rank="F" size={46} dim /><span class="rl"><span>Rank</span><span>Apprentice</span></span></span>
       {/if}
       {#if E.forgeOpen(game.save)}<span class="purse">{game.save.coin} coin</span>{/if}
-      {#if game.inHunt && !game.lesson}
+      {#if game.inHunt && !game.lesson && !(E.onRails(game.save) && E.islandStep(game.save) < 4)}
         <button class="btn quiet" onclick={() => game.abandon()}>Abandon hunt</button>
       {/if}
       <button class="iconbtn" data-coach="help" aria-label="How to play" aria-expanded={help.open} onclick={openHelp}>

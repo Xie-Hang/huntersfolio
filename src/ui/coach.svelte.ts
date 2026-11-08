@@ -93,7 +93,7 @@ const ISLAND: Tip[] = [
     id: 'i-again', guide: true, learn: true, at: ['move'], head: 'Moves',
     when: () => { const h = onIsland('scuttlehog'); return !!h && h.turn === 1 && !unusedTurn(h) && freeDice(h) > 0 && E.canUseMove(h, 0); },
     // the shortcut, taught here (Mekkman, 8 Nov 2026): with no die selected, a move picks its own
-    text: () => 'Now select **Slash** alone. It picks the Fang.',
+    text: () => 'Now select **Slash** alone. It picks the Fang automatically.',
     done: () => { const h = hunt(); return !!h && h.mid === 'scuttlehog' && (h.turn > 1 || freeDice(h) === 0); }
   },
   {
@@ -173,7 +173,7 @@ const ISLAND: Tip[] = [
   {
     id: 'i-maul', guide: true, info: true, gotit: true, at: ['slot-w1'], head: 'Two weapons',
     when: () => game.view === 'board' && E.islandStep(game.save) === 3 && !huntOn(),
-    text: () => 'The lodge gave a maul. You carry two.'
+    text: () => 'The lodge gave a maul. You can now carry two weapons to hunts.'
   },
   // ---- the Tuskling: aim and Swap ----
   {
@@ -181,6 +181,13 @@ const ISLAND: Tip[] = [
     when: () => { const h = onIsland('tuskling'); return !!h && E.islandStep(game.save) === 3 && h.target !== 'hide' && !h.mon.parts.hide.broken && E.currentWeapon(h).type === 'Cut'; },
     text: () => '**Cut** can’t break tusks. Select the Hide.',
     done: () => hunt()?.target === 'hide'
+  },
+  {
+    // Undo, once you've done something on turn 2 (Mekkman, 8 Nov 2026: it had no prompt)
+    id: 'i-undo', head: 'Undo', guide: true, learn: true, at: ['undo'],
+    when: () => { const h = onIsland('tuskling'); return !!h && E.islandStep(game.save) === 3 && h.turn === 2 && game.undoStack.length > 0 && game.save.tips.includes('i-aim'); },
+    text: () => 'Changed your mind? Select **Undo** to take it back.',
+    done: () => game.undos > 0
   },
   {
     // turn 3 rolls a blank for Swap to take (game.rerollLesson)
@@ -235,10 +242,34 @@ const ISLAND: Tip[] = [
     done: () => E.islandStep(game.save) >= 7
   },
   {
+    // the salve, on the Hunt Board before the exam, and in it the first time you're hurt (Mekkman, 8 Nov 2026)
+    id: 'i-item', head: 'Items', guide: true, info: true, gotit: true, at: ['slot-item'],
+    when: () => E.onExam(game.save) && game.view === 'board' && game.boardMon && !huntOn() && !game.lesson,
+    text: () => 'Your salve heals 30 in a hunt. Items cost no dice.'
+  },
+  {
+    id: 'i-salve', head: 'Items', guide: true, learn: true, at: ['item'],
+    when: () => { const h = hunt(); return !!h && h.exam === true && !!h.item && E.itemUsable(h) && h.php <= h.pmax * 0.7 && h.turn >= 2; },
+    text: () => 'Hurt? Select your salve. It heals 30.',
+    done: () => !!hunt()?.itemUsed
+  },
+  {
     id: 'i-exam', guide: true, info: true, at: ['begin', 'nav-board'],
     when: () => E.onExam(game.save) && game.view === 'board' && !huntOn() && !game.lesson,
     head: 'Promotion hunt',
     text: () => 'Win this to become a Hunter. Select Hunt.'
+  },
+  // ---- on rails until practice (Mekkman, 8 Nov 2026): every step points at the next thing. These never retire:
+  // they show whenever their moment comes round (a lost hunt, a second try)
+  {
+    id: 'i-go', head: 'Next', guide: true, side: 'right', at: ['to-retry', 'to-next', 'to-forge', 'to-shop'],
+    when: () => !game.lesson && !!game.hunt?.over && game.view === 'hunt' && !!game.hunt.reward && E.islandStep(game.save) !== 4 && !E.islandDone(game.save),
+    text: () => game.hunt?.over === 'lose' ? 'The hunt failed. Select Try again.' : E.islandTown(game.save) === 'forge' ? 'The Forge is open. Select it.' : E.islandTown(game.save) === 'shop' ? 'The Shop is next. Select it.' : `Next is the ${E.MONSTERS[game.save.loadout.target]?.short}. Select it.`
+  },
+  {
+    id: 'i-hunt', head: 'Next hunt', guide: true, at: ['begin'],
+    when: () => !game.lesson && game.view === 'board' && game.boardMon && !huntOn() && [0, 1, 3, E.EXAM_STEP].includes(E.islandStep(game.save)) && E.isUnlocked(game.save, game.save.loadout.target),
+    text: () => `Select Hunt to face the ${E.MONSTERS[game.save.loadout.target]?.short}.`
   },
   // done in town: back to the Hunt Board for the next hunt (once per town step)
   ...[3, 7].map((n): Tip => ({

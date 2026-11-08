@@ -28,6 +28,9 @@ export const EXAM_STEP = 7;
 /** the step each Foothills monster (and the exam) opens at */
 export const ISLAND_OPENS: Record<string, number> = { scuttlehog: 0, snapclaw: 1, tuskling: 3, burrowmole: 4, gustmarmot: 4, gorehorn: EXAM_STEP };
 export const onExam = (s: Save) => islandStep(s) === EXAM_STEP;
+/** the island's guided steps (Mekkman, 8 Nov 2026): one way on, no Hunt Board, no abandoning. Practice is the break,
+ *  and from "get ready" on the town is open; the promotion hunt is on rails again */
+export const onRails = (s: Save) => !islandDone(s) && (islandStep(s) < 4 || islandStep(s) === EXAM_STEP);
 
 export const islandStep = (s: Save) => s.island ?? ISLAND_DONE;
 export const islandDone = (s: Save) => islandStep(s) >= ISLAND_DONE;

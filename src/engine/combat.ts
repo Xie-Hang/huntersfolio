@@ -122,6 +122,8 @@ export function startHunt(s: Save, seed: number, script?: Face[][], lesson?: num
     ...(MD.island ? { ndice: MD.island.dice, faces: [...MD.island.faces] } : {}),
     // a Foothills hunt shows what the island has taught by now (engine/island.ts); afterwards, everything
     ...(MD.island && !islandDone(s) ? { show: islandShow(s) } : {}),
+    // the promotion hunt shows what the island taught, and no more: Charge and Capture come on the Ridge (8 Nov 2026)
+    ...(!islandDone(s) && MD.id === 'gorehorn' ? { show: islandShow(s) } : {}),
     ...(!islandDone(s) && MD.id === 'gorehorn' ? { exam: true } : {})
   };
   // the first layer hides the parts row: aim where the first weapon does best
