@@ -2,6 +2,7 @@
 // A term is met when it's drawn as a bold word (Rich) or a monster tag. Kept in its own storage key, per device,
 // so it never touches the save format.
 import { NOTES, noteFor } from '../engine';
+import { taught, type Topic } from './taught';
 
 const KEY = 'huntersfolio-notes';
 const load = (): string[] => { try { return JSON.parse(localStorage.getItem(KEY) ?? '[]'); } catch { return []; } };
@@ -36,6 +37,8 @@ export function met(term: string, quiet = false) {
     try { localStorage.setItem(KEY, JSON.stringify(help.seen)); } catch { /* storage full or blocked: still works this session */ }
   });
 }
-export const known = (id: string) => !!NOTES[id]?.always || help.seen.includes(id);
+/** the basics are listed from the start, once Mell has taught them (taught.ts) */
+const ALWAYS: Record<string, Topic> = { dice: 'faces', block: 'block', reroll: 'reroll', undo: 'undo', parts: 'parts' };
+export const known = (id: string) => (!!NOTES[id]?.always && taught(ALWAYS[id] ?? 'dice')) || help.seen.includes(id);
 /** open Hunter's Notes on the entry for this bold term */
 export const openNote = (term: string) => { const id = noteFor(term); if (id) help.show('notes', id); };

@@ -6,6 +6,7 @@
   import Rich from '../parts/Rich.svelte';
   import { help, known } from '../notes.svelte';
   import { game } from '../game.svelte';
+  import { taught, type Topic } from '../taught';
 
   let q = $state('');
   const all = Object.values(E.NOTES);
@@ -14,14 +15,20 @@
   const cur = $derived(help.entry && known(help.entry) ? E.NOTES[help.entry] : (shown[0] ?? null));
   const TABS = [['hunt', 'How to hunt'], ['notes', 'Hunter’s Notes'], ['controls', 'Controls']] as const;
 
-  const STEPS = [
-    ['Your dice', 'You roll 4 each turn, each a Fang, Claw or blank.'],
-    ['Moves', 'Each needs the faces on its right. Select one to attack.'],
-    ['Its next move', 'What it does next, and how hard. Read it every turn.'],
-    ['Parts', 'Aim at one. Breaking it drops its material.'],
-    ['**Block**, **Charge**, **Swap**', 'Where the rest of your dice go.'],
-    ['End turn', 'It makes its move, then you roll again.']
-  ];
+  // each line shows once it's been taught (taught.ts): nothing here before Mell has shown it
+  const dash = $derived((['block', 'charge', 'swap'] as Topic[]).filter(taught).map(k => `**${k === 'block' ? 'Block' : k === 'charge' ? 'Charge' : 'Swap'}**`));
+  const STEPS = $derived(([
+    ['dice', 'Your dice', taught('faces') ? 'You roll them each turn. Each shows a Fang, a Claw or a blank.' : 'You roll them each turn. Each shows a Fang or a blank.'],
+    ['moves', 'Moves', 'Each needs the faces on its right. Select one to attack.'],
+    ['intent', 'Its next move', 'What it does next, and how hard. Read it every turn.'],
+    ['parts', 'Parts', 'Aim at one. Breaking it drops its material.'],
+    ['block', dash.join(', '), 'Where the rest of your dice go.'],
+    ['end', 'End turn', 'It makes its move, then you roll again.']
+  ] as [Topic, string, string][]).filter(([k]) => taught(k)).map(([k, h, t]) => [k, h, t]));
+  const box = (k: Topic) => taught(k);
+  const num = (k: Topic) => STEPS.findIndex(([x]) => x === k) + 1;
+  /** the lessons you've been through (a lesson you haven't reached yet would name what it teaches) */
+  const lessonsDone = $derived(E.LESSONS.map((l, i) => [l, i] as const).filter(([, i]) => E.islandDone(game.save) || E.islandStep(game.save) > [0, 1, 3, 6][i]));
 </script>
 
 <div class="help-tabs" role="tablist" aria-label="Help">
@@ -34,31 +41,31 @@
       <div class="s-hp">HP</div>
       <div class="s-left">
         <div class="s-box s-mon">Monster</div>
-        <div class="s-box s-tele"><i>3</i>Its next move</div>
-        <div class="s-box s-parts"><i>4</i>Parts</div>
+        {#if box('intent')}<div class="s-box s-tele"><i>{num('intent')}</i>Its next move</div>{/if}
+        {#if box('parts')}<div class="s-box s-parts"><i>{num('parts')}</i>Parts</div>{/if}
       </div>
       <div class="s-right">
-        <div class="s-box s-dice"><i>1</i><span class="pips"><b></b><b></b><b></b><b></b></span></div>
-        <div class="s-box s-moves"><i>2</i>Moves</div>
-        <div class="s-box s-dash"><i>5</i>Block · Charge · Swap</div>
-        <div class="s-box s-end"><i>6</i>End turn</div>
+        <div class="s-box s-dice"><i>{num('dice')}</i><span class="pips"><b></b><b></b><b></b><b></b></span></div>
+        <div class="s-box s-moves"><i>{num('moves')}</i>Moves</div>
+        {#if box('block')}<div class="s-box s-dash"><i>{num('block')}</i>{dash.map(d => d.replace(/\*/g, '')).join(' · ')}</div>{/if}
+        <div class="s-box s-end"><i>{num('end')}</i>End turn</div>
       </div>
     </div>
     <ol class="steps">
-      {#each STEPS as [h, t], i}<li><span class="n">{i + 1}</span><span><strong><Rich text={h} /></strong>{t}</span></li>{/each}
+      {#each STEPS as [, h, t], i}<li><span class="n">{i + 1}</span><span><strong><Rich text={h} /></strong>{t}</span></li>{/each}
     </ol>
-    <p class="loop">Hunt, break parts, bring the materials to the Forge, make better gear, hunt again. Progress saves itself.</p>
+    <p class="loop">{taught('parts') ? 'Hunt, break parts, bring the materials to the Forge, make better gear, hunt again.' : 'Hunt, bring the materials to the Forge, make better gear, hunt again.'} Progress saves itself.</p>
     <!-- the island's lessons, to replay (8 Nov 2026): played on a copy, so nothing in them is kept -->
-    <section class="lessons" aria-labelledby="lessons-h">
+    {#if lessonsDone.length}<section class="lessons" aria-labelledby="lessons-h">
       <h3 id="lessons-h">Lessons</h3>
       <p class="md">Replay a lesson from the Foothills. Nothing you do in one is kept.</p>
       <ol>
-        {#each E.LESSONS as l, i}
+        {#each lessonsDone as [l, i]}
           <li><span><strong>{l.name}</strong><span class="md">{l.teaches}</span></span><button class="btn" disabled={game.inHunt || !!game.lesson} onclick={() => { help.open = false; game.startLesson(i); }}>Play</button></li>
         {/each}
       </ol>
       {#if game.inHunt}<p class="md">Finish this hunt first.</p>{/if}
-    </section>
+    </section>{/if}
   </div>
 {:else if help.tab === 'notes'}
   <div class="notes" role="tabpanel">
@@ -86,7 +93,7 @@
 {:else}
   <div role="tabpanel"><ul class="helplist">
     <li><strong>Mouse or touch:</strong> select dice, then a move.</li>
-    <li><strong>Controller:</strong> d-pad moves, <kbd>A</kbd> selects, <kbd>B</kbd> back. In a hunt: <kbd>Y</kbd> end turn · <kbd>X</kbd> reroll · <kbd>LB</kbd> <kbd>RB</kbd> aim · <kbd>LT</kbd> undo · <kbd>RT</kbd> swap. Elsewhere <kbd>LB</kbd> <kbd>RB</kbd> switch screens. <kbd>Menu</kbd> settings, <kbd>View</kbd> this help.</li>
+    <li><strong>Controller:</strong> d-pad moves, <kbd>A</kbd> selects, <kbd>B</kbd> back. In a hunt: <kbd>Y</kbd> end turn{#if taught('reroll')} · <kbd>X</kbd> reroll{/if}{#if taught('parts')} · <kbd>LB</kbd> <kbd>RB</kbd> aim{/if}{#if taught('undo')} · <kbd>LT</kbd> undo{/if}{#if taught('swap')} · <kbd>RT</kbd> swap{/if}. Elsewhere <kbd>LB</kbd> <kbd>RB</kbd> switch screens. <kbd>Menu</kbd> settings, <kbd>View</kbd> this help.</li>
     <li>Progress saves itself. Reset it in Settings.</li>
   </ul></div>
 {/if}

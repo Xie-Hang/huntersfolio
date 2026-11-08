@@ -54,7 +54,7 @@
     <div class="ph"><h2>The Shop</h2><span class="label">{E.trackedLine(s)}</span></div>
     <div class="tabs" role="tablist">
       <button role="tab" aria-selected={tab === 'buy'} onclick={() => setTab('buy')}>Buy</button>
-      {#if !isl || E.islandCraft(s)}<button role="tab" aria-selected={tab === 'craft'} onclick={() => setTab('craft')}>Craft items</button>{/if}
+      {#if !isl}<button role="tab" aria-selected={tab === 'craft'} onclick={() => setTab('craft')}>Craft items</button>{/if}
       {#if !isl}<button role="tab" aria-selected={tab === 'sell'} data-coach="shop-sell" onclick={() => setTab('sell')}>Sell</button>{/if}
     </div>
     <div class="toast" aria-live="polite">{toast}</div>
