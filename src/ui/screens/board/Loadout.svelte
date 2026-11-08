@@ -4,7 +4,7 @@
   import Icon from '../../parts/Icon.svelte';
   // Four slots; tapping one swaps the slots for a picker list (sortable, filterable, with deltas).
   import Elem from '../../parts/Elem.svelte';
-  import { coach } from '../../coach.svelte';
+  import { coach, sigShown } from '../../coach.svelte';
   import * as E from '../../../engine';
   import { game } from '../../game.svelte';
   import { detail, full } from '../../detail.svelte';
@@ -126,7 +126,7 @@
             <span class="sl">{SLOT_LABEL[slot]}</span>
             <span>
               <span class="nm"><WeaponArt id={id} size={34} />{w.name}{#if w.lv}{' '}<span class="lv">+{w.lv}</span>{/if}{' '}<span class="avg">{weaponVs(game.save, id, mon)} avg</span></span>
-              <span class="sub2"><span>{#if w.moves.some(m => m.flow || m.daze || m.expose)}<span class="tag {sg.tag}" style="margin:0 4px 0 0">{sg.name}</span>{/if}{w.type} · <Elem e={markOf(w)} />{elemLabel(w)}</span><span>{@render weaponNotes(w)}</span></span>
+              <span class="sub2"><span>{#if w.moves.some(m => m.flow || m.daze || m.expose) && sigShown(w.type)}<span class="tag {sg.tag}" style="margin:0 4px 0 0">{sg.name}</span>{/if}{w.type} · <Elem e={markOf(w)} />{elemLabel(w)}</span><span>{@render weaponNotes(w)}</span></span>
             </span>
             <span class="chg">Change</span>
           </button>

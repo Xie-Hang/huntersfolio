@@ -580,7 +580,7 @@ class Coach {
     if (!E.islandDone(game.save) || (seen.includes('i-begin') && !seen.includes('i-ridge'))) return ISLAND.find(t => !seen.includes(t.id) && t.when()) ?? null;
     const did = seen.includes('i-begin');
     // Ridge lessons: one a hunt, then a hunt with none (save.lessonAt is the hunt count when the last one showed)
-    const at = game.save.lessonAt, open = at == null || game.save.hunts >= at + 2;
+    const at = game.save.lessonAt, open = at == null || game.save.hunts >= at + 1; // (one a hunt: with only Charge and Capture left, a free hunt between just delayed Capture)
     return TIPS.find(t => !seen.includes(t.id) && !(did && ISLAND_TAUGHT.includes(t.id)) && (!t.lesson || open || t.id === this.shown) && t.when()) ?? null;
   });
   private shown = $state<string | null>(null);
@@ -624,3 +624,11 @@ class Coach {
 }
 
 export const coach = new Coach();
+
+/** A weapon type's trick tag (Flow, Daze, Expose) shows once Mell has taught it: on the island, from her line about it
+ *  (Mekkman, 8 Nov 2026); after the island, always */
+export function sigShown(type: string): boolean {
+  if (E.islandDone(game.save)) return true;
+  const id = type === 'Cut' ? 'i-flow' : type === 'Blunt' ? 'i-dazemaul' : '';
+  return !!id && (game.save.tips.includes(id) || coach.current?.id === id);
+}
