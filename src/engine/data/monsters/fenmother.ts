@@ -103,7 +103,7 @@ export const fenmother: MonsterDef = {
 
   badges(h) {
     const s = h.mon.mirage ?? 0;
-    return s > 0 ? [{ key: 'steam', n: s, label: 'Steam', short: `Only your 1st hit lands · ${s} turn${s > 1 ? 's' : ''}`, cls: 'ice', desc: 'Steam hides it.\nOnly your first hit each turn lands.\nYour later hits that turn miss.' }] : [];
+    return s > 0 ? [{ key: 'steam', n: s, label: 'Steam', short: `Only your 1st hit lands · ${s} turn${s > 1 ? 's' : ''}`, cls: 'ice', desc: 'Only your first hit each turn lands.' }] : [];
   },
 
   tip(h, type) {
