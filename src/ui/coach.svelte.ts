@@ -62,6 +62,8 @@ const canMake = () => { const n = forgeNeed(); return !n || !short(...n); };
 const huntOn = () => game.view === 'hunt' && !!game.hunt && !game.hunt.over;
 /** the town tour after the promotion hunt (the island is done, and its last prompt hasn't shown yet) */
 const tour = () => E.islandDone(game.save) && game.save.tips.includes('i-begin') && !game.save.tips.includes('i-ridge') && !game.lesson;
+/** practice hasn't started: neither practice monster hunted yet (the practice prompts belong before the first one) */
+const beforePractice = () => E.PRACTICE.every(id => !(game.save.record[id]?.hunts));
 const onIsland = (mid: string) => { const h = hunt(); return h && h.mid === mid ? h : null; };
 const toForge = () => (game.view === 'hunt' ? ['to-forge'] : ['nav-forge']);
 const toShop = () => (game.view === 'hunt' ? ['to-shop'] : ['nav-shop']);
@@ -211,18 +213,19 @@ const ISLAND: Tip[] = [
   {
     // the weapon types' own tricks (Mekkman, 8 Nov 2026): Flow is the first one met, on the blade's Cleave
     id: 'i-flow', head: 'Flow', guide: true, info: true, gotit: true, at: ['slot-w0'],
-    when: () => E.islandStep(game.save) === 4 && game.view === 'board' && game.boardMon && !huntOn() && !game.lesson,
+    when: () => E.islandStep(game.save) === 4 && beforePractice() && game.view === 'board' && game.boardMon && !huntOn() && !game.lesson,
     text: () => 'Every weapon type has its own special trick. Your blade’s is **Flow**. Moves tagged **Flow** give you a free **Reroll**, once a turn.'
   },
   {
     // the maul's trick, straight after the blade's (Mekkman, 8 Nov 2026)
     id: 'i-dazemaul', head: 'Daze', guide: true, info: true, gotit: true, at: ['slot-w1'],
-    when: () => E.islandStep(game.save) === 4 && game.view === 'board' && game.boardMon && !huntOn() && !game.lesson && game.save.tips.includes('i-flow'),
+    when: () => E.islandStep(game.save) === 4 && beforePractice() && game.view === 'board' && game.boardMon && !huntOn() && !game.lesson && game.save.tips.includes('i-flow'),
     text: () => 'Your maul’s trick is **Daze**. **Skullcrack** fills its **Daze** meter, and when the meter is full, it loses its turn.'
   },
   {
-    id: 'i-practice', head: 'Practice', guide: true, info: true, gotit: true, at: ['begin'],
-    when: () => E.islandStep(game.save) === 4 && game.view === 'board' && game.boardMon && !huntOn(),
+    // no Got it: selecting Hunt is the way on (Mekkman, 8 Nov 2026)
+    id: 'i-practice', head: 'Practice', guide: true, info: true, at: ['begin'],
+    when: () => E.islandStep(game.save) === 4 && beforePractice() && game.view === 'board' && game.boardMon && !huntOn(),
     text: () => "Time to practise on your own! Beat the Cinderpup and the Shrikelet, in any order. I’ll be watching."
   },
   // ---- get ready: the vest, then a salve ----
@@ -636,7 +639,7 @@ techHold.untaught = k => {
 /** A weapon type's trick tag (Flow, Daze, Expose) shows once Mell has taught it: on the island, from her line about it
  *  (Mekkman, 8 Nov 2026); after the island, always */
 export function sigShown(type: string): boolean {
-  if (E.islandDone(game.save)) return true;
+  if (E.islandDone(game.save) || E.islandStep(game.save) >= 5 || (E.islandStep(game.save) === 4 && !beforePractice())) return true;
   const id = type === 'Cut' ? 'i-flow' : type === 'Blunt' ? 'i-dazemaul' : '';
   return !!id && (game.save.tips.includes(id) || coach.current?.id === id);
 }
