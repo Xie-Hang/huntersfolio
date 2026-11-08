@@ -32,14 +32,14 @@
     // (takes, burns you, drains, through Block, X only, loses N turns); the tip says what's happening and what ends it,
     // no play advice and no negatives. **Game terms** render bold.
     if (m.enraged && shows(h, 'enraged')) out.push({ key: 'enr', label: 'Enraged', short: 'hits harder', cls: 'hot', desc: 'Its attacks hit harder, and some of its moves change.' });
-    if (mud) out.push({ key: 'mud', n: m.wallow, label: 'Mud-caked', short: `hide takes ½ · ${tn(m.wallow)}`, cls: 'mud', desc: 'Your hits on its hide do half until the mud dries.\nExcept **Pierce** hits do full.' });
+    if (mud) out.push({ key: 'mud', n: m.wallow, label: 'Muddy hide', short: `hide takes ½ · ${tn(m.wallow)}`, cls: 'mud', desc: 'Your hits on its hide do half until the mud dries.\nExcept **Pierce** hits do full.' });
     if (h.intent === 'trapped') out.push({ key: 'trap', n: m.trapped ?? 1, label: 'Trapped', short: `loses ${tn(m.trapped ?? 1)}`, cls: 'gold', desc: 'It loses its turns while it’s held.\nA **Snare** you set now always closes.' });
     if (m.air) out.push({ key: 'air', label: 'Airborne', short: 'Only **Pierce** reaches it', cls: 'gale', desc: 'Only **Pierce** hits reach it until it lands.' });
     if (m.under) { const half = M.hitMod?.(h, h.target, E.currentWeapon(h))?.mult === 0.5;
       out.push({ key: 'under', label: 'Underground', short: half ? 'Only **Blunt** reaches it, takes ½' : 'Only **Blunt** reaches it', cls: 'mud', desc: `Only **Blunt** hits reach it until it comes up${half ? ', and they do half' : ''}.` }); }
     // every plated monster gets the badge but the Ashtail, whose burning scales have their own (Nov 2026 bug hunt: the Cragwing's slate had none)
     if (m.plating > 0 && !M.plateHot) { const pw = M.plateWord ?? 'ice'; out.push({ key: 'ice', label: `${pw[0].toUpperCase() + pw.slice(1)} ×${m.plating}`, short: 'takes hits before HP', cls: 'ice', desc: `Each hit breaks a layer of ${pw} instead of taking its HP.\nA **Cut** hit breaks two.` }); }
-    if (m.molten > 0) out.push({ key: 'molt', n: m.molten, label: 'Molten', short: `**Cut**/**Blunt** burn you ${m.enraged ? 8 : 5} · ${tn(m.molten)}`, cls: 'hot', desc: 'Your **Cut** and **Blunt** hits on it burn you until it cools.' });
+    if (m.molten > 0) out.push({ key: 'molt', n: m.molten, label: 'Molten', short: `**Cut**/**Blunt** burn you ${M.burn?.(h, { type: 'Cut' } as E.WeaponInst) ?? (m.enraged ? 8 : 5)} · ${tn(m.molten)}`, cls: 'hot', desc: 'Your **Cut** and **Blunt** hits on it burn you until it cools.' });
     if ((m.shell ?? 0) > 0) out.push({ key: 'shell', label: 'In its shell', short: 'takes ½ until it acts', cls: 'stone', desc: 'Your hits do half until its next move.' });
     if ((m.slime ?? 0) > 0 && M.inflicts !== 'Drain') out.push({ key: 'slime', n: m.slime, label: 'Slime', short: `burns you · ${tn(m.slime!)}`, cls: 'hot', desc: 'It burns you a little at the end of each turn.' });
     if ((m.mirage ?? 0) > 0 && M.id !== 'fenmother') out.push({ key: 'mir', n: m.mirage, label: 'Images', short: `Only your 1st hit lands · ${tn(m.mirage!)}`, cls: 'ice', desc: `Only your first hit each turn lands.${(m.hits ?? 0) > 0 ? '\nYour hit this turn has landed.' : ''}` });

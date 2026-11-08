@@ -31,13 +31,13 @@ export const rimeshrike: MonsterDef = {
   rarePart: 'crest',
   rare: 'haileye',
   habits: 'A Galeshrike iced over from crest to tail. **Airborne**, only **Pierce** reaches it. When it dives and lands, ice locks over its feathers for two of its actions, and only **Cut** and **Blunt** reach it then.',
-  enragedHabit: 'On the ground under its ice, it sheds a **Frost Flare** and the ice grows back, so it stays **Frost-shrouded** longer.',
+  enragedHabit: 'On the ground under its ice, it sheds a **Frost Flare** and the ice grows back, so its **Iced feathers** last longer.',
   intro: 'Hail rattles across the ridge. A pale shrike settles on a frozen boulder, feathers clinking like glass.',
   enrageText: 'Sleet whirls off its wings. The Rimeshrike is enraged!',
   parts: [
     { id: 'wings', name: 'Wings', eff: { Cut: 0.5, Blunt: 0, Pierce: 1 }, hint: 'Breaking them shortens its time in the air', mat: 'rimepinion', hp: 310, brk: 'A wing cracks! It can’t stay aloft for long now.' },
     { id: 'talons', name: 'Talons', eff: { Cut: 1, Blunt: 0.5, Pierce: 0.5 }, hint: 'Breaking them weakens its rake and dive', mat: 'icetalon', hp: 360, brk: 'An icy talon shatters. Its strikes lose their bite.' },
-    { id: 'crest', name: 'Crest', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'On the ground only. Breaking it ends **Frost-shrouded** for good', mat: 'rimecrest', hp: 340, brk: 'The crest splits and the frost drains out of its feathers. No more shroud.' }
+    { id: 'crest', name: 'Crest', eff: { Cut: 0, Blunt: 1, Pierce: 0.5 }, hint: 'On the ground only. Breaking it ends **Iced feathers** for good', mat: 'rimecrest', hp: 340, brk: 'The crest splits and the ice slides off its feathers for good.' }
   ],
 
   intent(h, type): Intent {
@@ -47,11 +47,11 @@ export const rimeshrike: MonsterDef = {
       case 'takeoff': { const n = airTurns(h); return { name: 'Taking off', text: 'It shakes the ice off its wings and leaps into the wind.', dmg: 0, threat: 0, note: `After your turn it’s airborne for ${n} turn${n > 1 ? 's' : ''}. Only **Pierce** reaches it then` }; }
       case 'gust': return { name: 'Hail Buffet', text: 'It beats its wings and drives a sheet of hail at you.', dmg: enr ? 48 : 39, threat: 2, halfGuard: true, note: 'Your **Block** is ½' };
       case 'circle': return { name: 'Circling high', text: 'It climbs into a wide circle, frost trailing from its wings.', dmg: 0, threat: 0, note: 'Dives next turn' };
-      case 'dive': return { name: 'Frost Dive', text: 'It folds its wings and drops, wrapped in freezing air!', dmg: tb ? (enr ? 88 : 78) : (enr ? 112 : 100), threat: enr ? 4 : 3, note: m.parts.crest.broken ? 'Then it’s stuck for a turn' : 'Then it’s stuck, and **Frost-shrouded**' };
+      case 'dive': return { name: 'Frost Dive', text: 'It folds its wings and drops, wrapped in freezing air!', dmg: tb ? (enr ? 88 : 78) : (enr ? 112 : 100), threat: enr ? 4 : 3, note: m.parts.crest.broken ? 'Then it’s stuck for a turn' : 'Then it’s stuck, with **Iced feathers**' };
       // enraged (Nov 2026): its ice shroud turned up, shed as shards and grown back thicker
-      case 'flare': return { name: 'Frost Flare', text: 'It shrugs, and ice shards burst off its feathers.', dmg: 30, threat: 2, isNew: !m.newSeen, note: 'Its ice regrows and it stays down a turn longer. **Cut**/Only **Blunt** reaches it' };
+      case 'flare': return { name: 'Frost Flare', text: 'It shrugs, and ice shards burst off its feathers.', dmg: 30, threat: 2, isNew: !m.newSeen, note: 'Its ice grows back, and it stays down a turn longer' };
       case 'stuck': return { name: 'Beak stuck', text: 'Its beak is buried in the frozen ground. It thrashes to pull free.', dmg: 0, threat: 0, note: 'On the ground' };
-      case 'crashed': return { name: 'Brought down', text: 'It crashes to the ground in a spray of ice.', dmg: 0, threat: 0, note: 'On the ground, shroud gone. It loses its turn' };
+      case 'crashed': return { name: 'Brought down', text: 'It crashes to the ground in a spray of ice.', dmg: 0, threat: 0, note: 'On the ground, with no ice. It loses its turn' };
       case 'dazed': return { name: 'Dazed', text: 'It reels, eyes unfocused, swaying on its feet.', dmg: 0, threat: 0, note: 'It loses its turn' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
@@ -77,7 +77,7 @@ export const rimeshrike: MonsterDef = {
       case 'circle': return 'It wheels overhead, lining up a dive.';
       case 'dive':
         m.air = false; m.airLeft = 0;
-        if (!m.parts.crest.broken) { m.shroud = SHROUD_TURNS; return 'Ice locks over its feathers. It’s Frost-shrouded.'; }
+        if (!m.parts.crest.broken) { m.shroud = SHROUD_TURNS; return 'Ice locks over its feathers.'; }
         return null;
       case 'stuck': return 'It wrenches its beak free.' + thaw();
       case 'rake': { const t = thaw(); return t ? t.trim() : null; }
@@ -89,7 +89,7 @@ export const rimeshrike: MonsterDef = {
   },
 
   onBreak(h, partId) {
-    if (partId === 'crest' && (h.mon.shroud ?? 0) > 0) { h.mon.shroud = 0; return 'The shroud falls away in sheets.'; }
+    if (partId === 'crest' && (h.mon.shroud ?? 0) > 0) { h.mon.shroud = 0; return 'The ice falls away in sheets.'; }
     return null;
   },
 
@@ -101,7 +101,7 @@ export const rimeshrike: MonsterDef = {
   cantHitReason(h) {
     return h.mon.air
       ? 'It’s airborne. Only **Pierce** reaches it.'
-      : 'It’s **Frost-shrouded**. Only **Cut** and **Blunt** reach it.';
+      : 'It has **Iced feathers**. Only **Cut** and **Blunt** hits reach it.';
   },
 
   reachable(h, partId, w) {
@@ -115,16 +115,16 @@ export const rimeshrike: MonsterDef = {
 
   badges(h) {
     const s = h.mon.shroud ?? 0;
-    return s > 0 ? [{ key: 'shroud', n: s, label: 'Frost-shrouded', short: `Only **Cut** and **Blunt** reach it · ${s} action${s > 1 ? 's' : ''}`, cls: 'ice', desc: 'Only **Cut** and **Blunt** hits reach it until the ice melts.' }] : [];
+    return s > 0 ? [{ key: 'shroud', n: s, label: 'Iced feathers', short: `Only **Cut** and **Blunt** reach it · ${s} action${s > 1 ? 's' : ''}`, cls: 'ice', desc: 'Only **Cut** and **Blunt** hits reach it until the ice melts.' }] : [];
   },
 
   tip(h, type) {
     const m = h.mon;
-    if (m.air && carries(h, 'Pierce')) return `**Pinning Shot** brings it down without its shroud (${carryingName(h, 'Pierce')}).`;
-    if (m.air && h.item === 'net' && h.itemCharges > 0) return 'A **Weighted Net** brings it down without its shroud.';
-    if ((m.shroud ?? 0) > 0 && carries(h, 'Blunt')) return `${dazeTag} It’s on the ground, dazed and **Frost-shrouded**. Its crest is open.`;
+    if (m.air && carries(h, 'Pierce')) return `**Pinning Shot** brings it down with no ice (${carryingName(h, 'Pierce')}).`;
+    if (m.air && h.item === 'net' && h.itemCharges > 0) return 'A **Weighted Net** brings it down with no ice.';
+    if ((m.shroud ?? 0) > 0 && carries(h, 'Blunt')) return `${dazeTag} It’s on the ground, dazed, with **Iced feathers**. Its crest is open.`;
     if (m.air) return 'It’s airborne. Only **Pierce** reaches it.';
-    if (type === 'takeoff') return 'Its shroud is gone. Every weapon reaches it this turn.';
+    if (type === 'takeoff') return 'Its ice is gone. Every weapon reaches it this turn.';
     return null;
   },
 

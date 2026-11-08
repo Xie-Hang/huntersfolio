@@ -81,7 +81,7 @@
   {#if best.length && (E.islandDone(game.save) || E.islandStep(game.save) >= 4 || game.save.tips.includes('i-aim'))}{m !== 1 ? ' · ' : ''}<span class="best">Breaks more: {best.join(', ')}</span>{/if}
   {#if M.flier}{' · '}{#if w.type === 'Pierce'}<span class="good">Reaches it airborne</span>{:else}<span class="bad">Can’t reach it airborne</span>{/if}{/if}
   {#if M.plated}{@const n = M.plateBreak?.(w) ?? (w.type === 'Cut' ? 2 : 1)}{@const word = M.plateWord === 'scale' ? 'scales' : (M.plateWord ?? 'ice')}{' · '}{#if n >= M.plated}<span class="good">Clears its {word} in one hit</span>{:else}<span class="bad">Takes {Math.ceil(M.plated / n)} hits to clear its {word}</span>{/if}{#if M.plateHot && w.type === 'Cut'}{' · '}<span class="bad">Cut hits burn you</span>{/if}{/if}
-  {#if M.id === 'rimeshrike' && w.type === 'Pierce'}{' · '}<span class="bad">Misses its shroud on the ground</span>{/if}
+  {#if M.id === 'rimeshrike' && w.type === 'Pierce'}{' · '}<span class="bad">Can’t reach its iced feathers</span>{/if}
   {#if M.burrower}{' · '}{#if w.type === 'Blunt'}<span class="good">Reaches it underground</span>{:else}<span class="bad">Can’t reach it underground</span>{/if}{/if}
 {/snippet}
 

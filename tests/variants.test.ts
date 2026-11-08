@@ -67,7 +67,7 @@ describe('Rimeshrike', () => {
     h.intent = 'dive'; E.endTurn(h);
     expect(h.mon.air).toBe(false); expect(h.mon.shroud).toBe(3);
     expect(E.canHit(h, h.weps[0])).toBe(false); expect(E.canHit(h, h.weps[1])).toBe(true);
-    expect(E.cantHitReason(h, h.weps[0])).toMatch(/Frost-shrouded/);
+    expect(E.cantHitReason(h, h.weps[0])).toMatch(/Iced feathers/);
   });
   it('breaking the crest ends the shroud for good; a Net brings it down unshrouded', () => {
     const h = ready('rimeshrike', [['maul', 0], ['bow', 0]]); h.php = 999;

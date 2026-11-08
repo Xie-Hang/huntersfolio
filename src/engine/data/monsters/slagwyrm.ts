@@ -134,7 +134,7 @@ export const slagwyrm: MonsterDef = {
   tip(h, type) {
     const m = h.mon;
     if ((type === 'stoke' || type === 'eruption') && carries(h, 'Blunt')) return `One ${carryingName(h, 'Blunt')} hit of ${SHATTER_AT} or more breaks its armour and stops the **Eruption**.`;
-    if (m.melt) return carries(h, 'Pierce') ? `**Cut** and **Blunt** hits burn you now. Your ${carryingName(h, 'Pierce')} doesn’t.` : '**Cut** and **Blunt** hits burn you now.';
+    if (m.melt) return 'Your first **Cut** or **Blunt** hit each turn burns you.';
     if (armourUp(h) && carries(h, 'Blunt')) return `Its armour takes the first ${soakMax(h)} each turn. One ${carryingName(h, 'Blunt')} hit of ${SHATTER_AT} or more breaks it.`;
     if (armourUp(h)) return `Its armour takes the first ${soakMax(h)} each turn. A heavy **Blunt** hit breaks it.`;
     return null;
