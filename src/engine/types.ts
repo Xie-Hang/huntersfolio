@@ -123,7 +123,6 @@ export interface ItemDef {
   /** one line for the Shop card when desc runs long; desc then opens on hover (Nov 2026 text audit) */
   short?: string;
   /** the hunt button's line (about 30 characters) when desc is longer; desc goes in the tip (Nov 2026) */
-  line?: string;
   effect: ItemEffect;
   /** carried automatically, outside the item slot (Snares) */
   pouch?: boolean;

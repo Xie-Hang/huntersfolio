@@ -138,7 +138,7 @@
       <span><span class="mn"><Key k="F" /><Icon id={h.item} size={20} />{it.name}</span><!-- one short line (orange when there's something to do about it, gold when set); the full sentence in the tip -->
       {#if E.itemBlockReason(h)}{@const why = E.itemBlockReason(h)!}<span class="md {E.ITEM_SHORT[why] === 'Set ✓' ? 'iset' : E.ITEM_SHORT[why] === 'Throw it next turn' ? 'iwarn' : 'iinfo'}" use:detail={why}>{E.ITEM_SHORT[why] ?? why}</span>
       {:else if it.effect === 'trapRush' || it.effect === 'trapLand'}{#if E.trapCatches(it.effect, h.intent)}<span class="md good" use:detail={`Catches its **${E.intentInfo(h).name}**. No hit, and it loses ${E.TRAP_HOLD[it.effect]} turns.${E.canCapture(h) ? '\nIt’s weak enough, so that captures it.' : ''}`}>{E.canCapture(h) ? 'Catches it · captures it' : `Catches it · loses ${E.TRAP_HOLD[it.effect]} turns`}</span>{:else}<span class="md iwarn" use:detail={`Set now, the trap is wasted on its **${E.intentInfo(h).name}**.`}>Wasted on this move</span>{/if}
-      {:else}<span class="md" use:detail={it.line ? it.desc : ''}>{it.line ?? it.desc}</span>{/if}</span>
+      {:else}<span class="md" use:detail={it.desc}><Rich text={it.short ?? it.desc} /></span>{/if}</span>
       <span class="need ileft"><span>Free</span><small>{h.itemCharges} left</small></span>
     </button>
   {:else}

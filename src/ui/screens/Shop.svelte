@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Rich from '../parts/Rich.svelte';
   import Icon from '../parts/Icon.svelte';
   // Buy items, craft items from materials, sell materials (with a "keep what recipes need" guard).
   import * as E from '../../engine';
@@ -72,7 +73,7 @@
           <article class="scard">
             <!-- the price once, on the button; quiet buttons (gold means "do this now", and eleven of them meant nothing) -->
             <div class="sc-top"><Icon id={it.id} size={34} /><span class="sc-nm"><span class="nm">{it.name}</span><span class="have">Have {s.items[it.id] ?? 0} · max {it.max}</span></span></div>
-            {#if it.short && !full()}<p class="md"><span use:detail={it.desc}>{it.short}</span></p>{:else}<p class="md">{it.desc}</p>{/if}
+            {#if it.short && !full()}<p class="md"><span use:detail={it.desc}><Rich text={it.short} /></span></p>{:else}<p class="md"><Rich text={it.desc.replace(/\n/g, ' ')} /></p>{/if}
             <div class="sc-ctl">{@render stepper(it.id, max)}</div>
             <button class="btn sc-go" data-sound data-coach="buy-{it.id}" disabled={s.coin < it.price! * q} onclick={() => run(sv => E.buyItem(sv, it.id, q), it.id)}>Buy {q} · {it.price! * q} coin</button>
           </article>
@@ -81,7 +82,7 @@
         {#each craftRows as it (it.id)}
           <article class="scard">
             <div class="sc-top"><Icon id={it.id} size={34} /><span class="sc-nm"><span class="nm">{it.name}</span><span class="have">Have {s.items[it.id] ?? 0} · makes {it.yields ?? 1}</span></span></div>
-            <p class="md">{it.desc}</p>
+            <p class="md"><span use:detail={it.desc}><Rich text={it.short ?? it.desc} /></span></p>
             <Costs cost={it.craft!} />
             <button class="btn sc-go" data-sound disabled={!E.canPay(s, it.craft!)} onclick={() => run(sv => E.craftItem(sv, it.id))}>Craft {it.yields ?? 1}</button>
           </article>

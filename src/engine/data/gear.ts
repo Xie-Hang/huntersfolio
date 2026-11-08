@@ -40,20 +40,20 @@ armors.push({ id: 'sovmantle', tier: 4, name: 'Sovereign Mantle', hp: 260, guard
 export const ARMORS: Record<string, ArmorDef> = Object.fromEntries(armors.filter(inEdition).map(a => [a.id, a]));
 
 const items: ItemDef[] = [
-  { id: 'salve', name: 'Bitterroot Salve', max: 3, price: 30, desc: 'Heal 30.', effect: 'heal30' },
+  { id: 'salve', name: 'Bitterroot Salve', max: 3, price: 30, desc: 'Heals you 30.', short: 'Heal 30', effect: 'heal30' },
   // Playtest (Nov 2026): capture was free and safe. A snare costs coin, and it can be torn free.
-  { id: 'snare', name: 'Snare', max: 2, price: 40, desc: 'Needed to capture. Carried on every hunt outside your item slot; each attempt uses one.', short: 'Needed to capture. Carried outside your item slot.', effect: 'snare', pouch: true },
-  { id: 'smoke', name: 'Smoke Pouch', max: 2, price: 50, desc: "The monster's next attack misses.", line: 'Its next attack misses', effect: 'smoke' },
-  { id: 'whet', name: 'Whetstone', max: 2, price: 40, desc: 'Your next hit deals +50%.', effect: 'whet50' },
-  { id: 'net', name: 'Weighted Net', max: 2, price: 50, desc: 'Brings an airborne monster down. It loses its action.', line: 'Grounds it; it loses a turn', effect: 'net' },
-  { id: 'firepot', name: 'Firepot', max: 2, price: 50, desc: 'Melts all of a monster’s ice plating at once.', line: 'Melts all its ice', effect: 'thaw' },
-  { id: 'blast', name: 'Blast Powder', max: 2, price: 50, desc: 'Forces a burrowed monster to the surface. It loses its action.', line: 'Forces it up; it loses a turn', effect: 'blast' },
-  { id: 'purge', tier: 2.2, name: 'Purging Tonic', max: 2, price: 50, desc: 'Cures an infection on you.', effect: 'cureInfect' },
-  { id: 'groundsalt', tier: 2.2, name: 'Grounding Salt', max: 2, price: 50, desc: 'Clears the **Spark** on you and your **Static** dice.', line: 'Clears the Spark on you', effect: 'cureSpark' },
+  { id: 'snare', name: 'Snare', max: 2, price: 40, desc: 'Needed to capture. You carry **Snares** on every hunt, outside your item slot, and each try uses one.', short: 'Needed to capture', effect: 'snare', pouch: true },
+  { id: 'smoke', name: 'Smoke Pouch', max: 2, price: 50, desc: 'Its next attack misses.', short: 'Its next attack misses', effect: 'smoke' },
+  { id: 'whet', name: 'Whetstone', max: 2, price: 40, desc: 'Your next hit +50%.', short: 'Next hit +50%', effect: 'whet50' },
+  { id: 'net', name: 'Weighted Net', max: 2, price: 50, desc: 'Brings an **Airborne** monster down, and it loses its turn.', short: 'Brings it down, loses a turn', effect: 'net' },
+  { id: 'firepot', name: 'Firepot', max: 2, price: 50, desc: 'Melts all its ice, or cracks all its slate, at once.', short: 'Breaks all its ice or slate', effect: 'thaw' },
+  { id: 'blast', name: 'Blast Powder', max: 2, price: 50, desc: 'Forces it up from underground, and it loses its turn.', short: 'Forces it up, loses a turn', effect: 'blast' },
+  { id: 'purge', tier: 2.2, name: 'Purging Tonic', max: 2, price: 50, desc: 'Cures **Infect** on you.', short: 'Cures **Infect** on you', effect: 'cureInfect' },
+  { id: 'groundsalt', tier: 2.2, name: 'Grounding Salt', max: 2, price: 50, desc: 'Clears the **Spark** on you and your **Static** dice.', short: 'Clears **Spark** and **Static**', effect: 'cureSpark' },
   // Traps (prototype, Nov 2026; working names): set this turn, they catch only the move they're built for
-  { id: 'tripline', name: 'Tripline', max: 2, price: 60, desc: 'Catches a charge, lunge or pounce: no damage, and it\u2019s held. Held while weak enough to capture, it\u2019s captured. Lost if its move is anything else.', short: 'Catches a charge, lunge or pounce.', effect: 'trapRush' },
-  { id: 'stakebed', name: 'Stakebed', max: 2, price: 60, desc: 'Catches a dive, or a burst up from underground: no damage, and it\u2019s held. Held while weak enough to capture, it\u2019s captured. Lost if its move is anything else.', short: 'Catches a dive, or a burst up from underground.', effect: 'trapLand' },
-  { id: 'tuskwhet', name: 'Tusk Whetstone', max: 2, craft: { tusk: 1, coin: 20 }, yields: 2, desc: 'Your next hit deals +100%.', effect: 'whet100' }
+  { id: 'tripline', name: 'Tripline', max: 2, price: 60, desc: 'Catches a charge, lunge or pounce. No hit, and it loses 2 turns.\nIf it’s weak enough, that captures it.\nWasted on any other move.', short: 'Catches charge, lunge, pounce', effect: 'trapRush' },
+  { id: 'stakebed', name: 'Stakebed', max: 2, price: 60, desc: 'Catches a dive, or a burst up from underground. No hit, and it loses 2 turns.\nIf it’s weak enough, that captures it.\nWasted on any other move.', short: 'Catches dives and bursts', effect: 'trapLand' },
+  { id: 'tuskwhet', name: 'Tusk Whetstone', max: 2, craft: { tusk: 1, coin: 20 }, yields: 2, desc: 'Your next hit +100%.', short: 'Next hit +100%', effect: 'whet100' }
 ];
 export const ITEMS: Record<string, ItemDef> = Object.fromEntries(items.filter(inEdition).map(i => [i.id, i]));
 
@@ -67,23 +67,23 @@ const charms: CharmDef[] = [
   { id: 'rimecharm', name: 'Rime Charm', src: 'Rimetail', short: '**Slash** and **Gust Cut** +4', perk: '**Slash** and **Gust Cut** hit for 4 more.', effect: 'lightCut', craft: { coin: 150, barbtail: 1, rimescale: 2 } }
 ];
 charms.push({ id: 'cragcharm', tier: 1.5, name: 'Crag Charm', src: 'Cragwing', short: 'Next hit +50% after grounding', perk: 'Bringing it down or driving it up makes your next hit +50%.', effect: 'landWhet', craft: { coin: 175, craghorn: 1, cragslate: 2 } });
-charms.push({ id: 'fencharm', tier: 2.4, name: 'Fen Charm', src: 'Fenmother', short: 'First hit each turn +15%', perk: 'Your first hit each turn is +15%.', effect: 'firstHit', craft: { coin: 200, fengill: 1, fenhide: 2 } });
+charms.push({ id: 'fencharm', tier: 2.4, name: 'Fen Charm', src: 'Fenmother', short: 'First hit each turn +15%', perk: 'Your first hit each turn +15%.', effect: 'firstHit', craft: { coin: 200, fengill: 1, fenhide: 2 } });
 charms.push({ id: 'bogcharm', tier: 2, name: 'Bog Charm', src: 'Bogjaw', short: 'Heal 20 when you cut free', perk: 'When you cut free of a swallow, you heal 20.', effect: 'escapeHeal', craft: { coin: 150, bogmolar: 1, bogskin: 2 } });
-charms.push({ id: 'duskcharm', tier: 2, name: 'Dusk Charm', src: 'Duskheron', short: 'Next hit +50% after a **Daze**', perk: 'When you **Daze** it, your next hit is +50%.', effect: 'dazeWhet', craft: { coin: 150, duskbeak: 1, duskplume: 2 } });
+charms.push({ id: 'duskcharm', tier: 2, name: 'Dusk Charm', src: 'Duskheron', short: 'Next hit +50% after a **Daze**', perk: 'When you **Daze** it, your next hit +50%.', effect: 'dazeWhet', craft: { coin: 150, duskbeak: 1, duskplume: 2 } });
 charms.push({ id: 'whelkcharm', tier: 2, name: 'Whelk Charm', src: 'Emberwhelk', short: '**Expose** lasts 3 turns', perk: '**Expose** lasts 3 turns instead of 2.', effect: 'longExpose', craft: { coin: 150, whelkgill: 1, whelkscale: 2 } });
 charms.push({ id: 'glasscharm', tier: 2, name: 'Glass Charm', src: 'Mistglass', short: '**Charged** hits break ×2', perk: '**Charged** hits count double toward breaking parts.', effect: 'chargeBreak', craft: { coin: 150, glasstail: 1, glassdust: 2 } });
 // bounty charms: unlocked by completing 3 / 6 / 10 different bounties, then crafted for coin (full game)
 charms.push(
   { id: 'scoutcharm', tier: 2, name: 'Tracker’s Charm', src: 'Bounty board', short: '+1 **Reroll** each hunt', perk: 'Start every hunt with 1 extra **Reroll**.', effect: 'scout', craft: { coin: 100 }, bounties: 3 },
   { id: 'salvagecharm', tier: 2, name: 'Salvager’s Charm', src: 'Bounty board', short: 'Breaks heal 15, +1 **Reroll**', perk: 'Breaking a part heals you 15 and gives +1 **Reroll**.', effect: 'salvage', craft: { coin: 150 }, bounties: 6 },
-  { id: 'finishercharm', tier: 2, name: 'Finisher’s Charm', src: 'Bounty board', short: '+25% once **Capturable**', perk: 'Your hits are +25% once it’s **Capturable**.', effect: 'finisher', craft: { coin: 200 }, bounties: 10 }
+  { id: 'finishercharm', tier: 2, name: 'Finisher’s Charm', src: 'Bounty board', short: '+25% once **Capturable**', perk: 'Your hits +25% once it’s **Capturable**.', effect: 'finisher', craft: { coin: 200 }, bounties: 10 }
 );
-charms.push({ id: 'corecharm', tier: 3, name: 'Core Charm', src: 'Monolith Warden', short: 'Next hit +30% after a **Swap**', perk: 'After a **Swap**, your next hit is +30%.', effect: 'swapWhet', craft: { coin: 200, coreshard: 1, wardenstone: 2 } });
-charms.push({ id: 'crowncharm', tier: 3, name: 'Crown Charm', src: 'Stormcrown Roc', short: '**Pierce** on **Airborne** +20%', perk: '**Pierce** hits on it while **Airborne** are +20%.', effect: 'airPierce', craft: { coin: 200, stormcrown: 1, rocplume: 2 } });
+charms.push({ id: 'corecharm', tier: 3, name: 'Core Charm', src: 'Monolith Warden', short: 'Next hit +30% after a **Swap**', perk: 'After a **Swap**, your next hit +30%.', effect: 'swapWhet', craft: { coin: 200, coreshard: 1, wardenstone: 2 } });
+charms.push({ id: 'crowncharm', tier: 3, name: 'Crown Charm', src: 'Stormcrown Roc', short: '**Pierce** on **Airborne** +20%', perk: '**Pierce** hits on it while **Airborne** +20%.', effect: 'airPierce', craft: { coin: 200, stormcrown: 1, rocplume: 2 } });
 charms.push({ id: 'slagcharm', tier: 3, name: 'Slag Charm', src: 'Slagwyrm', short: '40+ **Blunt** hit heals 10', perk: 'A **Blunt** hit of 40 or more heals you 10.', effect: 'bigHeal', craft: { coin: 200, slagspine: 1, slagscale: 2 } });
 charms.push({ id: 'stumpcharm', tier: 3, name: 'Stump Charm', src: 'Gorhydra', short: 'Sealing a stump heals 20', perk: 'Sealing a stump heals you 20.', effect: 'sealHeal', craft: { coin: 200, hydrafang: 1, hydrascale: 2 } });
 charms.push({ id: 'squallcharm', tier: 2.5, name: 'Squall Charm', src: 'Squallhorn', short: '**Charge** fills 10 **Daze**', perk: '**Charge** also fills 10 **Daze**.', effect: 'chargeDaze', craft: { coin: 175, galetusk: 1, squallhide: 2 } });
-charms.push({ id: 'shroudcharm', tier: 2.5, name: 'Shroud Charm', src: 'Rimeshrike', short: 'Fliers on the ground +15%', perk: 'Hits on a flier while it’s on the ground are +15%.', effect: 'groundHit', craft: { coin: 175, rimecrest: 1, rimeplume: 2 } });
+charms.push({ id: 'shroudcharm', tier: 2.5, name: 'Shroud Charm', src: 'Rimeshrike', short: 'Fliers on the ground +15%', perk: 'Hits on a flier while it’s on the ground +15%.', effect: 'groundHit', craft: { coin: 175, rimecrest: 1, rimeplume: 2 } });
 charms.push({ id: 'quakecharm', tier: 2.5, name: 'Quake Charm', src: 'Quakeback', short: 'Breaks get back 1 lost die', perk: 'Breaking a part gets back 1 die lost to ice or tremors.', effect: 'breakFree', craft: { coin: 175, backridge: 1, quakescale: 2 } });
 charms.push({ id: 'ashcharm', tier: 2.5, name: 'Ash Charm', src: 'Ashtail', short: '**Pierce** breaks 1 more layer', perk: '**Pierce** hits break 1 more layer of ice or scales.', effect: 'pierceStrip', craft: { coin: 175, emberbarb: 1, ashscale: 2 } });
 charms.push(
@@ -91,7 +91,7 @@ charms.push(
   { id: 'arccharm', tier: 2.2, name: 'Arc Charm', src: 'Arcmoth', short: '**Spark** fills 1 more', perk: '**Spark** weapons fill the meter 1 more per hit.', effect: 'sparkBuild', craft: { coin: 175, arcfeeler: 1, arcdust: 2 } },
   { id: 'fangcharm', tier: 2.2, name: 'Fang Charm', src: 'Hollowfang', short: '**Drain** heals 5% more', perk: '**Drain** heals 5% more of your max HP.', effect: 'drainUp', craft: { coin: 175, palefang: 1, palehide: 2 } },
   { id: 'fevercharm', tier: 3.2, name: 'Fever Charm', src: 'Feverjaw', short: '**Infect** lasts 5 turns', perk: 'Your **Infect** lasts 5 turns instead of 3.', effect: 'infectLong', craft: { coin: 225, fevermolar: 1, feverskin: 2 } },
-  { id: 'heroncharm', tier: 3.2, name: 'Heron Charm', src: 'Archeron', short: 'Your **Spark** +40%', perk: 'Your **Spark** going off is +40%.', effect: 'sparkBig', craft: { coin: 225, archcrest: 1, archplume: 2 } },
+  { id: 'heroncharm', tier: 3.2, name: 'Heron Charm', src: 'Archeron', short: 'Your **Spark** +40%', perk: 'Your **Spark** going off +40%.', effect: 'sparkBig', craft: { coin: 225, archcrest: 1, archplume: 2 } },
   { id: 'bloodcharm', tier: 3.2, name: 'Blood Charm', src: 'Bloodwhelk', short: '**Drain** meter grows slower', perk: '**Drain**’s meter grows by 3 each time instead of 6.', effect: 'drainTol', craft: { coin: 225, bloodfoot: 1, bloodscale: 2 } }
 );
 charms.push({ id: 'sovcharm', tier: 4, name: 'Sovereign Charm', src: 'Wanderer Sovereign', short: 'Next hit +50% after a break', perk: 'Breaking a part makes your next hit +50%.', effect: 'breakWhet', craft: { coin: 300, sovgel: 4 } });

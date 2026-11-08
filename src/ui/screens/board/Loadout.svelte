@@ -180,7 +180,7 @@
         {@const have = game.save.items[L.item] ?? 0}
         <button class="slot" data-slot="item" onclick={() => open('item')}>
           <span class="sl">Item</span>
-          <span><span class="nm"><Icon id={L.item} />{it.name}</span><span class="sub2"><span>Carry {Math.min(have, it.max)} of {have}</span>{#if it.short && !full()}<span use:detail={it.desc}>{it.short}</span>{:else}<span>{it.desc}</span>{/if}</span></span>
+          <span><span class="nm"><Icon id={L.item} />{it.name}</span><span class="sub2"><span>Carry {Math.min(have, it.max)} of {have}</span>{#if it.short && !full()}<span use:detail={it.desc}><Rich text={it.short} /></span>{:else}<span><Rich text={it.desc.replace(/\n/g, ' ')} /></span>{/if}</span></span>
           <span class="chg">Change</span>
         </button>
       {:else}
@@ -317,7 +317,7 @@
             <button class="prow" aria-current={k === L.item} onclick={() => choose(k)}>
               <span>
                 <span class="nm"><Icon id={k} />{it.name}{#if k === L.item}<span class="badge">Equipped</span>{/if}</span>
-                <span class="ty">{it.desc}</span>
+                <span class="ty"><span use:detail={it.desc}><Rich text={it.short ?? it.desc} /></span></span>
                 {#if it.effect === 'net'}<span class="note">{#if M.flier}<span class="good">Grounds the {M.short}</span>{:else}<span class="bad">Fliers only</span>{/if}</span>{/if}
                 {#if it.effect === 'thaw'}<span class="note">{#if M.plated && M.plateHot}<span class="bad">Scales already burning</span>{:else if M.plated}<span class="good">{M.plateWord ? `Cracks the ${M.short}’s ${M.plateWord}` : `Melts the ${M.short}’s ice`}</span>{:else}<span class="bad">Plated monsters only</span>{/if}</span>{/if}
                 {#if it.effect === 'cureInfect'}<span class="note">{#if M.inflicts === 'Infect'}<span class="good">Cures the {M.short}’s infection</span>{:else}<span class="bad">It doesn’t infect</span>{/if}</span>{/if}
