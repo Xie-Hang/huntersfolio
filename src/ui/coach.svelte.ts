@@ -369,87 +369,12 @@ const ISLAND: Tip[] = [
   }
 ];
 /** the first Ridge hunt's basics, already taught in the Foothills */
-const ISLAND_TAUGHT = ['begin', 'g-next', 'g-hp', 'move', 'guard', 'end', 'aim', 'g-pick', 'reroll', 'g-free', 'swap', 'forge', 'track', 'charmNew', 'reinforceNew', 'sell', 'bounties'];
 
 export const tipTargets = (t: Tip | null | undefined) => (typeof t?.at === 'function' ? t.at() : t?.at ?? []);
 
 export const TIPS: Tip[] = [
-  // ---- the guided first hunt ----
-  // Playtest (Nov 2026): players clicked "Got it" and were lost. These steps can't be dismissed: each stays, with
-  // its highlight, until the player does it (info steps have Next). Only "Skip tutorial" turns them off.
-  {
-    id: 'begin', guide: true, learn: true, at: ['begin'],
-    when: () => game.view === 'board' && game.save.hunts === 0 && !game.hunt,
-    text: () => "Hi, I’m Mell! Your first hunt is the Gorehorn, a ridge boar. You’ve got a blade, a maul and leather armour.",
-    done: () => game.view === 'hunt'
-  },
-  {
-    id: 'g-next', guide: true, info: true, at: ['tele'],
-    when: () => { const h = hunt(); return !!h && h.turn === 1 && unusedTurn(h); },
-    text: () => {
-      const h = hunt()!, i = E.intentInfo(h), inc = E.incoming(h);
-      return `Its next move is **${i.name}**.${inc?.net ? ` It takes ${inc.raw} HP off you.` : ''} Check it every turn. It tells you when to attack and when to defend.`;
-    }
-  },
-  {
-    id: 'g-hp', guide: true, info: true, at: ['you'],
-    when: () => { const h = hunt(); return !!h && h.turn === 1 && unusedTurn(h); },
-    text: () => "That’s your HP. The striped end is what that move will take if you do nothing."
-  },
-  {
-    id: 'aim', guide: true, learn: true, at: ['parts'],
-    // the second hunt's new layer (the first hunt has no parts row: it aims for you)
-    when: () => { const h = hunt(); return !!h && shows(h, 'parts') && h.turn === 1 && unusedTurn(h) && h.target !== bestPart(h).id; },
-    text: () => {
-      const h = hunt()!, w = E.currentWeapon(h), p = bestPart(h), t = E.MONSTERS[h.mid].parts.find(x => x.id === h.target)!;
-      const none = t.eff[w.type] === 0;
-      return `Aim at a part! Your ${w.name}${none ? ` can’t break the ${t.name.toLowerCase()}` : ` breaks less on the ${t.name.toLowerCase()}`}. Select the ${p.name}, it breaks more. Broken parts drop materials.`;
-    },
-    done: () => { const h = hunt(); return !!h && h.target === bestPart(h).id; }
-  },
-  {
-    id: 'move', guide: true, learn: true, at: ['move'],
-    when: () => { const h = hunt(); return !!h && unusedTurn(h) && anyMoveReady(h); },
-    text: () => {
-      const h = hunt()!, w = E.currentWeapon(h), best = [...w.moves.keys()].filter(i => E.canUseMove(h, i)).sort((a, b) => w.moves[b].dmg - w.moves[a].dmg)[0];
-      return `To attack, select a move. Each one needs the faces shown on its right. You rolled what **${w.moves[best].name}** needs, so select it.`;
-    },
-    done: () => { const h = hunt(); return !!h && h.dice.some(d => d.used && d.used !== 'Block'); }
-  },
-  {
-    id: 'guard', guide: true, learn: true, at: ['guard'],
-    when: () => { const h = hunt(); return !!h && !unusedTurn(h) && freeDice(h) > 0 && !anyMoveReady(h) && h.guard === 0; },
-    text: () => {
-      const h = hunt()!, inc = E.incoming(h), d = game.sel.length ? game.sel : E.autoDice(h, 'guard') ?? [], g = d.reduce((a, i) => a + E.guardOf(h, i), 0);
-      const blank = d.length && d.every(i => h.dice[i].face === 'B');
-      return `${blank ? 'A blank fits no move, but it can still **Block**.' : 'Dice that fit no move can **Block**.'} Select **Block**. It stops ${g}${inc?.net ? `, so the ${inc.raw} becomes ${Math.max(0, inc.raw - g)}` : ''}.`;
-    },
-    done: () => (hunt()?.guard ?? 0) > 0
-  },
-  {
-    id: 'end', guide: true, learn: true, at: ['end'],
-    when: () => { const h = hunt(); return !!h && h.turn === 1 && !unusedTurn(h) && (freeDice(h) === 0 || h.guard > 0) && !anyMoveReady(h); },
-    text: () => `Select End turn. The ${E.MONSTERS[hunt()!.mid].short} makes its move, then you roll 4 new dice.`,
-    done: () => (hunt()?.turn ?? 1) > 1
-  },
-  {
-    id: 'g-pick', guide: true, at: ['dice'],
-    when: () => { const h = hunt(); return !!h && h.turn >= 2 && h.rerolls > 0 && unusedTurn(h) && h.dice.some((d, i) => d.face === 'B' && !game.sel.includes(i)); },
-    text: () => { const n = hunt()!.dice.filter(d => d.face === 'B').length; return `Not a great roll, ${n === 1 ? 'a blank' : `${n} blanks`}. You can **Reroll** any dice you like. Select ${n === 1 ? 'the blank' : 'both blanks'}.`; },
-    done: () => { const h = hunt(); return !!h && h.dice.every((d, i) => d.face !== 'B' || game.sel.includes(i)); }
-  },
-  {
-    id: 'reroll', guide: true, learn: true, at: ['reroll'], side: 'right',
-    when: () => { const h = hunt(); return !!h && h.turn >= 2 && h.rerolls > 0 && unusedTurn(h) && game.sel.length > 0; },
-    text: () => `Select **Reroll**. Only the selected dice roll again. You have ${hunt()!.rerolls} for the whole hunt.`,
-    done: () => (hunt()?.stats.rerollsUsed ?? 0) > 0
-  },
-  {
-    id: 'g-free', guide: true, info: true, at: ['tele'],
-    when: () => { const h = hunt(); return !!h && h.turn >= 2 && (h.stats.rerollsUsed > 0 || game.save.tips.includes('reroll')); },
-    text: () => "That’s the basics! Read its next move, spend your dice, end the turn. The rest of this hunt is yours.",
-    next: 'Start hunting'
-  },
+  // (9 Nov 2026, Mekkman: only the Ridge lessons are left. The basics and the town tips taught on the Foothills
+  // were for saves from before the island and are gone; see git history before this date)
   // ---- the first big attack: the most important lesson ----
   {
     // Mell's first Hunter technique: Charge (Capture has its own tip when it's ready)
@@ -465,128 +390,10 @@ export const TIPS: Tip[] = [
     when: () => { const h = hunt(); return !!h && shows(h, 'parts') && E.captureReady(h); },
     text: () => `${game.save.tips.includes('chargeNew') ? 'Another Hunter technique!' : 'Now that you’re a Hunter, I can show you this one.'} It’s weak enough to capture. Set a **Snare** with 2 dice. It closes at the end of your turn, unless it hits you for ${E.CHARGE_BREAK} or more. Captures give double part materials.`
   },
-  // ---- back in town ----
-  {
-    // playtest (Nov 2026): three testers never found out that materials sell for coin
-    id: 'sell', lesson: true, learn: true, at: () => (game.view === 'hunt' ? ['to-shop'] : ['nav-shop']),
-    when: () => game.save.hunts > 0 && game.save.tips.includes('track') && game.view !== 'shop' && !(game.view === 'hunt' && game.hunt && !game.hunt.over) && E.surplusValue(game.save) >= 40,
-    text: () => `Short on coin? Materials no recipe needs sell at the Shop. Yours are worth ${E.surplusValue(game.save)} coin right now.`,
-    done: () => game.view === 'shop'
-  },
-  {
-    id: 'bounties', lesson: true, learn: true, at: ['bounties'],
-    when: () => game.view === 'board' && game.boardMon && E.BOUNTIES_ON && game.save.tips.includes('track') && !game.save.loadout.bounty && E.bountiesFor(game.save.loadout.target).length > 0 && (game.save.record[game.save.loadout.target]?.wins ?? 0) > 0,
-    text: () => 'Bounties are open! Pick one before you hunt this monster again. Meet its goals and win for extra coin. They unlock three charms at the Forge too.',
-    done: () => !!game.save.loadout.bounty
-  },
-  {
-    id: 'track', lesson: true, guide: true, learn: true, at: ['track', 'forge-act'],
-    when: () => game.view === 'forge',
-    text: () => "Pick a weapon or armour you like. Can’t afford it yet? Select Track, and its materials get flagged on the Hunt Board and in the Shop.",
-    done: () => !!game.save.tracked || Object.keys(game.save.weapons).filter(id => !E.WEAPONS[id]?.foothills).length > 2 || Object.keys(game.save.armors).filter(id => !E.ARMORS[id]?.foothills).length > 1
-  },
-  {
-    id: 'charmNew', lesson: true, info: true, at: ['tab-charms'], next: 'Got it',
-    when: () => game.view === 'forge' && game.forgeTab !== 'charms' && Object.keys(E.CHARMS).some(id => { const r = E.recipeOf(game.save, 'c', id); return r.action === 'craft' && !!r.cost && E.canPay(game.save, r.cost); }),
-    text: () => 'You can make a charm now! Each one gives a small perk, and you wear one at a time.'
-  },
-  {
-    id: 'reinforceNew', lesson: true, info: true, at: ['forge-act'], next: 'Got it',
-    when: () => { if (game.view !== 'forge' || !game.forgeSel) return false; const k: E.RecipeKind = game.forgeTab === 'armor' ? 'a' : 'w'; const r = E.recipeOf(game.save, k, game.forgeSel); return r.action === 'reinforce' && !!r.cost && E.canPay(game.save, r.cost); },
-    text: () => 'Reinforcing makes gear you love even better. A weapon hits 5% harder, or armour gets 10 more HP and 1 more **Block**. You can do it up to 3 times.'
-  }
 ];
 
 /** Ashfall Ridge moments: first-time reads (a wind-up, a big hit, mud, a part breaking…). Off for now (Mekkman,
  *  8 Nov 2026: too many messages); kept here to bring back. Not in TIPS, so they never show. */
-export const MOMENTS: Tip[] = [
-  {
-    id: 'windup', at: ['tele'],
-    when: () => hunt()?.intent === 'windup',
-    text: () => "It’s winding up for a big charge next turn. This turn is safe, so go all in!"
-  },
-  {
-    id: 'charge', at: ['guard'],
-    when: () => { const h = hunt(); const inc = h && E.incoming(h); return !!h && (E.intentInfo(h).threat >= 3) && !!inc?.net && h.guard === 0; },
-    text: () => {
-      const h = hunt()!, inc = E.incoming(h)!, n = freeDice(h);
-      return `This one’s going to hurt. It takes ${inc.raw} HP off you. All ${n} dice in **Block** stops ${E.freeDice(h).reduce((t, i) => t + E.guardOf(h, i), 0)}. **Block**, hit back, or split them. Your call!`;
-    },
-    done: () => (hunt()?.guard ?? 0) > 0
-  },
-  {
-    id: 'item', learn: true, at: ['item'],
-    when: () => { const h = hunt(); return !!h && shows(h, 'item') && !!h.item && E.itemUsable(h) && E.ITEMS[h.item].effect === 'heal30' && h.php <= h.pmax * 0.6; },
-    text: () => { const h = hunt()!; return `Running low? Your ${E.ITEMS[h.item!].name} heals 30 and costs no dice. One item a turn, ${h.itemCharges} left.`; },
-    done: () => !!hunt()?.itemUsed
-  },
-  {
-    // traps (Nov 2026): the first hunt you carry one, say what it catches and what it's for, once
-    id: 'trap', learn: true, at: ['item'],
-    when: () => { const h = hunt(); return !!h && shows(h, 'item') && !!h.item && E.ITEMS[h.item].effect.startsWith('trap') && h.turn === 1 && unusedTurn(h); },
-    text: () => {
-      const h = hunt()!, it = E.ITEMS[h.item!], mv = E.trapMoves(h.mid)[it.effect as 'trapRush' | 'trapLand'];
-      return `Your ${it.name} catches ${it.effect === 'trapRush' ? 'charges, lunges and pounces' : 'dives, and bursts up from underground'}${mv.length ? `, like the ${E.MONSTERS[h.mid].short}’s ${mv.join(', ')}` : ''}. Set it when its next move is one of those. It won’t hit you, and it’s held for ${E.TRAP_HOLD[it.effect as 'trapRush']} turns. If it’s weak enough, that captures it. On any other move, the trap is wasted.`;
-    },
-    done: () => !!hunt()?.itemUsed || (hunt()?.turn ?? 1) > 3
-  },
-  {
-    id: 'swap', learn: true, at: ['swap'],
-    when: () => {
-      const h = hunt(); if (!h || !shows(h, 'swap') || h.turn < 2 || !unusedTurn(h)) return false;
-      const M = E.MONSTERS[h.mid], o = E.otherWeapon(h), w = E.currentWeapon(h);
-      return M.parts.some(p => !h.mon.parts[p.id].broken && p.eff[o.type] > p.eff[w.type]);
-    },
-    text: () => {
-      const h = hunt()!, o = E.otherWeapon(h), M = E.MONSTERS[h.mid], w = E.currentWeapon(h);
-      const p = M.parts.find(p => !h.mon.parts[p.id].broken && p.eff[o.type] > p.eff[w.type])!;
-      return `Try your other weapon! **Swap** costs 1 die. Your ${o.name} is **${o.type}**, so it breaks the ${p.name.toLowerCase()} better.`;
-    },
-    done: () => { const h = hunt(); return !!h && h.dice.some(d => d.used === 'Swap'); }
-  },
-  // ---- resist armor only cuts elemental attacks (Nov 2026): say so the first time it matters, or it looks like a bug ----
-  {
-    id: 'physical', at: ['tele'],
-    when: () => { const h = hunt(); const inc = h && E.incoming(h); return !!h && shows(h, 'all') && !!inc && inc.wearsResist && inc.elem === 0 && inc.raw > 0; },
-    text: () => {
-      const h = hunt()!, M = E.MONSTERS[h.mid], i = E.intentInfo(h);
-      return `Heads up! Your ${h.arm.name} only resists **${M.elem}** attacks. **${i.name}** is physical, so it hits in full. Your armour cuts its ${M.elemental?.join(' and ') ?? 'elemental attacks'} by 30%.`;
-    }
-  },
-  // ---- moments the Gorehorn creates ----
-  {
-    id: 'broke', at: ['parts'],
-    when: () => { const h = hunt(); return !!h && h.stats.broken > 0; },
-    text: () => 'You broke a part! It stays broken for this hunt and drops extra materials. The others are worth breaking too.'
-  },
-  {
-    id: 'mud', at: ['parts'],
-    when: () => { const h = hunt(); return !!h && h.mon.wallow > 0 && !h.mon.parts.hide?.broken; },
-    text: () => 'Mud on its hide! It takes half there for 2 turns. Aim somewhere else until it dries.'
-  },
-  {
-    id: 'open', at: ['move', 'tele'],
-    when: () => { const h = hunt(); return !!h && E.intentInfo(h).threat === 0 && E.intentInfo(h).dmg === 0 && h.turn > 1 && h.intent !== 'windup'; },
-    text: () => "It’s not attacking this turn. A free turn, so go all in!"
-  },
-  {
-    id: 'enraged', at: ['tele'],
-    when: () => !!hunt()?.mon.enraged,
-    text: () => "It’s enraged below half HP, so it hits harder now. Check its next move before you end each turn."
-  },
-  {
-    id: 'failed', at: ['tele'],
-    when: () => game.view === 'hunt' && game.hunt?.over === 'lose',
-    text: () => 'That one got away. You keep your weapons, armour and the materials from parts you broke. You lose the coin and the items you carried. Next time, **Block** its big hits and break the part that powers them.'
-  },
-  {
-    id: 'forge', guide: true, learn: true, at: () => (game.view === 'hunt' ? ['to-forge'] : ['nav-forge']),
-    // Nov 2026 playtest: straight after the first win this was "more info". It now waits until something can be made.
-    when: () => game.save.hunts > 1 && game.view !== 'forge' && !(game.view === 'hunt' && game.hunt && !game.hunt.over) && E.forgeReady(game.save),
-    text: () => "You’ve got enough to make something. Let’s head to the Forge.",
-    done: () => game.view === 'forge'
-  }
-];
 
 class Coach {
   /** the tip on screen, if any */
@@ -594,10 +401,9 @@ class Coach {
     if (!settings.prefs.tips && !game.lesson) return null;
     const seen = game.save.tips;
     if (!E.islandDone(game.save) || (seen.includes('i-begin') && !seen.includes('i-ridge'))) return ISLAND.find(t => !seen.includes(t.id) && t.when()) ?? null;
-    const did = seen.includes('i-begin');
     // Ridge lessons: one a hunt, then a hunt with none (save.lessonAt is the hunt count when the last one showed)
     const at = game.save.lessonAt, open = at == null || game.save.hunts >= at + 1; // (one a hunt: with only Charge and Capture left, a free hunt between just delayed Capture)
-    return TIPS.find(t => !seen.includes(t.id) && !(did && ISLAND_TAUGHT.includes(t.id)) && (!t.lesson || open || t.id === this.shown) && t.when()) ?? null;
+    return TIPS.find(t => !seen.includes(t.id) && (!t.lesson || open || t.id === this.shown) && t.when()) ?? null;
   });
   private shown = $state<string | null>(null);
 
