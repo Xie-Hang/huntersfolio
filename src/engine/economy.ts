@@ -296,8 +296,7 @@ export function isUnlocked(s: Save, id: string): boolean {
   // a promotion hunt counts as passed once you hold its rank (older saves earn their rank from their records)
   const met = (r: string) => (s.record[r]?.wins ?? 0) > 0 || (!!MONSTERS[r]?.promotion && rankAtLeast(s, MONSTERS[r].promotion!));
   // the Foothills (the tutorial island): one hunt at a time, the one the step asks for (Mekkman, 8 Nov 2026: no
-  // wandering off mid-lesson; a beaten monster can't be hunted again yet). The break is the practice step, where any
-  // island monster opened so far can be hunted. Getting ready also opens the practice hunts if you're short of coin
+  // wandering off mid-lesson; a beaten monster can't be hunted again until after the promotion). Getting ready also opens the practice hunts if you're short of coin
   // for the vest or the salve (spent it on the Whistling Blade, say), so you can't get stuck.
   if (!islandDone(s)) return islandHuntable(s, id);
   if ((s.record[id]?.hunts ?? 0) > 0) return true;
@@ -308,7 +307,9 @@ const ISLAND_HUNT: Record<number, string> = { 0: 'scuttlehog', 1: 'snapclaw', 3:
 function islandHuntable(s: Save, id: string): boolean {
   const st = islandStep(s);
   if (!(id in ISLAND_OPENS)) return false;
-  if (st === 4) return ISLAND_OPENS[id] <= 4 && id !== 'gorehorn';
+  // practice: the two practice monsters, each until it's beaten (Mekkman, 8 Nov 2026: no hunting again until after the
+  // promotion)
+  if (st === 4) return PRACTICE.includes(id) && !(s.record[id]?.wins);
   if (st === 5 && !canPay(s, ARMORS.hidevest.craft!)) return PRACTICE.includes(id);
   if (st === 6 && s.coin < ITEMS.salve.price! && !canPay(s, ITEMS.salve.craft!)) return PRACTICE.includes(id);
   return ISLAND_HUNT[st] === id;

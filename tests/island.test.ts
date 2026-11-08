@@ -90,9 +90,12 @@ describe('the Foothills', () => {
     E.forgeDo(s, 'w', 'blade');
     expect(E.isUnlocked(s, 'tuskling') && !E.isUnlocked(s, 'snapclaw')).toBe(true);
     win(s, 'tuskling');
-    for (const id of ['scuttlehog', 'snapclaw', 'tuskling', 'burrowmole', 'gustmarmot']) expect(E.isUnlocked(s, id)).toBe(true);
+    for (const id of ['burrowmole', 'gustmarmot']) expect(E.isUnlocked(s, id)).toBe(true);
+    for (const id of ['scuttlehog', 'snapclaw', 'tuskling']) expect(E.isUnlocked(s, id)).toBe(false);
     expect(E.isUnlocked(s, 'gorehorn')).toBe(false);
-    win(s, 'burrowmole'); win(s, 'gustmarmot');
+    win(s, 'burrowmole');
+    expect(E.isUnlocked(s, 'burrowmole')).toBe(false); // beaten: not again until after the promotion
+    win(s, 'gustmarmot');
     expect(s.island).toBe(5);
     expect(E.isUnlocked(s, 'burrowmole')).toBe(s.coin < 60); // only when short of coin for the vest
     s.coin = 10;
