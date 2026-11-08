@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Rich from './Rich.svelte';
   // The tutorial tip on screen: a small card beside the thing it describes, with a ring around that thing.
   // Placement tries below, above, right, then left of the target, and stays inside the window.
   import { coach, tipTargets } from '../coach.svelte';
@@ -127,7 +128,7 @@
   <div class="coach" class:guide={t.guide} role="status" aria-live="polite" bind:this={cardEl} bind:clientHeight={cardH} style="left:{pos.x}px;top:{pos.y}px;width:min({W}px, calc(100vw - {EDGE * 2}px))">
     {#if arrow}<span class="coach-arrow {arrow.side}" style="{arrow.side === 'up' || arrow.side === 'down' ? 'left' : 'top'}:{arrow.at}px" aria-hidden="true"></span>{/if}
     <span class="coach-head">{t.id.startsWith('i-') ? (t.head ?? 'The Foothills') : t.guide ? (game.inHunt ? (!game.save.hunts || game.hunt?.lesson === 1 ? 'Your first hunt' : game.hunt?.lesson ? 'New this hunt' : 'Tutorial') : 'Getting started') : t.text().startsWith('New:') ? 'New this hunt' : 'Tip'}</span>
-    <p>{padWords(t.text())}</p>
+    <p><Rich text={padWords(t.text())} /></p>
     <div class="coach-acts">
       <button class="coach-skip" onclick={() => coach.skipAll(!!t.guide)}>{t.guide ? 'Skip tutorial' : 'Skip tips'}</button>
       {#if !t.guide}<button class="btn quiet" onclick={() => coach.dismiss()}>Got it</button>
