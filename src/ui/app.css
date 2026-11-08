@@ -75,6 +75,9 @@ dialog.help{width:min(640px,calc(100vw - 32px))}
 /* the art fills its frame (capped so it does not grow tall) and sits in the middle: it used to shrink to 300px on the left (Nov 2026 playtest, wide screen) */
 .stage .plate{display:flex;align-items:center;justify-content:center}
 .stage .plate .plate-stage{width:100%;max-width:460px}
+/* the scene fills the whole picture box, edge to edge, not just the monster's 460px (8 Nov 2026, Mekkman) */
+.stage .plate .plate-stage{position:static}
+.stage .plate .plate-stage svg.wc{position:relative}
 .stage .tele{margin:0;padding:12px 14px}
 .parts.row{flex-direction:row;flex-wrap:wrap}
 .parts.row{align-items:stretch}
@@ -713,6 +716,8 @@ html[data-input="pad"] body{cursor:none}
 .lay .stage .platecol{flex-direction:row;align-items:flex-start}
 .lay .stage .platecol > .plate{flex:1 1 auto;min-width:0}
 .lay .stage .platecol > .metarow{flex:0 1 auto;max-width:40%;min-width:0}
+/* no meters or conditions (the island monsters): no empty column and gap beside the picture */
+.lay .stage .platecol > .metarow:not(:has(.hpline,.heads,.conds > *)){display:none}
 /* meters showing (daze, heads, statuses): they get a readable share beside the picture */
 .lay .stage .platecol > .metarow:has(.hpline,.heads,.conds > *){flex:0 0 36%;max-width:36%}
 .lay .partspanel .aimword{display:none}

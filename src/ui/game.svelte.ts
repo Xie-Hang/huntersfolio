@@ -26,7 +26,7 @@ function hold(h: E.Hunt, k: string) { if (!h.show?.includes(k)) return; h.show =
 /** each tutorial hunt's prompts: a lost hunt shows them again (coach.svelte.ts) */
 const ISLAND_HUNT_TIPS: Record<string, string[]> = {
   scuttlehog: ['i-die', 'i-move', 'i-again', 'i-end', 'i-tele', 'i-pick', 'i-reroll'],
-  snapclaw: ['i-faces2', 'i-twice', 'i-twice2', 'i-block'],
+  snapclaw: ['i-faces2', 'i-slash1', 'i-twice', 'i-twice2', 'i-block'],
   tuskling: ['i-aim', 'i-undo', 'i-swap', 'i-tusks'],
   gorehorn: ['i-salve']
 };

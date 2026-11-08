@@ -107,7 +107,7 @@
   {/if}
   {#if shows(h, 'charge')}
   <button class="move dash {cOk ? 'ready' : 'no'}" class:warn={chargeRisk} onmouseenter={() => (game.preview = n ? [...game.sel] : auto.charge ?? [])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = n ? [...game.sel] : auto.charge ?? [])} onblur={() => (game.preview = [])} data-coach="charge" data-key="c" aria-disabled={!cOk} onclick={() => cOk && game.charge()}>
-    <span><span class="mn"><Key k="C" />Charge</span><span class="md" use:detail={h.chargePending ? 'Your first hit next turn does double.\nIf its attack hurts you, the charge is lost.' : chargeRisk ? 'Its attack this turn will hurt you, and that would lose the charge.' : 'Your first hit next turn does double.\nIf its attack hurts you, the charge is lost.'}>{h.chargePending ? 'Charging · next hit ×2' : chargeRisk ? 'Lost to its attack' : 'Next hit ×2 · lost if hurt'}</span></span><span class="need dice"><span class="x">{cd}×</span><CostDie c="any" /></span>
+    <span><span class="mn"><Key k="C" />Charge</span><span class="md" use:detail={h.chargePending ? 'Your first hit next turn does double.\nIf its attack hurts you, the charge is lost.' : chargeRisk ? 'Its attack this turn will hurt you, and that would lose the charge.' : 'Your first hit next turn does double.\nIf its attack hurts you, the charge is lost.'}>{h.chargePending ? 'Charging · next hit ×2' : chargeRisk ? 'Lost to its attack' : 'Cancelled if hit'}</span></span><span class="need dice"><span class="x">{cd}×</span><CostDie c="any" /></span>
   </button>
   {/if}
   {#if shows(h, 'swap')}

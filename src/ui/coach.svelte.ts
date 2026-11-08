@@ -126,7 +126,7 @@ const ISLAND: Tip[] = [
   {
     id: 'i-reroll', head: 'Reroll', guide: true, learn: true, at: ['reroll'], side: 'right',
     when: () => { const h = onIsland('scuttlehog'); return !!h && h.rerolls > 0 && h.stats.rerollsUsed === 0 && game.sel.some(i => h.dice[i]?.face === 'B'); },
-    text: () => "Now select **Reroll** to roll them again. Let’s see what you get!",
+    text: () => "Now select **Reroll** to roll them again. Remember, you can select as many dice as you want to **Reroll**. Let’s see what you get!",
     done: () => (hunt()?.stats.rerollsUsed ?? 0) > 0
   },
   {
@@ -141,6 +141,14 @@ const ISLAND: Tip[] = [
     id: 'i-faces2', guide: true, info: true, gotit: true, at: ['dice'], head: 'New faces',
     when: () => { const h = onIsland('snapclaw'); return !!h && h.turn === 1 && unusedTurn(h) && !game.sel.length; },
     text: () => 'New faces! From now on, Claws and blanks join the Fangs.'
+  },
+  {
+    // turn 1 (C, T, B): the Fang on Slash first, so the Claw and blank are left for the Block prompt. Without it a
+    // player could Block straight after "New faces" and skip the Block lesson (Mekkman, 8 Nov 2026 playtest)
+    id: 'i-slash1', guide: true, learn: true, at: ['move'], head: 'More than one',
+    when: () => { const h = onIsland('snapclaw'); return !!h && h.turn === 1 && game.save.tips.includes('i-faces2') && h.guard === 0 && E.canUseMove(h, 0); },
+    text: () => 'You can do more than one thing in a turn. Your Fang goes on **Slash** first.',
+    done: () => { const h = hunt(); return !!h && h.mid === 'snapclaw' && (h.turn > 1 || h.dice.some(d => d.face === 'C' && !!d.used)); }
   },
   {
     // several dice, one move, used that many times (Nov 2026 playtest)
