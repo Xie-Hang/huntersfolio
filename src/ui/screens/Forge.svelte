@@ -7,6 +7,7 @@
   import Elem from '../parts/Elem.svelte';
   import * as E from '../../engine';
   import { game } from '../game.svelte';
+  import { settings } from '../settings.svelte';
   import { glyphs, needLabel, elemLabel, markOf } from '../fmt';
   import Costs from '../parts/Costs.svelte';
   import { tick } from 'svelte';
@@ -26,6 +27,10 @@
 
   // the Foothills (the tutorial island): the Forge holds one recipe, the Hunter's Blade, and nothing else yet
   const isl = $derived(!E.islandDone(game.save));
+  /** charms show once they're taught (Mekkman, 8 Nov 2026): the Ridge's charm lesson fires when one can be made, so the
+   *  tab appears then; with tips off, or once you own one, it's always there */
+  const charmsOpen = $derived(!isl && (!settings.prefs.tips || Object.keys(s.charms).length > 0 || s.tips.includes('charmNew')
+    || Object.keys(E.CHARMS).some(id => { const r = E.recipeOf(s, 'c', id); return r.action === 'craft' && !!r.cost && E.canPay(s, r.cost); })));
   /** the island's Forge grows tabs once it holds armor (step 8) */
   const isTabs = $derived(isl && E.islandForge(s).a.length > 0);
   const groups = $derived.by(() => {
@@ -94,7 +99,7 @@
     <div class="tabs" role="tablist">
       <button role="tab" data-coach="tab-weapons" aria-selected={tab === 'weapons'} onclick={() => setTab('weapons')}>Weapons</button>
       <button role="tab" data-coach="tab-armor" aria-selected={tab === 'armor'} onclick={() => setTab('armor')}>Armour</button>
-      {#if !isl || E.islandForge(s).c.length}<button role="tab" data-coach="tab-charms" aria-selected={tab === 'charms'} onclick={() => setTab('charms')}>Charms</button>{/if}
+      {#if charmsOpen}<button role="tab" data-coach="tab-charms" aria-selected={tab === 'charms'} onclick={() => setTab('charms')}>Charms</button>{/if}
     </div>
     {/if}
     {#if !isl}

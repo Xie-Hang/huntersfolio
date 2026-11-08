@@ -165,7 +165,7 @@
       <span class="rankseal" title="Apprentice: finish the Foothills to become a Hunter"><RankMedal rank="F" size={46} dim /><span class="rl"><span>Rank</span><span>Apprentice</span></span></span>
       {/if}
       {#if E.forgeOpen(game.save)}<span class="purse">{game.save.coin} coin</span>{/if}
-      {#if game.inHunt && !game.lesson && !(E.onRails(game.save) && E.islandStep(game.save) < 4)}
+      {#if game.inHunt && !game.lesson && (E.islandDone(game.save) || E.onExam(game.save))}
         <button class="btn quiet" data-coach="abandon" onclick={() => game.abandon()}>Abandon hunt</button>
       {/if}
       <button class="iconbtn" data-coach="help" aria-label="How to play" aria-expanded={help.open} onclick={openHelp}>

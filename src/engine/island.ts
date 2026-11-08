@@ -41,18 +41,19 @@ export const shopOpen = (s: Save) => islandStep(s) >= 5;
  *  Forge), and the item slot (the salve, step 6) */
 export const twoWeapons = (s: Save) => islandStep(s) >= 3;
 export const itemSlot = (s: Save) => islandStep(s) >= 6;
-export const armorSlot = (s: Save) => islandStep(s) >= 4;
-export const charmSlot = (s: Save) => islandStep(s) >= 4;
+export const armorSlot = (s: Save) => islandStep(s) >= 5;
+/** charms aren't taught on the island (a Ridge lesson): hidden until it's done */
+export const charmSlot = (s: Save) => islandDone(s);
 /** the town step the island is on, if any: where the result screen's gold button goes */
 export const islandTown = (s: Save): 'forge' | 'shop' | null => {
   const st = islandStep(s);
   return st === 2 || st === 5 ? 'forge' : st === 6 ? 'shop' : null;
 };
-/** what the Forge holds on the island, by tab. From the practice hunts on, everything the island's monsters make:
- *  no prompts for the extras (the Whistling Blade, the Claw Charm), they're there if you want them */
+/** what the Forge holds on the island, by tab. Armour and charms stay hidden until they're taught (Mekkman, 8 Nov
+ *  2026): armour with "get ready", charms on the Ridge. The Whistling Blade is there from practice, no prompt */
 export function islandForge(s: Save): { w: string[]; a: string[]; c: string[] } {
   const st = islandStep(s);
-  return { w: [...(st >= 2 ? ['blade'] : []), ...(st >= 4 ? ['whistle'] : [])], a: st >= 4 ? ['hidevest'] : [], c: st >= 4 ? ['clawcharm'] : [] };
+  return { w: [...(st >= 2 ? ['blade'] : []), ...(st >= 4 ? ['whistle'] : [])], a: st >= 5 ? ['hidevest'] : [], c: [] };
 }
 /** what the Shop sells on the island */
 export const islandShop = (_s: Save) => ['salve'];

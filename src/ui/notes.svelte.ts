@@ -21,16 +21,18 @@ export const help = new HelpState();
 /** the groups whose new terms get a notice: the ones no prompt teaches */
 const NOTICE = ['Weapon tags', 'Monster states', 'On you'];
 let pending: string[] = [];
+const quietIds = new Set<string>();
 /** note that the player has met this term (a bold word or a tag label); unknown words are ignored */
-export function met(term: string) {
+export function met(term: string, quiet = false) {
   const id = noteFor(term);
   if (!id || help.seen.includes(id) || pending.includes(id)) return;
+  if (quiet) quietIds.add(id);
   pending.push(id);
   queueMicrotask(() => {
     if (!pending.length) return;
     const add = pending.filter(p => !help.seen.includes(p)); pending = [];
     help.seen = [...help.seen, ...add];
-    help.fresh = [...help.fresh, ...add.filter(id => NOTICE.includes(NOTES[id].group) || id === 'elements')];
+    help.fresh = [...help.fresh, ...add.filter(id => !quietIds.has(id) && (NOTICE.includes(NOTES[id].group) || id === 'elements'))];
     try { localStorage.setItem(KEY, JSON.stringify(help.seen)); } catch { /* storage full or blocked: still works this session */ }
   });
 }

@@ -207,6 +207,12 @@ const ISLAND: Tip[] = [
   },
   // ---- practice: the Cinderpup and the Shrikelet, no prompts ----
   {
+    // the weapon types' own tricks (Mekkman, 8 Nov 2026): Flow is the first one met, on the blade's Cleave
+    id: 'i-flow', head: 'Flow', guide: true, info: true, gotit: true, at: ['slot-w0'],
+    when: () => E.islandStep(game.save) === 4 && game.view === 'board' && game.boardMon && !huntOn() && !game.lesson,
+    text: () => 'Every weapon type has its own special trick. Your blade’s is **Flow**. Moves tagged **Flow** give you a free **Reroll**, once a turn.'
+  },
+  {
     id: 'i-practice', head: 'Practice', guide: true, info: true, gotit: true, at: ['begin'],
     when: () => E.islandStep(game.save) === 4 && game.view === 'board' && game.boardMon && !huntOn(),
     text: () => "Time to practise on your own! Beat the Cinderpup and the Shrikelet, in any order. I’ll be watching."
@@ -270,13 +276,13 @@ const ISLAND: Tip[] = [
   // ---- on rails until practice (Mekkman, 8 Nov 2026): every step points at the next thing. These never retire:
   // they show whenever their moment comes round (a lost hunt, a second try)
   {
-    id: 'i-go', head: 'Next', guide: true, side: 'right', at: ['to-retry', 'to-next', 'to-forge', 'to-shop'],
-    when: () => !game.lesson && !!game.hunt?.over && game.view === 'hunt' && !!game.hunt.reward && E.islandStep(game.save) !== 4 && !E.islandDone(game.save),
-    text: () => game.hunt?.over === 'lose' ? 'That one got away. It happens to the best of us. Try again.' : E.islandTown(game.save) === 'forge' ? "You’ve got materials now. Let’s visit the Forge." : E.islandTown(game.save) === 'shop' ? "Let’s visit the Shop." : `Nicely done! The ${E.MONSTERS[game.save.loadout.target]?.short} is next.`
+    id: 'i-go', head: 'Next', guide: true, side: 'right', at: () => (game.hunt?.over === 'lose' ? ['to-retry'] : ['to-next', 'to-forge', 'to-shop']),
+    when: () => !game.lesson && !!game.hunt?.over && game.view === 'hunt' && !!game.hunt.reward && !E.islandDone(game.save),
+    text: () => game.hunt?.over === 'lose' ? 'That one got away. It happens to the best of us. Try again.' : E.islandTown(game.save) === 'forge' ? "You’ve got materials now. Let’s visit the Forge." : E.islandTown(game.save) === 'shop' ? "Let’s visit the Shop." : game.hunt?.mid === 'tuskling' && E.islandStep(game.save) === 4 ? 'Nicely done! Next up, some practice hunts.' : `Nicely done! The ${E.MONSTERS[game.save.loadout.target]?.short} is next.`
   },
   {
     id: 'i-hunt', head: 'Next hunt', guide: true, at: ['begin'],
-    when: () => !game.lesson && game.view === 'board' && game.boardMon && !huntOn() && [0, 1, 3, E.EXAM_STEP].includes(E.islandStep(game.save)) && E.isUnlocked(game.save, game.save.loadout.target),
+    when: () => !game.lesson && game.view === 'board' && game.boardMon && !huntOn() && [0, 1, 3, 4, E.EXAM_STEP].includes(E.islandStep(game.save)) && E.isUnlocked(game.save, game.save.loadout.target),
     text: () => "Whenever you’re ready."
   },
   // done in town: back to the Hunt Board for the next hunt (once per town step)

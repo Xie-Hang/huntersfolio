@@ -133,7 +133,7 @@
     {#if arrow}<span class="coach-arrow {arrow.side}" style="{arrow.side === 'up' || arrow.side === 'down' ? 'left' : 'top'}:{arrow.at}px" aria-hidden="true"></span>{/if}
     <!-- Mell (8 Nov 2026): the S-rank hunter who teaches you speaks every prompt; the topic follows her name -->
     <span class="coach-head">Mell{#if t.head}<span class="coach-topic">{' · '}{t.head}</span>{/if}</span>
-    <p><Rich text={padWords(t.text())} /></p>
+    <p><Rich quiet text={padWords(t.text())} /></p>
     <div class="coach-acts">
       {#if game.lesson}<button class="coach-skip" onclick={() => game.endLesson()}>End lesson</button>{:else}<button class="coach-skip" onclick={() => coach.skipAll(!!t.guide)}>{t.guide ? 'Skip tutorial' : 'Skip tips'}</button>{/if}
       {#if !t.guide}<button class="btn quiet" onclick={() => coach.dismiss()}>Got it</button>

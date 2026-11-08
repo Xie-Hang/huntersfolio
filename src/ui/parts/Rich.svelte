@@ -5,9 +5,9 @@
   import { noteFor } from '../../engine';
   import { met, openNote } from '../notes.svelte';
   /** self: the Hunter's Notes entry this text belongs to, so a term never links to the page you're on */
-  let { text, self = '' }: { text: string; self?: string } = $props();
+  let { text, self = '', quiet = false }: { text: string; self?: string; quiet?: boolean } = $props();
   const parts = $derived(text.split(/\*\*(.+?)\*\*/));
-  $effect(() => { for (let i = 1; i < parts.length; i += 2) met(parts[i]); });
+  $effect(() => { for (let i = 1; i < parts.length; i += 2) met(parts[i], quiet); });
   /** a term link only where a select can reach it */
   function link(el: HTMLElement) {
     if (el.closest('button, [role="button"], [role="tooltip"], .dtip, a')) { el.classList.remove('glink'); el.removeAttribute('tabindex'); el.removeAttribute('role'); }
