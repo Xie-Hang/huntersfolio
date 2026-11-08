@@ -53,7 +53,9 @@ export const islandTown = (s: Save): 'forge' | 'shop' | null => {
  *  2026): armour with "get ready", charms on the Ridge. The Whistling Blade is there from practice, no prompt */
 export function islandForge(s: Save): { w: string[]; a: string[]; c: string[] } {
   const st = islandStep(s);
-  return { w: [...(st >= 2 ? ['blade'] : []), ...(st >= 4 ? ['whistle'] : [])], a: st >= 5 ? ['hidevest'] : [], c: [] };
+  // (9 Nov 2026: the Whistling Blade waits until the island is done: its Gale Gland is a rare drop from a monster you can't
+  // hunt again on the island, so it was a recipe players could see but not make)
+  return { w: st >= 2 ? ['blade'] : [], a: st >= 5 ? ['hidevest'] : [], c: [] };
 }
 /** what the Shop sells on the island */
 export const islandShop = (_s: Save) => ['salve'];

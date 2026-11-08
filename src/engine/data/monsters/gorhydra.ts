@@ -70,7 +70,6 @@ export const gorhydra: MonsterDef = {
 
   intent(h, type): Intent {
     if (type === 'slam') return { name: 'Tail Slam', text: 'Headless, it thrashes its tail at you.', dmg: h.mon.enraged ? 34 : 28, threat: 2 };
-    if (type === 'dazed') return { name: 'Dazed', text: 'All three heads sway.', dmg: 0, threat: 0, note: 'It loses its turn' };
     // enraged (Nov 2026): its Frost Breath turned up, every head breathing at once
     if (type === 'chain') { const n = live(h).length, d = 16 * n; return { name: 'Frost Chain', text: 'Every head draws breath at once. The air goes white.', dmg: d, elemDmg: d, threat: band(d), isNew: !h.mon.newSeen, note: `${Math.min(2, n)} fewer dice next turn. Each head cut off makes it 1 less` }; }
     const acts = parse(type);
@@ -114,7 +113,6 @@ export const gorhydra: MonsterDef = {
         lines.push(`The ${NAME[x]} grows back${heal ? `, and it heals ${heal}` : ''}!`);
       }
     }
-    if (type === 'dazed') lines.push('The heads shake off the daze.');
     return lines.join(' ') || null;
   },
 

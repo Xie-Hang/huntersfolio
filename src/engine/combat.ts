@@ -204,7 +204,6 @@ export const cantHitReason = (h: Hunt, w: WeaponInst) => (canHit(h, w) ? null : 
 export const reachable = (h: Hunt, partId: string, w: WeaponInst) => def(h).reachable?.(h, partId, w) ?? true;
 /** Crag Charm: bringing a monster down from the air or up out of the ground whets your next hit */
 function landWhet(h: Hunt) { h.whet = Math.max(h.whet, 0.5); log(h, 'Crag Charm: your next hit +50%.', 'gold'); }
-export const airborneHalf = (h: Hunt, w: WeaponInst) => h.mon.air && w.type !== 'Pierce';
 export const freeDice = (h: Hunt) => h.dice.map((d, i) => (d.used ? -1 : i)).filter(i => i >= 0);
 
 /** Why the carried item can't be used right now (null when it can, or when the reason is simply "used up").
@@ -403,7 +402,6 @@ export function useMove(h: Hunt, i: number, prefer: number[] = []): HitResult | 
   if (h.whet) { dmg = Math.round(dmg * (1 + h.whet)); notes.push(`whetted +${Math.round(h.whet * 100)}%`); h.whet = 0; }
   const em = elemMult(w.elem, h.mid, h);
   if (em !== 1) { dmg = Math.round(dmg * em); notes.push(em > 1 ? 'weakness ×1.5' : 'resisted ×0.75'); }
-  if (airborneHalf(h, w)) { dmg = Math.round(dmg / 2); notes.push('airborne ½'); }
   // Fen Charm: the first hit each turn (stored as the turn it landed on)
   if (charmFx(h) === 'firstHit' && m.fenHit !== h.turn) { m.fenHit = h.turn; dmg = Math.round(dmg * 1.15); notes.push('Fen Charm +15%'); }
   if (MD.flier && !m.air && charmFx(h) === 'groundHit') { dmg = Math.round(dmg * GROUND_HIT); notes.push('Shroud Charm +15%'); }
@@ -490,8 +488,11 @@ const freeOnly = (h: Hunt, idx: number[]) => idx.filter(i => h.dice[i] && !h.dic
 
 /** A blank fits no move, so it guards better than a shape (playtest: blanks felt like a wasted roll).
  *  The Bristlehide Vest's perk raises that further. */
-export const BLANK_GUARD = 1.5, VEST_BLANK_GUARD = 2.5;
-export const guardOf = (h: Hunt, i: number) => Math.round(h.arm.guard * (h.dice[i]?.face === 'B' ? (h.arm.blankx2 ? VEST_BLANK_GUARD : BLANK_GUARD) : 1));
+// (9 Nov 2026, Mekkman: blanks no longer block more. It was a layer with no decision in it; blanks still fit no move,
+// so they're still the dice you Block with.)
+export const guardOf = (h: Hunt, _i: number) => h.arm.guard;
+/** Bristlehide Vest: a fully blocked attack hits the monster back for this */
+export const BRISTLE_BACK = 15;
 export function guard(h: Hunt, idx: number[]): boolean {
   const sel = freeOnly(h, idx); if (!sel.length || h.over) return false;
   for (const i of sel) { h.guard += guardOf(h, i); h.dice[i].used = 'Block'; }
@@ -646,6 +647,11 @@ export function endTurn(h: Hunt): TurnResult {
       const blocked = raw - taken;
       h.php = Math.max(0, h.php - taken); h.stats.taken += taken; h.stats.guarded += blocked;
       log(h, `${info.name} hits you for ${taken}${blocked ? ` (${blocked} blocked${info.halfGuard && !h.arm.steady ? ', block halved' : ''})` : ''}${res ? ` (${monElem(h)} resisted)` : ar.elem === 0 && ar.wearsResist ? ' (physical: your armour\u2019s resist doesn\u2019t apply)' : ''}.`, taken >= CHARGE_BREAK ? 'ember' : '');
+      if (h.arm.bristle && taken === 0 && blocked > 0 && m.hp > 0) {
+        const d = Math.min(m.hp, BRISTLE_BACK); m.hp -= d; h.stats.dealt += d;
+        log(h, `${h.arm.name}: the bristles bite back for ${d}.`, 'gold'); checkEnrage(h);
+        if (m.hp <= 0) { finish(h, 'win'); return { taken }; }
+      }
       // any hit that gets past your block breaks a charge (Nov 2026: charging is a read of a safe turn, not a habit)
       if (h.chargePending && taken > 0) { h.chargePending = false; log(h, 'The hit breaks your focus. Your charge fails.', 'ember'); }
     }

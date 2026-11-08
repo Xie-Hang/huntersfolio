@@ -56,7 +56,7 @@ export const squallhorn: MonsterDef = {
       case 'squall': return { name: 'Squall Jab', text: 'It hooks a tusk at you, and the wind rises with it.', dmg: enr ? 42 : 32, threat: 2, isNew: !m.newSeen, note: `Also gathers **Wind** (${Math.min(cap, w + 1)} of ${cap}). **Daze** scatters it` };
       case 'tailwind': return { name: 'Tailwind', text: 'It turns its mane into the wind and lets it fill.', dmg: 0, threat: 0, note: 'Your **Block** is ½ against its next **Cyclone Charge**' };
       case 'winded': return { name: 'Winded', text: 'The storm drops away. It stands blowing, sides heaving.', dmg: 0, threat: 0, note: 'A free turn' };
-      case 'pinned': return { name: 'Pinned', text: 'An arrow through the foreleg breaks its stance. Some of the wind slips away.', dmg: 0, threat: 0, note: 'Loses 1 **Wind**' };
+      case 'pinned': return { name: 'Pinned', text: 'An arrow through the foreleg knocks it off balance. The wind slips away.', dmg: 0, threat: 0, note: 'No **Wind** gained · it loses its turn' };
       case 'dazed': return { name: 'Dazed', text: 'It reels, and the gathered wind tears loose around it.', dmg: 0, threat: 0, note: 'It loses its turn and its **Wind**' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
@@ -98,7 +98,8 @@ export const squallhorn: MonsterDef = {
 
   onPin(h) {
     const m = h.mon;
-    if (h.intent === 'gather' && (m.wind ?? 0) > 0) { m.wind = (m.wind ?? 0) - 1; return `Pin: it staggers, and 1 Wind slips away (${m.wind} of ${windCap(h)}).`; }
+    // (9 Nov 2026, Mekkman: wire up Pinned) a pin while it gathers stops the gather: no hit, no Wind gained
+    if (h.intent === 'gather') { h.intent = 'pinned'; return `Pin: it staggers, and the wind it was gathering slips away (${m.wind ?? 0} of ${windCap(h)}).`; }
     return null;
   },
 

@@ -68,7 +68,8 @@ export interface ArmorDef {
   perk: string;
   /** one line, 30 characters or fewer, for the loadout slot and picker (8 Nov 2026) */
   short?: string;
-  blankx2?: boolean;
+  /** Bristlehide Vest: a fully blocked attack hits the monster back (BRISTLE_BACK) */
+  bristle?: boolean;
   breakHeal?: boolean;
   /** immune to burns from hitting a molten monster */
   burnproof?: boolean;

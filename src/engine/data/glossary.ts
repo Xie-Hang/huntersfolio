@@ -22,10 +22,10 @@ const notes: NoteDef[] = [
   // Your turn
   { id: 'dice', name: 'Dice', group: 'Your turn', aka: ['Fang', 'Fangs', 'Claw', 'Claws', 'blank', 'blanks'], always: true,
     head: 'Fangs, Claws and blanks',
-    lines: ['You roll 4 dice each turn.', 'Each move needs certain faces, shown on its right.', 'A blank fits no move, but it blocks best.'] },
+    lines: ['You roll 4 dice each turn.', 'Each move needs certain faces, shown on its right.', 'A blank is not wild. It fits no move.'] },
   { id: 'block', name: 'Block', group: 'Your turn', always: true,
     head: 'Takes less damage from its next move',
-    lines: ['**Block** is used to take less damage from its next move.', 'Your armour sets how much each die blocks. A blank blocks most.', 'Some moves weaken or ignore **Block**.'] },
+    lines: ['**Block** is used to take less damage from its next move.', 'Your armour sets how much each die blocks.', 'Some moves weaken or ignore **Block**.'] },
   { id: 'reroll', name: 'Reroll', group: 'Your turn', aka: ['Rerolls'], always: true,
     head: 'Rolls the selected dice again',
     lines: ['Select one or more dice, then **Reroll**.', 'Your armour sets how many you get for the whole hunt.'] },

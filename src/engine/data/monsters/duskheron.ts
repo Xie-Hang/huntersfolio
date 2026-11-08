@@ -24,12 +24,13 @@ export const parse = (type: string): Record<string, Act> | null => {
 export const reeling = (h: Hunt, head: string) => (h.mon.reel?.[head] ?? 0) > 0;
 
 function headAct(h: Hunt, head: string, act: Act) {
-  const enr = h.mon.enraged, broke = h.mon.parts[head].broken, n = NAME[head];
+  const enr = h.mon.enraged, broke = h.mon.parts[head].broken;
   switch (act) {
-    case 'peck': return { name: 'Peck', text: `The ${n} jabs down.`, dmg: broke ? 10 : enr ? 18 : 14 };
-    case 'thrust': return { name: 'Spear Thrust', text: `The ${n} draws back its neck to spear you.`, dmg: broke ? 18 : enr ? 32 : 26 };
-    case 'screech': return { name: 'Screech', text: `The ${n} screeches. Your Block is ½ next turn.`, dmg: 0 };
-    case 'reel': return { name: 'Reeling', text: `The ${n} reels, dazed.`, dmg: 0 };
+    // (9 Nov 2026 audit: no story lines per head; a card with both heads' moves never shows story text)
+    case 'peck': return { name: 'Peck', text: '', dmg: broke ? 10 : enr ? 18 : 14 };
+    case 'thrust': return { name: 'Spear Thrust', text: '', dmg: broke ? 18 : enr ? 32 : 26 };
+    case 'screech': return { name: 'Screech', text: '', dmg: 0 };
+    case 'reel': return { name: 'Reeling', text: '', dmg: 0 };
   }
 }
 const band = (dmg: number) => (dmg <= 0 ? 0 : dmg <= 20 ? 1 : dmg <= 40 ? 2 : dmg <= 60 ? 3 : 4);
@@ -74,14 +75,13 @@ export const duskheron: MonsterDef = {
       const live = HEADS.filter(x => !reeling(h, x)), each = 30;
       return { name: 'Scissor Strike', text: live.length === 2 ? 'Both necks swing in from either side at once!' : 'The head still standing swings in alone.', dmg: each * live.length, threat: band(each * live.length), halfGuard: true, isNew: !m.newSeen, note: 'Your **Block** is ½. **Daze** on a head stops its half' };
     }
-    if (type === 'dazed') return { name: 'Dazed', text: 'Both heads sway, eyes unfocused.', dmg: 0, threat: 0, note: 'It loses its turn' };
     const acts = parse(type);
     if (!acts) return { name: '…', text: '', dmg: 0, threat: 0 };
     const parts = HEADS.map(x => headAct(h, x, reeling(h, x) ? 'reel' : acts[x]));
     const dmg = parts.reduce((t, p) => t + p.dmg, 0);
     const names = parts.map(p => p.name).join(' + ');
     const screech = HEADS.some(x => acts[x] === 'screech' && !reeling(h, x));
-    return { name: names, text: parts.map(p => p.text).join(' '), dmg, threat: band(dmg), halfGuard, note: screech ? 'Your **Block** is ½ next turn' : undefined };
+    return { name: names, text: '', dmg, threat: band(dmg), halfGuard, note: screech ? 'Your **Block** is ½ next turn' : undefined };
   },
 
   next(h, prev) {

@@ -30,14 +30,13 @@
   const sg = $derived(E.SIGNATURES[w.type]);
   // a Flow move on screen puts up its Hunter's Notes notice (no prompt teaches it any more)
   $effect(() => { if (shows(h, 'flow') && w.moves.some(m => m.flow)) met('Flow'); });
-  const halfAir = $derived(E.airborneHalf(h, w) && E.canHit(h, w)); // fliers (Nov 2026) block non-bows outright: the reason line says so instead
   const iceNow = $derived(h.mon.plating > 0);
   // the short form for the attack cards: what this weapon's hit breaks, where the damage number goes
   const iceShort = $derived(`${Math.min(h.mon.plating, E.plateBreak(h, w))} ${E.monsterOf(h).plateWord ?? 'ice'}`);
   const iceLine = $derived.by(() => { const n = Math.min(h.mon.plating, E.plateBreak(h, w)), word = E.monsterOf(h).plateWord ?? 'ice', hot = (E.monsterOf(h).burn?.(h, w) ?? 0) > 0 && !h.arm.burnproof ? `, burns you ${E.monsterOf(h).burn!(h, w)}` : ''; return n >= h.mon.plating ? `Breaks all the ${word === 'scale' ? 'scales' : word} (${n} layer${n > 1 ? 's' : ''})${hot}` : `Only breaks ${n} layer${n > 1 ? 's' : ''} of ${word}${hot}`; });
   const exposedNow = $derived(h.mon.parts[h.target]?.exposed > 0 && !h.mon.parts[h.target].broken);
   /** the number the move will roughly deal now: air halves it, an exposed target adds Expose's bonus */
-  const shownDmg = (d: number) => { let x = halfAir ? Math.round(d / 2) : d; if (exposedNow) x = Math.round(x * E.EXPOSE_DMG); if (h.chargeReady) x *= 2; return x; };
+  const shownDmg = (d: number) => { let x = d; if (exposedNow) x = Math.round(x * E.EXPOSE_DMG); if (h.chargeReady) x *= 2; return x; };
   /** the status meters of the status weapons you carry (one per status) */
   const smeters = $derived([...new Set(h.weps.map(x => x.status).filter(Boolean))].map(st => ({ st: st!, ...E.statusOf(h, st!) })));
   const STONE: Record<string, string> = { Infect: '#9fc062', Spark: '#f0dd6e', Drain: '#d0545b' };
@@ -71,7 +70,7 @@
       {#if shows(h, 'elements')}<span class="avg">{E.avgVs(w, h.mid)} avg</span>{/if}
     </div>
     <div class="elemrow">
-      {#if !shows(h, 'elements')}<span class="elem" style="color:var(--muted)">{w.type}</span>{:else}<span class="elem" style="color:{elemColor}">{w.type} · <Elem e={markOf(w)} />{elemLabel(w)}{em > 1 ? ' · hits weakness' : em < 1 ? ' · resisted' : ''}{halfAir ? ' · ½ in the air' : ''}</span>{/if}
+      {#if !shows(h, 'elements')}<span class="elem" style="color:var(--muted)">{w.type}</span>{:else}<span class="elem" style="color:{elemColor}">{w.type} · <Elem e={markOf(w)} />{elemLabel(w)}{em > 1 ? ' · hits weakness' : em < 1 ? ' · resisted' : ''}</span>{/if}
       <!-- status weapons (Nov 2026): the meter your hits fill on the monster, one per status you carry -->
       {#each smeters as sm (sm.st)}
         <span class="smeter" use:detail={`# **${sm.st}**\nEach hit fills it by the dice the move used.\n${SWHAT[sm.st]}\nEach fill makes the next one take longer.`} aria-label="{sm.st} meter {sm.value} of {sm.max}">
@@ -93,7 +92,7 @@
     <button class="move atk {ok ? 'ready' : 'no'}" class:pick={ok && (reps > 0 || picks(mv.need))} onmouseenter={() => (game.preview = ok ? (reps > 0 ? [...game.sel] : E.pickDice(h, mv.need, game.sel) ?? []) : [])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = ok ? (reps > 0 ? [...game.sel] : E.pickDice(h, mv.need, game.sel) ?? []) : [])} onblur={() => (game.preview = [])} data-coach={i === bestReady ? 'move' : mv.flow ? 'move-flow' : undefined} data-key={MOVE_KEYS[i]?.toLowerCase()} aria-disabled={!ok} onclick={() => ok && game.move(i)}>
       <span>
         <span class="mn"><Key k={MOVE_KEYS[i]} />{mv.name}{#if reps > 1}<span class="reps"> ×{reps}</span>{/if}{#if mv.flow && shows(h, 'flow')}<span class="tag flow" use:detail={E.SIGNATURES.Cut.text}>Flow</span>{/if}{#if mv.daze && shows(h, 'daze')}<span class="tag daze" use:detail={E.SIGNATURES.Blunt.text}>Daze</span>{/if}{#if full && mv.expose}<span class="tag expose" use:detail={E.SIGNATURES.Pierce.text}>Expose</span>{/if}{#if !over && tipText?.includes(mv.name)}<span class="tag counter">Counter</span>{/if}</span>
-        <span class="md">{#if iceNow}<b class="dn ice" title={iceLine}>{iceShort}</b><span class="dx">{iceLine}</span>{:else}{#if h.chargeReady && ok}<span class="chgx" aria-label="Charged: this hit does double">×2</span>{/if}<b class="dn" class:charged={h.chargeReady && ok}>{shownDmg(mv.dmg)}</b><span class="dw"> damage{reps > 1 ? ' each' : ''}</span><span class="dx">{halfAir ? ', ½ in the air' : ''}{exposedNow ? ', Exposed' : ''}{shows(h, 'rend') && shows(h, 'parts') && mv.part ? ` · ×${mv.part} toward breaks` : ''}{shows(h, 'daze') && mv.daze ? ` · Daze +${mv.daze}` : ''}{shows(h, 'flow') && mv.flow ? (h.flowUsed ? ' · Reroll used this turn' : ' · +1 Reroll') : ''}{full && mv.expose && !exposedNow && !h.mon.parts[h.target]?.broken ? ' · use first, later hits +20%' : ''}</span>{/if}</span>
+        <span class="md">{#if iceNow}<b class="dn ice" title={iceLine}>{iceShort}</b><span class="dx">{iceLine}</span>{:else}{#if h.chargeReady && ok}<span class="chgx" aria-label="Charged: this hit does double">×2</span>{/if}<b class="dn" class:charged={h.chargeReady && ok}>{shownDmg(mv.dmg)}</b><span class="dw"> damage{reps > 1 ? ' each' : ''}</span><span class="dx">{exposedNow ? ', Exposed' : ''}{shows(h, 'rend') && shows(h, 'parts') && mv.part ? ` · ×${mv.part} toward breaks` : ''}{shows(h, 'daze') && mv.daze ? ` · Daze +${mv.daze}` : ''}{shows(h, 'flow') && mv.flow ? (h.flowUsed ? ' · Reroll used this turn' : ' · +1 Reroll') : ''}{full && mv.expose && !exposedNow && !h.mon.parts[h.target]?.broken ? ' · use first, later hits +20%' : ''}</span>{/if}</span>
       </span>
       <span class="need dice" aria-label="Needs {needLabel(mv.need)}{miss.length && !over ? `; missing ${miss.join(', ')}` : ''}">{#each mv.need as c}<CostDie {c} />{/each}</span>
     </button>
@@ -102,7 +101,7 @@
 
   {#if shows(h, 'block')}
   <button class="move dash {gOk ? 'ready' : 'no'}" class:pick={gOk && n > 0} class:keepmd={!shows(h, 'all')} onmouseenter={() => (game.preview = n ? [...game.sel] : auto.guard ?? [])} onmouseleave={() => (game.preview = [])} onfocus={() => (game.preview = n ? [...game.sel] : auto.guard ?? [])} onblur={() => (game.preview = [])} data-coach="guard" data-key="a" aria-disabled={!gOk} onclick={() => gOk && game.guard()}>
-    <span><span class="mn"><Key k="A" />Block</span><span class="md">{E.intentInfo(h).noGuard && E.intentInfo(h).dmg > 0 ? `${E.intentInfo(h).name} goes through Block` : selGuard ? `Blocks ${selGuard} with the selected dice` : auto.guard?.length ? `Blocks ${auto.guard.reduce((a, i) => a + E.guardOf(h, i), 0)}` : `${h.arm.guard} a die · ${Math.round(h.arm.guard * (h.arm.blankx2 ? E.VEST_BLANK_GUARD : E.BLANK_GUARD))} a blank`}</span></span><span class="need dice"><CostDie c="any" /></span>
+    <span><span class="mn"><Key k="A" />Block</span><span class="md">{E.intentInfo(h).noGuard && E.intentInfo(h).dmg > 0 ? `${E.intentInfo(h).name} goes through Block` : selGuard ? `Blocks ${selGuard} with the selected dice` : auto.guard?.length ? `Blocks ${auto.guard.reduce((a, i) => a + E.guardOf(h, i), 0)}` : `${h.arm.guard} a die`}</span></span><span class="need dice"><CostDie c="any" /></span>
   </button>
   {/if}
   {#if shows(h, 'charge')}

@@ -50,9 +50,35 @@ describe('Achievements match their text', () => {
   it('Grounded, Unearthed and Shatter count only the monster they name', () => {
     for (const [id, feat, mid, other] of [['GROUNDED', 'grounded', 'galeshrike', 'cragwing'], ['UNEARTHED', 'unearthed', 'cinderback', 'quakeback'], ['SHATTER', 'shatter', 'rimetail', 'cragwing']]) {
       const h = ready(mid); h.feats = [feat];
-      expect(ach(id).hunt!(h), id).toBe(true);
+      expect(ach(id).hunt!(h, E.newSave()), id).toBe(true);
       const o = ready(other); o.feats = [feat];
-      expect(ach(id).hunt!(o), id + ' on ' + other).toBe(false);
+      expect(ach(id).hunt!(o, E.newSave()), id + ' on ' + other).toBe(false);
     }
+  });
+});
+
+describe('Blanks and the Bristlehide Vest (9 Nov 2026)', () => {
+  it('a blank blocks the same as any die', () => {
+    const h = ready('gorehorn'); h.dice = [{ face: 'B', used: null }, { face: 'C', used: null }] as never;
+    expect(E.guardOf(h, 0)).toBe(E.guardOf(h, 1));
+  });
+  it('the Bristlehide Vest hits back for 15 when its attack is fully blocked', () => {
+    const s = E.newSave();
+    for (const id of Object.keys(E.MONSTERS)) s.record[id] = { hunts: 1, wins: 1, captures: 0, breaks: {} };
+    s.armors = { ...s.armors, vest: { lv: 0 } }; s.loadout = { ...s.loadout, armor: 'vest', target: 'gorehorn' };
+    const h = E.startHunt(s, 3); h.guard = 999; const hp = h.mon.hp;
+    while (E.intentInfo(h).dmg === 0) { h.guard = 0; E.endTurn(h); h.guard = 999; }
+    const before = h.mon.hp; E.endTurn(h);
+    expect(hp).toBeGreaterThan(0); expect(before - h.mon.hp).toBe(E.BRISTLE_BACK);
+  });
+});
+
+describe('Squallhorn: Pinned', () => {
+  it('a pin while it gathers stops the gather: no hit and no Wind gained', () => {
+    const h = ready('squallhorn'); h.intent = 'gather'; h.mon.wind = 1;
+    const line = E.MONSTERS.squallhorn.onPin!(h);
+    expect(line).toBeTruthy(); expect(h.intent).toBe('pinned');
+    const hp = h.php; E.endTurn(h);
+    expect(h.php).toBe(hp); expect(h.mon.wind).toBe(1);
   });
 });

@@ -24,7 +24,7 @@ function effFor(h: Hunt, w: Hunt['weps'][number], partId: string): number {
   const exposed = h.mon.parts[partId].exposed > 0 ? E.EXPOSE_BREAK * E.EXPOSE_DMG : 1;
   // with ice up, what matters is how fast the weapon clears it (Cut breaks 2 layers a hit)
   const ice = h.mon.plating > 0 ? E.plateBreak(h, w) / E.CUT_ICE_BREAK : 1;
-  return p.eff[w.type] * exposed * ice * (E.airborneHalf(h, w) ? 0.5 : 1);
+  return p.eff[w.type] * exposed * ice;
 }
 
 function chooseTarget(h: Hunt, p: Policy) {

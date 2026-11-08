@@ -422,7 +422,7 @@ export const TIPS: Tip[] = [
     text: () => {
       const h = hunt()!, inc = E.incoming(h), d = game.sel.length ? game.sel : E.autoDice(h, 'guard') ?? [], g = d.reduce((a, i) => a + E.guardOf(h, i), 0);
       const blank = d.length && d.every(i => h.dice[i].face === 'B');
-      return `${blank ? 'A blank fits no move, but it blocks best.' : 'Dice that fit no move can **Block**.'} Select **Block**. It stops ${g}${inc?.net ? `, so the ${inc.raw} becomes ${Math.max(0, inc.raw - g)}` : ''}.`;
+      return `${blank ? 'A blank fits no move, but it can still **Block**.' : 'Dice that fit no move can **Block**.'} Select **Block**. It stops ${g}${inc?.net ? `, so the ${inc.raw} becomes ${Math.max(0, inc.raw - g)}` : ''}.`;
     },
     done: () => (hunt()?.guard ?? 0) > 0
   },
