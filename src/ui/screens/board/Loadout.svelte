@@ -95,7 +95,7 @@
   {:else if !a.resist}<span class="neutral">No resistance</span>
   {:else if M.elemOf}<span class="neutral">Resists its <b>{a.resist}</b> stance’s attacks</span>
   {:else if a.resist === M.elem}{#if full() || !M.elemental?.length}<span class="good">Resists its <b>{M.elem}</b> attacks −30%{M.elemental?.length ? ` (${M.elemental.join(', ')}; not its physical ones)` : ''}</span>{:else}<span class="good" use:detail={`${M.elemental.join(', ')}. Its other attacks are physical, and resist doesn’t touch those.`}>Resists {M.elemental.length} of its moves −30%</span>{/if}
-  {:else}<span class="bad"><b>{a.resist}</b> resist unused here</span>{/if}
+  {:else}<span class="neutral"><Elem e={a.resist} />{a.resist}</span>{/if}
 {/snippet}
 
 {#snippet delta(v: number, cur: number)}

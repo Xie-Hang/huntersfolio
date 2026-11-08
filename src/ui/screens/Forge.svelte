@@ -84,6 +84,21 @@
     chosen[tab] = id; toast = '';
     if (window.innerWidth <= 900) { await tick(); detailEl?.scrollIntoView?.({ behavior: 'smooth', block: 'start' }); }
   }
+  /** Equip from the Forge (Mekkman, 8 Nov 2026: players look for it here). A weapon takes the place of the one of its
+   *  own type you're carrying, or your second weapon; armour and charms take their slot. */
+  const equipped = (id: string) => kind === 'w' ? s.loadout.weapons.includes(id) : kind === 'a' ? s.loadout.armor === id : s.loadout.charm === id;
+  const canEquip = (id: string) => E.isOwned(s, kind, id) && (kind === 'w' || (kind === 'a' ? E.armorSlot(s) : E.charmSlot(s)));
+  function equip() {
+    if (!sel || !canEquip(sel)) return;
+    const L = s.loadout;
+    if (kind === 'w') {
+      const W = L.weapons, same = W.findIndex(w => E.WEAPONS[w]?.type === E.WEAPONS[sel!].type), at = same >= 0 ? same : W.length < (E.twoWeapons(s) ? 2 : 1) ? W.length : W.length - 1;
+      const out = W[at]; W[at] = sel;
+      toast = out ? `Equipped. It replaces your ${E.WEAPONS[out].name}.` : 'Equipped.';
+    } else if (kind === 'a') { L.armor = sel; toast = 'Equipped.'; }
+    else { L.charm = sel; toast = 'Equipped.'; }
+    E.fixLoadout(s); game.persist();
+  }
   function doIt() { if (sel) toast = game.town(sv => E.forgeDo(sv, kind, sel), 'forge') ?? ''; }
   function track() {
     if (!sel) return;
@@ -234,8 +249,11 @@
             <button class="btn primary" data-sound data-coach="forge-act" disabled={!E.canPay(s, r.cost)} onclick={doIt}>
               {r.action === 'craft' || r.action === 'upgrade' ? 'Craft' : `Reinforce to +${lv + 1}`}
             </button>
-          {:else if owned}
-            <span class="pl">{kind === 'c' ? 'Owned. Equip it at the Hunt Board.' : isl ? 'Yours.' : 'Fully reinforced.'}</span>
+          {:else if owned && kind !== 'c'}
+            <span class="pl">{isl ? 'Yours.' : 'Fully reinforced.'}</span>
+          {/if}
+          {#if canEquip(sel)}
+            {#if equipped(sel)}<span class="pl">Equipped</span>{:else}<button class="btn" data-coach="equip" onclick={equip}>Equip</button>{/if}
           {/if}
           {#if r.cost && (r.action || r.locked) && !(kind === 'c' && E.CHARMS[sel].bounties) && !(kind === 'w' && E.WEAPONS[sel].bounties && !r.action) && !isl}
             <button class="btn quiet" data-coach="track" aria-pressed={s.tracked === tk} onclick={track}>{s.tracked === tk ? 'Untrack' : 'Track'}</button>
