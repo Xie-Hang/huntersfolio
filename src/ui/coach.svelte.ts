@@ -157,10 +157,12 @@ const ISLAND: Tip[] = [
     done: () => game.multi > 0
   },
   {
+    // the moment the dice left fit no move (Mekkman, 8 Nov 2026: turn 1's Claw and blank, after Slash). Before the
+    // several-dice lesson, so a Block on turn 1 can't skip it
     id: 'i-block', head: 'Block', guide: true, learn: true, at: ['guard'],
-    when: () => { const h = onIsland('snapclaw'); return !!h && h.intent === 'pinch' && h.guard === 0 && freeDice(h) > 0; },
+    when: () => { const h = onIsland('snapclaw'); return !!h && h.guard === 0 && freeDice(h) > 0 && !anyMoveReady(h) && (E.incoming(h)?.net ?? 0) > 0; },
     // Block arrives here, after several dice (it's hidden until turn 3, game.rerollLesson); Any means any face
-    text: () => 'Big hit coming! Put your dice into **Block** to take less. Any die works.',
+    text: () => 'Those dice fit no move, but they can still help. Put them into **Block** to take less from its next move. Any die works.',
     done: () => (hunt()?.guard ?? 0) > 0
   },
   // ---- the Forge: the blade (and the maul) ----

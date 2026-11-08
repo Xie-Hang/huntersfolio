@@ -301,9 +301,7 @@ class Game {
     if (h.mid === 'snapclaw' && st === 1 && !seen('i-twice2')) {
       const f: E.Face[] = ['C', 'T', 'B']; h.dice.forEach((d, i) => { d.face = f[i] ?? d.face; });
       turn(2, ['C', 'C', 'C']);
-      // Block comes after several dice (Mekkman, 8 Nov 2026): hidden until turn 3, its Tail Sweep, and turn 3 rolls no
-      // Fang, so Block is the thing to do
-      if (!seen('i-block')) { hold(h, 'block'); turn(3, ['T', 'B', 'T']); }
+      // (Block is taught on turn 1: after Slash, the Claw and the blank fit no move, so Block is what they're for)
     }
     // the Tuskling: turn 3 has a blank for Swap to take on its own (without one the player would have to pick a die
     // first, and the prompt's lock would leave them stuck)

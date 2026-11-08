@@ -329,6 +329,8 @@ function planDmg(h: Hunt, faces: string[]): number {
 function flowReroll(h: Hunt, mv: { flow?: boolean }) {
   // one Flow reroll a turn, however many Flow moves you use (Mekkman, Nov 2026)
   if (!mv.flow || h.flowUsed) return;
+  // (a Foothills hunt before Flow is taught: no Flow yet, Mekkman 8 Nov 2026)
+  if (h.show && !h.show.includes('flow')) return;
   h.flowUsed = true; h.rerolls++;
   log(h, 'Flow: +1 reroll.');
 }

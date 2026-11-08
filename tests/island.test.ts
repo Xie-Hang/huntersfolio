@@ -138,6 +138,14 @@ describe('the Foothills', () => {
     expect(show(4, 'burrowmole')).not.toContain('charge');
     expect(show(4, 'burrowmole')).not.toContain('capture');
   });
+  it('Flow gives no reroll on the island until it is taught (practice)', () => {
+    const s = E.newPlayerSave(); s.island = 3; s.weapons = { blade: { lv: 0 }, maul: { lv: 0 } }; s.loadout.weapons = ['blade', 'maul']; s.loadout.target = 'tuskling';
+    const h = E.startHunt(s, 4); h.dice = h.dice.map(() => ({ face: 'C' as const, used: null })); const r0 = h.rerolls;
+    E.useMove(h, 1); expect(h.rerolls).toBe(r0);
+    s.island = 4; s.loadout.target = 'burrowmole';
+    const g = E.startHunt(s, 4); g.dice = g.dice.map(() => ({ face: 'C' as const, used: null })); const g0 = g.rerolls;
+    E.useMove(g, 1); expect(g.rerolls).toBe(g0 + 1);
+  });
   it('a replayed lesson starts from a copy of a new player at that step', () => {
     expect(E.lessonSave(0).island).toBe(0);
     expect(E.lessonSave(2)).toMatchObject({ island: 3, loadout: { target: 'tuskling', weapons: ['blade', 'maul'] } });
