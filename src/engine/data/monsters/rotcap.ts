@@ -98,7 +98,7 @@ export const rotcap: MonsterDef = {
 
   badges(h) {
     const m = h.mon;
-    return (m.bloom ?? 0) > 0 || h.intent === 'burst' ? [{ key: 'bloom', label: 'Swollen', short: 'bursts soon · **Pierce** the cap', cls: 'stone', desc: 'A 2-dice **Pierce** move on the cap stops the **Spore Burst**.' }] : [];
+    return (m.bloom ?? 0) > 0 || h.intent === 'burst' ? [{ key: 'bloom', label: 'Swollen', short: 'bursts soon · **Pierce** the cap', cls: 'stone', desc: 'Its cap is swelling to burst.\nA 2-dice **Pierce** move on the cap pops it, and the **Spore Burst** never comes.' }] : [];
   },
 
   partNote(h, partId) {

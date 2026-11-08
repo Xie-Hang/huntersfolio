@@ -82,7 +82,7 @@ export const bloodwhelk: MonsterDef = {
 
   badges(h) {
     const s = h.mon.slime ?? 0;
-    return s > 0 ? [{ key: 'leech', n: s, label: 'Leeching', short: `drains through **Block** · ${s} turn${s > 1 ? 's' : ''}`, cls: 'ember', desc: 'It heals what it drains.\nBreaking its gills stops the healing for good.' }] : [];
+    return s > 0 ? [{ key: 'leech', n: s, label: 'Leeching', short: `drains through **Block** · ${s} turn${s > 1 ? 's' : ''}`, cls: 'ember', desc: 'Its slime drinks your HP each turn, even through your **Block**.\nIt heals what it takes.\nBreaking its gills stops the healing for good.' }] : [];
   },
 
   tip(h, type) {
