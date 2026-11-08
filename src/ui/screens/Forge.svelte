@@ -228,7 +228,7 @@
             {#if owned && lv < E.MAX_REINFORCE}<span class="delta up">↑ {a.hp + 10} HP, block {a.guard + 1} at +{lv + 1}</span>{/if}
           </div>
           <div class="fd-type">
-            <span>Block {owned ? a.guard : base.guard} per die</span><span class="sep">·</span><span>{base.rerolls} rerolls</span><span class="sep">·</span>
+            <span>Block {owned ? a.guard : base.guard} per die</span><span class="sep">·</span><span>{base.rerolls} Rerolls</span><span class="sep">·</span>
             <span>{#if base.resist}<Elem e={base.resist} />Resists {base.resist}{:else}No resistance{/if}</span>
           </div>
           <p class="fd-sig"><Rich text={base.perk} /></p>

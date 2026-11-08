@@ -138,7 +138,7 @@ export function startHunt(s: Save, seed: number, script?: Face[][], lesson?: num
 }
 
 export const SWALLOWED = 'Swallowed', FROZEN = 'Frozen', SHAKEN = 'Shaken';
-/** damage it takes to cut your way out once swallowed; Cut counts double, slick armor halves it */
+/** damage it takes to cut your way out once swallowed; Cut counts 3 times, slick armor halves it */
 export const GUT_ESCAPE = 60;
 /** how much each damage type counts toward cutting free: blades slice out, clubs barely dent the gut wall */
 export const GUT_CUT: Record<string, number> = { Cut: 3, Blunt: 0.5, Pierce: 1 };
@@ -647,7 +647,7 @@ export function endTurn(h: Hunt): TurnResult {
       h.php = Math.max(0, h.php - taken); h.stats.taken += taken; h.stats.guarded += blocked;
       log(h, `${info.name} hits you for ${taken}${blocked ? ` (${blocked} blocked${info.halfGuard && !h.arm.steady ? ', block halved' : ''})` : ''}${res ? ` (${monElem(h)} resisted)` : ar.elem === 0 && ar.wearsResist ? ' (physical: your armour\u2019s resist doesn\u2019t apply)' : ''}.`, taken >= CHARGE_BREAK ? 'ember' : '');
       // any hit that gets past your block breaks a charge (Nov 2026: charging is a read of a safe turn, not a habit)
-      if (h.chargePending && taken > 0) { h.chargePending = false; log(h, 'The hit breaks your focus. Your charge is lost.', 'ember'); }
+      if (h.chargePending && taken > 0) { h.chargePending = false; log(h, 'The hit breaks your focus. Your charge fails.', 'ember'); }
     }
   }
   if (h.snareSet) {

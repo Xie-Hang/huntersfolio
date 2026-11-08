@@ -46,7 +46,7 @@ export const quakeback: MonsterDef = {
     switch (type) {
       case 'swipe': return { name: 'Stone Swipe', text: 'It scrapes forward, claws grinding on the rock.', dmg: enr ? 30 : 24, threat: 1 };
       case 'rockfall': return { name: 'Rockfall', text: 'It hunches and shrugs its back ridge: the slope above you starts to slide!', dmg: enr ? 68 : 58, threat: enr ? 4 : 3, note: 'Breaking its back ridge stops this' };
-      case 'burrow': return { name: 'Burrowing', text: 'It claws into the ground and vanishes in a burst of grit.', dmg: 0, threat: 0, note: 'After your turn it’s underground. Only **Blunt** reaches it then' };
+      case 'burrow': return { name: 'Burrowing', text: 'It claws into the ground and vanishes in a burst of grit.', dmg: 0, threat: 0, note: m.parts.claws.broken ? 'Its claws are broken · it stays above ground' : 'After your turn it’s underground. Only **Blunt** reaches it then' };
       case 'tremor': return { name: 'Tremor', text: 'The ground bucks under your feet.', dmg: enr ? 50 : 42, threat: 2, note: h.arm.steadyfoot ? 'Your boots hold. All your dice next turn' : '1 fewer die next turn' };
       // enraged (Nov 2026): its tremor turned up, two dice knocked loose
       case 'quake': return { name: 'Great Tremor', text: 'The whole slope lurches under you.', dmg: enr ? 50 : 42, threat: 3, isNew: !m.newSeen, note: h.arm.steadyfoot ? 'Your boots hold. All your dice next turn' : '2 fewer dice next turn. A 3-dice **Blunt** move drives it up and stops it' };
@@ -60,7 +60,7 @@ export const quakeback: MonsterDef = {
 
   next(h, prev) {
     const m = h.mon;
-    if (prev === 'burrow') return 'tremor';
+    if (prev === 'burrow' && m.under) return 'tremor';
     // still underground after anything (a daze included: Nov 2026 bug hunt), it keeps to its tremors and bursts up
     if (m.under) return m.charges < TREMORS ? (m.enraged && m.charges === TREMORS - 1 ? 'quake' : 'tremor') : 'rockburst';
     if (prev === 'rockburst') return 'settle';
@@ -73,7 +73,8 @@ export const quakeback: MonsterDef = {
   resolve(h, type, landed) {
     const m = h.mon;
     switch (type) {
-      case 'burrow': m.under = true; m.charges = 0; m.usedWallow = true; return 'It’s underground.';
+      // claws broken while it was about to dig: it stays up (9 Nov 2026 audit: it used to burrow anyway)
+      case 'burrow': if (m.parts.claws.broken) return null; m.under = true; m.charges = 0; m.usedWallow = true; return 'It’s underground.';
       case 'tremor':
         m.charges++;
         if (landed && !h.arm.steadyfoot) { m.shake = 1; return 'A die is shaken loose.'; }

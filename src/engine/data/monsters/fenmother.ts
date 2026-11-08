@@ -1,6 +1,6 @@
 // The Fenmother — the rank E → D promotion hunt (Nov 2026, the rank ladder). Ember; weak to Stone.
 // The oldest thing in the Mirewood: a vast steaming hot-spring toad. An exam of the Mirewood's lessons at once:
-//   Gape → Swallow like the Bogjaw: two dice stuck until you cut free (Cut counts double); breaking the Throat
+//   Gape → Swallow like the Bogjaw: two dice stuck until you cut free (Cut counts 3 times); breaking the Throat
 //   Sac (Cut) stops it; a Smoke Pouch makes it miss.
 //   Gills heal it every turn like the Emberwhelk, until the Gills (Pierce) break.
 //   The Head (Blunt) is the daze part, like the Duskheron's heads: a daze during the Gape cancels the Swallow.
@@ -50,7 +50,7 @@ export const fenmother: MonsterDef = {
       case 'gape': return { name: 'Gape', text: 'It opens its jaws wide. The spring pours into its throat.', dmg: 0, threat: 0, note: sac ? '**Snap** next turn' : 'Swallows you next turn. **Daze** to the head stops it' };
       case 'swallow': return { name: 'Swallow', text: 'It lunges to swallow you whole!', dmg: enr ? 48 : 40, threat: 3, note: '2 of your dice stuck inside until you cut free' };
       case 'snap': return { name: 'Snap', text: 'It snaps its torn throat shut on empty steam.', dmg: enr ? 34 : 28, threat: 2 };
-      case 'digest': return { name: 'Digest', text: 'You’re inside, in the heat. The walls squeeze.', dmg: enr ? 20 : 16, threat: 1, note: `${Math.max(0, m.gutHp ?? 0)} left to cut free. **Cut** counts double, **Blunt** ½` };
+      case 'digest': return { name: 'Digest', text: 'You’re inside, in the heat. The walls squeeze.', dmg: enr ? 20 : 16, threat: 1, note: `${Math.max(0, m.gutHp ?? 0)} left to cut free. **Cut** counts 3 times, **Blunt** half` };
       case 'steam': return { name: 'Steam Cloud', text: 'It sinks into the spring and the steam rolls over everything.', dmg: 0, threat: 0, isNew: !m.newSeen, note: '1st hit only for 2 turns' };
       case 'dazed': return { name: 'Dazed', text: 'It sways, eyes rolling, steam leaking from its jaws.', dmg: 0, threat: 0, note: 'It loses its turn' };
     }
@@ -103,12 +103,12 @@ export const fenmother: MonsterDef = {
 
   badges(h) {
     const s = h.mon.mirage ?? 0;
-    return s > 0 ? [{ key: 'steam', n: s, label: 'Steam', short: `Only your 1st hit lands · ${s} turn${s > 1 ? 's' : ''}`, cls: 'ice', desc: 'Only your first hit each turn lands.' }] : [];
+    return s > 0 ? [{ key: 'steam', n: s, label: 'Steam', short: `First hit only · ${s} turn${s > 1 ? 's' : ''}`, cls: 'ice', desc: 'Only your first hit each turn lands.' }] : [];
   },
 
   tip(h, type) {
     const m = h.mon;
-    if ((m.gut ?? 0) > 0) return carries(h, 'Cut') ? `You’re swallowed. Your ${carryingName(h, 'Cut')} counts double toward cutting free.` : 'You’re swallowed. Every hit counts toward cutting free. **Cut** counts double, **Blunt** ½.';
+    if ((m.gut ?? 0) > 0) return carries(h, 'Cut') ? `You’re swallowed. Your ${carryingName(h, 'Cut')} counts 3 times toward cutting free.` : 'You’re swallowed. Every hit counts toward cutting free. **Cut** counts 3 times, **Blunt** half.';
     if ((m.mirage ?? 0) > 0) return h.chargeReady ? 'Your **Charge** is ready. Only your first hit lands in the steam.' : 'In the steam only your first hit each turn lands.';
     if (type === 'gape') {
       if (h.item === 'smoke' && h.itemCharges > 0) return 'A **Smoke Pouch** now makes the **Swallow** miss.';

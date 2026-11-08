@@ -53,8 +53,8 @@ export const slagwyrm: MonsterDef = {
       // enraged (Nov 2026): its spit turned up, a shower of slag that burns a turn longer, broken jaw or not
       case 'rain': return { name: 'Slag Rain', text: 'It rears and sprays molten slag across the ground.', dmg: 24, threat: 2, isNew: !m.newSeen, note: `Then burns you for ${SPIT_TURNS + 1} turns. Burn-proof armour takes it to ½` };
       case 'lash': return { name: 'Tail Lash', text: 'Its tail whips round, trailing slag.', dmg: enr ? 30 : 26, threat: 2 };
-      case 'stoke': return { name: 'Stoke', text: 'It coils and glows brighter and brighter.', dmg: 0, threat: 0, note: 'Its armour doubles, then **Eruption**. Break the armour to stop it' };
-      case 'eruption': return { name: 'Eruption', text: 'It bursts open in a fountain of fire!', dmg: enr ? 66 : 60, threat: 4, steady: true, note: 'Breaking its armour stops it' };
+      case 'stoke': return { name: 'Stoke', text: 'It coils and glows brighter and brighter.', dmg: 0, threat: 0, note: armourUp(h) ? 'Its armour doubles, then **Eruption** · breaking its armour stops it' : 'Then **Eruption**' };
+      case 'eruption': return { name: 'Eruption', text: 'It bursts open in a fountain of fire!', dmg: enr ? 66 : 60, threat: 4, steady: true, note: armourUp(h) ? 'Breaking its armour stops it' : undefined };
       case 'quenched': return { name: 'Quenched', text: 'Its armour cracks and the fire inside it gutters.', dmg: 0, threat: 0, note: '**Eruption** stopped' };
       case 'dazed': return { name: 'Dazed', text: 'It sways, slag dripping from its jaw.', dmg: 0, threat: 0, note: 'It loses its turn' };
     }
@@ -133,7 +133,8 @@ export const slagwyrm: MonsterDef = {
 
   tip(h, type) {
     const m = h.mon;
-    if ((type === 'stoke' || type === 'eruption') && carries(h, 'Blunt')) return `One ${carryingName(h, 'Blunt')} hit of ${SHATTER_AT} or more breaks its armour and stops the **Eruption**.`;
+    // (9 Nov 2026 audit: in Meltdown, or with the armour already broken, nothing stops the Eruption)
+    if ((type === 'stoke' || type === 'eruption') && armourUp(h) && carries(h, 'Blunt')) return `One ${carryingName(h, 'Blunt')} hit of ${SHATTER_AT} or more breaks its armour and stops the **Eruption**.`;
     if (m.melt) return 'Your first **Cut** or **Blunt** hit each turn burns you.';
     if (armourUp(h) && carries(h, 'Blunt')) return `Its armour takes the first ${soakMax(h)} each turn. One ${carryingName(h, 'Blunt')} hit of ${SHATTER_AT} or more breaks it.`;
     if (armourUp(h)) return `Its armour takes the first ${soakMax(h)} each turn. A heavy **Blunt** hit breaks it.`;

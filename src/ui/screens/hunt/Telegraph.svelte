@@ -132,7 +132,7 @@
     {/if}
     {#if tp?.extra}<div class="calc rider">+<b>{tp.extra}</b> at turn end from <Rich text={tp.why.join(' and ')} />. <span class="nores">Goes through <b>Block</b>.</span></div>{/if}
     {#if E.trapCatches(h.trapSet, h.intent)}<div class="calc rider" style="color:var(--gold-hi)">Your {(E.ITEMS[h.item ?? '']?.name ?? 'trap')} catches it. No hit, and it loses {E.TRAP_HOLD[h.trapSet!]} turns{E.canCapture(h) ? '. It’s weak enough, so it’s captured' : ''}.</div>{:else if h.trapSet}<div class="calc rider"><span class="nores">Your {(E.ITEMS[h.item ?? '']?.name ?? 'trap')} is wasted on this move.</span></div>{/if}
-    {#if info.note || info.steady || breaksCharge || breaksSnare}<div class="note"><Rich text={[info.note, info.steady && E.carries(h, 'Blunt') ? 'Goes through **Daze**' : null, breaksCharge ? 'Its attack will break your **Charge**' : null, breaksSnare ? 'This hit tears it free of your **Snare**' : null].filter(Boolean).map(t => stop(t!)).join(' ')} /></div>{/if}
+    {#if info.note || info.steady || breaksCharge || breaksSnare}<div class="note"><Rich text={[info.note, info.steady && E.carries(h, 'Blunt') ? 'Goes through **Daze**' : null, breaksCharge ? 'Its attack will make your **Charge** fail' : null, breaksSnare ? 'This hit tears it free of your **Snare**' : null].filter(Boolean).map(t => stop(t!)).join(' ')} /></div>{/if}
     {#if tip}<div class="answer" class:counter={isCounter}><b>{isCounter ? 'Counter:' : 'Tip:'}</b> <Tagged text={stop(tip)} /></div>{/if}
     {#if recap}
       <div class="recap">

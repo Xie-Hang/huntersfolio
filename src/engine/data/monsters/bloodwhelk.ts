@@ -42,6 +42,7 @@ export const bloodwhelk: MonsterDef = {
     const r = emberwhelk.intent.call(this, h, type);
     const out = r.dmg ? { ...r, dmg: Math.round(r.dmg * HIT) } : r;
     if (type === 'spit') return { ...out, name: 'Spit Grit', text: 'It hawks a gob of grit and red slime.' };
+    if (type === 'retreat') return { ...out, note: h.mon.parts.gills.broken ? 'Takes half damage until it comes out' : 'Takes half damage until it comes out · heals 40' };
     // enraged (Nov 2026): its slime turned up, a tide that drinks for longer
     if (type === 'tide') { const s = emberwhelk.intent.call(this, h, 'slime'); return { name: 'Blood Tide', text: 'A wave of red slime rolls over you.', dmg: Math.round(s.dmg * HIT), threat: 2, isNew: !h.mon.newSeen, note: h.arm.leechProof ? 'Your armour keeps the slime off' : `Then drains you ${LEECH_TURNS + 2} turns, through your **Block**. Breaking its gills stops the healing` }; }
     if (type === 'slime') return { ...out, name: 'Leeching Slime', text: 'It surges forward on a wave of red slime.', note: h.arm.leechProof ? 'Your armour keeps the slime off' : `Then drains you ${LEECH_TURNS} turns, through your **Block**` };
@@ -71,7 +72,7 @@ export const bloodwhelk: MonsterDef = {
       }
       m.slime!--;
     }
-    if (type === 'retreat') { m.shell = 1; const heal = Math.min(40, m.max - m.hp); m.hp += heal; lines.push(`It heals ${heal} inside its shell.`); }
+    if (type === 'retreat') { m.shell = 1; const heal = m.parts.gills.broken ? 0 : Math.min(40, m.max - m.hp); m.hp += heal; if (heal) lines.push(`It heals ${heal} inside its shell.`); }
     if (!m.parts.gills.broken && m.hp > 0) {
       const heal = Math.min(m.enraged ? 26 : 18, m.max - m.hp);
       if (heal > 0) { m.hp += heal; lines.push(`Its gills flare. It heals ${heal}.`); }

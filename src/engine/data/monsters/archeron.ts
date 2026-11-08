@@ -33,7 +33,7 @@ export const archeron: MonsterDef = {
   common: 'archplume',
   rarePart: 'wings',
   rare: 'stormquill',
-  habits: 'A Duskheron from the frozen pools, both heads crackling. A spear that lands puts **Spark** on you, and at 3 it goes off through your **Block**. Its cry puts **Static** on your dice, and a **Static** die can only attack. **Daze** on a head stops its strike carrying anything.',
+  habits: 'A Duskheron from the frozen pools, both heads crackling. A spear that lands puts **Spark** on you, and at 3 it goes off through your **Block**. Its cry puts **Static** on your dice, and a **Static** die goes off if used for **Block** or left unused. **Daze** on a head stops its strike carrying anything.',
   enragedHabit: 'Both heads cry together, a **Static Field** that puts **Static** on 3 of your dice.',
   intro: 'Ice creaks in the reeds. Two heads rise, and the air between them snaps with static.',
   enrageText: 'Sparks run up both necks. The Archeron is enraged!',
@@ -84,7 +84,7 @@ export const archeron: MonsterDef = {
   },
 
   tip(h, type) {
-    if (h.dice.some(d => d.charged && !d.used)) return 'A **Static** die can only attack. Blocking with it or leaving it sets it off.';
+    if (h.dice.some(d => d.charged && !d.used)) return 'A **Static** die is safe on a move, **Charge**, **Swap** or **Snare**. Used for **Block** or left unused, it goes off and does 15 damage to you.';
     if ((h.mon.pSpark ?? 0) >= 2 && carries(h, 'Blunt')) return `2 **Spark** on you. **Daze** to the thrusting head from your ${carryingName(h, 'Blunt')} stops it, and any **Blunt** move grounds 1.`;
     return duskheron.tip!.call(this, h, type);
   }

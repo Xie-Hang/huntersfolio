@@ -23,7 +23,9 @@ const tier3 = () => Object.values(MONSTERS).filter(M => M.tier === 3).map(M => M
 const changed = () => Object.values(MONSTERS).filter(M => M.tier === 2.5).map(M => M.id);
 const gloam = () => Object.values(MONSTERS).filter(M => M.tier === 2.2).map(M => M.id);
 const mireChanged = () => Object.values(MONSTERS).filter(M => M.tier === 3.2).map(M => M.id);
-const STARTERS = ['blade', 'maul'];
+// weapons you're given, not made: the Training Blade and Mell's maul (the Foothills), or the old start's blade and
+// maul (saves from before the island). 9 Nov 2026 audit: the Training Blade wasn't listed, so this unlocked unearned
+const given = (s: { weapons: Record<string, unknown> }) => ('training' in s.weapons ? ['training', 'maul'] : ['blade', 'maul']);
 
 export const ACHIEVEMENTS: AchievementDef[] = [
   { id: 'FIRST_HUNT', name: 'First blood', desc: 'Win your first hunt.', save: s => Object.values(s.record).some(r => r.wins > 0) },
@@ -35,11 +37,11 @@ export const ACHIEVEMENTS: AchievementDef[] = [
   { id: 'BARELY_SCRATCHED', name: 'Barely scratched', desc: 'Win a hunt losing 40 HP or less.', hunt: h => won(h) && h.stats.taken <= 40 },
   { id: 'LIGHTS_OUT', name: 'Lights out', desc: 'Daze a monster.', hunt: h => !!h.feats?.includes('daze') },
   { id: 'STOPPED_COLD', name: 'Stopped cold', desc: 'Stop a monster’s big attack before it lands.', hunt: h => !!h.feats?.includes('interrupt') },
-  { id: 'GROUNDED', name: 'Grounded', desc: 'Shoot the Galeshrike out of the sky.', hunt: h => !!h.feats?.includes('grounded') },
-  { id: 'UNEARTHED', name: 'Unearthed', desc: 'Drive the Cinderback up with a Blunt hit.', hunt: h => !!h.feats?.includes('unearthed') },
-  { id: 'SHATTER', name: 'Shatter', desc: 'Break all of the Rimetail’s ice with one hit.', hunt: h => !!h.feats?.includes('shatter') },
+  { id: 'GROUNDED', name: 'Grounded', desc: 'Shoot the Galeshrike out of the sky.', hunt: h => h.mid === 'galeshrike' && !!h.feats?.includes('grounded') },
+  { id: 'UNEARTHED', name: 'Unearthed', desc: 'Drive the Cinderback up with a Blunt hit.', hunt: h => h.mid === 'cinderback' && !!h.feats?.includes('unearthed') },
+  { id: 'SHATTER', name: 'Shatter', desc: 'Break all of the Rimetail’s ice with one hit.', hunt: h => h.mid === 'rimetail' && !!h.feats?.includes('shatter') },
   { id: 'RARE_FIND', name: 'Rare find', desc: 'Carry home a rare material.', hunt: h => !!h.reward?.rare },
-  { id: 'FIRST_FORGE', name: 'Fresh from the forge', desc: 'Craft or upgrade a weapon.', save: s => Object.keys(s.weapons).some(id => !STARTERS.includes(id)) },
+  { id: 'FIRST_FORGE', name: 'Fresh from the forge', desc: 'Craft or upgrade a weapon.', save: s => Object.keys(s.weapons).some(id => !given(s).includes(id)) },
   { id: 'TEMPERED', name: 'Tempered', desc: 'Reinforce a weapon to +3.', save: s => Object.values(s.weapons).some(w => w.lv >= 3) },
   { id: 'FIRST_CHARM', name: 'Lucky charm', desc: 'Craft a charm.', save: s => Object.keys(s.charms).length > 0 },
   { id: 'ALL_CHARMS', name: 'Charm collector', desc: 'Craft every charm.', save: s => Object.keys(CHARMS).every(id => s.charms[id]) }

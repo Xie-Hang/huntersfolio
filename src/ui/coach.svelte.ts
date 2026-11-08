@@ -457,7 +457,7 @@ export const TIPS: Tip[] = [
     // (any turn from 2 on without a big hit coming: it used to wait for a turn with no attack at all, which some monsters
     // rarely give, and the Charge button now waits for this lesson)
     when: () => { const h = hunt(); return !!h && shows(h, 'all') && h.turn >= 2 && unusedTurn(h) && E.intentInfo(h).threat < 3 && !h.chargePending && !h.chargeReady; },
-    text: () => `${game.save.tips.includes('capture') ? 'Here’s another Hunter technique,' : 'Now that you’re a Hunter, I can show you this one,'} **Charge**. Spend ${E.chargeDice(hunt()!)} dice now and your first hit next turn does double. Careful, if its attack hurts you, the charge is lost.`,
+    text: () => `${game.save.tips.includes('capture') ? 'Here’s another Hunter technique,' : 'Now that you’re a Hunter, I can show you this one,'} **Charge**. Spend ${E.chargeDice(hunt()!)} dice now and your first hit next turn does double damage. Careful, if its attack damages you, the charge fails.`,
     done: () => !!hunt()?.chargePending
   },
   {

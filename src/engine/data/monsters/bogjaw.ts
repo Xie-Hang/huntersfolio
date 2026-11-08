@@ -1,6 +1,6 @@
 // The Bogjaw — T2 Stone grappler of the Mirewood. The Cut check.
 // Weighted behaviour (Tier 2): Tongue Lash and Body Slam, and every few turns Gape → Swallow.
-//   Swallow: 30 damage and 2 of your dice are stuck in its gut until you cut free (60 damage; Cut counts double,
+//   Swallow: 30 damage and 2 of your dice are stuck in its gut until you cut free (60 damage; Cut counts 3 times,
 //   Blunt half). Each turn inside it Digests you (18). Answers: a Blunt daze on the jaw during Gape cancels the Swallow;
 //   a Smoke Pouch makes the Swallow miss; breaking the Throat Sac turns the Swallow into a plain Snap.
 // Parts: Jaw (Blunt; the daze part), Throat Sac (Cut; stops the Swallow), Stone Warts (Pierce; rare Mirestone).
@@ -49,7 +49,7 @@ export const bogjaw: MonsterDef = {
       // enraged (Nov 2026): once a hunt it swallows you deeper: a fifth more to cut through
       case 'gulp': return { name: 'Deep Gulp', text: 'It lunges, throat bulging, to swallow you whole and deep!', dmg: jaw ? 28 : 42, threat: 3, isNew: !m.newSeen, note: '2 of your dice stuck, deeper this time. **Daze** to the jaw or breaking its throat sac stops it' };
       case 'snap': return { name: 'Snap', text: 'It lunges and snaps its torn throat shut on empty air.', dmg: enr ? 30 : 24, threat: 2 };
-      case 'digest': return { name: 'Digest', text: 'You’re inside. The walls of its gut squeeze.', dmg: enr ? 18 : 14, threat: 1, note: `${Math.max(0, m.gutHp ?? 0)} left to cut free. **Cut** counts double, **Blunt** ½` };
+      case 'digest': return { name: 'Digest', text: 'You’re inside. The walls of its gut squeeze.', dmg: enr ? 18 : 14, threat: 1, note: `${Math.max(0, m.gutHp ?? 0)} left to cut free. **Cut** counts 3 times, **Blunt** half` };
       case 'dazed': return { name: 'Dazed', text: 'It sways, jaw hanging, eyes rolling.', dmg: 0, threat: 0, note: 'It loses its turn' };
     }
     return { name: '…', text: '', dmg: 0, threat: 0 };
@@ -99,8 +99,8 @@ export const bogjaw: MonsterDef = {
   tip(h, type) {
     const m = h.mon;
     if ((m.gut ?? 0) > 0) return carries(h, 'Cut')
-      ? `You’re swallowed. Your ${carryingName(h, 'Cut')} counts double toward cutting free.`
-      : 'You’re swallowed. Every hit counts toward cutting free. **Cut** counts double, **Blunt** ½.';
+      ? `You’re swallowed. Your ${carryingName(h, 'Cut')} counts 3 times toward cutting free.`
+      : 'You’re swallowed. Every hit counts toward cutting free. **Cut** counts 3 times, **Blunt** half.';
     if (type === 'gape') {
       if (h.item === 'smoke' && h.itemCharges > 0) return 'A **Smoke Pouch** now makes the **Swallow** miss.';
       return carries(h, 'Blunt') ? `**Daze** to the jaw from your ${carryingName(h, 'Blunt')} stops the **Swallow**.` : 'It swallows you next turn. Breaking its throat sac stops it.';

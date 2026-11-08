@@ -1,6 +1,6 @@
 // The Feverjaw — a changed Bogjaw: Infect, Ember. The Mirewood, changed (Tier 3.2, Nov 2026). The Cut check.
 // Its gut is septic: a Swallow infects you, every turn inside keeps the infection going, and a Spore Belch infects you
-// from outside. Cutting your way out fast is the answer (Cut counts double), or breaking the throat sac so it can't
+// from outside. Cutting your way out fast is the answer (Cut counts 3 times), or breaking the throat sac so it can't
 // swallow at all. Same body, parts and Gape → Swallow chain as the Bogjaw (bogjaw.ts); hits harder.
 import type { Intent, MonsterDef } from '../../types';
 import { choose, remember } from '../../behaviour';
@@ -44,6 +44,8 @@ export const feverjaw: MonsterDef = {
     // enraged (Nov 2026): its belch turned up, a cloud that keeps you infected longer
     if (type === 'burst') return { name: 'Spore Burst', text: 'Every wart bursts at once in a hot, choking cloud.', dmg: enr ? 28 : 24, threat: 2, isNew: !h.mon.newSeen, note: 'If it hits, **Infect** on you for 5 turns. Breaking its warts stops it' };
     if (type === 'belch') return { name: 'Spore Belch', text: 'Its warts swell, and it belches a hot cloud of spores at you.', dmg: enr ? 28 : 22, threat: 1, note: 'If it hits, **Infect** on you for 3 turns' };
+    // its warts broken while a belch or burst was coming: the cloud never comes (9 Nov 2026 audit, Mekkman)
+    if (type === 'fizzle') return { name: 'Spores spent', text: 'Its torn warts wheeze out a thin puff.', dmg: 0, threat: 0, note: h.mon.enraged ? '**Spore Burst** stopped' : '**Spore Belch** stopped' };
     const r = bogjaw.intent.call(this, h, type);
     const out = r.dmg ? { ...r, dmg: Math.round(r.dmg * HIT) } : r;
     if (type === 'swallow') return { ...out, note: 'Swallowed. 2 dice stuck, and **Infect** on you until you’re out' };
@@ -62,8 +64,14 @@ export const feverjaw: MonsterDef = {
     return remember(h, pick === 'belch' && m.enraged && prev !== 'burst' ? 'burst' : pick);
   },
 
+  onBreak(h, partId, w) {
+    if (partId === 'warts' && (h.intent === 'belch' || h.intent === 'burst')) { h.intent = 'fizzle'; return 'The warts burst early. The spores are spent.'; }
+    return bogjaw.onBreak!.call(this, h, partId, w);
+  },
+
   resolve(h, type, landed) {
     const enr = h.mon.enraged;
+    if (type === 'fizzle') return null;
     if (type === 'belch') return landed ? infectPlayer(h, 3, enr ? 12 : 10) : null;
     if (type === 'burst') { h.mon.newSeen = true; return landed ? infectPlayer(h, 5, enr ? 12 : 10) : null; }
     if (type === 'digest') return infectPlayer(h, 2, enr ? 14 : 12);
@@ -73,7 +81,7 @@ export const feverjaw: MonsterDef = {
   },
 
   tip(h, type) {
-    if ((h.mon.gut ?? 0) > 0) return carries(h, 'Cut') ? `**Cut** counts double toward cutting free (${carryingName(h, 'Cut')}).` : 'Every hit counts toward cutting free. **Cut** counts double.';
+    if ((h.mon.gut ?? 0) > 0) return carries(h, 'Cut') ? `**Cut** counts 3 times toward cutting free (${carryingName(h, 'Cut')}).` : 'Every hit counts toward cutting free. **Cut** counts 3 times, **Blunt** half.';
     return bogjaw.tip!.call(this, h, type);
   }
 };

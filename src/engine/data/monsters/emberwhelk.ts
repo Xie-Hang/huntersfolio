@@ -45,7 +45,7 @@ export const emberwhelk: MonsterDef = {
     switch (type) {
       case 'spit': return { name: 'Spit Cinders', text: 'It hawks a gob of glowing cinders.', dmg: enr ? 28 : 22, threat: 1 };
       case 'slime': return { name: 'Molten Slime', text: 'It surges forward on a wave of burning slime.', dmg: enr ? 20 : 16, threat: 2, note: `Then its slime burns you for ${SLIME_TURNS} turns` };
-      case 'retreat': return { name: 'Shell Retreat', text: 'It pulls back into its shell, hissing.', dmg: 0, threat: 0, note: 'Takes ½ until it comes out. Heals 30' };
+      case 'retreat': return { name: 'Shell Retreat', text: 'It pulls back into its shell, hissing.', dmg: 0, threat: 0, note: m.parts.gills.broken ? 'Takes half damage until it comes out' : 'Takes half damage until it comes out · heals 30' };
       case 'rear': return { name: 'Rears Back', text: 'It rears up, shell tilted forward like a battering ram.', dmg: 0, threat: 0, note: '**Shell Lunge** next turn' };
       case 'lunge': return { name: 'Shell Lunge', text: 'It throws the whole molten shell at you!', dmg: enr ? 66 : 56, threat: 3 };
       // enraged (Nov 2026): its gills open wide and it heals a big chunk after your turn (on top of the usual flare)
@@ -83,7 +83,8 @@ export const emberwhelk: MonsterDef = {
       m.slime!--;
     }
     if (type === 'bloom') { m.newSeen = true; if (!m.parts.gills.broken && m.hp > 0) { const heal = Math.min(40, m.max - m.hp); m.hp += heal; lines.push(`Its gills bloom. It heals ${heal}.`); } }
-    if (type === 'retreat') { m.shell = 1; const heal = Math.min(30, m.max - m.hp); m.hp += heal; lines.push(`It heals ${heal} inside its shell.`); }
+    // broken gills stop this heal too: the gills are its healing (9 Nov 2026 audit, Mekkman: breaking parts does what it says)
+    if (type === 'retreat') { m.shell = 1; const heal = m.parts.gills.broken ? 0 : Math.min(30, m.max - m.hp); m.hp += heal; if (heal) lines.push(`It heals ${heal} inside its shell.`); }
     if (!m.parts.gills.broken && m.hp > 0) {
       const heal = Math.min(m.enraged ? 22 : 15, m.max - m.hp);
       if (heal > 0) { m.hp += heal; lines.push(`Its gills flare. It heals ${heal}.`); }
