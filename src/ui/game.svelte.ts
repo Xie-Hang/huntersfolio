@@ -155,7 +155,8 @@ class Game {
     // Foothills hunts name what they show themselves (MonsterDef.island) and don't count toward the Ridge's layers.
     const isl = !!E.MONSTERS[L.target]?.island, prior = E.ISLAND_MONSTERS.reduce((n, id) => n + (this.save.record[id]?.hunts ?? 0), 0);
     const ridgeHunts = this.save.hunts - prior;
-    const lesson = isl || !E.islandDone(this.save) || settings.prefs.showAll || ridgeHunts >= 3 ? undefined : ridgeHunts + 1;
+    // (island graduates have been taught everything: the layers are only for saves that never saw the island)
+    const lesson = isl || !E.islandDone(this.save) || this.save.tips.includes('i-begin') || settings.prefs.showAll || ridgeHunts >= 3 ? undefined : ridgeHunts + 1;
     this.hunt = E.startHunt(this.save, E.randomSeed(), scripted ? E.TUTORIAL_SCRIPT : undefined, lesson);
     this.rerollLesson(true);
     PL.huntBegin(this.hunt, this.save);

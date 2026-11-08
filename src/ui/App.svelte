@@ -211,18 +211,8 @@
         {/each}
       </span>
     </div>
-    <div class="setrow">
-      <span><span class="nm">Tutorial tips</span><span class="md">Turning them on again replays them.</span></span>
-      <button class="btn quiet" role="switch" aria-checked={settings.prefs.tips} onclick={() => coach.setEnabled(!settings.prefs.tips)}>{settings.prefs.tips ? 'On' : 'Off'}</button>
-    </div>
-    <div class="setrow">
-      <span><span class="nm">Show tips again</span><span class="md">The tips you've seen come back. Replay the first lessons from Help.</span></span>
-      <button class="btn quiet" onclick={() => { coach.showAgain(); settingsOpen = false; }}>Show again</button>
-    </div>
-    <div class="setrow">
-      <span><span class="nm">Show every action</span><span class="md">From your first hunt, instead of a little more each hunt. From your next hunt.</span></span>
-      <button class="btn quiet" role="switch" aria-checked={settings.prefs.showAll} onclick={() => { settings.prefs.showAll = !settings.prefs.showAll; settings.save(); }}>{settings.prefs.showAll ? 'On' : 'Off'}</button>
-    </div>
+    <!-- (Tutorial tips, Show tips again and Show every action were removed, Mekkman 8 Nov 2026: Skip tutorial is on every
+         prompt card, and the lessons replay from Help) -->
     <div class="setrow">
       <span><span class="nm">Feedback</span><span class="md">Your hunt log ({logCount.hunts} hunt{logCount.hunts === 1 ? '' : 's'}) stays on this PC. Export it to <span use:detail={'What you hunted, how each hunt went and how long turns took. Nothing is sent anywhere unless you attach the file yourself.'}>send with feedback</span>.</span></span>
       <span class="btnrow">
