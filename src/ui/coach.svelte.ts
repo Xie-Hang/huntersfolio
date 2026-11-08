@@ -155,7 +155,7 @@ const ISLAND: Tip[] = [
     // three Fangs, so it reads as "one Slash per Fang", not "a ×2 button" (Nov 2026 playtest: a tester thought ×2 was the cap)
     id: 'i-twice', guide: true, learn: true, at: ['dice'], head: 'Several dice',
     when: () => { const h = onIsland('snapclaw'); const f = h ? h.dice.filter(d => d.face === 'C' && !d.used).length : 0; return !!h && h.turn === 2 && f >= 2 && unusedTurn(h) && game.sel.filter(i => h.dice[i]?.face === 'C').length < f; },
-    text: () => { const h = hunt(); const f = h ? h.dice.filter(d => d.face === 'C' && !d.used).length : 3; return f === 3 ? 'Three Fangs! Select all three.' : `${f} Fangs! Select all ${f}.`; },
+    text: () => 'Three Fangs! Select all three.', // (turn 2 is always three Fangs: rerollLesson scripts it)
     done: () => { const h = hunt(); return game.multi > 0 || (!!h && h.mid === 'snapclaw' && h.turn === 2 && game.sel.filter(i => h.dice[i]?.face === 'C').length >= h.dice.filter(d => d.face === 'C' && !d.used).length); }
   },
   {
@@ -298,9 +298,10 @@ const ISLAND: Tip[] = [
   // ---- on rails until practice (Mekkman, 8 Nov 2026): every step points at the next thing. These never retire:
   // they show whenever their moment comes round (a lost hunt, a second try)
   {
+    // (9 Nov 2026: no Forge or Shop lines here; at those steps i-forge, i-vest and i-shop come first and say it)
     id: 'i-go', head: 'Next', guide: true, side: 'right', at: () => (game.hunt?.over === 'lose' ? ['to-retry'] : ['to-next', 'to-forge', 'to-shop']),
     when: () => !game.lesson && !!game.hunt?.over && game.view === 'hunt' && !!game.hunt.reward && !E.islandDone(game.save),
-    text: () => game.hunt?.over === 'lose' ? (game.hunt.reward?.lost ? 'That one got away, and the items you carried are gone. It happens to the best of us. Try again.' : 'That one got away. It happens to the best of us. Try again.') : E.islandTown(game.save) === 'forge' ? "You’ve got materials now. Let’s visit the Forge." : E.islandTown(game.save) === 'shop' ? "Let’s visit the Shop." : game.hunt?.mid === 'tuskling' && E.islandStep(game.save) === 4 ? 'Nicely done! Next up, some practice hunts.' : `Nicely done! The ${E.MONSTERS[game.save.loadout.target]?.short} is next.`
+    text: () => game.hunt?.over === 'lose' ? (game.hunt.reward?.lost ? 'That one got away, and the items you carried are gone. It happens to the best of us. Try again.' : 'That one got away. It happens to the best of us. Try again.') : game.hunt?.mid === 'tuskling' && E.islandStep(game.save) === 4 ? 'Nicely done! Next up, some practice hunts.' : `Nicely done! The ${E.MONSTERS[game.save.loadout.target]?.short} is next.`
   },
   {
     id: 'i-hunt', head: 'Next hunt', guide: true, at: ['begin'],
