@@ -41,7 +41,6 @@
     </div>
     <div class="vst">
       {#if h.arm.ward && shows(h, 'all')}<span>Armour −{h.arm.ward} a hit</span>{/if}
-      {#if h.chargeReady}<span class="gold">Charged: first hit ×2</span>{:else if h.chargePending}<span class="gold">Charging for next turn</span>{/if}
       {#if h.whet}<span class="gold">Sharpened: next hit +{Math.round(h.whet * 100)}%</span>{/if}
       {#if h.evade}<span class="gold">Hidden in smoke</span>{/if}
       {#if (m.pInf ?? 0) > 0}<span class="bad inf" title="You lose this much at the end of each turn. It can’t knock you out on its own. A Purging Tonic cures it.">Infected −{m.pInfDmg} · {m.pInf} turn{m.pInf! > 1 ? 's' : ''}</span>{/if}
