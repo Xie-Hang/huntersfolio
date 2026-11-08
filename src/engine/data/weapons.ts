@@ -50,7 +50,6 @@ const list: WeaponDef[] = [
   // the Foothills' first weapon (the tutorial island, Nov 2026): one move, no Flow. Never made at the Forge.
   // the Foothills' last weapon (tracked at step 10, made at step 12): the Hunter's Blade's moves, with Gale.
   // The Gorehorn (the island's exam) is weak to Gale.
-  { id: 'whistle', tier: 0.5, foothills: true, name: 'Whistling Blade', type: 'Cut', elem: 'Gale', kind: 'Longsword', note: 'Hums when you swing it.', moves: BLADE, mult: 1, craft: { coin: 120, marmotfur: 2, galegland: 1 } },
   { id: 'training', name: 'Training Blade', type: 'Cut', elem: null, kind: 'Practice sword', note: 'Blunt-tipped, for learning on.', moves: [{ name: 'Slash', need: 'C', dmg: 12 }], mult: 1, starter: true },
   { id: 'blade', name: "Hunter's Blade", type: 'Cut', elem: null, kind: 'Longsword', note: 'Plain steel. Never wrong, never the best.', moves: BLADE, mult: 1, craft: { coin: 100, shell: 2 } },
   { id: 'saber', name: 'Bristle Saber', type: 'Cut', elem: null, kind: 'Longsword', note: 'Edged with Gorehorn bristles. Bites deeper.', moves: BLADE, mult: 1.2, from: 'blade', cost: { coin: 300, pelt: 2, hide: 3 } },

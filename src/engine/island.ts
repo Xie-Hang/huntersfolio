@@ -50,7 +50,7 @@ export const islandTown = (s: Save): 'forge' | 'shop' | null => {
   return st === 2 || st === 5 ? 'forge' : st === 6 ? 'shop' : null;
 };
 /** what the Forge holds on the island, by tab. Armour and charms stay hidden until they're taught (Mekkman, 8 Nov
- *  2026): armour with "get ready", charms on the Ridge. The Whistling Blade is there from practice, no prompt */
+ *  2026): armour with "get ready", charms on the Ridge. */
 export function islandForge(s: Save): { w: string[]; a: string[]; c: string[] } {
   const st = islandStep(s);
   // (9 Nov 2026: the Whistling Blade waits until the island is done: its Gale Gland is a rare drop from a monster you can't

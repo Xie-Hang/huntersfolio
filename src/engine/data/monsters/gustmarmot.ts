@@ -21,12 +21,12 @@ export const gustmarmot: MonsterDef = {
   head: 'cheeks',
   common: 'marmotfur',
   rarePart: 'cheeks',
-  rare: 'galegland',
+  rare: 'marmotfur', // (no rare of its own since 9 Nov 2026, like the Cragling and Rimekit)
   habits: 'A Galeshrike chick, too young to fly. It pecks twice, then beats its wings, and the gust it whips up hits hard the turn after. Badly hurt, it gets angry and the gust hits harder.',
   intro: 'A Shrikelet hops onto a rock and spreads its wings. The grass flattens.',
   enrageText: 'It fluffs up, shrieking. The Shrikelet is enraged!',
   parts: [
-    { id: 'cheeks', name: 'Beak', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: 'Breaking it can drop a Gale Gland (rare)', mat: 'marmotfur', hp: 70, brk: 'Its beak chips with a squawk.' },
+    { id: 'cheeks', name: 'Beak', eff: { Cut: 0.5, Blunt: 1, Pierce: 0.5 }, hint: 'Breaking it drops Shrike Down', mat: 'marmotfur', hp: 70, brk: 'Its beak chips with a squawk.' },
     { id: 'fur', name: 'Down', eff: { Cut: 1, Blunt: 0.5, Pierce: 0.5 }, hint: 'Breaking it drops its down', mat: 'marmotfur', hp: 80, brk: 'A clump of down tears away.' }
   ],
 

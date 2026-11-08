@@ -112,6 +112,10 @@ export function loadSave(raw: unknown): Save {
     bounties: Object.fromEntries(Object.keys(s.bounties && typeof s.bounties === 'object' ? s.bounties : {}).filter(k => BOUNTIES[k]).map(k => [k, true])) as Save['bounties']
   };
   migrateIsland(out); // the old 16-step island onto the new one (8 Nov 2026)
+  // the Whistling Blade and its Gale Gland are gone (9 Nov 2026, Mekkman): their coin comes back
+  if (s.weapons && typeof s.weapons === 'object' && 'whistle' in s.weapons) out.coin += 120;
+  if (out.mats.galegland) { out.coin += 40 * out.mats.galegland; delete out.mats.galegland; }
+  delete out.pity.galegland;
   // A hunt takes two weapons; only a damaged save can have fewer, so give back the starter pair.
   // (the Foothills start with one weapon, the Training Blade)
   if (Object.keys(out.weapons).length < 2 && !(typeof out.island === 'number' && out.island < ISLAND_DONE)) out.weapons = { ...base.weapons, ...out.weapons };

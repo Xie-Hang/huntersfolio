@@ -82,3 +82,14 @@ describe('Squallhorn: Pinned', () => {
     expect(h.php).toBe(hp); expect(h.mon.wind).toBe(1);
   });
 });
+
+describe('The Whistling Blade and Gale Gland are gone (9 Nov 2026)', () => {
+  it('an old save gets their coin back and loses neither weapon slot', () => {
+    const s = E.newSave() as any; s.weapons = { blade: { lv: 0 }, maul: { lv: 0 }, whistle: { lv: 1 } }; s.loadout.weapons = ['whistle', 'maul'];
+    s.mats.galegland = 2; s.pity.galegland = 3; const coin = s.coin;
+    const out = E.loadSave(JSON.parse(JSON.stringify(s)));
+    expect(out.coin).toBe(coin + 120 + 80);
+    expect(out.weapons.whistle).toBeUndefined(); expect(out.mats.galegland).toBeUndefined();
+    expect(out.loadout.weapons.length).toBe(2);
+  });
+});

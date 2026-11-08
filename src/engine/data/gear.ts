@@ -104,7 +104,6 @@ const mats: MaterialDef[] = [
   { id: 'milktusk', base: 'Milk Tusk', src: 'Tuskling', sell: 20, how: 'Break the Tuskling\u2019s tusks (a maul)' },
   { id: 'moleclaw', base: 'Cinder Claw', src: 'Cinderpup', sell: 10, how: 'Every Cinderpup hunt' },
   { id: 'marmotfur', base: 'Shrike Down', src: 'Shrikelet', sell: 10, how: 'Every Shrikelet hunt' },
-  { id: 'galegland', base: 'Gale Gland', src: 'Shrikelet', sell: 40, how: 'Rare from Shrikelet beak breaks; capture raises the chance' },
   { id: 'hide', base: 'Hide', src: 'Gorehorn', sell: 20, how: 'Every Gorehorn hunt' },
   { id: 'tusk', base: 'Tusk', src: 'Gorehorn', sell: 60, how: 'Break the Gorehorn’s tusks (Blunt best)' },
   { id: 'pelt', base: 'Bristled Pelt', src: 'Gorehorn', sell: 60, how: 'Break the Gorehorn’s hide (Cut best)' },
