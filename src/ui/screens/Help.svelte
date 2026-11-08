@@ -66,8 +66,8 @@
       <article class="ne" aria-live="polite">
         <p class="ng">{cur.group}</p>
         <h3>{cur.name}</h3>
-        <p class="nh"><Rich text={cur.head} /></p>
-        {#each cur.lines as l}<p><Rich text={l} /></p>{/each}
+        <p class="nh"><Rich text={cur.head} self={cur.id} /></p>
+        {#each cur.lines as l}<p><Rich text={l} self={cur.id} /></p>{/each}
       </article>
     {/if}
   </div>
