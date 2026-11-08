@@ -93,7 +93,7 @@ const ISLAND: Tip[] = [
     id: 'i-again', guide: true, learn: true, at: ['move'], head: 'Moves',
     when: () => { const h = onIsland('scuttlehog'); return !!h && h.turn === 1 && !unusedTurn(h) && freeDice(h) > 0 && E.canUseMove(h, 0); },
     // the shortcut, taught here (Mekkman, 8 Nov 2026): with no die selected, a move picks its own
-    text: () => 'Now select **Slash** alone. It picks the Fang automatically.',
+    text: () => 'Now select **Slash** alone. It picks a Fang automatically.',
     done: () => { const h = hunt(); return !!h && h.mid === 'scuttlehog' && (h.turn > 1 || freeDice(h) === 0); }
   },
   {
@@ -246,6 +246,12 @@ const ISLAND: Tip[] = [
     id: 'i-item', head: 'Items', guide: true, info: true, gotit: true, at: ['slot-item'],
     when: () => E.onExam(game.save) && game.view === 'board' && game.boardMon && !huntOn() && !game.lesson,
     text: () => 'Your salve heals 30 in a hunt. Items cost no dice.'
+  },
+  {
+    // Abandon hunt first shows here (hidden on the guided hunts before practice)
+    id: 'i-abandon', head: 'Abandon hunt', guide: true, info: true, gotit: true, at: ['abandon'],
+    when: () => { const h = hunt(); return !!h && h.exam === true && h.turn === 1 && unusedTurn(h) && !game.lesson; },
+    text: () => 'Too tough? You can leave with Abandon hunt.'
   },
   {
     id: 'i-salve', head: 'Items', guide: true, learn: true, at: ['item'],

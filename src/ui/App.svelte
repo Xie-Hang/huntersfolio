@@ -166,7 +166,7 @@
       {/if}
       {#if E.forgeOpen(game.save)}<span class="purse">{game.save.coin} coin</span>{/if}
       {#if game.inHunt && !game.lesson && !(E.onRails(game.save) && E.islandStep(game.save) < 4)}
-        <button class="btn quiet" onclick={() => game.abandon()}>Abandon hunt</button>
+        <button class="btn quiet" data-coach="abandon" onclick={() => game.abandon()}>Abandon hunt</button>
       {/if}
       <button class="iconbtn" data-coach="help" aria-label="How to play" aria-expanded={help.open} onclick={openHelp}>
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5" /><path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.8" /><circle cx="12" cy="17.2" r=".6" fill="currentColor" /></svg>
